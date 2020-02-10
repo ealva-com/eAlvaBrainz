@@ -2,19 +2,35 @@ eAlvaBrainz
 ===========
 Kotlin [MusicBrainz][brainz]/[CoverArtArchive][coverart] [Retrofit][retrofit] libraries for Android
 
-**Currently in very preliminary state**. Pushing unfinished to Github in case someone can use the preliminary work
+**Currently in very preliminary state**. Pushing unfinished to Github in case someone can use the 
+preliminary work
 
-This respository consists of 3 parts:
-  * **ealvabrainz** - A library which consists of 2 Retrofit interfaces, MusicBrainz and CoverArt, and supporting classes to generate a MusicBrainz REST cleint.
-  * **ealvabrainz-service** - Higher-level abstraction that wraps the Retrofit clients with a richer interface, configures necessary Retrofit/OkHttp clients, and provides support for cache control/throttling/user agent/etc.
+This repository consists of 3 parts:
+  * **ealvabrainz** - A library which consists of 2 Retrofit interfaces, MusicBrainz and CoverArt, 
+  and supporting data classes to generate a MusicBrainz REST client.
+  * **ealvabrainz-service** - Higher-level abstractions that wraps the Retrofit clients with a 
+  richer interface, configures necessary Retrofit/OkHttp clients, and provides support for cache 
+  control/throttling/user agent/etc.
   * **app** - Demonstrates search and lookup
   
-  These libraries started as a small, very limited API, part of an app. The goal is to widen support to most of the API MusicBrainz and CoverArt provide. As of now things are very preliminary, a very small portion of the MusicBrainz API is supported, and no libraries are being published. Pull requests welcome. 
+These libraries started as a small, very limited API, part of an app. The goal is to widen support
+to most of the API MusicBrainz and CoverArt provide. As of now things are very preliminary, a 
+very small portion of the MusicBrainz API is supported, and no libraries are being published. 
+Pull requests welcome. 
   
 # Libraries
 ## ealvabrainz
-Provides MusicBrainz and CoverArt interfaces which Retrofit.Builder can use to generate a REST client for the MusicBrainz and CoverArtArchive servers. The data classes created as response to MusicBrainz request, plus added annotations/JsonAdapters, are provided to support the Null Object Pattern. 
-Null is avoided almost entirely (one specific case remains). Null Strings become empty Strings, null Lists become empty lists, and a null reference is replaced by a specific instance of the interface - known as a Null Object. Missing objects default to the their Null Object counterparts. Checking for null is not required, but it is possible to check for the Null Object via instance comparison. The Area class provides a short example:
+Provides MusicBrainz and CoverArt interfaces which Retrofit.Builder can use to generate a REST 
+client for the MusicBrainz and CoverArtArchive servers. 
+
+The data classes created as response to MusicBrainz requests, plus added annotations/JsonAdapters, 
+are provided to support the Null Object Pattern. Null is avoided almost entirely (one specific case 
+remains). Null Strings become empty Strings, null Lists become empty lists, and a null reference 
+is replaced by a specific instance of the class - known as a Null Object. 
+
+Missing objects default to the their Null Object counterparts. Checking for null is not required, 
+but it is possible to check for the Null Object via instance comparison. The Area class provides a 
+short example:
 ```kotlin
 @JsonClass(generateAdapter = true)
 data class Area(
@@ -38,9 +54,15 @@ inline class AreaMbid(override val value: String) : Mbid
 inline val Area.mbid
   get() = AreaMbid(id)
 ```
-A companion object is defined which contains the Null Object and a mapping between the class name and the fallback NullArea object. An extension function defines a Boolean isNullObject val. Note also the AreaMbid inline class. Currently this conversion must be done by the client until adapters are written to automate this. Since a MusicBrainz identifier (MBID) is just a string, these inline classes are meant to differentiate types of MBID to facilitate compile time type checking.
+A companion object is defined which contains the Null Object and a mapping between the class name 
+and the fallback NullArea object. An extension function defines a Boolean isNullObject val. Note 
+also the AreaMbid inline class. Currently this conversion must be done by the client until adapters 
+are written to automate this. Since a MusicBrainz identifier (MBID) is just a string, these inline 
+classes are meant to differentiate types of MBID to facilitate compile time type checking.
 
-While this module is not directly dependent upon Kotlin [coroutine][coroutines] libraries, the Retrofit interface functions are defined with suspend. This means clients will require Kotlin coroutine libraries.
+While this module is not directly dependent upon Kotlin [coroutine][coroutines] libraries, the 
+Retrofit interface functions are defined with suspend. This means clients will require Kotlin 
+coroutine libraries.
 ```kotlin
 interface CoverArt {
   /**
@@ -57,11 +79,17 @@ interface CoverArt {
   suspend fun getArtwork(@Path("entity") entity: String, @Path("mbid") mbid: String): Response<CoverArtRelease>
 }
 ```
-Note that ```getArtwork()``` is suspending and may only be called from a coroutine. The higher level abstractions in ealvabrainz-service also define suspend functions along with providing [flows][flow] of various types.    
+Note that ```getArtwork()``` is suspending and may only be called from a coroutine. The higher level 
+abstractions in ealvabrainz-service also define suspend functions along with providing [flows][flow] 
+of images.    
 ## ealvabrainz-service
-Provides CoverArtService and MusicBrainzService, which wrap the CoverArt and MusicBrainz Retrofit clients providing a higher-level function. 
+Provides CoverArtService and MusicBrainzService, which wrap the CoverArt and MusicBrainz Retrofit 
+clients providing a higher-level function. 
 #### CoverArtService    
-The CoverArtService provides functions to retrieve artwork based on an MusicBrainz ID (MBID). It also has extension functions to convert flows of MBIDs to cover art images. The CoverArtService implementation builds and contains the necessary OkHttp client and Retrofit implementation of the CoverArt class.
+The CoverArtService provides functions to retrieve artwork based on an MusicBrainz ID (MBID). It 
+also has extension functions to convert flows of MBIDs to cover art images. The CoverArtService 
+implementation builds and contains the necessary OkHttp client and Retrofit implementation of the 
+CoverArt class.
 ```kotlin
 interface CoverArtService {
   enum class Entity(val value: String) {
@@ -86,7 +114,8 @@ fun Flow<ReleaseMbid>.transform(service: CoverArtService): Flow<RemoteImage>
 fun Flow<ReleaseGroupMbid>.transform(service: CoverArtService): Flow<RemoteImage>
 ```
 #### MusicBrainzService
-This service is similar to CoverArtService in that it provides a higher-level abstraction and builds the appropriate underlying Retrofit/OkHttp classes.
+This service is similar to CoverArtService in that it provides a higher-level abstraction and builds
+the appropriate underlying Retrofit/OkHttp classes.
 ```kotlin
 interface MusicBrainzService {
   suspend fun findRelease(
@@ -114,7 +143,8 @@ interface MusicBrainzService {
   }
 }
 ```
-Note the MusicBrainzService is constructed with a CoverArtService instance. This allows MusicBrainzService to provide functionality such as
+The MusicBrainzService is constructed with a CoverArtService instance. This allows 
+MusicBrainzService to provide functionality such as:
 ``` kotlin
 fun getReleaseArt(artistName: ArtistName, albumName: AlbumName): Flow<RemoteImage>
 ```
