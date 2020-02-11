@@ -86,14 +86,52 @@ data class Area(
   var lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
   var score: Int = 0
 ) {
-  override fun toString(): String = toJSon()
+  interface Lookup : Include
+
+  @Suppress("unused")
+  enum class Misc(override val value: String) : Lookup {
+    Aliases("aliases"),       // include artist, label, area or work aliases; treat these as a set, as they are not deliberately ordered
+    Annotation("annotation"),
+    Tags("tags"),
+    Ratings("ratings"),
+    Genres("genres")
+  }
+
+  @Suppress("unused")
+  enum class SearchFields(val value: String) {
+    /** the area's MBID */
+    AreaId("aid"),
+    /** an alias attached to the area */
+    Alias("alias"),
+    /** the area's name */
+    AreaName("area"),
+    /** the area's begin date */
+    BeginDate("begin"),
+    /** the area's disambiguation comment */
+    Comment("comment"),
+    /** the area's end date */
+    EndDate("end"),
+    /** a flag indicating whether or not the area has ended */
+    Ended("ended"),
+    /** an ISO 3166-1/2/3 code attached to the area */
+    Iso("iso"),
+    /** an ISO 3166-1 code attached to the area */
+    Iso1("iso1"),
+    /** an ISO 3166-2 code attached to the area */
+    Iso2("iso2"),
+    /** an ISO 3166-3 code attached to the area */
+    Iso3("iso3"),
+    /** the area's sort name */
+    SortName("sortname"),
+    /** the area's type  */
+    Type("type"),
+  }
 
   companion object {
     val NullArea = Area()
     val fallbackMapping: Pair<String, Any> = Area::class.java.name to NullArea
   }
 }
-
 
 inline val Area.isNullObject
   get() = this === NullArea

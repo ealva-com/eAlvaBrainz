@@ -47,7 +47,8 @@ data class Medium(
   @field:Json(name = "track-offset") var trackOffset: Int = 0,
   var discs: List<Disc> = emptyList(),
   var position: Int = 0,
-  var tracks: List<Track> = emptyList()
+  internal var tracks: List<Track> = emptyList(),
+  internal var track: List<Track> = emptyList()
 ) {
   companion object {
     val NullMedium = Medium(title = NullObject.NAME)
@@ -57,3 +58,6 @@ data class Medium(
 
 inline val Medium.isNullObject
   get() = this === NullMedium
+
+val Medium.theTracks
+get() = if (track.isNotEmpty()) track else tracks

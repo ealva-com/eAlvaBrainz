@@ -21,13 +21,23 @@ import com.nhaarman.expect.expect
 import org.junit.Test
 
 internal class CoverArtImageTest {
+  /** Currently the list may contain nulls, so let's test they get filtered and others converted */
   @Test
   fun `test imageTypes converts list of raw type string to CoverArtImageType list`() {
     val image = CoverArtImage(
-      types = listOf(CoverArtImageType.TYPE_FRONT, CoverArtImageType.TYPE_BACK).map { it.value }
+      types = listOf(
+        null,
+        CoverArtImageType.TYPE_FRONT.value,
+        null,
+        CoverArtImageType.TYPE_BACK.value,
+        null,
+        null,
+        CoverArtImageType.TYPE_POSTER.value,
+        null)
     )
     val sequence = image.imageTypes
     expect(sequence.first()).toBe(CoverArtImageType.TYPE_FRONT)
     expect(sequence.elementAt(1)).toBe(CoverArtImageType.TYPE_BACK)
+    expect(sequence.elementAt(2)).toBe(CoverArtImageType.TYPE_POSTER)
   }
 }

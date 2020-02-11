@@ -131,7 +131,7 @@ data class Artist(
   var recordings: List<Recording> = emptyList(),
   var releases: List<Release> = emptyList(),
   /** score only used in query results */
-  var score: String = ""
+  var score: Int = 0
 ) {
   override fun toString(): String {
     return toJSon()

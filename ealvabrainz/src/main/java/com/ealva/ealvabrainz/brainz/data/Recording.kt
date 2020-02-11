@@ -36,8 +36,94 @@ data class Recording(
 //  var relations: List<> = emptyList(),
   var releases: List<Release> = emptyList(),
   var tags: List<Tag> = emptyList(),
-  var video: Boolean = false
+  var video: Boolean = false,
+  /** used with queries */
+  var score: Int = 0
 ) {
+  interface Lookup : Include
+
+  @Suppress("unused")
+  enum class Subqueries(override val value: String) : Lookup {
+    ArtistCredits("artist-credits") // include artists credits for all releases and recordings
+  }
+
+  @Suppress("unused")
+  enum class Misc(override val value: String) : Lookup {
+    Aliases("aliases"),       // include artist, label, area or work aliases; treat these as a set, as they are not deliberately ordered
+    Annotation("annotation"),
+    Tags("tags"),
+    Ratings("ratings"),
+    Genres("genres")
+  }
+
+  @Suppress("unused")
+  enum class SearchFields(val value: String) {
+    /** the artist's MBID */
+    ArtistId("arid"),
+    /** artist name is name(s) as it appears on the recording */
+    Artist("artist"),
+    /** an artist on the recording, each artist added as a separate field */
+    ArtistName("artistname"),
+    /** the artist's disambiguation comment */
+    Comment("comment"),
+    /** name credit on the recording, each artist added as a separate field */
+    CreditName("creditname"),
+    /**
+     * the 2-letter code (ISO 3166-1 alpha-2) for the artist's main associated country, or “unknown”
+     */
+    Country("country"),
+    /** recording release date */
+    Date("date"),
+
+    /** duration of track in milliseconds */
+    Duration("dur"),
+    /** recording release format */
+    Format("format"),
+    /** ISRC of recording */
+    Isrc("isrc"),
+    /** free text track number */
+    Number("number"),
+    /** the medium that the recording should be found on, first medium is position 1 */
+    Position("position"),
+    /** primary type of the release group (album, single, ep, other) */
+    PrimaryType("primarytype"),
+    /** quantized duration (duration / 2000) */
+    QuantizedDuration("qdur"),
+    /** name of recording or a track associated with the recording */
+    Recording("recording"),
+    /** name of the recording with any accent characters retained */
+    RecordingAccent("recordingaccent"),
+    /** release id */
+    ReleaseId("reid"),
+    /** release name */
+    ReleaseName("release"),
+    /** release group id */
+    ReleaseGroupId("rgid"),
+    /** recording id */
+    RecordingId("rid"),
+    /** secondary type of the release group (audiobook, compilation, interview, live, remix soundtrack, spokenword) */
+    SecondaryType("secondarytype"),
+    /** Release status (official, promotion, Bootleg, Pseudo-Release) */
+    Status("status"),
+    /** folksonomy tag */
+    Tag("tag"),
+    /** track id */
+    TrackId("tid"),
+    /** track number on medium */
+    TrackNumber("tnum"),
+    /** number of tracks in the medium on release */
+    Tracks("tracks"),
+    /** number of tracks on release as a whole */
+    TracksRelease("tracksrelease"),
+    /**
+     * type of the release group, old type mapping for when we did not have separate primary and
+     * secondary types or use standalone for standalone recordings
+     */
+    Type("type"),
+    /** true to only show video tracks */
+    Video("video"),
+  }
+
   companion object {
     val NullRecording = Recording(id = NullObject.ID)
     val fallbackMapping: Pair<String, Any> = Recording::class.java.name to NullRecording

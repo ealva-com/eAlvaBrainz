@@ -30,3 +30,4 @@ data class ArtistList(
     return toJSon()
   }
 }
+

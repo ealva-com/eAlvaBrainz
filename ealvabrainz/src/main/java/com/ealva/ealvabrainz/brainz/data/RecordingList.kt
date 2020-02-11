@@ -17,22 +17,17 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-/**
- * Represents a single part of a MusicBrainz inc= parameter
- */
-interface Include {
-  val value: String
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
+class RecordingList(
+  var created: String = "",
+  var count: Int = 0,
+  var offset: Int = 0,
+  var recordings: List<Recording> = emptyList()
+) {
+  override fun toString(): String {
+    return toJSon()
+  }
 }
 
-/**
- * Join each [Include] instance into an inc= value for MusicBrainz lookup.
- *
- * @return list entries concatenated together separated by "+" as required by MusicBrainz Lucene
- * query, or null if the list isEmpty
- */
-fun List<Include>.joinToInc(): String? {
-  return if (isEmpty()) null else joinToString("+") { it.value }
-}
-
-// All possible includes, some do not apply to all entities
-// discids+media+isrcs+artist-credits+various-artists+aliases+annotation+tags+ratings+genres

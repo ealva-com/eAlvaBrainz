@@ -55,6 +55,9 @@ data class CoverArtImage(
 inline val CoverArtImage.isNullObject
   get() = this === NullCoverArtImage
 
+/**
+ * Currently types may contain null, need to revisit this
+ */
 val CoverArtImage.imageTypes: Sequence<CoverArtImageType>
   get() = types.asSequence()
     .filterNotNull()

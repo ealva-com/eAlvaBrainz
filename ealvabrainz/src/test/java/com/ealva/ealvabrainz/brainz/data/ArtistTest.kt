@@ -36,21 +36,21 @@ class ArtistTest {
    */
   @Test
   fun `test parse release all inc`() {
-    moshi.adapter(Artist::class.java).fromJson(artistAllIncJson)?.let { artist ->
-      expect(artist.gender).toBe("Male")
-      expect(artist.beginArea.id).toBe("dc08b8ca-f6ad-4163-b78e-d29079f5521a")
-      expect(artist.beginArea.name).toBe("Lakewood")
-      expect(artist.recordings[0].artistCredit[0].name).toBe("Benjamin Orr")
-      expect(artist.recordings[0].artistCredit[0].artist.genres[0].name).toBe("rock")
-      expect(artist.recordings[1].isrcs[0]).toBe("USEE10608065")
-      expect(artist.releases[0].title).toBe("The Power of Love 3")
-      expect(artist.releases[5].packaging).toBe("Box")
-      expect(artist.endArea.name).toBe("Atlanta")
-      expect(artist.endArea.id).toBe("26e0e534-19ea-4645-bfb3-1aa4e83a4046")
-//      artist.tags[0].run {
-//        expect(name).toBe("rock")
-//        expect(count).toBe(1)
-//      }
+    moshi.adapter(Artist::class.java).fromJson(artistAllIncJson)?.run {
+      expect(gender).toBe("Male")
+      expect(beginArea.id).toBe("dc08b8ca-f6ad-4163-b78e-d29079f5521a")
+      expect(beginArea.name).toBe("Lakewood")
+      expect(recordings[0].artistCredit[0].name).toBe("Benjamin Orr")
+      expect(recordings[0].artistCredit[0].artist.genres[0].name).toBe("rock")
+      expect(recordings[1].isrcs[0]).toBe("USEE10608065")
+      expect(releases[0].title).toBe("The Power of Love 3")
+      expect(releases[5].packaging).toBe("Box")
+      expect(endArea.name).toBe("Atlanta")
+      expect(endArea.id).toBe("26e0e534-19ea-4645-bfb3-1aa4e83a4046")
+      tags[0].run {
+        expect(name).toBe("rock")
+        expect(count).toBe(1)
+      }
     } ?: fail("Release is null")
   }
 }

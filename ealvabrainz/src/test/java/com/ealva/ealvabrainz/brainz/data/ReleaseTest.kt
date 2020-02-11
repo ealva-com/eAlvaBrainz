@@ -49,7 +49,7 @@ internal class ReleaseTest {
       val firstMedia = release.media.first()
       expect(firstMedia.formatId).toBe("9712d52a-4509-3d4b-a1a2-67c88c643e31")
       expect(firstMedia.trackCount).toBe(1)
-      expect(firstMedia.tracks).toHaveSize(1)
+      expect(firstMedia.theTracks).toHaveSize(1)
     } ?: fail("Release is null")
   }
 
@@ -990,7 +990,7 @@ private const val releaseWithNullObjects = """
 }
 """
 
-const val releaseWithMissingObjects = """
+private const val releaseWithMissingObjects = """
 {
   "media": [
     {

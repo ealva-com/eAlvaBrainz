@@ -70,7 +70,8 @@ data class ReleaseGroup(
   var annotation: String = "",
   var tags: List<Tag> = emptyList(),
   @field:Json(name = "primary-type") var primaryType: String = "",
-  @field:Json(name = "primary_type_id") var primaryTypeId: String = "",
+  @field:Json(name = "primary-type-id") internal var primaryTypeId: String = "",
+  @field:Json(name = "type-id") internal var typeId: String = "",
   @field:FallbackOnNull var rating: Rating = Rating.NullRating,
   @field:Json(name = "secondary-type-ids") var secondaryTypeIds: List<String> = emptyList(),
   @field:Json(name = "secondary-types") var secondaryTypes: List<String> = emptyList(),
@@ -82,6 +83,7 @@ data class ReleaseGroup(
 
   interface Lookup : Include
 
+  @Suppress("unused")
   enum class Subqueries(override val value: String) : Lookup {
     Artists("artists"),
     Releases("releases"),
@@ -90,6 +92,7 @@ data class ReleaseGroup(
     ArtistCredits("artist-credits"); // include artists credits for all releases and recordings
   }
 
+  @Suppress("unused")
   enum class Misc(override val value: String) : Lookup {
     Aliases("aliases"),       // include artist, label, area or work aliases; treat these as a set, as they are not deliberately ordered
     Annotation("annotation"),
@@ -98,6 +101,7 @@ data class ReleaseGroup(
     Genres("genres")
   }
 
+  @Suppress("unused")
   enum class SearchFields(val value: String) {
     /** MBID of the release group’s artist */
     ArtistId("arid"),
@@ -168,3 +172,11 @@ inline class ReleaseGroupMbid(override val value: String) : Mbid
 inline val ReleaseGroup.mbid: ReleaseGroupMbid
   get() = ReleaseGroupMbid(id)
 
+/**
+ * Appears as primary-type-id in some places and type-id in others. Handle like this for now. Moshi
+ * should have aliases, but they recommend something similar this.
+ *
+ * [Moshi Issue](https://github.com/square/moshi/issues/1012)
+ */
+val ReleaseGroup.thePrimaryTypeId: String
+  get() = if (primaryTypeId.isNotEmpty()) primaryTypeId else typeId

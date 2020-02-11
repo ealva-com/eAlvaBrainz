@@ -17,6 +17,7 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
+import com.ealva.ealvabrainz.matchers.toBeEmpty
 import com.nhaarman.expect.expect
 import com.nhaarman.expect.fail
 import com.squareup.moshi.Moshi
@@ -34,12 +35,112 @@ internal class ReleaseListTest {
 
   @Test
   fun `test full release list`() {
-    moshi.adapter(ReleaseList::class.java).lenient().fromJson(blackCrowesLions)?.let { list ->
-      // TODO beef-up tests
-      expect(list.count).toBe(7)
-    } ?: fail("ReleaseList is null")
+    withReleaseDo(blackCrowesLions) {
+      expect(created).toBe("2020-02-03T22:15:29.616Z")
+      expect(count).toBe(7)
+      expect(releases).toHaveSize(7)
+      releases[0].run {
+        expect(id).toBe("ca2866c0-e204-4b0e-8fd2-00823863e2b2")
+        expect(score).toBe(100)
+        expect(title).toBe("Lions")
+        expect(status).toBe("Official")
+        expect(packaging).toBe("Jewel Case")
+        expect(packagingId).toBe("ec27701a-4a22-37f4-bfac-6616e0f9750a")
+        expect(textRepresentation.language).toBe("eng")
+        expect(textRepresentation.script).toBe("Latn")
+        expect(artistCredit).toHaveSize(1)
+        artistCredit[0].run {
+          expect(name).toBe("The Black Crowes")
+          expect(artist.id).toBe("02ceff75-7363-493e-a78d-912dc86c7460")
+          expect(artist.name).toBe("The Black Crowes")
+          expect(artist.sortName).toBe("Black Crowes, The")
+        }
+        expect(releaseGroup.thePrimaryTypeId).toBe("f529b476-6e62-324f-b0aa-1f3e33d313fc")
+        expect(releaseGroup.primaryType).toBe("Album")
+        expect(country).toBe("CA")
+        expect(date).toBe("2001-05-08")
+        expect(releaseEvents).toHaveSize(1)
+        releaseEvents[0].run {
+          expect(date).toBe("2001-05-08")
+          expect(area.name).toBe("Canada")
+          expect(area.iso31661Codes).toContain("CA")
+        }
+        expect(barcode).toBe("638812709127")
+        expect(labelInfo).toHaveSize(1)
+        labelInfo[0].run {
+          expect(catalogNumber).toBe("63881-27091-2")
+          expect(label.id).toBe("dc2f5993-7a3d-4c59-bba0-0a77bf9d7416")
+          expect(label.name).toBe("V2")
+        }
+        expect(trackCount).toBe(13)
+        expect(media).toHaveSize(1)
+        media[0].run {
+          expect(format).toBe("CD")
+          expect(discCount).toBe(0)
+          expect(trackCount).toBe(13)
+        }
+      }
+      releases[6].run {
+        expect(id).toBe("18c0e808-8cb0-422a-82fc-eb7015bd755b")
+        expect(asin).toBe("B00005B19O")
+        expect(labelInfo).toHaveSize(1)
+        labelInfo[0].run {
+          expect(catalogNumber).toBe("63881-27091-2")
+          expect(label.id).toBe("dc2f5993-7a3d-4c59-bba0-0a77bf9d7416")
+          expect(label.name).toBe("V2")
+        }
+        expect(media).toHaveSize(1)
+        media[0].run {
+          expect(format).toBe("Enhanced CD")
+          expect(discCount).toBe(4)
+          expect(trackCount).toBe(13)
+        }
+      }
+    }
   }
 
+  @Test
+  fun `test release list with nulls`() {
+    withReleaseDo(blackCrowesLionsWithNulls, checkReleaseNullOrMissing())
+  }
+
+  @Test
+  fun `test release with missing`() {
+    withReleaseDo(blackCrowesLionsWithMissing, checkReleaseNullOrMissing())
+  }
+
+  /**
+   * If something is missing or specified as null, the same results should be expected. It will be
+   * the default value (Null Object, empty string, empty list...)
+   */
+  private fun checkReleaseNullOrMissing(): ReleaseList.() -> Unit {
+    return {
+      expect(created).toBe("2020-02-03T22:15:29.616Z")
+      expect(count).toBe(7)
+      expect(releases).toHaveSize(1)
+      releases[0].run {
+        expect(packagingId).toBeEmpty()
+        expect(packaging).toBeEmpty()
+        expect(artistCredit).toHaveSize(1)
+        expect(artistCredit[0].artist).toBe(Artist.NullArtist)
+        expect(releaseEvents).toHaveSize(1)
+        expect(releaseEvents[0].area).toBe(Area.NullArea)
+        expect(labelInfo).toHaveSize(1)
+        expect(labelInfo[0].label).toBe(Label.NullLabel)
+        expect(media).toHaveSize(1)
+        media[0].run {
+          expect(format).toBe("CD")
+          expect(discCount).toBe(0)
+          expect(trackCount).toBe(13)
+        }
+      }
+    }
+  }
+
+  private fun withReleaseDo(json: String, block: ReleaseList.() -> Unit) {
+    moshi.adapter(ReleaseList::class.java).lenient().fromJson(json)?.block()
+      ?: fail("ReleaseList was null")
+  }
 }
 
 private const val blackCrowesLions = """
@@ -415,3 +516,111 @@ private const val blackCrowesLions = """
   ]
 }
 """
+
+private const val blackCrowesLionsWithNulls = """
+{
+  "created": "2020-02-03T22:15:29.616Z",
+  "count": 7,
+  "offset": 0,
+  "releases": [
+    {
+      "id": "ca2866c0-e204-4b0e-8fd2-00823863e2b2",
+      "score": 100,
+      "count": 1,
+      "title": "Lions",
+      "status": "Official",
+      "packaging": null,
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "artist-credit": [
+        {
+          "name": "The Black Crowes",
+          "artist": null
+        }
+      ],
+      "release-group": {
+        "id": "dffd04c1-7ba4-3904-ac3a-e33de148a25e",
+        "type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+        "title": "Lions",
+        "primary-type": "Album"
+      },
+      "date": "2001-05-08",
+      "country": "CA",
+      "release-events": [
+        {
+          "date": "2001-05-08",
+          "area": null
+        }
+      ],
+      "barcode": "638812709127",
+      "label-info": [
+        {
+          "catalog-number": "63881-27091-2",
+          "label": null
+        }
+      ],
+      "track-count": 13,
+      "media": [
+        {
+          "format": "CD",
+          "disc-count": 0,
+          "track-count": 13
+        }
+      ]
+    }
+  ]
+}"""
+
+private const val blackCrowesLionsWithMissing = """
+{
+  "created": "2020-02-03T22:15:29.616Z",
+  "count": 7,
+  "offset": 0,
+  "releases": [
+    {
+      "id": "ca2866c0-e204-4b0e-8fd2-00823863e2b2",
+      "score": 100,
+      "count": 1,
+      "title": "Lions",
+      "status": "Official",
+      "text-representation": {
+        "language": "eng",
+        "script": "Latn"
+      },
+      "artist-credit": [
+        {
+          "name": "The Black Crowes"
+        }
+      ],
+      "release-group": {
+        "id": "dffd04c1-7ba4-3904-ac3a-e33de148a25e",
+        "type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+        "title": "Lions",
+        "primary-type": "Album"
+      },
+      "date": "2001-05-08",
+      "country": "CA",
+      "release-events": [
+        {
+          "date": "2001-05-08"
+        }
+      ],
+      "barcode": "638812709127",
+      "label-info": [
+        {
+          "catalog-number": "63881-27091-2"
+        }
+      ],
+      "track-count": 13,
+      "media": [
+        {
+          "format": "CD",
+          "disc-count": 0,
+          "track-count": 13
+        }
+      ]
+    }
+  ]
+}"""
