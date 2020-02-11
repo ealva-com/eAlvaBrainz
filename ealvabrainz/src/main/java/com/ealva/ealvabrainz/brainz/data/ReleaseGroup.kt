@@ -41,7 +41,7 @@ import com.squareup.moshi.JsonClass
  * database, a new release group is automatically added as well.
  */
 @JsonClass(generateAdapter = true)
-data class ReleaseGroup(
+class ReleaseGroup(
   /** Release Group MusicBrainz ID (MBID) */
   var id: String = "",
   /**
@@ -80,6 +80,21 @@ data class ReleaseGroup(
   /** Only used in search results */
   var score: Int = 0
 ) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as ReleaseGroup
+
+    if (id != other.id) return false
+
+    return true
+  }
+
+  override fun hashCode() = id.hashCode()
+
+  override fun toString() = toJson()
+
 
   interface Lookup : Include
 
@@ -87,6 +102,7 @@ data class ReleaseGroup(
   enum class Subqueries(override val value: String) : Lookup {
     Artists("artists"),
     Releases("releases"),
+    /** An ID calculated from the TOC of a CD */
     DiscIds("discids"),             // include discids for all media in the releases
     Media("media"),                 // include media for all releases, this includes the # of tracks on each medium and its format.
     ArtistCredits("artist-credits"); // include artists credits for all releases and recordings

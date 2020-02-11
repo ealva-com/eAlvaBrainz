@@ -50,7 +50,7 @@ import com.squareup.moshi.JsonClass
  * specifically ordered sequence of related songs (i.e. a “concept album”).
  */
 @JsonClass(generateAdapter = true)
-data class Work(
+class Work(
   /** The MusicBrainz ID (MBID) for this work */
   var id: String = "",
   /** The canonical title of the work, expressed in the language it was originally written. */
@@ -81,6 +81,21 @@ data class Work(
   var aliases: List<Alias> = emptyList(),
   var tags: List<Tag> = emptyList()
 ) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as Work
+
+    if (id != other.id) return false
+
+    return true
+  }
+
+  override fun hashCode() = id.hashCode()
+
+  override fun toString() = toJson()
+
   companion object {
     val NullWork = Work(id = NullObject.ID, title = NullObject.NAME)
     val fallbackMapping: Pair<String, Any> = Work::class.java.name to NullWork

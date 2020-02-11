@@ -26,5 +26,7 @@ data class ReleaseGroupList(
   var count: Int = 0,
   var offset: Int = 0,
   @field:Json(name = "release-groups") var releaseGroups: List<ReleaseGroup> = emptyList()
-)
+) {
+  override fun toString() = toJson()
+}
 

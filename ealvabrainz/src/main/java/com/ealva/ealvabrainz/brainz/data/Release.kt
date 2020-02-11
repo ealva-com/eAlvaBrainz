@@ -46,7 +46,7 @@ import com.squareup.moshi.Json
  * [MusicBrainz Release](https://musicbrainz.org/doc/Release)
  */
 //@JsonClass(generateAdapter = true)  Only generate when changed - we use custom for "packaging"
-data class Release(
+class Release(
   /** The MusicBrainz ID (MBID) */
   var id: String = "",
   /** The title of the release. */
@@ -86,7 +86,8 @@ data class Release(
    */
   @field:Json(name = "packaging-id") var packagingId: String = "",
   /**
-   * The barcode, if the release has one. The most common types found on releases are 12-digit
+   * The barcode, if the release has one, is a machine-readable number used as stock control
+   * mechanisms by retailers. The most common types found on releases are 12-digit
    * UPCs and 13-digit EANs.
    */
   var barcode: String = "",
@@ -143,9 +144,20 @@ data class Release(
   var score: Int = 0
 ) {
 
-  override fun toString(): String {
-    return toJSon()
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as Release
+
+    if (id != other.id) return false
+
+    return true
   }
+
+  override fun hashCode() = id.hashCode()
+
+  override fun toString() = toJson()
 
   interface Lookup : Include
 
@@ -156,9 +168,14 @@ data class Release(
     Labels("labels"),
     Recordings("recordings"),
     ReleaseGroups("release-groups"),
+    /** An ID calculated from the TOC of a CD */
     DiscIds("discids"),              // include discids for all media in the releases
     Media("media"),                  // include media for all releases, this includes the # of tracks on each medium and its format.
-    Isrcs("isrcs"),                  // include isrcs for all recordings
+    /**
+     * The International Standard Recording Code, an identification system for audio and music
+     * video recordings. Includes isrcs for all recordings
+     */
+    Isrcs("isrcs"),
     ArtistCredits("artist-credits"); // include artists credits for all releases and recordings
   }
 
@@ -171,6 +188,7 @@ data class Release(
     Genres("genres")
   }
 
+  @Suppress("unused")
   enum class SearchFields(val value: String) {
     /** artist MusicBrainz id (MBID) */
     ArtistId("arid"),
@@ -184,7 +202,10 @@ data class Release(
     /** the Amazon ASIN for this release */
     Asin("asin"),
 
-    /** The barcode of this release */
+    /**
+     * The barcode of this release which is a machine-readable number used as stock control
+     * mechanisms by retailers.
+     */
     Barcode("barcode"),
 
     /** The catalog number for this release, can have multiples when major using an imprint */
@@ -232,7 +253,12 @@ data class Release(
     /** primary type of the release group (album, single, ep, other) */
     PrimaryType("primarytype"),
 
-    /** The release contains recordings with these puids */
+    /**
+     * The release contains recordings with these puids
+     *
+     *  PUIDS are the IDs used in the proprietary MusicDNS audio fingerprinting system operated by
+     *  MusicIP (used by MusicBrainz 2006–2013)
+     */
     Puid("puid"),
 
     /** The quality of the release (low, normal, high) */

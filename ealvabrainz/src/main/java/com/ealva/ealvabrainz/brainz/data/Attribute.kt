@@ -27,10 +27,6 @@ data class Attribute(
   @field:Json(name = "type-id") var typeId: String = "",
   var type: String = ""
 ) {
-  override fun toString(): String {
-    return toJSon()
-  }
-
   companion object {
     val NullAttribute = Attribute(value = NullObject.NAME)
     val fallbackMapping: Pair<String, Any> = Attribute::class.java.name to NullAttribute

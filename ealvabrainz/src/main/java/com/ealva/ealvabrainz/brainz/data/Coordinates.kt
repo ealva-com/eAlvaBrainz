@@ -25,10 +25,6 @@ data class Coordinates(
   var latitude: Double = 0.0,
   var longitude: Double = 0.0
 ) {
-  override fun toString(): String {
-    return toJSon()
-  }
-
   companion object {
     val NullCoordinates = Coordinates()
     val fallbackMapping: Pair<String, Any> = Coordinates::class.java.name to NullCoordinates

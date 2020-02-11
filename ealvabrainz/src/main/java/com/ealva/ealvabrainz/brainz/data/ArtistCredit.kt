@@ -26,10 +26,6 @@ data class ArtistCredit(
   var joinphrase: String = "",
   @field:FallbackOnNull var artist: Artist = Artist.NullArtist
 ) {
-  override fun toString(): String {
-    return toJSon()
-  }
-
   companion object {
     val NullArtistCredit = ArtistCredit(name = NullObject.NAME)
     val fallbackMapping: Pair<String, Any> = ArtistCredit::class.java.name to NullArtistCredit

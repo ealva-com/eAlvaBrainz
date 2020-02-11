@@ -29,7 +29,7 @@ import com.squareup.moshi.JsonClass
  * for more information.
  */
 @JsonClass(generateAdapter = true)
-data class Area(
+class Area(
   /** This area's MusicBrainz ID (MBID) */
   var id: String = "",
   /** The name of the area */
@@ -86,6 +86,22 @@ data class Area(
   var lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
   var score: Int = 0
 ) {
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as Area
+
+    if (id != other.id) return false
+
+    return true
+  }
+
+  override fun hashCode() = id.hashCode()
+
+  override fun toString() = toJson()
+
   interface Lookup : Include
 
   @Suppress("unused")
@@ -131,6 +147,7 @@ data class Area(
     val NullArea = Area()
     val fallbackMapping: Pair<String, Any> = Area::class.java.name to NullArea
   }
+
 }
 
 inline val Area.isNullObject

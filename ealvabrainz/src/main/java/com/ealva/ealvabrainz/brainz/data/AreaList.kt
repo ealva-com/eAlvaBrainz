@@ -20,11 +20,11 @@ package com.ealva.ealvabrainz.brainz.data
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class AreaList(
-  var areas: List<Area> = emptyList(),
+class AreaList(
+  var created: String = "",
   var count: Int = 0,
   var offset: Int = 0,
-  var created: String = ""
+  var areas: List<Area> = emptyList()
 ) {
-  override fun toString(): String = toJSon()
+  override fun toString() = toJson()
 }

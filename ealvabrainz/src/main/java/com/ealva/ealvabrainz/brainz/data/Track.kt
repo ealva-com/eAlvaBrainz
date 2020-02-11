@@ -30,7 +30,7 @@ import com.squareup.moshi.JsonClass
  * other properties conventionally available to entities.
  */
 @JsonClass(generateAdapter = true)
-data class Track(
+class Track(
   var id: String = "",
   var title: String = "",
   var number: Int = 0,
@@ -39,6 +39,21 @@ data class Track(
   @field:Json(name = "artist-credit") var artistCredit: List<ArtistCredit> = emptyList(),
   var length: Int = 0
 ) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as Track
+
+    if (id != other.id) return false
+
+    return true
+  }
+
+  override fun hashCode() = id.hashCode()
+
+  override fun toString() = toJson()
+
   companion object {
     val NullTrack = Track(id = NullObject.ID, title = NullObject.NAME)
     val fallbackMapping: Pair<String, Any> = Track::class.java.name to NullTrack
@@ -53,27 +68,16 @@ inline class TrackMbid(override val value: String) : Mbid
 inline val Track.mbid
   get() = TrackMbid(id)
 
-/** Assumes artist credit not present is exceptional */
-inline val Track.theArtistMbid: String
-  get() = try {
-    artistCredit[0].artist.mbid.value
-  } catch (e: Exception) {
-    ""
-  }
+/** First [ArtistCredit] [Artist.mbid] or "" if not found */
+@Suppress("unused") val Track.theArtistMbid: String
+  get() = if (artistCredit.isNotEmpty()) artistCredit[0].artist.mbid.value else ""
 
-/** Assumes artist credit not present is exceptional */
+/** First [ArtistCredit] [Artist.name] or "" if not found */
 inline val Track.theArtistName: String
-  get() = try {
-    artistCredit[0].artist.name
-  } catch (e: Exception) {
-    ""
-  }
+  get() = if (artistCredit.isNotEmpty()) artistCredit[0].artist.name else ""
 
-/** Assumes artist credit not present is exceptional */
+/** First [ArtistCredit] [Artist.sortName] or "" if not found */
+@Suppress("unused")
 inline val Track.theArtistSortName: String
-  get() = try {
-    artistCredit[0].artist.theSortName
-  } catch (e: Exception) {
-    ""
-  }
+  get() = if (artistCredit.isNotEmpty()) artistCredit[0].artist.theSortName else theArtistName
 

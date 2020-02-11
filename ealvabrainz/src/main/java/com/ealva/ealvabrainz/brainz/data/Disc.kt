@@ -42,7 +42,7 @@ import com.squareup.moshi.JsonClass
  * ```
  */
 @JsonClass(generateAdapter = true)
-data class Disc(
+class Disc(
   /**
    * ID of the Disc. NOT a MusicBrainz ID (MBID)
    *
@@ -54,6 +54,22 @@ data class Disc(
   var offsets: List<Int> = emptyList(),
   @field:Json(name = "offset-count") var offsetCount: Int = 0
 ) {
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as Disc
+
+    if (id != other.id) return false
+
+    return true
+  }
+
+  override fun hashCode() = id.hashCode()
+
+  override fun toString() = toJson()
+
   companion object {
     val NullDisc = Disc(id = NullObject.ID)
     val fallbackMapping: Pair<String, Any> = Disc::class.java.name to NullDisc

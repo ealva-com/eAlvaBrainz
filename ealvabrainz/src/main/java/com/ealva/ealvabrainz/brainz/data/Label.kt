@@ -27,7 +27,7 @@ import com.squareup.moshi.JsonClass
  * cases the imprint and the company controlling it have the same name.
  */
 @JsonClass(generateAdapter = true)
-data class Label(
+class Label(
   /** The MusicBrainz ID (MBID) for this label */
   var id: String = "",
   /**
@@ -127,6 +127,21 @@ data class Label(
   /** Used when querying Labels */
   var count: Int = 0
 ) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as Label
+
+    if (id != other.id) return false
+
+    return true
+  }
+
+  override fun hashCode() = id.hashCode()
+
+  override fun toString() = toJson()
+
   interface Lookup : Include
 
   @Suppress("unused")

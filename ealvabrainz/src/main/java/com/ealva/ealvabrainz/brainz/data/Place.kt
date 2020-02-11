@@ -23,7 +23,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class Place(
+class Place(
   var id: String = "",
   var name: String = "",
   var type: String = "",
@@ -34,6 +34,22 @@ data class Place(
   @field:Json(name = "life-span") @field:FallbackOnNull var lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
   @field:Json(name = "type-id") var typeId: String = ""
 ) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as Place
+
+    if (id != other.id) return false
+
+    return true
+  }
+
+  override fun hashCode() = id.hashCode()
+
+  override fun toString() = toJson()
+
+
   companion object {
     val NullPlace = Place(id = NullObject.ID, name = NullObject.NAME)
     val fallbackMapping: Pair<String, Any> = Place::class.java.name to NullPlace

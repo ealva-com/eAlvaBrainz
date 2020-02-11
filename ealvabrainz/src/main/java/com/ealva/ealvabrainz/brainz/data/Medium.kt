@@ -50,6 +50,8 @@ data class Medium(
   internal var tracks: List<Track> = emptyList(),
   internal var track: List<Track> = emptyList()
 ) {
+  override fun toString() = toJson()
+
   companion object {
     val NullMedium = Medium(title = NullObject.NAME)
     val fallbackMapping: Pair<String, Any> = Medium::class.java.name to NullMedium

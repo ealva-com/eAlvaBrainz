@@ -41,7 +41,7 @@ import com.squareup.moshi.JsonClass
  * [endingDate]
  */
 @JsonClass(generateAdapter = true)
-data class Alias(
+class Alias(
   var name: String = "",
   @field:Json(name = "sort-name") var sortName: String = "",
   var type: String = "",
@@ -54,9 +54,31 @@ data class Alias(
   @field:Json(name = "begin-date") var beginDate: String = "",
   @field:Json(name = "end-date") var endDate: String = ""
 ) {
-  override fun toString(): String {
-    return toJSon()
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as Alias
+
+    if (name != other.name) return false
+    if (sortName != other.sortName) return false
+    if (type != other.type) return false
+    if (typeId != other.typeId) return false
+    if (primary != other.primary) return false
+
+    return true
   }
+
+  override fun hashCode(): Int {
+    var result = name.hashCode()
+    result = 31 * result + sortName.hashCode()
+    result = 31 * result + type.hashCode()
+    result = 31 * result + typeId.hashCode()
+    result = 31 * result + primary.hashCode()
+    return result
+  }
+
+  override fun toString() = toJson()
 
   companion object {
     val NullAlias = Alias(name = NullObject.NAME)
@@ -67,10 +89,10 @@ data class Alias(
 inline val Alias.isNullObject
   get() = this === NullAlias
 
-/** [Alias.begin] if not empty, else [Alias.beginDate] */
+/** [Alias.beginDate] if not empty, else [Alias.begin] */
 val Alias.startingDate
-  get() = if (begin.isNotEmpty()) begin else beginDate
+  get() = if (beginDate.isNotEmpty()) beginDate else begin
 
-/** [Alias.end] if not empty, else [Alias.endDate] */
+/** [Alias.endDate] if not empty, else [Alias.end] */
 val Alias.endingDate
-  get() = if (end.isNotEmpty()) end else endDate
+  get() = if (endDate.isNotEmpty()) endDate else end

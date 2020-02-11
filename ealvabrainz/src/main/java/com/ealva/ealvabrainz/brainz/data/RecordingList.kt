@@ -20,14 +20,12 @@ package com.ealva.ealvabrainz.brainz.data
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-class RecordingList(
+data class RecordingList(
   var created: String = "",
   var count: Int = 0,
   var offset: Int = 0,
   var recordings: List<Recording> = emptyList()
 ) {
-  override fun toString(): String {
-    return toJSon()
-  }
+  override fun toString() = toJson()
 }
 

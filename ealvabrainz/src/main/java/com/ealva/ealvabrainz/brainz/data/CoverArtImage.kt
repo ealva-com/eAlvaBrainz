@@ -22,7 +22,7 @@ import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class CoverArtImage(
+class CoverArtImage(
   /** This is not a MusicBrainz MBID */
   var id: Long = 0L,
   /**
@@ -46,6 +46,21 @@ data class CoverArtImage(
   var isApproved: Boolean = false,
   @field:FallbackOnNull var thumbnails: Thumbnails = Thumbnails.NullThumbnails
 ) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as CoverArtImage
+
+    if (id != other.id) return false
+
+    return true
+  }
+
+  override fun hashCode() = id.hashCode()
+
+  override fun toString() = toJson()
+
   companion object {
     val NullCoverArtImage = CoverArtImage(id = -1)
     val fallbackMapping: Pair<String, Any> = CoverArtImage::class.java.name to NullCoverArtImage

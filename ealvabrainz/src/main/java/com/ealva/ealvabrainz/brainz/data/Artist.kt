@@ -30,7 +30,7 @@ import com.squareup.moshi.JsonClass
  * [https://musicbrainz.org/doc/Artist]
  */
 @JsonClass(generateAdapter = true)
-data class Artist(
+class Artist(
   /** The MBID for this artist */
   var id: String = "",
   /**
@@ -133,9 +133,20 @@ data class Artist(
   /** score only used in query results */
   var score: Int = 0
 ) {
-  override fun toString(): String {
-    return toJSon()
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as Artist
+
+    if (id != other.id) return false
+
+    return true
   }
+
+  override fun hashCode() = id.hashCode()
+
+  override fun toString() = toJson()
 
   interface Lookup : Include
 
@@ -145,9 +156,14 @@ data class Artist(
     Releases("releases"),
     ReleaseGroups("release-groups"),
     Works("works"),
+    /** An ID calculated from the TOC of a CD */
     DiscIds("discids"),              // include discids for all media in the releases
     Media("media"),                  // include media for all releases, this includes the # of tracks on each medium and its format.
-    Isrcs("isrcs"),                  // include isrcs for all recordings
+    /**
+     * The International Standard Recording Code, an identification system for audio and music
+     * video recordings. Includes isrcs for all recordings
+     */
+    Isrcs("isrcs"),
     ArtistCredits("artist-credits"), // include artists credits for all releases and recordings
     VariousArtists("various-artists")
   }
@@ -190,7 +206,7 @@ data class Artist(
     Ended("ended"),
     /** the artist's gender (“male”, “female”, or “other”) */
     Gender("gender"),
-    /** an IPI code associated with the artist */
+    /** A number identifying persons connected to ISWC registered works (authors, composers, etc.). */
     Ipi("ipi"),
     /** the artist's sort name */
     SortName("sortname"),

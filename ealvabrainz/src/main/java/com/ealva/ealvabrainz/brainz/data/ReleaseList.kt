@@ -25,8 +25,6 @@ data class ReleaseList(
   var offset: Int = 0,
   var releases: List<Release> = emptyList()
 ) {
-  override fun toString(): String {
-    return toJSon()
-  }
+  override fun toString() = toJson()
 }
 

@@ -33,7 +33,7 @@ internal fun Moshi.Builder.addRequired(): Moshi.Builder {
 
 val theMoshi: Moshi = Moshi.Builder().addRequired().build()
 
-fun <T : Any> T.toJSon(): String {
+fun <T : Any> T.toJson(): String {
   return theMoshi
     .adapter<T>(this::class.java)
     .indent("  ")
