@@ -23,6 +23,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ealva.ealvabrainz.MainCoroutineRule
 import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
+import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.Release.Companion.NullRelease
 import com.ealva.ealvabrainz.brainz.data.ReleaseList
 import com.ealva.ealvabrainz.brainz.data.toReleaseMbid
@@ -68,12 +69,7 @@ class MusicBrainzServiceTest {
         findRelease(query)
       } doThrow MusicBrainzException("msg", IOException("I O, let's go!"))
     }
-    val service = MusicBrainzService.make(
-      context,
-      mockBrainz,
-      NullCoverArtService,
-      coroutineRule.testDispatcher
-    )
+    val service = makeServiceForTest(mockBrainz)
     service.findRelease(artistName, albumName)
   }
 
@@ -84,12 +80,7 @@ class MusicBrainzServiceTest {
     val mockBrainz = mock<MusicBrainz> {
       onBlocking { lookupRelease(mbid.value, null) } doReturn makeSuccess(NullRelease)
     }
-    val service = MusicBrainzService.make(
-      context,
-      mockBrainz,
-      NullCoverArtService,
-      coroutineRule.testDispatcher
-    )
+    val service = makeServiceForTest(mockBrainz)
     val release = service.lookupRelease(mbid)
     expect(release).toNotBeNull()
   }
@@ -101,14 +92,25 @@ class MusicBrainzServiceTest {
     val mockBrainz = mock<MusicBrainz> {
       onBlocking { lookupRelease(mbid.value, null) } doReturn makeSuccess(NullRelease)
     }
-    val service = MusicBrainzService.make(
-      context,
-      mockBrainz,
-      NullCoverArtService,
-      coroutineRule.testDispatcher
-    )
+    val service = makeServiceForTest(mockBrainz)
     val release = service.lookupRelease(mbid, listOf())
     expect(release).toNotBeNull()
+  }
+
+  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `test direct brainz call`() = coroutineRule.runBlockingTest {
+    val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseMbid()
+    val mockBrainz = mock<MusicBrainz> {
+      onBlocking { lookupRelease(mbid.value, null) } doReturn makeSuccess(NullRelease)
+    }
+    val service = makeServiceForTest(mockBrainz)
+    val response = service.brainz { brainz ->
+      brainz.lookupRelease(mbid.value, null)
+    }
+    expect(response).toBeInstanceOf<MusicBrainzResult.Success<Release>> {
+      expect(it.result).toBe(NullRelease)
+    }
   }
 
   private suspend fun doTestFindRelease(limit: Int?, offset: Int?) {
@@ -121,15 +123,19 @@ class MusicBrainzServiceTest {
         findRelease(query, limit, offset)
       } doReturn makeSuccess(list)
     }
-    val service = MusicBrainzService.make(
+    val service = makeServiceForTest(mockBrainz)
+    val rc: ReleaseList? = service.findRelease(artistName, albumName, limit, offset)
+    verify(mockBrainz, times(1)).findRelease(query, limit, offset)
+    expect(rc).toBe(list)
+  }
+
+  private fun makeServiceForTest(mockBrainz: MusicBrainz): MusicBrainzService {
+    return MusicBrainzService.make(
       context,
       mockBrainz,
       NullCoverArtService,
       coroutineRule.testDispatcher
     )
-    val rc: ReleaseList? = service.findRelease(artistName, albumName, limit, offset)
-    verify(mockBrainz, times(1)).findRelease(query, limit, offset)
-    expect(rc).toBe(list)
   }
 
   private fun <T> makeSuccess(t: T) = Response.success(200, t)

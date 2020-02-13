@@ -3,7 +3,7 @@
  *
  * This file is part of eAlvaBrainz
  *
- * eAlvaBrainz is free software to  you can redistribute it and/or modify it under the terms of the GNU
+ * eAlvaBrainz is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of
  *  the License, or (at your option) any later version.
  *
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License along with eAlvaBrainz.
- * If not, see <http to //www.gnu.org/licenses/>.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.ealva.ealvabrainz.brainz.data
@@ -23,12 +23,15 @@ internal object FallbackMap {
     Area.fallbackMapping,
     Artist.fallbackMapping,
     ArtistCredit.fallbackMapping,
+    ArtistRelation.fallbackMapping,
     Attribute.fallbackMapping,
     Coordinates.fallbackMapping,
     CoverArtArchive.fallbackMapping,
     CoverArtImage.fallbackMapping,
     CoverArtRelease.fallbackMapping,
     Disc.fallbackMapping,
+    Event.fallbackMapping,
+    EventRelation.fallbackMapping,
     Genre.fallbackMapping,
     Label.fallbackMapping,
     LabelInfo.fallbackMapping,
@@ -36,12 +39,16 @@ internal object FallbackMap {
     Medium.fallbackMapping,
     Packaging.fallbackMapping,
     Place.fallbackMapping,
+    PlaceRelation.fallbackMapping,
     Rating.fallbackMapping,
     Recording.fallbackMapping,
     Release.fallbackMapping,
+    ReleaseRelation.fallbackMapping,
     ReleaseEvent.fallbackMapping,
     ReleaseGroup.fallbackMapping,
+    ReleaseGroupRelation.fallbackMapping,
     Tag.fallbackMapping,
+    Target.fallbackMapping,
     TextRepresentation.fallbackMapping,
     Thumbnails.fallbackMapping,
     Track.fallbackMapping,

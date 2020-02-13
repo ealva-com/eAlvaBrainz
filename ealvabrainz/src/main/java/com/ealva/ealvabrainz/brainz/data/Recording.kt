@@ -33,7 +33,7 @@ class Recording(
   var genres: List<Genre> = emptyList(),
   var isrcs: List<String> = emptyList(),
   var rating: Rating = Rating.NullRating,
-//  var relations: List<> = emptyList(),
+  var relations: List<Relation> = emptyList(),
   var releases: List<Release> = emptyList(),
   var tags: List<Tag> = emptyList(),
   var video: Boolean = false,

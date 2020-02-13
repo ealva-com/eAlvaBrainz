@@ -47,6 +47,21 @@ import retrofit2.Retrofit
 import timber.log.Timber
 
 /**
+ * Result of a call to [MusicBrainzService.brainz]. [T] is declared with [Any] variance as null
+ * is not allowed.
+ */
+sealed class MusicBrainzResult<out T : Any> {
+  /** Call was successful and contains the [result] */
+  data class Success<T : Any>(val result: T) : MusicBrainzResult<T>()
+
+  /** Call was not successful or null was returned. Contains the Retrofit [Response] */
+  data class Error<T : Any>(val response: Response<T>) : MusicBrainzResult<T>()
+
+  /** An [exception] was thrown */
+  data class Exceptional(val exception: MusicBrainzException) : MusicBrainzResult<Nothing>()
+}
+
+/**
  * MusicBrainzService is a wrapper around a Retrofit MusicBrainz and CoverArt instance that
  * provides higher level functionality, including coordinating between the two to retrieve
  * artwork for Releases and Release Groups
@@ -152,6 +167,22 @@ interface MusicBrainzService {
     include: List<Artist.Lookup> = emptyList()
   ): Artist?
 
+  /**
+   * Call the [block] function, which receives [MusicBrainz] as a parameter, in the context of the
+   * contained [CoroutineDispatcher] (typically [Dispatchers.IO] when not under test)
+   *
+   * Usually [block] is a lambda which makes a direct call to the MusicBrainz Retrofit client. The
+   * caller is responsible for building the necessary String parameters, "query" in case of a
+   * find call and "inc" include if doing a lookup. Use the Subqueries and Misc defined
+   * in the various entity objects for doing a lookup and use SearchFields to build queries
+   *
+   * @return a [MusicBrainzResult.Success] or [MusicBrainzResult.Error] if response is not
+   * successful or a null is returned. [MusicBrainzResult.Exceptional] is returned if
+   * an underlying exception is thrown, such as an [IOException][java.io.IOException]
+   */
+  suspend fun <T : Any> brainz(block: suspend (brainz: MusicBrainz) -> Response<T>): MusicBrainzResult<T>
+
+  @Suppress("MemberVisibilityCanBePrivate", "unused")
   companion object {
     const val DEFAULT_MAX_RELEASE_COUNT = 10
 
@@ -172,12 +203,13 @@ interface MusicBrainzService {
     ): MusicBrainzService {
       return MusicBrainzServiceImpl(ctx.applicationContext, brainz, coverArt, dispatcher)
     }
+
+    const val website = "https://musicbrainz.org/"
+    const val registerUrl = """${website}register"""
+    const val forgotPasswordUrl = """${website}lost-password"""
+    const val donateUrl = "http://metabrainz.org/donate"
   }
 }
-
-//    private static final String URL_REGISTER = WEBSITE + "register";
-//    private static final String URL_FORGOT_PASS = WEBSITE + "lost-password";
-//    private static final String URL_DONATE = "http://metabrainz.org/donate";
 
 private val SERVICE_NAME = MusicBrainzServiceImpl::class.java.simpleName
 private const val CACHE_DIR = "MusicBrainz"
@@ -243,6 +275,23 @@ internal class MusicBrainzServiceImpl(
   override suspend fun lookupArtist(mbid: ArtistMbid, include: List<Artist.Lookup>) =
     handleResponse { musicBrainz.lookupArtist(mbid.value, include.joinToInc()) }
 
+  override suspend fun <T : Any> brainz(
+    block: suspend (brainz: MusicBrainz) -> Response<T>
+  ): MusicBrainzResult<T> = withContext(dispatcher) {
+    try {
+      val response = block(musicBrainz)
+      if (response.isSuccessful) {
+        val body = response.body()
+        if (body != null) MusicBrainzResult.Success(body)
+        else MusicBrainzResult.Error(response)
+      } else {
+        MusicBrainzResult.Error(response)
+      }
+    } catch (e: Exception) {
+      MusicBrainzResult.Exceptional(MusicBrainzException("", e))
+    }
+  }
+
   @UseExperimental(ExperimentalCoroutinesApi::class)
   private fun findReleases(artist: ArtistName, album: AlbumName, maxReleases: Int) = flow {
     val query = """artist:"${artist.value}" AND release:"${album.value}""""
@@ -268,28 +317,29 @@ internal class MusicBrainzServiceImpl(
    * call)
    */
   @Suppress("BlockingMethodInNonBlockingContext")
-  suspend fun <T> handleResponse(block: suspend () -> Response<T>): T? = withContext(dispatcher) {
-    try {
-      block().run {
-        if (isSuccessful) {
-          body()
-        } else {
-          Timber.e(
-            "Response code:%d message:%s %s",
-            code(),
-            message(),
-            errorBody()?.string() ?: "No error body"
-          )
-          null
+  private suspend fun <T> handleResponse(block: suspend () -> Response<T>): T? =
+    withContext(dispatcher) {
+      try {
+        block().run {
+          if (isSuccessful) {
+            body()
+          } else {
+            Timber.e(
+              "Response code:%d message:%s %s",
+              code(),
+              message(),
+              errorBody()?.string() ?: "No error body"
+            )
+            null
+          }
         }
+      } catch (e: Exception) {
+        throw MusicBrainzException(
+          context.getString(UnexpectedErrorWithMsg, e.localizedMessage ?: "null"),
+          e
+        )
       }
-    } catch (e: Exception) {
-      throw MusicBrainzException(
-        context.getString(UnexpectedErrorWithMsg, e.localizedMessage ?: "null"),
-        e
-      )
     }
-  }
 }
 
 private fun Context.buildMusicBrainz(appName: String, appVersion: String, emailContact: String) =

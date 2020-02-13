@@ -17,27 +17,16 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.moshi.FallbackOnNull
-import com.ealva.ealvabrainz.moshi.NullPrimitiveAdapter
-import com.ealva.ealvabrainz.moshi.RelationAdapter
-import com.ealva.ealvabrainz.moshi.ReleaseAdapter
-import com.ealva.ealvabrainz.moshi.StringJsonAdapter
-import com.squareup.moshi.Moshi
+import com.squareup.moshi.JsonClass
 
-internal fun Moshi.Builder.addRequired(): Moshi.Builder {
-  add(RelationAdapter.ADAPTER_FACTORY)
-  add(ReleaseAdapter.ADAPTER_FACTORY)
-  add(FallbackOnNull.ADAPTER_FACTORY)
-  add(NullPrimitiveAdapter())
-  add(StringJsonAdapter())
-  return this
-}
-
-val theMoshi: Moshi = Moshi.Builder().addRequired().build()
-
-fun <T : Any> T.toJson(): String {
-  return theMoshi
-    .adapter<T>(this::class.java)
-    .indent("  ")
-    .toJson(this)
+@JsonClass(generateAdapter = true)
+data class Target(
+  var id: String = "",
+  var type: String =""
+) {
+  companion object {
+    val NullTarget =
+      Target(id = NullObject.ID)
+    val fallbackMapping: Pair<String, Any> = Target::class.java.name to NullTarget
+  }
 }

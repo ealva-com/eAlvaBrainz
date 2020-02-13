@@ -21,12 +21,15 @@ import com.ealva.ealvabrainz.brainz.data.Alias.Companion.NullAlias
 import com.ealva.ealvabrainz.brainz.data.Area.Companion.NullArea
 import com.ealva.ealvabrainz.brainz.data.Artist.Companion.NullArtist
 import com.ealva.ealvabrainz.brainz.data.ArtistCredit.Companion.NullArtistCredit
+import com.ealva.ealvabrainz.brainz.data.ArtistRelation.Companion.NullArtistRelation
 import com.ealva.ealvabrainz.brainz.data.Attribute.Companion.NullAttribute
 import com.ealva.ealvabrainz.brainz.data.Coordinates.Companion.NullCoordinates
 import com.ealva.ealvabrainz.brainz.data.CoverArtArchive.Companion.NullCoverArtArchive
 import com.ealva.ealvabrainz.brainz.data.CoverArtImage.Companion.NullCoverArtImage
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease.Companion.NullCoverArtRelease
 import com.ealva.ealvabrainz.brainz.data.Disc.Companion.NullDisc
+import com.ealva.ealvabrainz.brainz.data.Event.Companion.NullEvent
+import com.ealva.ealvabrainz.brainz.data.EventRelation.Companion.NullEventRelation
 import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
 import com.ealva.ealvabrainz.brainz.data.Label.Companion.NullLabel
 import com.ealva.ealvabrainz.brainz.data.LabelInfo.Companion.NullLabelInfo
@@ -34,12 +37,16 @@ import com.ealva.ealvabrainz.brainz.data.LifeSpan.Companion.NullLifeSpan
 import com.ealva.ealvabrainz.brainz.data.Medium.Companion.NullMedium
 import com.ealva.ealvabrainz.brainz.data.Packaging.Companion.NullPackaging
 import com.ealva.ealvabrainz.brainz.data.Place.Companion.NullPlace
+import com.ealva.ealvabrainz.brainz.data.PlaceRelation.Companion.NullPlaceRelation
 import com.ealva.ealvabrainz.brainz.data.Rating.Companion.NullRating
 import com.ealva.ealvabrainz.brainz.data.Recording.Companion.NullRecording
 import com.ealva.ealvabrainz.brainz.data.Release.Companion.NullRelease
 import com.ealva.ealvabrainz.brainz.data.ReleaseEvent.Companion.NullReleaseEvent
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup.Companion.NullReleaseGroup
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupRelation.Companion.NullReleaseGroupRelation
+import com.ealva.ealvabrainz.brainz.data.ReleaseRelation.Companion.NullReleaseRelation
 import com.ealva.ealvabrainz.brainz.data.Tag.Companion.NullTag
+import com.ealva.ealvabrainz.brainz.data.Target.Companion.NullTarget
 import com.ealva.ealvabrainz.brainz.data.TextRepresentation.Companion.NullTextRepresentation
 import com.ealva.ealvabrainz.brainz.data.Thumbnails.Companion.NullThumbnails
 import com.ealva.ealvabrainz.brainz.data.Track.Companion.NullTrack
@@ -56,12 +63,15 @@ internal class FallbackMapTest {
     Area.fallbackMapping,
     Artist.fallbackMapping,
     ArtistCredit.fallbackMapping,
+    ArtistRelation.fallbackMapping,
     Attribute.fallbackMapping,
     Coordinates.fallbackMapping,
     CoverArtArchive.fallbackMapping,
     CoverArtImage.fallbackMapping,
     CoverArtRelease.fallbackMapping,
     Disc.fallbackMapping,
+    Event.fallbackMapping,
+    EventRelation.fallbackMapping,
     Genre.fallbackMapping,
     Label.fallbackMapping,
     LabelInfo.fallbackMapping,
@@ -69,12 +79,16 @@ internal class FallbackMapTest {
     Medium.fallbackMapping,
     Packaging.fallbackMapping,
     Place.fallbackMapping,
+    PlaceRelation.fallbackMapping,
     Rating.fallbackMapping,
     Recording.fallbackMapping,
     Release.fallbackMapping,
+    ReleaseRelation.fallbackMapping,
     ReleaseEvent.fallbackMapping,
     ReleaseGroup.fallbackMapping,
+    ReleaseGroupRelation.fallbackMapping,
     Tag.fallbackMapping,
+    Target.fallbackMapping,
     TextRepresentation.fallbackMapping,
     Thumbnails.fallbackMapping,
     Track.fallbackMapping,
@@ -99,6 +113,7 @@ internal class FallbackMapTest {
     expect(map.remove(Alias::class.java.name)).toBe(NullAlias)
     expect(map.remove(Area::class.java.name)).toBe(NullArea)
     expect(map.remove(Artist::class.java.name)).toBe(NullArtist)
+    expect(map.remove(ArtistRelation::class.java.name)).toBe(NullArtistRelation)
     expect(map.remove(ArtistCredit::class.java.name)).toBe(NullArtistCredit)
     expect(map.remove(Attribute::class.java.name)).toBe(NullAttribute)
     expect(map.remove(Coordinates::class.java.name)).toBe(NullCoordinates)
@@ -106,6 +121,8 @@ internal class FallbackMapTest {
     expect(map.remove(CoverArtImage::class.java.name)).toBe(NullCoverArtImage)
     expect(map.remove(CoverArtRelease::class.java.name)).toBe(NullCoverArtRelease)
     expect(map.remove(Disc::class.java.name)).toBe(NullDisc)
+    expect(map.remove(Event::class.java.name)).toBe(NullEvent)
+    expect(map.remove(EventRelation::class.java.name)).toBe(NullEventRelation)
     expect(map.remove(Genre::class.java.name)).toBe(NullGenre)
     expect(map.remove(Label::class.java.name)).toBe(NullLabel)
     expect(map.remove(LabelInfo::class.java.name)).toBe(NullLabelInfo)
@@ -113,16 +130,20 @@ internal class FallbackMapTest {
     expect(map.remove(Medium::class.java.name)).toBe(NullMedium)
     expect(map.remove(Packaging::class.java.name)).toBe(NullPackaging)
     expect(map.remove(Place::class.java.name)).toBe(NullPlace)
+    expect(map.remove(PlaceRelation::class.java.name)).toBe(NullPlaceRelation)
     expect(map.remove(Rating::class.java.name)).toBe(NullRating)
     expect(map.remove(Recording::class.java.name)).toBe(NullRecording)
     expect(map.remove(Release::class.java.name)).toBe(NullRelease)
     expect(map.remove(ReleaseEvent::class.java.name)).toBe(NullReleaseEvent)
+    expect(map.remove(ReleaseRelation::class.java.name)).toBe(NullReleaseRelation)
     expect(map.remove(ReleaseGroup::class.java.name)).toBe(NullReleaseGroup)
+    expect(map.remove(ReleaseGroupRelation::class.java.name)).toBe(NullReleaseGroupRelation)
     expect(map.remove(Tag::class.java.name)).toBe(NullTag)
+    expect(map.remove(Target::class.java.name)).toBe(NullTarget)
     expect(map.remove(TextRepresentation::class.java.name)).toBe(NullTextRepresentation)
     expect(map.remove(Thumbnails::class.java.name)).toBe(NullThumbnails)
     expect(map.remove(Track::class.java.name)).toBe(NullTrack)
     expect(map.remove(Work::class.java.name)).toBe(NullWork)
-    expect(map.size).toBe(0)
+    expect(map.size).toBe(0) { map.entries.first() }
   }
 }

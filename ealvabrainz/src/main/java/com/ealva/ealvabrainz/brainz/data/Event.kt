@@ -18,26 +18,27 @@
 package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
-import com.ealva.ealvabrainz.moshi.NullPrimitiveAdapter
-import com.ealva.ealvabrainz.moshi.RelationAdapter
-import com.ealva.ealvabrainz.moshi.ReleaseAdapter
-import com.ealva.ealvabrainz.moshi.StringJsonAdapter
-import com.squareup.moshi.Moshi
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-internal fun Moshi.Builder.addRequired(): Moshi.Builder {
-  add(RelationAdapter.ADAPTER_FACTORY)
-  add(ReleaseAdapter.ADAPTER_FACTORY)
-  add(FallbackOnNull.ADAPTER_FACTORY)
-  add(NullPrimitiveAdapter())
-  add(StringJsonAdapter())
-  return this
+@JsonClass(generateAdapter = true)
+data class Event(
+  var id: String = "",
+  var name: String = "",
+  var time: String = "",
+  var type: String = "",
+  @Json(name = "life-span") @field:FallbackOnNull var lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
+  var relations: List<Relation> = emptyList(),
+  /** Used when querying a list of events */
+  var score: Int = 0
+
+) {
+  companion object {
+    val NullEvent = Event()
+    val fallbackMapping: Pair<String, Any> = Event::class.java.name to NullEvent
+  }
 }
 
-val theMoshi: Moshi = Moshi.Builder().addRequired().build()
+inline val Event.isNullObject
+  get() = this === Event.NullEvent
 
-fun <T : Any> T.toJson(): String {
-  return theMoshi
-    .adapter<T>(this::class.java)
-    .indent("  ")
-    .toJson(this)
-}

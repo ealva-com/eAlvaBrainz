@@ -114,7 +114,10 @@ fun Flow<ReleaseGroupMbid>.transform(service: CoverArtService): Flow<RemoteImage
 ```
 #### MusicBrainzService
 This service is similar to CoverArtService in that it provides a higher-level abstraction and builds
-the appropriate underlying Retrofit/OkHttp classes.
+the appropriate underlying Retrofit/OkHttp classes. MusicBrainzService has functions that take type 
+specific parameters and format these into parameters for the underlying calls to the MusicBrainz
+Retrofit client and also has a generic function accepting a lambda which allows direct calls to the
+MusicBrainz client while providing correct coroutine dispatch and simplifying error handling.
 ```kotlin
 interface MusicBrainzService {
   suspend fun findRelease(

@@ -17,27 +17,15 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.moshi.FallbackOnNull
-import com.ealva.ealvabrainz.moshi.NullPrimitiveAdapter
-import com.ealva.ealvabrainz.moshi.RelationAdapter
-import com.ealva.ealvabrainz.moshi.ReleaseAdapter
-import com.ealva.ealvabrainz.moshi.StringJsonAdapter
-import com.squareup.moshi.Moshi
+import com.squareup.moshi.JsonClass
 
-internal fun Moshi.Builder.addRequired(): Moshi.Builder {
-  add(RelationAdapter.ADAPTER_FACTORY)
-  add(ReleaseAdapter.ADAPTER_FACTORY)
-  add(FallbackOnNull.ADAPTER_FACTORY)
-  add(NullPrimitiveAdapter())
-  add(StringJsonAdapter())
-  return this
+@JsonClass(generateAdapter = true)
+class EventList(
+  var count: Int = 0,
+  var created: String = "",
+  var events: List<Event> = emptyList(),
+  var offset: Int = 0
+) {
+  override fun toString() = toJson()
 }
 
-val theMoshi: Moshi = Moshi.Builder().addRequired().build()
-
-fun <T : Any> T.toJson(): String {
-  return theMoshi
-    .adapter<T>(this::class.java)
-    .indent("  ")
-    .toJson(this)
-}

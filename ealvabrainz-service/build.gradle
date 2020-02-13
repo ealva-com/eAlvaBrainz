@@ -18,6 +18,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+
 android {
     compileSdkVersion 28
 
@@ -50,19 +51,24 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    implementation project(':ealvabrainz')
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.2.0-rc01'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.2'
+
     implementation 'com.jakewharton.timber:timber:4.7.1'
+
     implementation 'com.squareup.retrofit2:retrofit:2.7.1'
     implementation 'com.squareup.moshi:moshi:1.9.2'
     implementation 'com.squareup.retrofit2:converter-moshi:2.7.1'
     implementation 'com.squareup.okhttp3:okhttp:4.3.1'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.3.1'
     implementation "com.louiscad.splitties:splitties-systemservices:$splitties_version"
-    implementation project(':ealvabrainz')
+
     testImplementation 'androidx.test:core:1.2.0'
     testImplementation 'androidx.test.ext:junit:1.1.1'
     testImplementation 'org.robolectric:robolectric:4.3'

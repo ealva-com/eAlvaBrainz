@@ -24,6 +24,7 @@ import com.squareup.moshi.JsonQualifier;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import kotlin.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
@@ -44,13 +45,13 @@ import java.util.Set;
 @Documented
 @JsonQualifier
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.PARAMETER})
 public @interface FallbackOnNull {
 
   JsonAdapter.Factory ADAPTER_FACTORY = new JsonAdapter.Factory() {
-    @Override public JsonAdapter<?> create(Type type,
-                                           Set<? extends Annotation> annotations,
-                                           Moshi moshi) {
+    @Override public JsonAdapter<?> create(@NotNull Type type,
+                                           @NotNull Set<? extends Annotation> annotations,
+                                           @NotNull Moshi moshi) {
 
       Pair<FallbackOnNull, Set<Annotation>>
         nextAnnotations = Annotations.nextAnnotations(annotations, FallbackOnNull.class);

@@ -196,3 +196,101 @@ inline val ReleaseGroup.mbid: ReleaseGroupMbid
  */
 val ReleaseGroup.thePrimaryTypeId: String
   get() = if (primaryTypeId.isNotEmpty()) primaryTypeId else typeId
+
+/*
+ <define name="def_release-group-element">
+        <element name="release-group">
+            <optional>
+                <attribute name="id">
+                    <data type="anyURI"/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="type">
+                    <data type="anyURI"/>
+                </attribute>
+            </optional>
+            <optional>
+                <attribute name="type-id">
+                    <ref name="def_uuid"/>
+                </attribute>
+            </optional>
+            <ref name="def_release-group-attribute_extension"/>
+            <optional>
+                <element name="title">
+                    <text/>
+                </element>
+            </optional>
+            <optional>
+              <ref name="def_annotation" />
+            </optional>
+            <optional>
+                <element name="disambiguation">
+                    <text/>
+                </element>
+            </optional>
+            <optional>
+              <element name="first-release-date">
+                <ref name="def_incomplete-date" />
+              </element>
+            </optional>
+            <optional>
+                <element name="primary-type">
+                    <attribute name="id">
+                        <ref name="def_uuid"/>
+                    </attribute>
+                    <text/>
+                </element>
+            </optional>
+            <optional>
+              <element name="secondary-type-list">
+                <optional>
+                  <zeroOrMore>
+                    <element name="secondary-type">
+                      <attribute name="id">
+                        <ref name="def_uuid"/>
+                      </attribute>
+                      <text />
+                    </element>
+                  </zeroOrMore>
+                </optional>
+              </element>
+            </optional>
+
+            <optional>
+                <ref name="def_artist-credit"/>
+            </optional>
+            <optional>
+                <ref name="def_release-list"/>
+            </optional>
+            <optional>
+                <ref name="def_alias-list"/>
+            </optional>
+            <zeroOrMore>
+                <ref name="def_relation-list"/>
+            </zeroOrMore>
+            <optional>
+                <ref name="def_tag-list"/>
+            </optional>
+            <optional>
+                <ref name="def_user-tag-list"/>
+            </optional>
+            <optional>
+                <ref name="def_genre-list"/>
+            </optional>
+            <optional>
+                <ref name="def_user-genre-list"/>
+            </optional>
+            <optional>
+                <ref name="def_rating"/>
+            </optional>
+            <optional>
+                <ref name="def_user-rating"/>
+            </optional>
+
+            <ref name="def_release-group-element_extension"/>
+        </element>
+    </define>
+
+
+ */
