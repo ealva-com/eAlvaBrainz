@@ -68,6 +68,9 @@ inline class TrackMbid(override val value: String) : Mbid
 inline val Track.mbid
   get() = TrackMbid(id)
 
+@Suppress("NOTHING_TO_INLINE")
+inline fun String.toTrackMbid() = TrackMbid(this)
+
 /** First [ArtistCredit] [Artist.mbid] or "" if not found */
 @Suppress("unused") val Track.theArtistMbid: String
   get() = if (artistCredit.isNotEmpty()) artistCredit[0].artist.mbid.value else ""

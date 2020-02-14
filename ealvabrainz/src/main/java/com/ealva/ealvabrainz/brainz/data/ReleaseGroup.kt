@@ -77,6 +77,7 @@ class ReleaseGroup(
   @field:Json(name = "secondary-types") var secondaryTypes: List<String> = emptyList(),
   @field:Json(name = "first-release-date") var firstReleaseDate: String = "",
   var aliases: List<Alias> = emptyList(),
+  var relations: List<Relation> = emptyList(),
   /** Only used in search results */
   var score: Int = 0
 ) {
@@ -187,6 +188,9 @@ inline class ReleaseGroupMbid(override val value: String) : Mbid
 
 inline val ReleaseGroup.mbid: ReleaseGroupMbid
   get() = ReleaseGroupMbid(id)
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun String.toReleaseGroupMbid() = ReleaseGroupMbid(this)
 
 /**
  * Appears as primary-type-id in some places and type-id in others. Handle like this for now. Moshi

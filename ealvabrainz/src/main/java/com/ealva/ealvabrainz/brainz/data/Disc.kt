@@ -83,3 +83,6 @@ inline class DiscMbid(override val value: String) : Mbid
 
 inline val Disc.mbid
   get() = DiscMbid(id)
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun String.toDiscMbid() = DiscMbid(this)

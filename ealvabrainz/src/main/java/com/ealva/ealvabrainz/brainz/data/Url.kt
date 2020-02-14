@@ -15,7 +15,34 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-include ':app', ':ealvabrainz', ':ealvabrainz-service', ':ealvabrainz-test'
-rootProject.name = 'eAlva Brainz'
-include 'ealvabrainz-test'
+package com.ealva.ealvabrainz.brainz.data
 
+import com.ealva.ealvabrainz.brainz.data.Url.Companion.NullUrl
+import com.squareup.moshi.JsonClass
+
+/**
+ * A MusicBrainz URL consists of its ID and the actual Url
+ *
+ * Example
+ * ```json
+ * "url": {
+ *     "id": "56da3f0f-2a88-44ab-97ad-9cf5fa1d0be6",
+ *     "resource": "https://www.musik-sammler.de/album/6995/"
+ *  }
+ * ```
+ */
+@JsonClass(generateAdapter = true)
+class Url(
+  /** UUID of the Url instance */
+  var id: String = "",
+  /** The url */
+  var resource: String = ""
+) {
+  companion object {
+    val NullUrl = Url(id = NullObject.ID)
+    val fallbackMapping: Pair<String, Any> = Url::class.java.name to NullUrl
+  }
+}
+
+inline val Url.isNullObject
+  get() = this === NullUrl

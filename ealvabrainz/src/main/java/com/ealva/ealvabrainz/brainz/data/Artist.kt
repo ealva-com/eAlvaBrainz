@@ -256,3 +256,5 @@ inline class ArtistMbid(override val value: String) : Mbid {
 inline val Artist.mbid
   get() = ArtistMbid(id)
 
+@Suppress("NOTHING_TO_INLINE")
+inline fun String.toArtistMbid() = ArtistMbid(this)

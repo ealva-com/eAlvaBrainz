@@ -156,3 +156,5 @@ inline class RecordingMbid(override val value: String) : Mbid
 inline val Recording.mbid
   get() = RecordingMbid(id)
 
+@Suppress("NOTHING_TO_INLINE")
+inline fun String.toRecordingMbid() = RecordingMbid(this)

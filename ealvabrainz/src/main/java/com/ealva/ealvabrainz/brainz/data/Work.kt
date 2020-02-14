@@ -110,3 +110,5 @@ inline class WorkMbid(override val value: String) : Mbid
 inline val Work.mbid
   get() = WorkMbid(id)
 
+@Suppress("NOTHING_TO_INLINE")
+inline fun String.toWorkMbid() = WorkMbid(this)

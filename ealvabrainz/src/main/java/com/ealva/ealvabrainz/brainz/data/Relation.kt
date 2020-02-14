@@ -26,7 +26,8 @@ import com.ealva.ealvabrainz.brainz.data.RecordingRelation.Companion.NullRecordi
 import com.ealva.ealvabrainz.brainz.data.Release.Companion.NullRelease
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupRelation.Companion.NullReleaseGroupRelation
 import com.ealva.ealvabrainz.brainz.data.ReleaseRelation.Companion.NullReleaseRelation
-import com.ealva.ealvabrainz.brainz.data.Target.Companion.NullTarget
+import com.ealva.ealvabrainz.brainz.data.SeriesRelation.Companion.NullSeriesRelation
+import com.ealva.ealvabrainz.brainz.data.UrlRelation.Companion.NullUrlRelation
 import com.ealva.ealvabrainz.brainz.data.WorkRelation.Companion.NullWorkRelation
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
@@ -60,11 +61,13 @@ import com.squareup.moshi.JsonClass
  */
 sealed class Relation(
   var type: String = "",
-  @field:Json(name = "type-id")var typeId: String = "",
-  @field:FallbackOnNull var target: Target = NullTarget,
-  @field:Json(name = "ordering-key")var orderingKey: Int = 0,
+  @field:Json(name = "type-id") var typeId: String = "",
+  @field:Json(name = "target-type") var targetType: String = "",
+  @field:Json(name = "ordering-key") var orderingKey: Int = 0,
   var direction: String = "",
-  @field:Json(name = "attribute-list") var attributeList: List<Attribute> = emptyList(),
+  var attributes: List<String> = emptyList(),
+  @field:Json(name = "attribute-values") var attributeValues: Map<String, String> = emptyMap(),
+  @field:Json(name = "attribute-ids") var attributeIds: Map<String, String> = emptyMap(),
   var begin: String = "",
   var end: String = "",
   var ended: Boolean = false,
@@ -84,17 +87,33 @@ sealed class Relation(
 class AreaRelation(
   type: String = "",
   typeId: String = "",
-  target: Target = NullTarget,
+  targetType: String = "",
   orderingKey: Int = 0,
   direction: String = "",
-  attributeList: List<Attribute> = emptyList(),
+  attributes: List<String> = emptyList(),
+  attributeValues: Map<String, String> = emptyMap(),
+  attributeIds: Map<String, String> = emptyMap(),
   begin: String = "",
   end: String = "",
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
   @field:FallbackOnNull var area: Area = Area.NullArea
-) : Relation(type, typeId, target, orderingKey, direction, attributeList, begin, end, ended, sourceCredit, targetCredit) {
+) : Relation(
+  type,
+  typeId,
+  targetType,
+  orderingKey,
+  direction,
+  attributes,
+  attributeValues,
+  attributeIds,
+  begin,
+  end,
+  ended,
+  sourceCredit,
+  targetCredit
+) {
   companion object {
     val NullAreaRelation = AreaRelation(type = NullObject.NAME)
     val fallbackMapping: Pair<String, Any> = AreaRelation::class.java.name to NullAreaRelation
@@ -121,17 +140,33 @@ val AreaRelation.isNullObject
 class ArtistRelation(
   type: String = "",
   typeId: String = "",
-  target: Target = NullTarget,
+  targetType: String = "",
   orderingKey: Int = 0,
   direction: String = "",
-  attributeList: List<Attribute> = emptyList(),
+  attributes: List<String> = emptyList(),
+  attributeValues: Map<String, String> = emptyMap(),
+  attributeIds: Map<String, String> = emptyMap(),
   begin: String = "",
   end: String = "",
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
   @field:FallbackOnNull var artist: Artist = Artist.NullArtist
-) : Relation(type, typeId, target, orderingKey, direction, attributeList, begin, end, ended, sourceCredit, targetCredit) {
+) : Relation(
+  type,
+  typeId,
+  targetType,
+  orderingKey,
+  direction,
+  attributes,
+  attributeValues,
+  attributeIds,
+  begin,
+  end,
+  ended,
+  sourceCredit,
+  targetCredit
+) {
   companion object {
     val NullArtistRelation = ArtistRelation(type = NullObject.NAME)
     val fallbackMapping: Pair<String, Any> = ArtistRelation::class.java.name to NullArtistRelation
@@ -155,17 +190,33 @@ val ArtistRelation.isNullObject
 class EventRelation(
   type: String = "",
   typeId: String = "",
-  target: Target = NullTarget,
+  targetType: String = "",
   orderingKey: Int = 0,
   direction: String = "",
-  attributeList: List<Attribute> = emptyList(),
+  attributes: List<String> = emptyList(),
+  attributeValues: Map<String, String> = emptyMap(),
+  attributeIds: Map<String, String> = emptyMap(),
   begin: String = "",
   end: String = "",
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
   @field:FallbackOnNull var event: Event = Event.NullEvent
-) : Relation(type, typeId, target, orderingKey, direction, attributeList, begin, end, ended, sourceCredit, targetCredit) {
+) : Relation(
+  type,
+  typeId,
+  targetType,
+  orderingKey,
+  direction,
+  attributes,
+  attributeValues,
+  attributeIds,
+  begin,
+  end,
+  ended,
+  sourceCredit,
+  targetCredit
+) {
   companion object {
     val NullEventRelation = EventRelation(type = NullObject.NAME)
     val fallbackMapping: Pair<String, Any> = EventRelation::class.java.name to NullEventRelation
@@ -187,17 +238,33 @@ val EventRelation.isNullObject
 class LabelRelation(
   type: String = "",
   typeId: String = "",
-  target: Target = NullTarget,
+  targetType: String = "",
   orderingKey: Int = 0,
   direction: String = "",
-  attributeList: List<Attribute> = emptyList(),
+  attributes: List<String> = emptyList(),
+  attributeValues: Map<String, String> = emptyMap(),
+  attributeIds: Map<String, String> = emptyMap(),
   begin: String = "",
   end: String = "",
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
   @field:FallbackOnNull var label: Label = Label.NullLabel
-) : Relation(type, typeId, target, orderingKey, direction, attributeList, begin, end, ended, sourceCredit, targetCredit) {
+) : Relation(
+  type,
+  typeId,
+  targetType,
+  orderingKey,
+  direction,
+  attributes,
+  attributeValues,
+  attributeIds,
+  begin,
+  end,
+  ended,
+  sourceCredit,
+  targetCredit
+) {
   companion object {
     val NullLabelRelation = LabelRelation(type = NullObject.NAME)
     val fallbackMapping: Pair<String, Any> = LabelRelation::class.java.name to NullLabelRelation
@@ -218,17 +285,33 @@ val LabelRelation.isNullObject
 class PlaceRelation(
   type: String = "",
   typeId: String = "",
-  target: Target = NullTarget,
+  targetType: String = "",
   orderingKey: Int = 0,
   direction: String = "",
-  attributeList: List<Attribute> = emptyList(),
+  attributes: List<String> = emptyList(),
+  attributeValues: Map<String, String> = emptyMap(),
+  attributeIds: Map<String, String> = emptyMap(),
   begin: String = "",
   end: String = "",
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
   @field:FallbackOnNull var place: Place = Place.NullPlace
-) : Relation(type, typeId, target, orderingKey, direction, attributeList, begin, end, ended, sourceCredit, targetCredit) {
+) : Relation(
+  type,
+  typeId,
+  targetType,
+  orderingKey,
+  direction,
+  attributes,
+  attributeValues,
+  attributeIds,
+  begin,
+  end,
+  ended,
+  sourceCredit,
+  targetCredit
+) {
   companion object {
     val NullPlaceRelation = PlaceRelation(type = NullObject.NAME)
     val fallbackMapping: Pair<String, Any> = PlaceRelation::class.java.name to NullPlaceRelation
@@ -249,20 +332,37 @@ val PlaceRelation.isNullObject
 class RecordingRelation(
   type: String = "",
   typeId: String = "",
-  target: Target = NullTarget,
+  targetType: String = "",
   orderingKey: Int = 0,
   direction: String = "",
-  attributeList: List<Attribute> = emptyList(),
+  attributes: List<String> = emptyList(),
+  attributeValues: Map<String, String> = emptyMap(),
+  attributeIds: Map<String, String> = emptyMap(),
   begin: String = "",
   end: String = "",
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull var recording: Recording= Recording.NullRecording
-) : Relation(type, typeId, target, orderingKey, direction, attributeList, begin, end, ended, sourceCredit, targetCredit) {
+  @field:FallbackOnNull var recording: Recording = Recording.NullRecording
+) : Relation(
+  type,
+  typeId,
+  targetType,
+  orderingKey,
+  direction,
+  attributes,
+  attributeValues,
+  attributeIds,
+  begin,
+  end,
+  ended,
+  sourceCredit,
+  targetCredit
+) {
   companion object {
     val NullRecordingRelation = RecordingRelation(type = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = RecordingRelation::class.java.name to NullRecordingRelation
+    val fallbackMapping: Pair<String, Any> =
+      RecordingRelation::class.java.name to NullRecordingRelation
   }
 }
 
@@ -278,17 +378,33 @@ val RecordingRelation.isNullObject
 class ReleaseRelation(
   type: String = "",
   typeId: String = "",
-  target: Target = NullTarget,
+  targetType: String = "",
   orderingKey: Int = 0,
   direction: String = "",
-  attributeList: List<Attribute> = emptyList(),
+  attributes: List<String> = emptyList(),
+  attributeValues: Map<String, String> = emptyMap(),
+  attributeIds: Map<String, String> = emptyMap(),
   begin: String = "",
   end: String = "",
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
   @field:FallbackOnNull var release: Release = NullRelease
-) : Relation(type, typeId, target, orderingKey, direction, attributeList, begin, end, ended, sourceCredit, targetCredit) {
+) : Relation(
+  type,
+  typeId,
+  targetType,
+  orderingKey,
+  direction,
+  attributes,
+  attributeValues,
+  attributeIds,
+  begin,
+  end,
+  ended,
+  sourceCredit,
+  targetCredit
+) {
   companion object {
     val NullReleaseRelation = ReleaseRelation(type = NullObject.NAME)
     val fallbackMapping: Pair<String, Any> = ReleaseRelation::class.java.name to NullReleaseRelation
@@ -298,29 +414,41 @@ class ReleaseRelation(
 val ReleaseRelation.isNullObject
   get() = this === NullReleaseRelation
 
-/**
- * * [ReleaseGroup-ReleaseGroup](https://musicbrainz.org/relationships/release_group-release_group)
- * * [ReleaseGroup-Series](https://musicbrainz.org/relationships/release_group-series)
- * * [ReleaseGroup-URL](https://musicbrainz.org/relationships/release_group-url)
- */
 @JsonClass(generateAdapter = true)
 class ReleaseGroupRelation(
   type: String = "",
   typeId: String = "",
-  target: Target = NullTarget,
+  targetType: String = "",
   orderingKey: Int = 0,
   direction: String = "",
-  attributeList: List<Attribute> = emptyList(),
+  attributes: List<String> = emptyList(),
+  attributeValues: Map<String, String> = emptyMap(),
+  attributeIds: Map<String, String> = emptyMap(),
   begin: String = "",
   end: String = "",
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:Json(name = "release-group") @field:FallbackOnNull var releaseGroup: ReleaseGroup = ReleaseGroup.NullReleaseGroup
-) : Relation(type, typeId, target, orderingKey, direction, attributeList, begin, end, ended, sourceCredit, targetCredit) {
+  @field:Json(name = "release_group") @field:FallbackOnNull var releaseGroup: ReleaseGroup = ReleaseGroup.NullReleaseGroup
+) : Relation(
+  type,
+  typeId,
+  targetType,
+  orderingKey,
+  direction,
+  attributes,
+  attributeValues,
+  attributeIds,
+  begin,
+  end,
+  ended,
+  sourceCredit,
+  targetCredit
+) {
   companion object {
     val NullReleaseGroupRelation = ReleaseGroupRelation(type = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = ReleaseGroupRelation::class.java.name to NullReleaseGroupRelation
+    val fallbackMapping: Pair<String, Any> =
+      ReleaseGroupRelation::class.java.name to NullReleaseGroupRelation
   }
 }
 
@@ -334,17 +462,33 @@ val ReleaseGroupRelation.isNullObject
 class WorkRelation(
   type: String = "",
   typeId: String = "",
-  target: Target = NullTarget,
+  targetType: String = "",
   orderingKey: Int = 0,
   direction: String = "",
-  attributeList: List<Attribute> = emptyList(),
+  attributes: List<String> = emptyList(),
+  attributeValues: Map<String, String> = emptyMap(),
+  attributeIds: Map<String, String> = emptyMap(),
   begin: String = "",
   end: String = "",
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
   @field:FallbackOnNull var work: Work = Work.NullWork
-) : Relation(type, typeId, target, orderingKey, direction, attributeList, begin, end, ended, sourceCredit, targetCredit) {
+) : Relation(
+  type,
+  typeId,
+  targetType,
+  orderingKey,
+  direction,
+  attributes,
+  attributeValues,
+  attributeIds,
+  begin,
+  end,
+  ended,
+  sourceCredit,
+  targetCredit
+) {
   companion object {
     val NullWorkRelation = WorkRelation(type = NullObject.NAME)
     val fallbackMapping: Pair<String, Any> = WorkRelation::class.java.name to NullWorkRelation
@@ -354,13 +498,95 @@ class WorkRelation(
 val WorkRelation.isNullObject
   get() = this === NullWorkRelation
 
+@JsonClass(generateAdapter = true)
+class SeriesRelation(
+  type: String = "",
+  typeId: String = "",
+  targetType: String = "",
+  orderingKey: Int = 0,
+  direction: String = "",
+  attributes: List<String> = emptyList(),
+  attributeValues: Map<String, String> = emptyMap(),
+  attributeIds: Map<String, String> = emptyMap(),
+  begin: String = "",
+  end: String = "",
+  ended: Boolean = false,
+  sourceCredit: String = "",
+  targetCredit: String = "",
+  @field:FallbackOnNull var series: Series = Series.NullSeries
+) : Relation(
+  type,
+  typeId,
+  targetType,
+  orderingKey,
+  direction,
+  attributes,
+  attributeValues,
+  attributeIds,
+  begin,
+  end,
+  ended,
+  sourceCredit,
+  targetCredit
+) {
+  companion object {
+    val NullSeriesRelation = SeriesRelation(type = NullObject.NAME)
+    val fallbackMapping: Pair<String, Any> = SeriesRelation::class.java.name to NullSeriesRelation
+  }
+}
+
+val SeriesRelation.isNullObject
+  get() = this === NullSeriesRelation
+
+
+@JsonClass(generateAdapter = true)
+class UrlRelation(
+  type: String = "",
+  typeId: String = "",
+  targetType: String = "",
+  orderingKey: Int = 0,
+  direction: String = "",
+  attributes: List<String> = emptyList(),
+  attributeValues: Map<String, String> = emptyMap(),
+  attributeIds: Map<String, String> = emptyMap(),
+  begin: String = "",
+  end: String = "",
+  ended: Boolean = false,
+  sourceCredit: String = "",
+  targetCredit: String = "",
+  @field:FallbackOnNull var url: Url = Url.NullUrl
+) : Relation(
+  type,
+  typeId,
+  targetType,
+  orderingKey,
+  direction,
+  attributes,
+  attributeValues,
+  attributeIds,
+  begin,
+  end,
+  ended,
+  sourceCredit,
+  targetCredit
+) {
+  companion object {
+    val NullUrlRelation = UrlRelation(type = NullObject.NAME)
+    val fallbackMapping: Pair<String, Any> = UrlRelation::class.java.name to NullUrlRelation
+  }
+}
+
+val UrlRelation.isNullObject
+  get() = this === NullUrlRelation
+
 // @JsonClass(generateAdapter = true)
 // class InstrumentRelation(
 // type: String = "",
 // typeId: String = "",
-// target: Target = NullTarget,
+// targetType: String = "",
 // orderingKey: Int = 0,
 // direction: String = "",
+// attributes: List<String> = emptyList(),
 // attributeList: List<Attribute> = emptyList(),
 // begin: String = "",
 // end: String = "",
@@ -368,7 +594,7 @@ val WorkRelation.isNullObject
 // sourceCredit: String = "",
 // targetCredit: String = "",
 // @field:FallbackOnNull var instrument: Instrument = Instrument.NullInstrument
-// ) : Relation(type, typeId, target, orderingKey, direction, attributeList, begin, end, ended, sourceCredit, targetCredit) {
+// ) : Relation(type, typeId, targetType, orderingKey, direction, attributeList, begin, end, ended, sourceCredit, targetCredit) {
 // companion object {
 // val NullInstrumentRelation = InstrumentRelation(type = NullObject.NAME)
 // val fallbackMapping: Pair<String, Any> = InstrumentRelation::class.java.name to NullInstrumentRelation
@@ -378,26 +604,3 @@ val WorkRelation.isNullObject
 // val InstrumentRelation.isNullObject
 // get() = this === NullInstrumentRelation
 //
-// @JsonClass(generateAdapter = true)
-// class SeriesRelation(
-// type: String = "",
-// typeId: String = "",
-// target: Target = NullTarget,
-// orderingKey: Int = 0,
-// direction: String = "",
-// attributeList: List<Attribute> = emptyList(),
-// begin: String = "",
-// end: String = "",
-// ended: Boolean = false,
-// sourceCredit: String = "",
-// targetCredit: String = "",
-// @field:FallbackOnNull var series: Series = Series.NullSeries
-// ) : Relation(type, typeId, target, orderingKey, direction, attributeList, begin, end, ended, sourceCredit, targetCredit) {
-// companion object {
-// val NullSeriesRelation = SeriesRelation(type = NullObject.NAME)
-// val fallbackMapping: Pair<String, Any> = SeriesRelation::class.java.name to NullSeriesRelation
-// }
-// }
-//
-// val SeriesRelation.isNullObject
-// get() = this === NullSeriesRelation

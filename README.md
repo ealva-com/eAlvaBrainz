@@ -55,8 +55,8 @@ inline val Area.mbid
   get() = AreaMbid(id)
 ```
 A companion object is defined which contains the Null Object and a mapping between the class name 
-and the fallback NullArea object. An extension function defines a Boolean isNullObject val. Note 
-also the AreaMbid inline class. Since a MusicBrainz identifier (MBID) is just a string, these inline 
+and the fallback NullArea object. An extension function defines a Boolean isNullObject val. Also 
+note the AreaMbid inline class. Since a MusicBrainz identifier (MBID) is just a string, these inline 
 classes are meant to differentiate types of MBID to facilitate compile time type checking.
 
 While this module is not directly dependent upon Kotlin [coroutine][coroutines] libraries, the 
@@ -160,8 +160,9 @@ This library contains classes others may find useful in a different context. Whi
 may be used as examples or a starting point:
 * Moshi annotated data classes for codegen and json adapter generation
 * Moshi custom json adapter copied form codegen and modified to support a name possibly being of 2 types
-* Moshi combination of data class style, annotations, and adatpers to support the Null Object Pattern 
+* Moshi combination of data class style, annotations, and adapters to support the Null Object Pattern 
 * Moshi annotation and adapter to support a fallback strategy for items missing from json (part of Null Object pattern)
+* Moshi adapter that peeks names to determine which subtype to instantiate
 * Retrofit interfaces defined with suspend or returning a flow 
 * Retrofit, OkHttp, and Moshi builders to fully support the Rest client
 * Coroutine test strategy with a JUnit rule and a test dispatcher (test concurrent code)

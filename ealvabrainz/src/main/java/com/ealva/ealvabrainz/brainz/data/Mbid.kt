@@ -67,7 +67,7 @@ fun Mbid.appearsValid(): Boolean = with(value) {
 }
 
 /**
- * Check length of group and that is is a hexadecimal string
+ * Check length of group and that is a hexadecimal string
  */
 private fun checkGroup(group: String, expectedLength: Int): Boolean {
   return try {

@@ -63,3 +63,6 @@ inline class PlaceMbid(override val value: String) : Mbid
 
 inline val Place.mbid
   get() = PlaceMbid(id)
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun String.toPlaceMbid() = PlaceMbid(this)

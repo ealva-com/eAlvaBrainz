@@ -14,6 +14,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/ealvabrainz" />
             <option value="$PROJECT_DIR$/ealvabrainz-service" />
+            <option value="$PROJECT_DIR$/ealvabrainz-test" />
           </set>
         </option>
         <option name="useQualifiedModuleNames" value="true" />

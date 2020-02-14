@@ -26,6 +26,8 @@ import com.ealva.ealvabrainz.brainz.data.RecordingRelation
 import com.ealva.ealvabrainz.brainz.data.Relation
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupRelation
 import com.ealva.ealvabrainz.brainz.data.ReleaseRelation
+import com.ealva.ealvabrainz.brainz.data.SeriesRelation
+import com.ealva.ealvabrainz.brainz.data.UrlRelation
 import com.ealva.ealvabrainz.brainz.data.WorkRelation
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonAdapter.Factory
@@ -38,7 +40,10 @@ import com.squareup.moshi.Types
 private val nameClassPairs = listOf(
   "artist" to ArtistRelation::class.java,
   "place" to PlaceRelation::class.java,
-  "event" to EventRelation::class.java
+  "event" to EventRelation::class.java,
+  "release_group" to ReleaseGroupRelation::class.java,
+  "series" to SeriesRelation::class.java,
+  "url" to UrlRelation::class.java
 )
 
 /** Let's not construct the range in the loop every time we need it*/

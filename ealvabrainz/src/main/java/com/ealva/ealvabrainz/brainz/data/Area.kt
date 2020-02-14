@@ -158,3 +158,5 @@ inline class AreaMbid(override val value: String) : Mbid
 inline val Area.mbid
   get() = AreaMbid(id)
 
+@Suppress("NOTHING_TO_INLINE")
+inline fun String.toAreaMbid() = AreaMbid(this)

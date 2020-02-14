@@ -55,6 +55,15 @@ class MbidTest {
     expect("-ca2866c0-e204-4b0e-8fd2-00823863e2b2".toMbid()).toBeInvalid()
     expect("ca2866c0-e204-4b0e-8fd2-00823863e2b2-".toMbid()).toBeInvalid()
 
+    expect("ca2866c0ae204-4b0e-8fd2-00823863e2b2".toMbid()).toBeInvalid()
+    expect("ca2866c0-e204a4b0e-8fd2-00823863e2b2".toMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0ea8fd2-00823863e2b2".toMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0e-8fd2a00823863e2b2".toMbid()).toBeInvalid()
+    expect("2ca2866c0-e204-4b0e-8fd2-00823863e2b2".toMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0e-8fd2-00823863e2b2c".toMbid()).toBeInvalid()
+
+    expect("ca28g6c0-e204-4b0e-8fd2-00823863e2b2c".toMbid()).toBeInvalid()
+
     expect("".toMbid()).toBeInvalid()
   }
 }

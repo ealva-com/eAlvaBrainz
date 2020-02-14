@@ -175,3 +175,6 @@ inline class LabelMbid(override val value: String) : Mbid
 
 inline val Label.mbid
   get() = LabelMbid(id)
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun String.toLabelMbid() = LabelMbid(this)

@@ -21,6 +21,7 @@ internal object FallbackMap {
   internal val map = mapOf(
     Alias.fallbackMapping,
     Area.fallbackMapping,
+    AreaRelation.fallbackMapping,
     Artist.fallbackMapping,
     ArtistCredit.fallbackMapping,
     ArtistRelation.fallbackMapping,
@@ -34,6 +35,7 @@ internal object FallbackMap {
     EventRelation.fallbackMapping,
     Genre.fallbackMapping,
     Label.fallbackMapping,
+    LabelRelation.fallbackMapping,
     LabelInfo.fallbackMapping,
     LifeSpan.fallbackMapping,
     Medium.fallbackMapping,
@@ -42,17 +44,22 @@ internal object FallbackMap {
     PlaceRelation.fallbackMapping,
     Rating.fallbackMapping,
     Recording.fallbackMapping,
+    RecordingRelation.fallbackMapping,
     Release.fallbackMapping,
     ReleaseRelation.fallbackMapping,
     ReleaseEvent.fallbackMapping,
     ReleaseGroup.fallbackMapping,
     ReleaseGroupRelation.fallbackMapping,
+    Series.fallbackMapping,
+    SeriesRelation.fallbackMapping,
     Tag.fallbackMapping,
     Target.fallbackMapping,
     TextRepresentation.fallbackMapping,
     Thumbnails.fallbackMapping,
     Track.fallbackMapping,
-    Work.fallbackMapping
+    Url.fallbackMapping,
+    Work.fallbackMapping,
+    WorkRelation.fallbackMapping
   )
 
   fun get(key: String): Any {
