@@ -19,6 +19,7 @@ package com.ealva.ealvabrainz.brainz
 
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistList
+import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupList
@@ -67,12 +68,27 @@ interface MusicBrainz {
    *
    * @param mbid the release mbid. In the example this would be: 938cef50-de9a-3ced-a1fe-bdfbd3bc4315
    * @param include include parameters
+   * @param type restrict the result to this type of Release
+   * @param status restrict the result to Releases with this status
    * @return the given Release if found
    */
   @GET("release/{mbid}")
   suspend fun lookupRelease(
     @Path("mbid") mbid: String,
-    @Query("inc") include: String? = "recordings+artist-credits"
+    @Query("inc") include: String? = null,
+    /**
+     * Limit linked entities to this Release type
+     *
+     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
+     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
+     */
+    @Query("type") type: String? = null,
+    /**
+     * Limit linked entities to this Release status.
+     *
+     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
+     */
+    @Query("status") status: String? = null
   ): Response<Release>
 
   /**
@@ -103,13 +119,28 @@ interface MusicBrainz {
    *
    * @param mbid        the release group mbid. In the example this would be:
    * e1b7e76e-09ff-36fd-b1fd-0c6cb199b817
-   *
-   * @return the ReleaseGroup if found
+   * @param type limit linked entities to this Release type
+   * @param status limit linked entities to the Release status, only valid if "releases" are
+   * included
    */
   @GET("release-group/{mbid}")
   suspend fun lookupReleaseGroup(
     @Path("mbid") mbid: String,
-    @Query("inc") include: String? = "artist-credits+releases"
+    @Query("inc") include: String? = null,
+    /**
+     * Limit linked entities to this Release type.
+     *
+     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
+     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
+     */
+    @Query("type") type: String? = null,
+    /**
+     * Limit linked entities to this Release status. Not valid unless "releases" are [include]d in
+     * the lookup
+     *
+     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
+     */
+    @Query("status") status: String? = null
   ): Response<ReleaseGroup>
 
   /**
@@ -140,13 +171,58 @@ interface MusicBrainz {
    *
    * @param mbid        the artist mbid. In the example this would be:
    * 5b11f4ce-a62d-471e-81fc-a69a8278c7da
-   *
-   * @return Artist
    */
   @GET("artist/{mbid}")
   suspend fun lookupArtist(
     @Path("mbid") mbid: String,
-    @Query("inc") include: String? = "aliases+tags+ratings"
+    @Query("inc") include: String? = null,
+    /**
+     * Limit linked entities to this Release type. Not valid unless "releases" or "release-groups"
+     * are [include]d in the lookup
+     *
+     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
+     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
+     */
+    @Query("type") type: String? = null,
+    /**
+     * Limit linked entities to this Release status. Not valid unless "releases" are [include]d in
+     * the lookup
+     *
+     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
+     */
+    @Query("status") status: String? = null
   ): Response<Artist>
+
+  /**
+   * An example for lookup by mbid would be:
+   * http://musicbrainz.org/ws/2/recording/fcbcdc39-8851-4efc-a02a-ab0e13be224f?fmt=json
+   *
+   * @param mbid  the recording mbid. In the example this would be:
+   * fcbcdc39-8851-4efc-a02a-ab0e13be224f
+   * @param include the list of subqueries, relationships, or other misc includes, to specify how
+   * much of the data about the linked entities should be included
+   * @param type limit linked entities to this Release type
+   * @param status limit linked entities to this Release status
+   */
+  @GET("recording/{mbid}")
+  suspend fun lookupRecording(
+    @Path("mbid") mbid: String,
+    @Query("inc") include: String? = null,
+    /**
+     * Limit linked entities to this Release type. Not valid unless "releases" or "release-groups"
+     * are [include]d in the lookup
+     *
+     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
+     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
+     */
+    @Query("type") type: String? = null,
+    /**
+     * Limit linked entities to this Release status. Not valid unless "releases" are [include]d in
+     * the lookup
+     *
+     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
+     */
+    @Query("status") status: String? = null
+  ): Response<Recording>
 
 }

@@ -59,7 +59,14 @@ class Recording(
 
   @Suppress("unused")
   enum class Subqueries(override val value: String) : Lookup {
-    ArtistCredits("artist-credits") // include artists credits for all releases and recordings
+    Artists("artists"),
+    Releases("releases"),
+    UrlRels("url-rels"),
+    /** DiscIds requires [Releases] also be specified and inc params can (currently) repeat */
+    DiscIds("releases+discids"),
+    Media("media"),
+    Isrcs("isrcs"),
+    ArtistCredits("artist-credits")
   }
 
   @Suppress("unused")

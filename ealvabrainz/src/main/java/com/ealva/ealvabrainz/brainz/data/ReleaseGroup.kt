@@ -69,6 +69,21 @@ class ReleaseGroup(
    */
   var annotation: String = "",
   var tags: List<Tag> = emptyList(),
+  /**
+   * Types may be
+   * * "nat"
+   * * "album"
+   * * "single"
+   * * "ep"
+   * * "compilation"
+   * * "soundtrack"
+   * * "spokenword"
+   * * "interview"
+   * * "audiobook"
+   * * "live"
+   * * "remix"
+   * * "other"
+   */
   @field:Json(name = "primary-type") var primaryType: String = "",
   @field:Json(name = "primary-type-id") internal var primaryTypeId: String = "",
   @field:Json(name = "type-id") internal var typeId: String = "",

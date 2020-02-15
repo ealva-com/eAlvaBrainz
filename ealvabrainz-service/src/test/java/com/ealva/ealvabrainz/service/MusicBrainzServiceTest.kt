@@ -25,12 +25,16 @@ import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.Release.Companion.NullRelease
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup.Companion.NullReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseList
+import com.ealva.ealvabrainz.brainz.data.toReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.toReleaseMbid
 import com.ealva.ealvabrainz.common.AlbumName
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.runBlockingTest
 import com.nhaarman.expect.expect
+import com.nhaarman.expect.fail
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.mock
@@ -94,8 +98,38 @@ class MusicBrainzServiceTest {
     }
     val service = makeServiceForTest(mockBrainz)
     val release = service.lookupRelease(mbid, listOf())
-    expect(release).toNotBeNull()
+    expect(release).toBe(NullRelease)
   }
+
+  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @Test(expected = MusicBrainzException::class)
+  fun `test lookupReleaseGroup status-include mismatch`() = coroutineRule.runBlockingTest {
+    val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseGroupMbid()
+    val mockBrainz = mock<MusicBrainz>()  // should not be called
+    val service = makeServiceForTest(mockBrainz)
+    // expect lookupReleaseGroup to throw
+    service.lookupReleaseGroup(mbid, status = Release.Status.Official)
+    fail("should have thrown a MusicBrainzException")
+  }
+
+  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `test lookupReleaseGroup status used`() = coroutineRule.runBlockingTest {
+    val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseGroupMbid()
+    val mockBrainz = mock<MusicBrainz> {
+      onBlocking {
+        lookupReleaseGroup(mbid.value, include = "releases", status = "official")
+      } doReturn makeSuccess(NullReleaseGroup)
+    }
+    val service = makeServiceForTest(mockBrainz)
+    val releaseGroup = service.lookupReleaseGroup(
+      mbid,
+      listOf(ReleaseGroup.Subqueries.Releases),
+      status = Release.Status.Official
+    )
+    expect(releaseGroup).toBe(NullReleaseGroup)
+  }
+
 
   @UseExperimental(ExperimentalCoroutinesApi::class)
   @Test

@@ -43,6 +43,11 @@ import com.squareup.moshi.Json
  * can appear on more than one release. For example, a boxset compilation that contains previously
  * released CDs would share the same tracklists as the separate releases.
  *
+ * WARNING: TODO Currently if this class is changed we have to regenerate the adapter and move the
+ * results to our custom [ReleaseAdapter][com.ealva.ealvabrainz.moshi.ReleaseAdapter]. Need to
+ * change this (maybe use the/a Polymorphic adapter or an Annotation that provides for multiple
+ * names)
+ *
  * [MusicBrainz Release](https://musicbrainz.org/doc/Release)
  */
 //@JsonClass(generateAdapter = true)  Only generate when changed - we use custom for "packaging"
@@ -138,6 +143,21 @@ class Release(
   @field:Json(name = "secondary-type-ids") var secondaryTypeIds: List<String> = emptyList(),
   @field:Json(name = "first-release-date") var firstReleaseDate: String = "",
   @field:FallbackOnNull var rating: Rating = Rating.NullRating,
+  /**
+   * Types may be
+   * * "nat"
+   * * "album"
+   * * "single"
+   * * "ep"
+   * * "compilation"
+   * * "soundtrack"
+   * * "spokenword"
+   * * "interview"
+   * * "audiobook"
+   * * "live"
+   * * "remix"
+   * * "other"
+   */
   @field:Json(name = "primary-type") var primaryType: String = "",
   var releases: List<Release> = emptyList(),
   /** Only relevant if returned from query */
@@ -303,11 +323,47 @@ class Release(
     Type("type"),
   }
 
+  /**
+   * Used for any lookup which includes a [ReleaseGroup] or [Release] to limit results to
+   * the that particular type of Release.
+   */
+  @Suppress("unused")
+  enum class Type(val value: String?) {
+    Nat("nat"),
+    Album("album"),
+    Single("single"),
+    Ep("ep"),
+    Compilation("compilation"),
+    Soundtrack("soundtrack"),
+    SpokenWord("spokenword"),
+    Interview("interview"),
+    Audiobook("audiobook"),
+    Live("live"),
+    Remix("remix"),
+    Other("other"),
+    /** Any is equivalent to not specifying a Type = any type */
+    Any(null)
+  }
+
+  /**
+   * Used for any lookup which includes a [Release] to limit results to that particular
+   * [status][Release.status]
+   */
+  @Suppress("unused")
+  enum class Status(val value: String?) {
+    Official("official"),
+    Promotion("promotion"),
+    Bootleg("bootleg"),
+    PseudoRelease("pseudo-release"),
+    /** Any is equivalent to not specifying a Status = any status */
+    Any(null)
+  }
+
   companion object {
     val NullRelease = Release(id = NullObject.ID)
     val fallbackMapping: Pair<String, Any> = Release::class.java.name to NullRelease
-
   }
+
 }
 
 inline val Release.isNullObject
@@ -324,6 +380,7 @@ inline fun String.toReleaseMbid(): ReleaseMbid {
 }
 
 /** Assumes artist credit not present is exceptional */
+@Suppress("unused")
 inline val Release.theArtistMbid: String
   get() {
     return try {
@@ -334,6 +391,7 @@ inline val Release.theArtistMbid: String
   }
 
 /** Assumes artist credit not present is exceptional */
+@Suppress("unused")
 inline val Release.theArtistName: String
   get() {
     return try {
@@ -344,6 +402,7 @@ inline val Release.theArtistName: String
   }
 
 /** Assumes artist credit not present is exceptional */
+@Suppress("unused")
 inline val Release.theArtistSortName: String
   get() {
     return try {
