@@ -32,6 +32,7 @@ import com.ealva.ealvabrainz.brainz.data.Disc.Companion.NullDisc
 import com.ealva.ealvabrainz.brainz.data.Event.Companion.NullEvent
 import com.ealva.ealvabrainz.brainz.data.EventRelation.Companion.NullEventRelation
 import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
+import com.ealva.ealvabrainz.brainz.data.Instrument.Companion.NullInstrument
 import com.ealva.ealvabrainz.brainz.data.Label.Companion.NullLabel
 import com.ealva.ealvabrainz.brainz.data.LabelInfo.Companion.NullLabelInfo
 import com.ealva.ealvabrainz.brainz.data.LabelRelation.Companion.NullLabelRelation
@@ -81,6 +82,7 @@ internal class FallbackMapTest {
     Event.fallbackMapping,
     EventRelation.fallbackMapping,
     Genre.fallbackMapping,
+    Instrument.fallbackMapping,
     Label.fallbackMapping,
     LabelInfo.fallbackMapping,
     LabelRelation.fallbackMapping,
@@ -139,6 +141,7 @@ internal class FallbackMapTest {
     expect(map.remove(Event::class.java.name)).toBe(NullEvent)
     expect(map.remove(EventRelation::class.java.name)).toBe(NullEventRelation)
     expect(map.remove(Genre::class.java.name)).toBe(NullGenre)
+    expect(map.remove(Instrument::class.java.name)).toBe(NullInstrument)
     expect(map.remove(Label::class.java.name)).toBe(NullLabel)
     expect(map.remove(LabelInfo::class.java.name)).toBe(NullLabelInfo)
     expect(map.remove(LabelRelation::class.java.name)).toBe(NullLabelRelation)

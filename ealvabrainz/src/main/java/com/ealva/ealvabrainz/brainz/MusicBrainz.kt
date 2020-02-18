@@ -20,6 +20,7 @@ package com.ealva.ealvabrainz.brainz
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistList
 import com.ealva.ealvabrainz.brainz.data.Recording
+import com.ealva.ealvabrainz.brainz.data.RecordingList
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupList
@@ -35,6 +36,10 @@ import retrofit2.http.Query
  * Be sure to read [MusicBrainz requirements]
  * (https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings)
  * for querying their servers.
+ *
+ * MusicBrainz query [documentation](https://musicbrainz.org/doc/Development/XML_Web_Service/Version_2/Search)
+ *
+ * [Lucene Query syntax](https://lucene.apache.org/core/7_7_2/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package.description)
  */
 interface MusicBrainz {
   /**
@@ -45,8 +50,6 @@ interface MusicBrainz {
    * returned in the resulting ReleaseList
    *
    * [Example: http://musicbrainz.org/ws/2/release/?query=release:Houses%20of%20the%20Holy%20AND%20artist:Led%20Zeppelin&fmt=json](http://musicbrainz.org/ws/2/release/?query=release:Houses%20of%20the%20Holy%20AND%20artist:Led%20Zeppelin&fmt=json)
-   *
-   * [Lucene Query syntax](https://lucene.apache.org/core/7_7_2/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package.description)
    *
    * @param query full MusicBrainz lucene query
    * @param limit 1..100 inclusive are valid. If skipped, defaults to 25
@@ -63,8 +66,6 @@ interface MusicBrainz {
    * Lookup by mbid for Release. Example is Led Zeppelin's "Houses of the Holy"
    *
    * [https://musicbrainz.org/ws/2/release/938cef50-de9a-3ced-a1fe-bdfbd3bc4315?fmt=json](https://musicbrainz.org/ws/2/release/938cef50-de9a-3ced-a1fe-bdfbd3bc4315?fmt=json)
-   *
-   * [MusicBrainz Lookup Docs](https://musicbrainz.org/doc/Development/JSON_Web_Service)
    *
    * @param mbid the release mbid. In the example this would be: 938cef50-de9a-3ced-a1fe-bdfbd3bc4315
    * @param include include parameters
@@ -99,8 +100,6 @@ interface MusicBrainz {
    * returned in the resulting ReleaseList
    *
    * [Example: http://musicbrainz.org/ws/2/release-group/?query=release:%22Houses%20of%20the%20Holy%22%20AND%20artist:%22Led%20Zeppelin%22&fmt=json](http://musicbrainz.org/ws/2/release-group/?query=release:%22Houses%20of%20the%20Holy%22%20AND%20artist:%22Led%20Zeppelin%22&fmt=json)
-   *
-   * [Lucene Query syntax](https://lucene.apache.org/core/7_7_2/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package.description)
    *
    * @param query full MusicBrainz lucene query
    * @param limit 1..100 inclusive are valid. If skipped, defaults to 25
@@ -152,8 +151,6 @@ interface MusicBrainz {
    *
    * [Example: http://musicbrainz.org/ws/2/release/?query=release:Houses%20of%20the%20Holy%20AND%20artist:Led%20Zeppelin&fmt=json](http://musicbrainz.org/ws/2/release/?query=release:Houses%20of%20the%20Holy%20AND%20artist:Led%20Zeppelin&fmt=json)
    *
-   * [Lucene Query syntax](https://lucene.apache.org/core/7_7_2/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package.description)
-   *
    * @param query full MusicBrainz lucene query
    * @param limit 1..100 inclusive are valid. If skipped, defaults to 25
    * @param offset specifies starting offset into list, used to page results. Defaults to 0
@@ -167,7 +164,7 @@ interface MusicBrainz {
 
   /**
    * An example for looking up Nirvana by mbid would be:
-   * http://musicbrainz.org/ws/2/artist/5b11f4ce-a62d-471e-81fc-a69a8278c7da?fmt=json
+   * [http://musicbrainz.org/ws/2/artist/5b11f4ce-a62d-471e-81fc-a69a8278c7da?fmt=json]
    *
    * @param mbid        the artist mbid. In the example this would be:
    * 5b11f4ce-a62d-471e-81fc-a69a8278c7da
@@ -192,6 +189,25 @@ interface MusicBrainz {
      */
     @Query("status") status: String? = null
   ): Response<Artist>
+
+  /**
+   * Example is a query for Recording with MBID of "0fc4f7e7-8dcc-4dd3-8d35-d6f4c1f6b0f2", which is
+   * a recording of the song "How Many Times" by the artist Wolfmother from their "New Crown"
+   * release.
+   *
+   * Example [http://musicbrainz.org/ws/2/recording/?query=rid:%220fc4f7e7-8dcc-4dd3-8d35-d6f4c1f6b0f2%22&fmt=json]
+   *
+   * @param query full MusicBrainz lucene query
+   * @param limit 1..100 inclusive are valid. If null, defaults to 25
+   * @param offset specifies starting offset into list, used to page results. Defaults to 0
+   * @return [Response] containing the query result [RecordingList]
+   */
+  @GET("recording")
+  suspend fun findRecording(
+    @Query("query") query: String,
+    @Query("limit") limit: Int? = null,
+    @Query("offset") offset: Int? = null
+  ): Response<RecordingList>
 
   /**
    * An example for lookup by mbid would be:

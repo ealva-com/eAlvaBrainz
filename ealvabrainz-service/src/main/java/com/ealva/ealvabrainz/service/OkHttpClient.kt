@@ -19,9 +19,9 @@ package com.ealva.ealvabrainz.service
 
 import android.content.Context
 import com.ealva.ealvabrainz.common.debug
-import com.ealva.ealvabrainz.okhttp.BrainzJsonFormatUserAgentInterceptor
-import com.ealva.ealvabrainz.okhttp.CacheControlInterceptor
-import com.ealva.ealvabrainz.okhttp.ThrottlingInterceptor
+import com.ealva.ealvabrainz.net.BrainzJsonFormatUserAgentInterceptor
+import com.ealva.ealvabrainz.net.CacheControlInterceptor
+import com.ealva.ealvabrainz.net.ThrottlingInterceptor
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

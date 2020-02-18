@@ -21,25 +21,58 @@ import com.ealva.ealvabrainz.brainz.data.Recording.Companion.NullRecording
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+/**
+ * A [recording](https://musicbrainz.org/doc/Recording) is an entity in MusicBrainz which can be
+ * linked to [tracks](https://musicbrainz.org/doc/Track) on
+ * [releases](https://musicbrainz.org/doc/Release). Each track must always be associated with a
+ * single recording, but a recording can be linked to any number of tracks.
+ *
+ * A recording represents distinct audio that has been used to produce at least one released track
+ * through copying or [mastering](https://musicbrainz.org/doc/Mix_Terminology#mastering). A
+ * recording itself is never produced solely through copying or mastering.
+ *
+ * Generally, the audio represented by a recording corresponds to the audio at a stage in the
+ * production process before any final mastering but after any editing or
+ * [mixing](https://musicbrainz.org/doc/Mix_Terminology#mixing).
+ */
 @JsonClass(generateAdapter = true)
 class Recording(
+  /** Recording MusicBrainz ID (MBID) */
   var id: String = "",
+  /** The title of the recording. */
   var title: String = "",
-  var disambiguation: String = "",
+  /** The artist(s) that the recording is primarily credited to. */
   @field:Json(name = "artist-credit") var artistCredit: List<ArtistCredit> = emptyList(),
+  /**
+   * The length of the recording. It's only entered manually for standalone recordings. For
+   * recordings that are being used on releases, the recording length is the median length of all
+   * tracks (that have a track length) associated with that recording. If there is an even number
+   * of track lengths, the smaller median candidate is used.
+   */
   var length: Int = 0,
   var aliases: List<Alias> = emptyList(),
+  /**
+   * See the [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
+   * for more information
+   */
+  var disambiguation: String = "",
+  /**
+   * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
+   */
   var annotation: String = "",
   var genres: List<Genre> = emptyList(),
+  /** The International Standard Recording Code assigned to the recording. */
   var isrcs: List<String> = emptyList(),
   var rating: Rating = Rating.NullRating,
   var relations: List<Relation> = emptyList(),
   var releases: List<Release> = emptyList(),
   var tags: List<Tag> = emptyList(),
+  /** If this recording is video */
   var video: Boolean = false,
   /** used with queries */
   var score: Int = 0
 ) {
+
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (javaClass != other?.javaClass) return false
@@ -58,7 +91,7 @@ class Recording(
   interface Lookup : Include
 
   @Suppress("unused")
-  enum class Subqueries(override val value: String) : Lookup {
+  enum class Subquery(override val value: String) : Lookup {
     Artists("artists"),
     Releases("releases"),
     UrlRels("url-rels"),
@@ -79,7 +112,7 @@ class Recording(
   }
 
   @Suppress("unused")
-  enum class SearchFields(val value: String) {
+  enum class SearchField(val value: String) {
     /** the artist's MBID */
     ArtistId("arid"),
     /** artist name is name(s) as it appears on the recording */

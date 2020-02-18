@@ -15,26 +15,25 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainz.app
+package com.ealva.brainz.services
 
-import android.app.Application
-import com.ealva.brainz.services.brainzModule
-import com.ealva.ealvabrainz.BuildConfig
+import com.ealva.ealvabrainz.service.CoverArtService
+import com.ealva.ealvabrainz.service.MusicBrainzService
 import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.x.androidXModule
-import timber.log.Timber
+import org.kodein.di.generic.bind
+import org.kodein.di.generic.instance
+import org.kodein.di.generic.singleton
 
-@Suppress("unused") // It's in the manifest
-class App: Application(), KodeinAware {
-  override val kodein by Kodein.lazy {
-    import(androidXModule(this@App))
-    import(brainzModule)
+private const val appName = "My App"
+private const val appVersion = "0.1"
+private const val contactEmail = "YourName@YourAddress.com"
+
+
+val brainzModule = Kodein.Module("BrainzModule") {
+  bind<CoverArtService>() with singleton {
+    CoverArtService.make(instance(), appName, appVersion, contactEmail)
   }
-  override fun onCreate() {
-    super.onCreate()
-    if (BuildConfig.DEBUG) {
-      Timber.plant(Timber.DebugTree())
-    }
+  bind<MusicBrainzService>() with singleton {
+    MusicBrainzService.make(instance(), appName, appVersion, contactEmail, instance())
   }
 }

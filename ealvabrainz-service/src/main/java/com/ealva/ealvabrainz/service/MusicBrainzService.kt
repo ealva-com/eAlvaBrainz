@@ -27,6 +27,7 @@ import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.BrainzError
 import com.ealva.ealvabrainz.brainz.data.Include
 import com.ealva.ealvabrainz.brainz.data.Recording
+import com.ealva.ealvabrainz.brainz.data.RecordingList
 import com.ealva.ealvabrainz.brainz.data.RecordingMbid
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
@@ -39,7 +40,11 @@ import com.ealva.ealvabrainz.brainz.data.mbid
 import com.ealva.ealvabrainz.brainz.data.theMoshi
 import com.ealva.ealvabrainz.common.AlbumName
 import com.ealva.ealvabrainz.common.ArtistName
-import com.ealva.ealvabrainz.service.R.string.UnexpectedErrorWithMsg
+import com.ealva.ealvabrainz.common.RecordingName
+import com.ealva.ealvabrainz.net.RawResponse
+import com.ealva.ealvabrainz.net.RetrofitRawResponse
+import com.ealva.ealvabrainz.service.MusicBrainzResult.Success
+import com.ealva.ealvabrainz.service.MusicBrainzResult.Unknown
 import com.squareup.moshi.JsonAdapter
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -53,18 +58,19 @@ import retrofit2.Retrofit
 import timber.log.Timber
 
 /**
- * Result of a call to [MusicBrainzService.brainz]. [T] is declared with [Any] variance as null
- * is not allowed.
+ * Result of various calls to [MusicBrainzService]
  */
 sealed class MusicBrainzResult<out T : Any> {
-  /** Call was successful and contains the [result] */
-  data class Success<T : Any>(val result: T) : MusicBrainzResult<T>()
+  /** Call was successful and contains the [value] */
+  data class Success<T : Any>(val value: T) : MusicBrainzResult<T>()
 
   /** Server returned an error and was converted to the common error body response */
-  data class Error(val result: BrainzError) : MusicBrainzResult<Nothing>()
+  data class Error(val error: BrainzError) : MusicBrainzResult<Nothing>()
 
-  /** An error occurred and we can't grok the error body. Punt to caller */
-  data class Unknown<T : Any>(val response: Response<T>) : MusicBrainzResult<T>()
+  /**
+   * An error occurred and we can't grok the error body. Punt to caller
+   */
+  data class Unknown(val response: RawResponse) : MusicBrainzResult<Nothing>()
 
   /** An [exception] was thrown */
   data class Exceptional(val exception: MusicBrainzException) : MusicBrainzResult<Nothing>()
@@ -82,7 +88,7 @@ interface MusicBrainzService {
    * the results to [limit], starting at [offset]. The [limit] and [offset] facilitate paging
    * through results
    *
-   * @return the [ReleaseList] or null
+   * @return [MusicBrainzResult] with the resulting ReleaseList or error/exception information
    * @throws MusicBrainzException if Retrofit throws
    */
   suspend fun findRelease(
@@ -90,7 +96,7 @@ interface MusicBrainzService {
     album: AlbumName,
     limit: Int? = null,
     offset: Int? = null
-  ): ReleaseList?
+  ): MusicBrainzResult<ReleaseList>
 
   /**
    * Find the [Release] identified by [mbid]. Use [include] to specify information to be
@@ -99,15 +105,14 @@ interface MusicBrainzService {
    * @param include list of [Release.Lookup] indicating what info linked to the entity is returned
    * @param type limit linked entities to this [Release.Type]
    * @param status limit linked entities to this [Release.Status]
-   * @return the [Release] associated with [mbid] or null
-   * @throws MusicBrainzException if Retrofit throws or parameters are invalid
+   * @return a [MusicBrainzResult] with Release if successful
    */
   suspend fun lookupRelease(
     mbid: ReleaseMbid,
     include: List<Release.Lookup> = emptyList(),
     type: Release.Type = Release.Type.Any,
     status: Release.Status = Release.Status.Any
-  ): Release?
+  ): MusicBrainzResult<Release>
 
   /**
    * Find [Release]s based on [artist] and [album] and convert the results to a flow
@@ -125,14 +130,14 @@ interface MusicBrainzService {
    * through results
    *
    * @return the [ReleaseGroupList] or null
-   * @throws MusicBrainzException if Retrofit throws
+   * @return a [MusicBrainzResult] with ReleaseGroupList if successful
    */
   suspend fun findReleaseGroup(
     artist: ArtistName,
     album: AlbumName,
     limit: Int? = null,
     offset: Int? = null
-  ): ReleaseGroupList?
+  ): MusicBrainzResult<ReleaseGroupList>
 
   /**
    * Find the [ReleaseGroup] identified by [ReleaseGroupMbid]. Use [include] to specify information
@@ -150,7 +155,7 @@ interface MusicBrainzService {
     include: List<ReleaseGroup.Lookup> = emptyList(),
     type: Release.Type = Release.Type.Any,
     status: Release.Status = Release.Status.Any
-  ): ReleaseGroup?
+  ): MusicBrainzResult<ReleaseGroup>
 
   /**
    * Find [ReleaseGroup]s based on [artist] and [album] and convert the results to a flow
@@ -173,7 +178,7 @@ interface MusicBrainzService {
     artist: ArtistName,
     limit: Int? = null,
     offset: Int? = null
-  ): ArtistList?
+  ): MusicBrainzResult<ArtistList>
 
   /**
    * Find the [Artist] identified by [ArtistMbid]. Use [include] to specify information to be
@@ -190,7 +195,27 @@ interface MusicBrainzService {
     include: List<Artist.Lookup> = emptyList(),
     type: Release.Type = Release.Type.Any,
     status: Release.Status = Release.Status.Any
-  ): Artist?
+  ): MusicBrainzResult<Artist>
+
+  /**
+   * Find an [RecordingList] based on [recording], [artist], and [album], limiting the results
+   * to [limit], starting at [offset]. The [limit] and [offset] facilitate paging through results
+   *
+   * @param recording the name of the recording or track
+   * @param artist the artist name (optional)
+   * @param album the album name (optional)
+   * @param limit how many entries should be returned
+   * @param offset offset into the returned list, used for paging results
+   * @return the [ArtistList] or null
+   * @throws MusicBrainzException if Retrofit throws
+   */
+  suspend fun findRecording(
+    recording: RecordingName,
+    artist: ArtistName? = null,
+    album: AlbumName? = null,
+    limit: Int? = null,
+    offset: Int? = null
+  ): MusicBrainzResult<RecordingList>
 
   /**
    * Find the [Recording] identified by [RecordingMbid]. Use [include] to specify information to be
@@ -207,7 +232,7 @@ interface MusicBrainzService {
     include: List<Recording.Lookup> = emptyList(),
     type: Release.Type = Release.Type.Any,
     status: Release.Status = Release.Status.Any
-  ): Recording?
+  ): MusicBrainzResult<Recording>
 
   /**
    * Call the [block] function, which receives [MusicBrainz] as a parameter, in the context of the
@@ -215,8 +240,8 @@ interface MusicBrainzService {
    *
    * Usually [block] is a lambda which makes a direct call to the MusicBrainz Retrofit client. The
    * caller is responsible for building the necessary String parameters, "query" in case of a
-   * find call and "inc" include if doing a lookup. Use the Subqueries and Misc defined
-   * in the various entity objects for doing a lookup and use SearchFields to build queries
+   * find call and "inc" include if doing a lookup. Use the Subquery and Misc defined
+   * in the various entity objects for doing a lookup and use SearchField to build queries
    *
    * @return a [MusicBrainzResult.Success] or [MusicBrainzResult.Error] if response is not
    * successful. [MusicBrainzResult.Exceptional] is returned if an underlying exception is thrown,
@@ -268,7 +293,7 @@ internal class MusicBrainzServiceImpl(
     album: AlbumName,
     limit: Int?,
     offset: Int?
-  ): ReleaseList? = brainzCall {
+  ): MusicBrainzResult<ReleaseList> = brainz {
     val query = """artist:"${artist.value}" AND release:"${album.value}""""
     musicBrainz.findRelease(query, limit, offset)
   }
@@ -278,7 +303,7 @@ internal class MusicBrainzServiceImpl(
     include: List<Release.Lookup>,
     type: Release.Type,
     status: Release.Status
-  ) = brainzCall {
+  ) = brainz {
     musicBrainz.lookupRelease(mbid.value, include.joinToInc(), type.value, status.value)
   }
 
@@ -294,7 +319,7 @@ internal class MusicBrainzServiceImpl(
     album: AlbumName,
     limit: Int?,
     offset: Int?
-  ) = brainzCall {
+  ) = brainz {
     val query = """artist:"${artist.value}" AND release:"${album.value}""""
     musicBrainz.findReleaseGroup(query, limit, offset)
   }
@@ -304,9 +329,9 @@ internal class MusicBrainzServiceImpl(
     include: List<ReleaseGroup.Lookup>,
     type: Release.Type,
     status: Release.Status
-  ): ReleaseGroup? {
-    include.ensureTypeValidity(type)
-    return brainzCall {
+  ): MusicBrainzResult<ReleaseGroup> {
+    return brainz {
+      include.ensureTypeValidity(type)
       musicBrainz.lookupReleaseGroup(
         mbid.value,
         include.joinToInc(),
@@ -325,7 +350,7 @@ internal class MusicBrainzServiceImpl(
     .transform(coverArtService)
     .flowOn(dispatcher)
 
-  override suspend fun findArtist(artist: ArtistName, limit: Int?, offset: Int?) = brainzCall {
+  override suspend fun findArtist(artist: ArtistName, limit: Int?, offset: Int?) = brainz {
     val query = """artist:"${artist.value}""""
     musicBrainz.findArtist(query, limit, offset)
   }
@@ -335,10 +360,10 @@ internal class MusicBrainzServiceImpl(
     include: List<Artist.Lookup>,
     type: Release.Type,
     status: Release.Status
-  ): Artist? {
-    include.ensureTypeValidity(type)
-    include.ensureStatusValidity(status)
-    return brainzCall {
+  ): MusicBrainzResult<Artist> {
+    return brainz {
+      include.ensureTypeValidity(type)
+      include.ensureStatusValidity(status)
       musicBrainz.lookupArtist(mbid.value, include.joinToInc(), type.value, status.value)
     }
   }
@@ -365,15 +390,40 @@ internal class MusicBrainzServiceImpl(
     )
   }
 
+  override suspend fun findRecording(
+    recording: RecordingName,
+    artist: ArtistName?,
+    album: AlbumName?,
+    limit: Int?,
+    offset: Int?
+  ) = brainz {
+    val query = buildString {
+      append("recording:\"")
+      append(recording.value)
+      append("\"")
+      if (artist !== null) {
+        append(" AND artist:\"")
+        append(artist.value)
+        append("\"")
+      }
+      if (album !== null) {
+        append(" AND release:\"")
+        append(album.value)
+        append("\"")
+      }
+    }
+    musicBrainz.findRecording(query, limit, offset)
+  }
+
   override suspend fun lookupRecording(
     mbid: RecordingMbid,
     include: List<Recording.Lookup>,
     type: Release.Type,
     status: Release.Status
-  ): Recording? {
-    include.ensureTypeValidity(type)
-    include.ensureStatusValidity(status)
-    return brainzCall {
+  ): MusicBrainzResult<Recording> {
+    return brainz {
+      include.ensureTypeValidity(type)
+      include.ensureStatusValidity(status)
       musicBrainz.lookupRecording(mbid.value, include.joinToInc(), type.value, status.value)
     }
   }
@@ -389,7 +439,7 @@ internal class MusicBrainzServiceImpl(
         response.handleErrorBody()
       }
     } catch (e: Exception) {
-      e.makeExceptional("Exception during brainz()")
+      e.makeExceptional()
     }
   }
 
@@ -411,37 +461,6 @@ internal class MusicBrainzServiceImpl(
       .forEach { emit(it.mbid) }
   }.flowOn(dispatcher)
 
-  /**
-   * If response isSuccessful returns T, otherwise logs and returns null.
-   *
-   * @throws MusicBrainzException if call to [block] throws (eg. IOException from Retrofit call)
-   */
-  @Suppress("BlockingMethodInNonBlockingContext") // we are running under Dispatchers.IO or test
-  private suspend fun <T> brainzCall(block: suspend () -> Response<T>): T? {
-    return withContext(dispatcher) {
-      try {
-        block().run {
-          if (isSuccessful) {
-            body()
-          } else {
-            val errorBody = errorBody()?.string()
-            val brainzError = if (errorBody != null) {
-              errorAdapter.fromJson(errorBody)
-            } else {
-              BrainzError(help = "No error body. Response code:${code()} message:${message()}")
-            }
-            Timber.e("Error %s", brainzError)
-            null
-          }
-        }
-      } catch (e: Exception) {
-        throw MusicBrainzException(
-          context.getString(UnexpectedErrorWithMsg, e.message.orEmpty()),
-          e
-        )
-      }
-    }
-  }
 }
 
 private fun Context.buildMusicBrainz(appName: String, appVersion: String, emailContact: String) =
@@ -479,13 +498,20 @@ private val <T : Any> Response<T>.errorString: String? get() = errorBody()?.stri
 private fun <T : Any> Response<T>.makeBrainzError(errorBody: String) =
   errorAdapter.fromJson(errorBody)?.let { makeError(it) } ?: makeUnknown()
 
-private fun <T : Any> Response<T>.makeUnknown() = MusicBrainzResult.Unknown(this)
+private fun <T : Any> Response<T>.makeUnknown() = Unknown(RetrofitRawResponse(this))
 
 private fun makeError(it: BrainzError) = MusicBrainzResult.Error(it)
 
-private fun <T : Any> Response<T>.handleBody() =
-  body()?.let { MusicBrainzResult.Success(it) } ?: MusicBrainzResult.Unknown(this)
+private fun <T : Any> Response<T>.handleBody() = body()?.let { Success(it) } ?: makeUnknown()
 
-private fun Exception.makeExceptional(message: String) =
-  MusicBrainzResult.Exceptional(MusicBrainzException(message, this))
+private fun Exception.makeExceptional(): MusicBrainzResult.Exceptional {
+  return MusicBrainzResult.Exceptional(
+    when (this) {
+      is MusicBrainzException -> this
+      else -> {
+        MusicBrainzException(message ?: "${this.javaClass} : calling Retrofit service", this)
+      }
+    }
+  )
+}
 

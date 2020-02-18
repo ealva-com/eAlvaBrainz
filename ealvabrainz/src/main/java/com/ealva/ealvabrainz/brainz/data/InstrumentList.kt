@@ -15,26 +15,14 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainz.app
+package com.ealva.ealvabrainz.brainz.data
 
-import android.app.Application
-import com.ealva.brainz.services.brainzModule
-import com.ealva.ealvabrainz.BuildConfig
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.x.androidXModule
-import timber.log.Timber
+import com.squareup.moshi.JsonClass
 
-@Suppress("unused") // It's in the manifest
-class App: Application(), KodeinAware {
-  override val kodein by Kodein.lazy {
-    import(androidXModule(this@App))
-    import(brainzModule)
-  }
-  override fun onCreate() {
-    super.onCreate()
-    if (BuildConfig.DEBUG) {
-      Timber.plant(Timber.DebugTree())
-    }
-  }
-}
+@JsonClass(generateAdapter = true)
+data class InstrumentList(
+  var created: String = "",
+  var count: Int = 0,
+  var offset: Int = 0,
+  var instruments: List<Instrument> = emptyList()
+)

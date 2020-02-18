@@ -15,26 +15,23 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainz.app
+package com.ealva.ealvabrainz.common
 
-import android.app.Application
-import com.ealva.brainz.services.brainzModule
-import com.ealva.ealvabrainz.BuildConfig
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.x.androidXModule
-import timber.log.Timber
+/**
+ * Convert this String to an [RecordingName] or [RecordingName.UNKNOWN] if this is null.
+ */
+@Suppress("NOTHING_TO_INLINE")
+inline fun String?.toRecordingName(): RecordingName {
+  return this?.let { RecordingName.make(this) } ?: RecordingName.UNKNOWN
+}
 
-@Suppress("unused") // It's in the manifest
-class App: Application(), KodeinAware {
-  override val kodein by Kodein.lazy {
-    import(androidXModule(this@App))
-    import(brainzModule)
-  }
-  override fun onCreate() {
-    super.onCreate()
-    if (BuildConfig.DEBUG) {
-      Timber.plant(Timber.DebugTree())
-    }
+inline class RecordingName(val value: String) {
+  companion object {
+    val UNKNOWN = RecordingName("Unknown")
+
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun make(value: String): RecordingName =
+      RecordingName(value.trim())
   }
 }
+

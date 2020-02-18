@@ -33,7 +33,7 @@ import com.squareup.moshi.JsonClass
 class Track(
   var id: String = "",
   var title: String = "",
-  var number: Int = 0,
+  var number: String = "",
   var position: Int = 0,
   @field:FallbackOnNull var recording: Recording = NullRecording,
   @field:Json(name = "artist-credit") var artistCredit: List<ArtistCredit> = emptyList(),

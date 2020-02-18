@@ -34,6 +34,7 @@ internal object FallbackMap {
     Event.fallbackMapping,
     EventRelation.fallbackMapping,
     Genre.fallbackMapping,
+    Instrument.fallbackMapping,
     Label.fallbackMapping,
     LabelRelation.fallbackMapping,
     LabelInfo.fallbackMapping,

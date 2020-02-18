@@ -8,15 +8,13 @@ preliminary work
 This repository consists of 3 parts:
   * **ealvabrainz** - A library which consists of 2 Retrofit interfaces, MusicBrainz and CoverArt, 
   and supporting data classes to generate a MusicBrainz REST client.
-  * **ealvabrainz-service** - Higher-level abstractions that wraps the Retrofit clients with a 
+  * **ealvabrainz-service** - Higher-level abstractions that wrap the Retrofit clients with a 
   richer interface, configures necessary Retrofit/OkHttp clients, and provides support for cache 
   control/throttling/user agent/etc.
   * **app** - Demonstrates search and lookup
   
-These libraries started as a small, very limited API, part of an app. The goal is to widen support
-to most of the API MusicBrainz and CoverArt provide. As of now things are very preliminary, a 
-very small portion of the MusicBrainz API is supported, and no libraries are being published. 
-Pull requests welcome. 
+As of now things are very preliminary, a very small portion of the MusicBrainz API is supported,
+and no libraries are being published. **Pull requests welcome.** 
   
 # Libraries
 ## ealvabrainz
@@ -116,23 +114,33 @@ fun Flow<ReleaseGroupMbid>.transform(service: CoverArtService): Flow<RemoteImage
 This service is similar to CoverArtService in that it provides a higher-level abstraction and builds
 the appropriate underlying Retrofit/OkHttp classes. MusicBrainzService has functions that take type 
 specific parameters and format these into parameters for the underlying calls to the MusicBrainz
-Retrofit client and also has a generic function accepting a lambda which allows direct calls to the
+Retrofit client. There is also a generic ```brainz()``` function accepting a lambda which allows direct calls to the
 MusicBrainz client while providing correct coroutine dispatch and simplifying error handling.
 ```kotlin
 interface MusicBrainzService {
   suspend fun findRelease(
-    artistName: ArtistName,
-    albumName: AlbumName,
-    limit: Int? = 0,
-    offset: Int? = 0
-  ): ReleaseList?
+    artist: ArtistName,
+    album: AlbumName,
+    limit: Int? = null,
+    offset: Int? = null
+  ): MusicBrainzResult<ReleaseList>
 
   suspend fun lookupRelease(
     mbid: ReleaseMbid,
-    include: List<Release.ReleaseLookupInclude> = emptyList()
-  ): Release?
+    include: List<Release.Lookup> = emptyList(),
+    type: Release.Type = Release.Type.Any,
+    status: Release.Status = Release.Status.Any
+  ): MusicBrainzResult<Release>
 
-  fun getReleaseArt(artistName: ArtistName, albumName: AlbumName): Flow<RemoteImage>
+  fun getReleaseArt(
+    artist: ArtistName,
+    album: AlbumName,
+    maxReleases: Int = DEFAULT_MAX_RELEASE_COUNT
+  ): Flow<RemoteImage>
+
+  suspend fun <T : Any> brainz(
+    block: suspend (brainz: MusicBrainz) -> Response<T>
+  ): MusicBrainzResult<T>
 
   companion object {
     fun make(
@@ -151,6 +159,27 @@ MusicBrainzService to provide functionality such as:
 fun getReleaseArt(artistName: ArtistName, albumName: AlbumName): Flow<RemoteImage>
 ```
 which coordinates a search of releases and returns a flow of images. 
+
+Most MusicBrainzService functions return a MusicBrainzResult sealed class based on the return type.
+The implementation of the returned MusicBrainzResult indicates success, error, exception, or 
+unknown.
+```kotlin
+sealed class MusicBrainzResult<out T : Any> {
+  /** Call was successful and contains the [value] */
+  data class Success<T : Any>(val value: T) : MusicBrainzResult<T>()
+
+  /** Server returned an error and was converted to the common error body response */
+  data class Error(val error: BrainzError) : MusicBrainzResult<Nothing>()
+
+  /**
+   * An error occurred and we can't grok the error body. Punt to caller
+   */
+  data class Unknown(val response: RawResponse) : MusicBrainzResult<Nothing>()
+
+  /** An [exception] was thrown */
+  data class Exceptional(val exception: MusicBrainzException) : MusicBrainzResult<Nothing>()
+}
+```
 ## app
 TBD
 

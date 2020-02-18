@@ -15,26 +15,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainz.app
+package com.ealva.ealvabrainz.net
 
-import android.app.Application
-import com.ealva.brainz.services.brainzModule
-import com.ealva.ealvabrainz.BuildConfig
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.x.androidXModule
-import timber.log.Timber
+import android.net.ConnectivityManager
+import splitties.systemservices.connectivityManager
 
-@Suppress("unused") // It's in the manifest
-class App: Application(), KodeinAware {
-  override val kodein by Kodein.lazy {
-    import(androidXModule(this@App))
-    import(brainzModule)
-  }
-  override fun onCreate() {
-    super.onCreate()
-    if (BuildConfig.DEBUG) {
-      Timber.plant(Timber.DebugTree())
-    }
-  }
-}
+fun ConnectivityManager.networkIsAvailable() = activeNetworkInfo != null
+fun networkIsAvailable() = connectivityManager.networkIsAvailable()

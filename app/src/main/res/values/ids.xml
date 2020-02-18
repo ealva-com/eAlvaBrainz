@@ -20,6 +20,6 @@
 <resources>
 
     <item name="main_text_center" type="id" />
-    <item name="main_constraint" type="id" />
+    <item name="main_constraint" type="id" /><item name="main_scroll_view" type="id" />
 
 </resources>

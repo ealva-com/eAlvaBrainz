@@ -17,7 +17,7 @@
 
 @file:Suppress("UnstableApiUsage")
 
-package com.ealva.ealvabrainz.okhttp
+package com.ealva.ealvabrainz.net
 
 import engineering.clientside.throttle.Throttle
 import okhttp3.Interceptor

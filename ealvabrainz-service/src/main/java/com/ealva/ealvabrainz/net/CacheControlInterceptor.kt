@@ -15,7 +15,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.okhttp
+package com.ealva.ealvabrainz.net
 
 import android.content.Context
 import okhttp3.CacheControl

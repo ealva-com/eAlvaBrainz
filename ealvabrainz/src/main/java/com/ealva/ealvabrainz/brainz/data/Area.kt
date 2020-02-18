@@ -106,7 +106,7 @@ class Area(
 
   @Suppress("unused")
   enum class Misc(override val value: String) : Lookup {
-    Aliases("aliases"),       // include artist, label, area or work aliases; treat these as a set, as they are not deliberately ordered
+    Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
     Ratings("ratings"),
@@ -114,7 +114,7 @@ class Area(
   }
 
   @Suppress("unused")
-  enum class SearchFields(val value: String) {
+  enum class SearchField(val value: String) {
     /** the area's MBID */
     AreaId("aid"),
     /** an alias attached to the area */

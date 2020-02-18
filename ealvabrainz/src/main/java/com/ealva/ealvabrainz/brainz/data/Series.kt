@@ -34,6 +34,22 @@ class Series(
   var id: String = "",
   var disambiguation: String = ""
 ) {
+  @Suppress("unused")
+  enum class SearchField(val value: String) {
+   /** an alias attached to the series */
+   Alias("alias"),
+   /** the disambiguation comment for the series */
+   Comment("comment"),
+   /** the name of the series */
+   Series("series"),
+   /** the MBID of the series */
+   SeriesId("sid"),
+   /** the series' type */
+   Type("type"),
+   /** a tag attached to the series */
+   Tag("tag"),
+  }
+
   companion object {
     val NullSeries = Series(NullObject.NAME, NullObject.ID)
     val fallbackMapping: Pair<String, Any> = Series::class.java.name to NullSeries

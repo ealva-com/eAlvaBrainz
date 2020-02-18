@@ -182,7 +182,7 @@ class Release(
   interface Lookup : Include
 
   @Suppress("unused")
-  enum class Subqueries(override val value: String) : Lookup {
+  enum class Subquery(override val value: String) : Lookup {
     Artists("artists"),
     Collections("collections"),
     Labels("labels"),
@@ -209,37 +209,28 @@ class Release(
   }
 
   @Suppress("unused")
-  enum class SearchFields(val value: String) {
+  enum class SearchField(val value: String) {
     /** artist MusicBrainz id (MBID) */
     ArtistId("arid"),
-
     /** complete artist name(s) as it appears on the release */
     Artist("artist"),
-
     /** an artist on the release, each artist added as a separate field */
     ArtistName("artistname"),
-
     /** the Amazon ASIN for this release */
     Asin("asin"),
-
     /**
      * The barcode of this release which is a machine-readable number used as stock control
      * mechanisms by retailers.
      */
     Barcode("barcode"),
-
     /** The catalog number for this release, can have multiples when major using an imprint */
     CatalogueNumber("catno"),
-
     /** Disambiguation comment */
     Comment("comment"),
-
     /** The two letter country code for the release country */
     Country("country"),
-
     /** name credit on the release, each artist added as a separate field */
     CreditName("creditname"),
-
     /** The release date (format: YYYY-MM-DD) */
     Date("date"),
 

@@ -76,6 +76,16 @@ interface CoverArtService {
     ReleaseGroupEntity("release-group")
   }
 
+  /**
+   * If Retrofit call is successful returns the result, else a MusicBrainzException is thrown.
+   * This call does not return a MusicBrainzResult as an incorrect [mbid] should not occur as it
+   * should come directly from MusicBrainz. A null return means the artwork didn't exist. An
+   * exception being thrown should truly be exceptional, such as an IOException.
+   * @param entity either [ReleaseEntity] or [ReleaseGroupEntity]
+   * @param mbid a MusicBrainz ID (MBID)
+   * @return a [CoverArtRelease] if successful or null if the [entity]-[mbid] pair weren't found
+   * @exception MusicBrainzException thrown if the underlying Retrofit service throws
+   */
   suspend fun getCoverArtRelease(entity: Entity, mbid: String): CoverArtRelease?
 
   companion object {

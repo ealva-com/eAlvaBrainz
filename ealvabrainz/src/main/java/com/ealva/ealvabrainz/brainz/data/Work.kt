@@ -96,6 +96,35 @@ class Work(
 
   override fun toString() = toJson()
 
+  @Suppress("unused", "UNUSED_PARAMETER")
+  enum class SearchField(value: String) {
+   /** the aliases/misspellings for this work */
+   Alias("alias"),
+   /** artist id */
+   ArtistId("arid"),
+   /**
+    * artist name, an artist in the context of a work is an artist-work relation such as composer
+    * or lyricist
+    **/
+   Artist("artist"),
+   /** disambiguation comment */
+   Comment("comment"),
+   /** ISWC of work */
+   Iswc("iswc"),
+   /** Lyrics language of work */
+   Language("lang"),
+   /** folksonomy tag */
+   Tag("tag"),
+   /** work type */
+   Type("type"),
+   /** work id */
+   WorkId("wid"),
+   /** name of work */
+   Work("work"),
+   /** name of the work with any accent characters retained */
+   WorkAccent("workaccent"),
+  }
+
   companion object {
     val NullWork = Work(id = NullObject.ID, title = NullObject.NAME)
     val fallbackMapping: Pair<String, Any> = Work::class.java.name to NullWork

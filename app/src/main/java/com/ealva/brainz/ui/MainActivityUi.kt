@@ -15,10 +15,16 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.okhttp
+package com.ealva.brainz.ui
 
-import android.net.ConnectivityManager
-import splitties.systemservices.connectivityManager
+import android.content.Context
+import android.view.View
+import splitties.views.dsl.coordinatorlayout.coordinatorLayout
+import splitties.views.dsl.core.Ui
 
-fun ConnectivityManager.networkIsAvailable() = activeNetworkInfo != null
-fun networkIsAvailable() = connectivityManager.networkIsAvailable()
+class MainActivityU(override val ctx: Context) : Ui {
+  override val root: View = coordinatorLayout {
+
+  }
+
+}

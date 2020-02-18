@@ -20,9 +20,9 @@ package com.ealva.ealvabrainz.service
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.ealva.ealvabrainz.okhttp.BrainzJsonFormatUserAgentInterceptor
-import com.ealva.ealvabrainz.okhttp.CacheControlInterceptor
-import com.ealva.ealvabrainz.okhttp.ThrottlingInterceptor
+import com.ealva.ealvabrainz.net.BrainzJsonFormatUserAgentInterceptor
+import com.ealva.ealvabrainz.net.CacheControlInterceptor
+import com.ealva.ealvabrainz.net.ThrottlingInterceptor
 import com.nhaarman.expect.expect
 import org.junit.Test
 import org.junit.runner.RunWith

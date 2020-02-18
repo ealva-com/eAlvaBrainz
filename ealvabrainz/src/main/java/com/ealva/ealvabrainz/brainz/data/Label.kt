@@ -145,7 +145,7 @@ class Label(
   interface Lookup : Include
 
   @Suppress("unused")
-  enum class Subqueries(override val value: String) : Lookup {
+  enum class Subquery(override val value: String) : Lookup {
     Releases("releases"),
   }
 
@@ -160,6 +160,40 @@ class Label(
     Tags("tags"),
     Ratings("ratings"),
     Genres("genres")
+  }
+
+  @Suppress("unused")
+  enum class SearchField(val value: String) {
+   /** the aliases/misspellings for this label */
+   Alias("alias"),
+   /** label area */
+   Area("area"),
+   /** label founding date */
+   Begin("begin"),
+   /** label code (only the figures part, i.e. without "LC") */
+   Code("code"),
+   /** label comment to differentiate similar labels */
+   Comment("comment"),
+   /** The two letter country code of the label country */
+   Country("country"),
+   /** label dissolution date */
+   End("end"),
+   /** true if know ended even if do not know end date */
+   Ended("ended"),
+   /** ipi */
+   Ipi("ipi"),
+   /** label name */
+   Label("label"),
+   /** name of the label with any accent characters retained */
+   LabelAccent("labelaccent"),
+   /** MBID of the label */
+   LabelId("laid"),
+   /** label sortname */
+   SortName("sortname"),
+   /** label type */
+   Type("type"),
+   /** folksonomy tag */
+   Tag("tag"),
   }
 
   companion object {

@@ -151,7 +151,7 @@ class Artist(
   interface Lookup : Include
 
   @Suppress("unused")
-  enum class Subqueries(override val value: String) : Lookup {
+  enum class Subquery(override val value: String) : Lookup {
     Recordings("recordings"),
     Releases("releases"),
     ReleaseGroups("release-groups"),
@@ -177,7 +177,7 @@ class Artist(
     Genres("genres")
   }
 
-  enum class SearchFields(val value: String) {
+  enum class SearchField(val value: String) {
     /** an alias attached to the artist */
     Alias("alias"),
     /** the artist's main associated area */
