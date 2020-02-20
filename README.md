@@ -161,8 +161,7 @@ fun getReleaseArt(artistName: ArtistName, albumName: AlbumName): Flow<RemoteImag
 which coordinates a search of releases and returns a flow of images. 
 
 Most MusicBrainzService functions return a MusicBrainzResult sealed class based on the return type.
-The implementation of the returned MusicBrainzResult indicates success, error, exception, or 
-unknown.
+The implementation of the returned MusicBrainzResult indicates success, error, or an exception.
 ```kotlin
 sealed class MusicBrainzResult<out T : Any> {
   /** Call was successful and contains the [value] */
@@ -170,11 +169,6 @@ sealed class MusicBrainzResult<out T : Any> {
 
   /** Server returned an error and was converted to the common error body response */
   data class Error(val error: BrainzError) : MusicBrainzResult<Nothing>()
-
-  /**
-   * An error occurred and we can't grok the error body. Punt to caller
-   */
-  data class Unknown(val response: RawResponse) : MusicBrainzResult<Nothing>()
 
   /** An [exception] was thrown */
   data class Exceptional(val exception: MusicBrainzException) : MusicBrainzResult<Nothing>()
