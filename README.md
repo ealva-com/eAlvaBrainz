@@ -194,6 +194,7 @@ may be used as examples or a starting point:
 * Moshi adapter that peeks names to determine which subtype to instantiate
 * Retrofit interfaces defined with suspend or returning a flow 
 * Retrofit, OkHttp, and Moshi builders to fully support the Rest client
+* Sealed class MusicBrainzResult from MusicBrainzService as opposed to exceptions
 * Coroutine test strategy with a JUnit rule and a test dispatcher (test concurrent code)
 * 
 

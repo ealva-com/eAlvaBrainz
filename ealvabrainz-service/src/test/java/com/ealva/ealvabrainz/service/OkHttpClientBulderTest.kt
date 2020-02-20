@@ -17,24 +17,25 @@
 
 package com.ealva.ealvabrainz.service
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ealva.ealvabrainz.net.BrainzJsonFormatUserAgentInterceptor
 import com.ealva.ealvabrainz.net.CacheControlInterceptor
 import com.ealva.ealvabrainz.net.ThrottlingInterceptor
 import com.nhaarman.expect.expect
 import org.junit.Test
-import org.junit.runner.RunWith
+import java.io.File
 
-@RunWith(AndroidJUnit4::class)
 class OkHttpClientBuilderTest {
-  private val context = ApplicationProvider.getApplicationContext<Context>()
 
   @Test
   fun `test okhttp built correctly`() {
     val cacheDir = "CacheDir"
-    val okhttp = context.makeOkHttpClient("ServiceName", cacheDir, "appName", "version", "email")
+    val okhttp = makeOkHttpClient(
+      "ServiceName",
+      "appName",
+      "version",
+      "email",
+      File("\\dummy\\", cacheDir)
+    )
     expect(okhttp.interceptors.find { it is CacheControlInterceptor }).toNotBeNull { "Missing CacheControlInterceptor" }
     expect(okhttp.interceptors.find { it is ThrottlingInterceptor }).toNotBeNull { "Missing ThrottlingInterceptor" }
     expect(okhttp.interceptors.find { it is BrainzJsonFormatUserAgentInterceptor }).toNotBeNull { "Missing BrainzUserAgentInterceptor" }

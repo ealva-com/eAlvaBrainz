@@ -17,13 +17,11 @@
 
 package com.ealva.ealvabrainz.service
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ealva.ealvabrainz.MainCoroutineRule
 import com.ealva.ealvabrainz.brainz.CoverArt
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease.Companion.NullCoverArtRelease
+import com.ealva.ealvabrainz.runBlockingTest
 import com.ealva.ealvabrainz.service.CoverArtService.Entity.ReleaseEntity
 import com.nhaarman.expect.expect
 import com.nhaarman.expect.fail
@@ -32,22 +30,17 @@ import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import retrofit2.Response
 
-@RunWith(AndroidJUnit4::class)
 internal class CoverArtServiceTest {
   @get:Rule var coroutineRule = MainCoroutineRule()
 
-  private val context = ApplicationProvider.getApplicationContext<Context>()
-
   @Test
   @UseExperimental(ExperimentalCoroutinesApi::class)
-  fun `get artwork success with Null Object`() = coroutineRule.testDispatcher.runBlockingTest {
+  fun `get artwork success with Null Object`() = coroutineRule.runBlockingTest {
     val entity = ReleaseEntity
     val mbid = "mbid"
     val mock = mock<CoverArt> {
@@ -55,7 +48,7 @@ internal class CoverArtServiceTest {
         getArtwork(entity.value, mbid)
       } doReturn Response.success<CoverArtRelease>(200, NullCoverArtRelease)
     }
-    val service = CoverArtService.make(context, mock, coroutineRule.testDispatcher)
+    val service = CoverArtService.make(mock, coroutineRule.testDispatcher)
     val release = service.getCoverArtRelease(entity, mbid)
     verify(mock).getArtwork(entity.value, mbid)
     expect(release).toBeTheSameAs(NullCoverArtRelease)
@@ -63,7 +56,7 @@ internal class CoverArtServiceTest {
 
   @Test
   @UseExperimental(ExperimentalCoroutinesApi::class)
-  fun `get artwork error response`() = coroutineRule.testDispatcher.runBlockingTest {
+  fun `get artwork error response`() = coroutineRule.runBlockingTest {
     val entity = ReleaseEntity
     val mbid = "mbid"
     val mock = mock<CoverArt> {
@@ -72,7 +65,7 @@ internal class CoverArtServiceTest {
       } doReturn Response.error(404, notFoundBody.toResponseBody())
 
     }
-    val service = CoverArtService.make(context, mock, coroutineRule.testDispatcher)
+    val service = CoverArtService.make(mock, coroutineRule.testDispatcher)
     val release = service.getCoverArtRelease(entity, mbid)
     verify(mock).getArtwork(entity.value, mbid)
     expect(release).toBeNull { "404 should return null" }
@@ -80,7 +73,7 @@ internal class CoverArtServiceTest {
 
   @Test(expected = MusicBrainzException::class)
   @UseExperimental(ExperimentalCoroutinesApi::class)
-  fun `get artwork throws`() = coroutineRule.testDispatcher.runBlockingTest {
+  fun `get artwork throws`() = coroutineRule.runBlockingTest {
     val entity = ReleaseEntity
     val mbid = "mbid"
     val mock = mock<CoverArt> {
@@ -88,7 +81,7 @@ internal class CoverArtServiceTest {
         getArtwork(entity.value, mbid)
       } doThrow (IllegalStateException("Bad Stuff"))
     }
-    val service = CoverArtService.make(context, mock, coroutineRule.testDispatcher)
+    val service = CoverArtService.make(mock, coroutineRule.testDispatcher)
     service.getCoverArtRelease(entity, mbid)?.let {
       fail("getCoverArtRelease() should have thrown")
     } ?: fail("Received null instead of exception being thrown")
@@ -97,9 +90,7 @@ internal class CoverArtServiceTest {
 
 private const val notFoundBody = """
 {
-  "error": {
-    "code": 404,
-    "message": "Not found"
-  }
+  "error": "404",
+  "help": "Not found"
 }
 """

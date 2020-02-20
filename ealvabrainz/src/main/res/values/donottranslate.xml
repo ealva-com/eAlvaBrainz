@@ -21,7 +21,4 @@
     <string name="music_brainz_api_url" translatable="false">http://musicbrainz.org/ws/2/</string>
     <string name="music_brainz_api_secure_url" translatable="false">https://musicbrainz.org/ws/2/</string>
 
-    <string name="cover_art_api_url" translatable="false">http://coverartarchive.org/</string>
-    <string name="cover_art_api_secure_url" translatable="false">https://coverartarchive.org/</string>
-
 </resources>

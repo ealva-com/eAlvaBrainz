@@ -17,9 +17,6 @@
 
 package com.ealva.ealvabrainz.service
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.ealva.ealvabrainz.MainCoroutineRule
 import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
@@ -45,17 +42,15 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import retrofit2.Response
-import java.io.IOException
 
-@RunWith(AndroidJUnit4::class)
 class MusicBrainzServiceTest {
   @get:Rule var coroutineRule = MainCoroutineRule()
 
-  private val context = ApplicationProvider.getApplicationContext<Context>()
+  private val dummyException = RuntimeException("I O, let's go!")
 
   @UseExperimental(ExperimentalCoroutinesApi::class)
   @Test
@@ -67,19 +62,20 @@ class MusicBrainzServiceTest {
   }
 
   @UseExperimental(ExperimentalCoroutinesApi::class)
-  fun `test findRelease on thrown IOException`() = coroutineRule.runBlockingTest {
+  @Test
+  fun `test findRelease on thrown exception`() = coroutineRule.runBlockingTest {
     val artistName = ArtistName("David Bowie")
     val albumName = AlbumName("The Man Who Sold the World")
     val query = """artist:"${artistName.value}" AND release:"${albumName.value}""""
     val mockBrainz = mock<MusicBrainz> {
       onBlocking {
         findRelease(query)
-      } doThrow MusicBrainzException("msg", IOException("I O, let's go!"))
+      } doThrow MusicBrainzException("msg", dummyException)
     }
     val service = makeServiceForTest(mockBrainz)
     expect(service.findRelease(artistName, albumName)).toBeInstanceOf<Exceptional> { result ->
       expect(result.exception).toBeInstanceOf<MusicBrainzException> { ex ->
-        expect(ex.cause).toBeInstanceOf<IOException>()
+        expect(ex.cause).toBeTheSameAs(dummyException)
       }
     }
   }
@@ -113,6 +109,7 @@ class MusicBrainzServiceTest {
   }
 
   @UseExperimental(ExperimentalCoroutinesApi::class)
+  @Test
   fun `test lookupReleaseGroup status-include mismatch`() = coroutineRule.runBlockingTest {
     val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseGroupMbid()
     val mockBrainz = mock<MusicBrainz>()  // should not be called
@@ -159,20 +156,22 @@ class MusicBrainzServiceTest {
     val recordingName = "Her Majesty".toRecordingName()
     val albumName = "Abbey Road".toAlbumName()
     val artistName = "The Beatles".toArtistName()
-    val query = """recording:"${recordingName.value}" AND artist:"${artistName.value}" AND release:"${albumName.value}""""
+    val query =
+      """recording:"${recordingName.value}" AND artist:"${artistName.value}" AND release:"${albumName.value}""""
     val mockBrainz = mock<MusicBrainz> {
       onBlocking { findRecording(query, null, null) } doReturn makeSuccess(dummy)
     }
     val service = makeServiceForTest(mockBrainz)
-    expect(service.findRecording(
-      recordingName,
-      artistName,
-      albumName
-    )).toBeInstanceOf<Success<RecordingList>> { result ->
+    expect(
+      service.findRecording(
+        recordingName,
+        artistName,
+        albumName
+      )
+    ).toBeInstanceOf<Success<RecordingList>> { result ->
       expect(result.value).toBeTheSameAs(dummy)
     }
   }
-
 
   @UseExperimental(ExperimentalCoroutinesApi::class)
   @Test
@@ -191,15 +190,68 @@ class MusicBrainzServiceTest {
     }
   }
 
+  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `test direct brainz call error response`() = coroutineRule.runBlockingTest {
+    val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseMbid()
+    val mockBrainz = mock<MusicBrainz> {
+      onBlocking {
+        lookupRelease(mbid.value, null)
+      } doReturn Response.error(404, notFoundBody.toResponseBody())
+    }
+    val service = makeServiceForTest(mockBrainz)
+    expect(service.brainz { brainz ->
+      brainz.lookupRelease(mbid.value, null)
+    }).toBeInstanceOf<MusicBrainzResult.Error> { result ->
+      expect(result.error.error).toBe("404")
+      expect(result.error.help).toBe("Not found")
+    }
+  }
+
+  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `test direct brainz call exception`() = coroutineRule.runBlockingTest {
+    val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseMbid()
+    val dummyEx = IllegalStateException()
+    val mockBrainz = mock<MusicBrainz> {
+      onBlocking { lookupRelease(mbid.value, null) } doThrow dummyEx
+    }
+    val service = makeServiceForTest(mockBrainz)
+    expect(service.brainz { brainz ->
+      brainz.lookupRelease(mbid.value, null)
+    }).toBeInstanceOf<Exceptional> { result ->
+      expect(result.exception).toBeInstanceOf<MusicBrainzException> { ex ->
+        expect(ex.cause).toBeTheSameAs(dummyEx)
+      }
+    }
+  }
+
+  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `test direct brainz call unknown error response`() = coroutineRule.runBlockingTest {
+    val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseMbid()
+    val mockBrainz = mock<MusicBrainz> {
+      onBlocking {
+        lookupRelease(mbid.value, null)
+      } doReturn Response.error(404, "won't work".toResponseBody())
+    }
+    val service = makeServiceForTest(mockBrainz)
+    expect(service.brainz { brainz ->
+      brainz.lookupRelease(mbid.value, null)
+    }).toBeInstanceOf<Exceptional> { result ->
+      expect(result.exception).toBeInstanceOf<MusicBrainzUnknownError> { ex ->
+        expect(ex.rawResponse.httpStatusCode).toBe(404)
+      }
+    }
+  }
+
   private suspend fun doTestFindRelease(limit: Int?, offset: Int?) {
     val dummy = ReleaseList()
     val artistName = ArtistName("David Bowie")
     val albumName = AlbumName("The Man Who Sold the World")
     val query = """artist:"${artistName.value}" AND release:"${albumName.value}""""
     val mockBrainz = mock<MusicBrainz> {
-      onBlocking {
-        findRelease(query, limit, offset)
-      } doReturn makeSuccess(dummy)
+      onBlocking { findRelease(query, limit, offset) } doReturn makeSuccess(dummy)
     }
     val service = makeServiceForTest(mockBrainz)
     expect(
@@ -218,7 +270,6 @@ class MusicBrainzServiceTest {
 
   private fun makeServiceForTest(mockBrainz: MusicBrainz): MusicBrainzService {
     return MusicBrainzService.make(
-      context,
       mockBrainz,
       NullCoverArtService,
       coroutineRule.testDispatcher
@@ -226,6 +277,7 @@ class MusicBrainzServiceTest {
   }
 
   private fun <T> makeSuccess(t: T) = Response.success(200, t)
+
 }
 
 object NullCoverArtService : CoverArtService {
@@ -236,3 +288,10 @@ object NullCoverArtService : CoverArtService {
     return null
   }
 }
+
+private const val notFoundBody = """
+{
+  "error": "404",
+  "help": "Not found"
+}
+"""

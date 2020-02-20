@@ -65,8 +65,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.7.1'
     implementation 'com.squareup.moshi:moshi:1.9.2'
     implementation 'com.squareup.retrofit2:converter-moshi:2.7.1'
-    implementation 'com.squareup.okhttp3:okhttp:4.3.1'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.3.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.4.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.4.0'
     implementation "com.louiscad.splitties:splitties-systemservices:$splitties_version"
 
     testImplementation 'androidx.test:core:1.2.0'
@@ -76,6 +76,7 @@ dependencies {
     testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
     testImplementation 'com.nhaarman:expect.kt:1.0.1'
     testImplementation 'junit:junit:4.12'
+    testImplementation 'com.squareup.retrofit2:retrofit-mock:2.7.1'
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {

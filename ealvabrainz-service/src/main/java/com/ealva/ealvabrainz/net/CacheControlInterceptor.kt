@@ -17,14 +17,12 @@
 
 package com.ealva.ealvabrainz.net
 
-import android.content.Context
 import okhttp3.CacheControl
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.util.concurrent.TimeUnit
 
 class CacheControlInterceptor(
-  private val context: Context,
   private val daysMaxAge: Int,
   private val daysMinFresh: Int,
   private val daysMaxStale: Int

@@ -18,7 +18,6 @@
 package com.ealva.ealvabrainz.service
 
 import android.content.Context
-import com.ealva.ealvabrainz.R
 import com.ealva.ealvabrainz.art.RemoteImage
 import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.Artist
@@ -41,10 +40,8 @@ import com.ealva.ealvabrainz.brainz.data.theMoshi
 import com.ealva.ealvabrainz.common.AlbumName
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.RecordingName
-import com.ealva.ealvabrainz.net.RawResponse
 import com.ealva.ealvabrainz.net.RetrofitRawResponse
 import com.ealva.ealvabrainz.service.MusicBrainzResult.Success
-import com.ealva.ealvabrainz.service.MusicBrainzResult.Unknown
 import com.squareup.moshi.JsonAdapter
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -56,6 +53,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.Response
 import retrofit2.Retrofit
 import timber.log.Timber
+import java.io.File
 
 /**
  * Result of various calls to [MusicBrainzService]
@@ -67,14 +65,15 @@ sealed class MusicBrainzResult<out T : Any> {
   /** Server returned an error and was converted to the common error body response */
   data class Error(val error: BrainzError) : MusicBrainzResult<Nothing>()
 
-  /**
-   * An error occurred and we can't grok the error body. Punt to caller
-   */
-  data class Unknown(val response: RawResponse) : MusicBrainzResult<Nothing>()
-
   /** An [exception] was thrown */
   data class Exceptional(val exception: MusicBrainzException) : MusicBrainzResult<Nothing>()
 }
+
+/**
+ * A BrainzCall is a suspending function which accepts a [MusicBrainz] instance and returns
+ * a Retrofit Response with a type parameter of the returned MusicBrainz entity.
+ */
+typealias BrainzCall<T> = suspend (brainz: MusicBrainz) -> Response<T>
 
 /**
  * MusicBrainzService is a wrapper around a Retrofit MusicBrainz and CoverArt instance that
@@ -243,12 +242,13 @@ interface MusicBrainzService {
    * find call and "inc" include if doing a lookup. Use the Subquery and Misc defined
    * in the various entity objects for doing a lookup and use SearchField to build queries
    *
-   * @return a [MusicBrainzResult.Success] or [MusicBrainzResult.Error] if response is not
-   * successful. [MusicBrainzResult.Exceptional] is returned if an underlying exception is thrown,
-   * such as an [IOException][java.io.IOException]. [MusicBrainzResult.Unknown] is returned
-   * if there the response is not successful and the error body could not be decoded.
+   * @return a [MusicBrainzResult.Success] or, if response is not successful, a
+   * [MusicBrainzResult.Error]. [MusicBrainzResult.Exceptional] is returned if an underlying
+   * exception is thrown or if the response is not successful and the error body could not be
+   * decoded. If unable to decode the error body the actual exception is [MusicBrainzUnknownError]
+   * which contains a [RetrofitRawResponse].
    */
-  suspend fun <T : Any> brainz(block: suspend (brainz: MusicBrainz) -> Response<T>): MusicBrainzResult<T>
+  suspend fun <T : Any> brainz(block: BrainzCall<T>): MusicBrainzResult<T>
 
   @Suppress("MemberVisibilityCanBePrivate", "unused")
   companion object {
@@ -261,15 +261,18 @@ interface MusicBrainzService {
       contact: String,
       coverArt: CoverArtService
     ): MusicBrainzService =
-      make(ctx, ctx.buildMusicBrainz(appName, appVersion, contact), coverArt, Dispatchers.IO)
+      make(
+        buildMusicBrainz(appName, appVersion, contact, File(ctx.cacheDir, CACHE_DIR)),
+        coverArt,
+        Dispatchers.IO
+      )
 
     internal fun make(
-      ctx: Context,
       brainz: MusicBrainz,
       coverArt: CoverArtService,
       dispatcher: CoroutineDispatcher
     ): MusicBrainzService {
-      return MusicBrainzServiceImpl(ctx.applicationContext, brainz, coverArt, dispatcher)
+      return MusicBrainzServiceImpl(brainz, coverArt, dispatcher)
     }
 
     const val website = "https://musicbrainz.org/"
@@ -279,11 +282,13 @@ interface MusicBrainzService {
   }
 }
 
+//private const val MUSIC_BRAINZ_API_URL = "http://musicbrainz.org/ws/2/"
+private const val MUSIC_BRAINZ_API_SECURE_URL = "https://musicbrainz.org/ws/2/"
+
 private val SERVICE_NAME = MusicBrainzServiceImpl::class.java.simpleName
 private const val CACHE_DIR = "MusicBrainz"
 
 internal class MusicBrainzServiceImpl(
-  private val context: Context,
   private val musicBrainz: MusicBrainz,
   private val coverArtService: CoverArtService,
   private val dispatcher: CoroutineDispatcher
@@ -293,7 +298,7 @@ internal class MusicBrainzServiceImpl(
     album: AlbumName,
     limit: Int?,
     offset: Int?
-  ): MusicBrainzResult<ReleaseList> = brainz {
+  ) = brainz {
     val query = """artist:"${artist.value}" AND release:"${album.value}""""
     musicBrainz.findRelease(query, limit, offset)
   }
@@ -329,16 +334,9 @@ internal class MusicBrainzServiceImpl(
     include: List<ReleaseGroup.Lookup>,
     type: Release.Type,
     status: Release.Status
-  ): MusicBrainzResult<ReleaseGroup> {
-    return brainz {
-      include.ensureTypeValidity(type)
-      musicBrainz.lookupReleaseGroup(
-        mbid.value,
-        include.joinToInc(),
-        type.value,
-        status.value
-      )
-    }
+  ) = brainz {
+    include.ensureTypeValidity(type)
+    musicBrainz.lookupReleaseGroup(mbid.value, include.joinToInc(), type.value, status.value)
   }
 
   @UseExperimental(ExperimentalCoroutinesApi::class)
@@ -360,12 +358,10 @@ internal class MusicBrainzServiceImpl(
     include: List<Artist.Lookup>,
     type: Release.Type,
     status: Release.Status
-  ): MusicBrainzResult<Artist> {
-    return brainz {
-      include.ensureTypeValidity(type)
-      include.ensureStatusValidity(status)
-      musicBrainz.lookupArtist(mbid.value, include.joinToInc(), type.value, status.value)
-    }
+  ) = brainz {
+    include.ensureTypeValidity(type)
+    include.ensureStatusValidity(status)
+    musicBrainz.lookupArtist(mbid.value, include.joinToInc(), type.value, status.value)
   }
 
   private fun List<Include>.ensureStatusValidity(status: Release.Status) {
@@ -386,7 +382,7 @@ internal class MusicBrainzServiceImpl(
         }
       }
     ) throw MusicBrainzException(
-      "type is not a valid parameter unless include contains releases or release groups"
+      "type is not a valid parameter unless include contains releases or release-groups"
     )
   }
 
@@ -420,17 +416,13 @@ internal class MusicBrainzServiceImpl(
     include: List<Recording.Lookup>,
     type: Release.Type,
     status: Release.Status
-  ): MusicBrainzResult<Recording> {
-    return brainz {
-      include.ensureTypeValidity(type)
-      include.ensureStatusValidity(status)
-      musicBrainz.lookupRecording(mbid.value, include.joinToInc(), type.value, status.value)
-    }
+  ) = brainz {
+    include.ensureTypeValidity(type)
+    include.ensureStatusValidity(status)
+    musicBrainz.lookupRecording(mbid.value, include.joinToInc(), type.value, status.value)
   }
 
-  override suspend fun <T : Any> brainz(
-    block: suspend (brainz: MusicBrainz) -> Response<T>
-  ): MusicBrainzResult<T> = withContext(dispatcher) {
+  override suspend fun <T : Any> brainz(block: BrainzCall<T>) = withContext(dispatcher) {
     try {
       val response = block(musicBrainz)
       if (response.isSuccessful) {
@@ -463,13 +455,17 @@ internal class MusicBrainzServiceImpl(
 
 }
 
-private fun Context.buildMusicBrainz(appName: String, appVersion: String, emailContact: String) =
-  Retrofit.Builder()
-    .client(makeOkHttpClient(SERVICE_NAME, CACHE_DIR, appName, appVersion, emailContact))
-    .baseUrl(getString(R.string.music_brainz_api_secure_url))
-    .addMoshiConverterFactory()
-    .build()
-    .create(MusicBrainz::class.java)
+private fun buildMusicBrainz(
+  appName: String,
+  appVersion: String,
+  emailContact: String,
+  cacheDirectory: File
+) = Retrofit.Builder()
+  .client(makeOkHttpClient(SERVICE_NAME, appName, appVersion, emailContact, cacheDirectory))
+  .baseUrl(MUSIC_BRAINZ_API_SECURE_URL)
+  .addMoshiConverterFactory()
+  .build()
+  .create(MusicBrainz::class.java)
 
 @JvmName(name = "getReleaseList")
 private fun Response<ReleaseList>.list(): List<Release> {
@@ -490,15 +486,20 @@ private fun Response<ReleaseGroupList>.list(): List<ReleaseGroup> {
 private val errorAdapter: JsonAdapter<BrainzError> = theMoshi.adapter(BrainzError::class.java)
 
 /** @throws java.io.IOException if Retrofit throws */
-private fun <T : Any> Response<T>.handleErrorBody() =
-  errorString?.let { makeBrainzError(it) } ?: makeUnknown()
+private fun <T : Any> Response<T>.handleErrorBody(): MusicBrainzResult<Nothing> {
+  return errorString?.let { makeBrainzError(it) } ?: makeUnknown()
+}
 
 private val <T : Any> Response<T>.errorString: String? get() = errorBody()?.string()
 
-private fun <T : Any> Response<T>.makeBrainzError(errorBody: String) =
+private fun <T : Any> Response<T>.makeBrainzError(errorBody: String) = try {
   errorAdapter.fromJson(errorBody)?.let { makeError(it) } ?: makeUnknown()
+} catch (e: Exception) {
+  makeUnknown()
+}
 
-private fun <T : Any> Response<T>.makeUnknown() = Unknown(RetrofitRawResponse(this))
+private fun <T : Any> Response<T>.makeUnknown() =
+  MusicBrainzUnknownError(RetrofitRawResponse(this)).makeExceptional()
 
 private fun makeError(it: BrainzError) = MusicBrainzResult.Error(it)
 

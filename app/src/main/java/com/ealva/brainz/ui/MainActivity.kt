@@ -86,10 +86,6 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         ui.longSnack(result.error.error)
         null
       }
-      is MusicBrainzResult.Unknown -> {
-        ui.longSnack("Unknown error. Code:${result.response.httpStatusCode}")
-        null
-      }
       is MusicBrainzResult.Exceptional -> {
         ui.longSnack(result.exception.message ?: "${result.exception}")
         null

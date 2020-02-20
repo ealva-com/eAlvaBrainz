@@ -17,7 +17,6 @@
 
 package com.ealva.ealvabrainz.service
 
-import android.content.Context
 import com.ealva.ealvabrainz.common.debug
 import com.ealva.ealvabrainz.net.BrainzJsonFormatUserAgentInterceptor
 import com.ealva.ealvabrainz.net.CacheControlInterceptor
@@ -33,19 +32,19 @@ private const val DAYS_MIN_FRESH = 14
 private const val DAYS_MAX_STALE = 365
 private const val MUSICBRAINZ_MAX_CALLS_PER_SECOND = 1.0
 
-internal fun Context.makeOkHttpClient(
+internal fun makeOkHttpClient(
   serviceName: String,
-  cacheDirName: String,
   appName: String,
   appVersion: String,
-  contactEmail: String
+  contactEmail: String,
+  cacheDirectory: File
 ): OkHttpClient {
   return OkHttpClient.Builder()
-    .addInterceptor(CacheControlInterceptor(this, DAYS_MAX_AGE, DAYS_MIN_FRESH, DAYS_MAX_STALE))
+    .addInterceptor(CacheControlInterceptor(DAYS_MAX_AGE, DAYS_MIN_FRESH, DAYS_MAX_STALE))
     .addInterceptor(ThrottlingInterceptor(MUSICBRAINZ_MAX_CALLS_PER_SECOND, serviceName))
     .addInterceptor(BrainzJsonFormatUserAgentInterceptor(appName, appVersion, contactEmail))
     .interceptLoggingInDebug()
-    .cache(Cache(File(cacheDir, cacheDirName), 10 * 1024 * 1024))
+    .cache(Cache(cacheDirectory, 10 * 1024 * 1024))
     .build()
 }
 

@@ -43,6 +43,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import timber.log.Timber
+import java.io.File
 
 /**
  * Transform operator converts ReleaseMbid to a RemoteImage which points to the CoverArtImage
@@ -100,25 +101,27 @@ interface CoverArtService {
       appVersion: String,
       contactEmail: String
     ): CoverArtService =
-      make(ctx, ctx.buildCoverArt(appName, appVersion, contactEmail), Dispatchers.IO)
+      make(
+        buildCoverArt(appName, appVersion, contactEmail, File(ctx.cacheDir, CACHE_DIR)),
+        Dispatchers.IO
+      )
 
     /**
      * For test, providing for injection of Mocks and test dispatcher.
      */
-    internal fun make(
-      ctx: Context,
-      coverArt: CoverArt,
-      dispatcher: CoroutineDispatcher
-    ): CoverArtService = CoverArtServiceImpl(ctx.applicationContext, coverArt, dispatcher)
+    internal fun make(coverArt: CoverArt, dispatcher: CoroutineDispatcher): CoverArtService =
+      CoverArtServiceImpl(coverArt, dispatcher)
   }
 }
+
+//private const val COVER_ART_API_URL = "http://coverartarchive.org/"
+private const val COVER_ART_API_SECURE_URL = "https://coverartarchive.org/"
 
 private val SERVICE_NAME = CoverArtServiceImpl::class.java.simpleName
 private const val CACHE_DIR = "CoverArtArchive"
 private val INTENT_BRAINZ = Intent(Intent.ACTION_VIEW, Uri.parse("https://musicbrainz.org/"))
 
 private class CoverArtServiceImpl(
-  private val context: Context,
   private val coverArt: CoverArt,
   private val dispatcher: CoroutineDispatcher
 ) : CoverArtService {
@@ -132,21 +135,22 @@ private class CoverArtServiceImpl(
         if (isSuccessful) body() else null
       }
     } catch (e: Exception) {
-      throw MusicBrainzException(
-        context.getString(R.string.UnexpectedErrorWithMsg, "'${e.message.orEmpty()}'"),
-        e
-      )
+      throw MusicBrainzException("Unexpected error: '${e.message.orEmpty()}'", e)
     }
   }
 }
 
-private fun Context.buildCoverArt(appName: String, appVersion: String, contactEmail: String) =
-  Retrofit.Builder()
-    .client(makeOkHttpClient(SERVICE_NAME, CACHE_DIR, appName, appVersion, contactEmail))
-    .baseUrl(getString(R.string.cover_art_api_secure_url))
-    .addMoshiConverterFactory()
-    .build()
-    .create(CoverArt::class.java)
+private fun buildCoverArt(
+  appName: String,
+  appVersion: String,
+  contactEmail: String,
+  cacheDirectory: File
+) = Retrofit.Builder()
+  .client(makeOkHttpClient(SERVICE_NAME, appName, appVersion, contactEmail, cacheDirectory))
+  .baseUrl(COVER_ART_API_SECURE_URL)
+  .addMoshiConverterFactory()
+  .build()
+  .create(CoverArt::class.java)
 
 private suspend fun FlowCollector<RemoteImage>.doTransform(
   service: CoverArtService,

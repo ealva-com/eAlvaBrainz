@@ -102,7 +102,7 @@ class RecordingListTest {
             expect(theTracks).toHaveSize(1)
             theTracks[0].run {
               expect(id).toBe("0ef6e647-4aeb-438e-8c8a-50c22c511203")
-              expect(number).toBe(1)
+              expect(number).toBe("1")
               expect(length).toBe(179000)
             }
           }

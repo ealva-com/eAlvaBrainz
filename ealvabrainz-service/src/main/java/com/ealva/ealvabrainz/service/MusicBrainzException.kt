@@ -17,5 +17,10 @@
 
 package com.ealva.ealvabrainz.service
 
-class MusicBrainzException(message: String, cause: Throwable? = null) :
+import com.ealva.ealvabrainz.net.RawResponse
+
+open class MusicBrainzException(message: String, cause: Throwable? = null) :
   RuntimeException(message, cause)
+
+class MusicBrainzUnknownError(val rawResponse: RawResponse) :
+  MusicBrainzException("Error body could not be deserialized", null)

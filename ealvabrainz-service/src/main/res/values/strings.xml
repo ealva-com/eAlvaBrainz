@@ -24,6 +24,4 @@
     <string name="Small">Small</string>
     <string name="Unknown">Unknown</string>
 
-    <string name="UnexpectedErrorWithMsg">Unexpected error %1$s</string>
-
 </resources>
