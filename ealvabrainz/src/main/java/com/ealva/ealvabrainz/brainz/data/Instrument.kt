@@ -86,31 +86,43 @@ class Instrument(
     return id.hashCode()
   }
 
+  interface Lookup : Include
 
   @Suppress("unused")
-  enum class Misc(override val value: String) : Area.Lookup {
+  enum class Misc(override val value: String) : Lookup {
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
     Genres("genres")
   }
 
+  /**
+   * * [Instrument-Instrument](https://musicbrainz.org/relationships/instrument-instrument)
+   * * [Instrument-Label](https://musicbrainz.org/relationships/instrument-label)
+   * * [Instrument-URL](https://musicbrainz.org/relationships/instrument-url)
+   */
+  enum class Relations(override val value: String) : Lookup {
+    Instrument("instrument-rels"),
+    Label("label-rels"),
+    Url("url-rels")
+  }
+
   @Suppress("unused")
   enum class SearchField(val value: String) {
-   /** an alias attached to the instrument */
-   Alias("alias"),
-   /** the disambiguation comment for the instrument */
-   Comment("comment"),
-   /** the description of the instrument */
-   Description("description"),
-   /** the MBID of the instrument */
-   InstrumentId("iid"),
-   /** the name of the instrument */
-   Instrument("instrument"),
-   /** the instrument's type */
-   Type("type"),
-   /** a tag attached to the instrument */
-   Tag("tag"),
+    /** an alias attached to the instrument */
+    Alias("alias"),
+    /** the disambiguation comment for the instrument */
+    Comment("comment"),
+    /** the description of the instrument */
+    Description("description"),
+    /** the MBID of the instrument */
+    InstrumentId("iid"),
+    /** the name of the instrument */
+    Instrument("instrument"),
+    /** the instrument's type */
+    Type("type"),
+    /** a tag attached to the instrument */
+    Tag("tag"),
   }
 
   companion object {

@@ -16,9 +16,17 @@
   ~ If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
+<ripple
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?android:colorControlHighlight"
+    >
+    <item
+        android:id="@android:id/mask"
+        android:gravity="center"
+        >
+        <shape android:shape="oval">
+            <solid android:color="@android:color/white" />
+        </shape>
+    </item>
+</ripple>
 
-    <string name="music_brainz_api_url" translatable="false">http://musicbrainz.org/ws/2/</string>
-    <string name="music_brainz_api_secure_url" translatable="false">https://musicbrainz.org/ws/2/</string>
-
-</resources>

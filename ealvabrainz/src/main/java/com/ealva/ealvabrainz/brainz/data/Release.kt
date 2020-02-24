@@ -208,6 +208,19 @@ class Release(
     Genres("genres")
   }
 
+  /**
+   * Release relationships
+   *
+   * * [Release-Release](https://musicbrainz.org/relationships/release-release)
+   * * [Release-Series](https://musicbrainz.org/relationships/release-series)
+   * * [Release-URL](https://musicbrainz.org/relationships/release-url)
+   */
+  enum class Relations(override val value: String) : Lookup {
+    Release("release-rels"),
+    Series("series-rels"),
+    Url("url-rels"),
+  }
+
   @Suppress("unused")
   enum class SearchField(val value: String) {
     /** artist MusicBrainz id (MBID) */

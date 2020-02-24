@@ -97,6 +97,24 @@ class Place(
     Genres("genres")
   }
 
+  /**
+   * Place relationships
+   *
+   * * [Place-Place](https://musicbrainz.org/relationships/place-place)
+   * * [Place-Recording](https://musicbrainz.org/relationships/place-recording)
+   * * [Place-Release](https://musicbrainz.org/relationships/place-release)
+   * * [Place-URL](https://musicbrainz.org/relationships/place-url)
+   * * [Place-Work](https://musicbrainz.org/relationships/place-work)
+   */
+  @Suppress("unused")
+  enum class Relations(override val value: String) : Lookup {
+    Place("place-rels"),
+    Recording("recording-rels"),
+    Release("release-rels"),
+    Url("url-rels"),
+    Work("work-rels")
+  }
+
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (javaClass != other?.javaClass) return false

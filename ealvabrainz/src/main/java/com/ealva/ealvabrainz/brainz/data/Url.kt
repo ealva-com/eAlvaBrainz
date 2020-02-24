@@ -38,6 +38,16 @@ class Url(
   /** The url */
   var resource: String = ""
 ) {
+
+  interface Lookup : Include
+
+  /**
+   * * [Url-Work](https://musicbrainz.org/relationships/url-work)
+   */
+  enum class Relation(override val value: String) : Lookup {
+    Work("work-rels")
+  }
+
   companion object {
     val NullUrl = Url(id = NullObject.ID)
     val fallbackMapping: Pair<String, Any> = Url::class.java.name to NullUrl

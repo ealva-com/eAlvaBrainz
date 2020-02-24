@@ -56,7 +56,7 @@ class Artist(
   /**
    * The sort name is a variant of the artist name which would be used when sorting artists by
    * name, such as in record shops or libraries. Among other things, sort names help to ensure
-   * that all the artists that start with "The" don't end up up under "T".
+   * that all the artists that start with Navigation"The" don't end up up under "T".
    */
   @field:Json(name = "sort-name") var sortName: String = "",
   var country: String = "",
@@ -128,8 +128,10 @@ class Artist(
 
   @field:FallbackOnNull var rating: Rating = Rating.NullRating,
   var tags: List<Tag> = emptyList(),
+  @field:Json(name = "release-groups") var releaseGroups: List<ReleaseGroup> = emptyList(),
   var recordings: List<Recording> = emptyList(),
   var releases: List<Release> = emptyList(),
+  var relations: List<Relation> = emptyList(),
   /** score only used in query results */
   var score: Int = 0
 ) {
@@ -175,6 +177,35 @@ class Artist(
     Tags("tags"),
     Ratings("ratings"),
     Genres("genres")
+  }
+
+  /**
+   * Artist relationships
+   *
+   * * [Artist-Artist](https://musicbrainz.org/relationships/artist-artist)
+   * * [Artist-Event](https://musicbrainz.org/relationships/artist-event)
+   * * [Artist-Instrument](https://musicbrainz.org/relationships/artist-instrument)
+   * * [Artist-Label](https://musicbrainz.org/relationships/artist-label)
+   * * [Artist-Place](https://musicbrainz.org/relationships/artist-place)
+   * * [Artist-Recording](https://musicbrainz.org/relationships/artist-recording)
+   * * [Artist-Release](https://musicbrainz.org/relationships/artist-release)
+   * * [Artist-ReleaseGroup](https://musicbrainz.org/relationships/artist-release_group)
+   * * [Artist-Series](https://musicbrainz.org/relationships/artist-series)
+   * * [Artist-URL](https://musicbrainz.org/relationships/artist-url)
+   * * [Artist-Work](https://musicbrainz.org/relationships/artist-work)
+   */
+  enum class Relations(override val value: String) : Lookup {
+    Artist("artist-rels"),
+    Event("event-rels"),
+    Instrument("instrument-rels"),
+    Label("label-rels"),
+    Place("place-rels"),
+    Recording("recording-rels"),
+    Release("release-rels"),
+    ReleaseGroup("release-group-rels"),
+    Series("series-rels"),
+    Url("url-rels"),
+    Work("work-rels")
   }
 
   enum class SearchField(val value: String) {

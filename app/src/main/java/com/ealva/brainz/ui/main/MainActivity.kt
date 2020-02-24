@@ -15,27 +15,26 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainz.app
+package com.ealva.brainz.ui.main
 
-import android.app.Application
-import com.ealva.brainz.services.brainzModule
-import com.ealva.ealvabrainz.BuildConfig
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import com.ealva.brainz.ui.fragment.Navigation
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
-import org.kodein.di.android.x.androidXModule
-import timber.log.Timber
+import org.kodein.di.android.closestKodein
+import com.ealva.ealvabrainz.R.id.main_ui_fragment_container as ID_FRAGMENT_CONTAINER
 
-@Suppress("unused") // It's in the manifest
-class App : Application(), KodeinAware {
-  override val kodein by Kodein.lazy {
-    import(androidXModule(this@App))
-    import(brainzModule)
+class MainActivity : AppCompatActivity(), KodeinAware {
+  override val kodein: Kodein by closestKodein()
+  private lateinit var ui: MainActivityUi
+  private lateinit var navigation: Navigation
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    navigation = Navigation.make(supportFragmentManager, ID_FRAGMENT_CONTAINER)
+    supportFragmentManager.fragmentFactory = AppFragmentFactory(kodein, navigation)
+    super.onCreate(savedInstanceState)
+    ui = MainActivityUi(makeUiContext(), navigation)
   }
 
-  override fun onCreate() {
-    super.onCreate()
-    if (BuildConfig.DEBUG) {
-      Timber.plant(Timber.DebugTree())
-    }
-  }
 }

@@ -34,6 +34,8 @@ class Series(
   var id: String = "",
   var disambiguation: String = ""
 ) {
+  interface Lookup : Include
+
   @Suppress("unused")
   enum class SearchField(val value: String) {
    /** an alias attached to the series */
@@ -48,6 +50,19 @@ class Series(
    Type("type"),
    /** a tag attached to the series */
    Tag("tag"),
+  }
+
+  /**
+   * Series relationships
+   *
+   * * [Series-Series](https://musicbrainz.org/relationships/series-series)
+   * * [Series-URL](https://musicbrainz.org/relationships/series-url)
+   * * [Series-Work](https://musicbrainz.org/relationships/series-work)
+   */
+  enum class Relations(override val value: String) : Lookup {
+    Series("series-rels"),
+    Url("url-rels"),
+    Work("work-rels")
   }
 
   companion object {

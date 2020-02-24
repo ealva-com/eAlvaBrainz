@@ -143,6 +143,28 @@ class Area(
     Type("type"),
   }
 
+  /**
+   * Area relationships
+   *
+   * * [Area-Area](https://musicbrainz.org/relationships/area-area)
+   * * [Area-Event](https://musicbrainz.org/relationships/area-event)
+   * * [Area-Instrument](https://musicbrainz.org/relationships/area-instrument)
+   * * [Area-Recording](https://musicbrainz.org/relationships/area-recording)
+   * * [Area-Release](https://musicbrainz.org/relationships/area-release)
+   * * [Area-URL](https://musicbrainz.org/relationships/area-url)
+   * * [Area-Work](https://musicbrainz.org/relationships/area-work)
+   */
+  @Suppress("unused")
+  enum class Relations(override val value: String) : Lookup {
+    Area("area-rels"),
+    Event("event-rels"),
+    Instrument("instrument-rels"),
+    Recording("recording-rels"),
+    Release("release-rels"),
+    Url("url-rels"),
+    Work("work-rels")
+  }
+
   companion object {
     val NullArea = Area()
     val fallbackMapping: Pair<String, Any> = Area::class.java.name to NullArea

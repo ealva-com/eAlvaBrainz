@@ -15,27 +15,15 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainz.app
+package com.ealva.brainz.ui.artist
 
-import android.app.Application
-import com.ealva.brainz.services.brainzModule
-import com.ealva.ealvabrainz.BuildConfig
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.x.androidXModule
-import timber.log.Timber
+import com.ealva.brainz.ui.fragment.FragmentUiContext
+import splitties.views.dsl.coordinatorlayout.coordinatorLayout
+import splitties.views.dsl.core.Ui
 
-@Suppress("unused") // It's in the manifest
-class App : Application(), KodeinAware {
-  override val kodein by Kodein.lazy {
-    import(androidXModule(this@App))
-    import(brainzModule)
-  }
+class ArtistFragmentUi(private val uiContext: FragmentUiContext) : Ui {
+  override val ctx = uiContext.context
+  override val root = coordinatorLayout {
 
-  override fun onCreate() {
-    super.onCreate()
-    if (BuildConfig.DEBUG) {
-      Timber.plant(Timber.DebugTree())
-    }
   }
 }

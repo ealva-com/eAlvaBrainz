@@ -162,6 +162,27 @@ class Label(
     Genres("genres")
   }
 
+  /**
+   * Label relatoinships
+   *
+   * * [Label-Label](https://musicbrainz.org/relationships/label-label)
+   * * [Label-Recording](https://musicbrainz.org/relationships/label-recording)
+   * * [Label-Release](https://musicbrainz.org/relationships/label-release)
+   * * [Label-ReleaseGroup](https://musicbrainz.org/relationships/label-release_group)
+   * * [Label-Series](https://musicbrainz.org/relationships/label-series)
+   * * [Label-URL](https://musicbrainz.org/relationships/label-url)
+   * * [Label-Work](https://musicbrainz.org/relationships/label-work)
+   */
+  enum class Relations(override val value: String) : Lookup {
+    Label("label-rels"),
+    Recording("recording-rels"),
+    Release("release-rels"),
+    ReleaseGroup("release-group-rels"),
+    Series("series-rels"),
+    Url("url-rels"),
+    Work("work-rels")
+  }
+
   @Suppress("unused")
   enum class SearchField(val value: String) {
    /** the aliases/misspellings for this label */

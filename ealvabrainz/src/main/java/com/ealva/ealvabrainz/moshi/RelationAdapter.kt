@@ -20,6 +20,7 @@ package com.ealva.ealvabrainz.moshi
 import com.ealva.ealvabrainz.brainz.data.AreaRelation
 import com.ealva.ealvabrainz.brainz.data.ArtistRelation
 import com.ealva.ealvabrainz.brainz.data.EventRelation
+import com.ealva.ealvabrainz.brainz.data.InstrumentRelation
 import com.ealva.ealvabrainz.brainz.data.LabelRelation
 import com.ealva.ealvabrainz.brainz.data.PlaceRelation
 import com.ealva.ealvabrainz.brainz.data.RecordingRelation
@@ -42,6 +43,7 @@ private val nameClassPairs = listOf(
   "place" to PlaceRelation::class.java,
   "event" to EventRelation::class.java,
   "release_group" to ReleaseGroupRelation::class.java,
+  "instrument" to InstrumentRelation::class.java,
   "series" to SeriesRelation::class.java,
   "url" to UrlRelation::class.java
 )

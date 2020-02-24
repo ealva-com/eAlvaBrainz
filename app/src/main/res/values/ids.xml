@@ -19,7 +19,32 @@
 
 <resources>
 
-    <item name="main_text_center" type="id" />
-    <item name="main_constraint" type="id" /><item name="main_scroll_view" type="id" />
+    <item name="search_fragment_coordinator" type="id" />
+    <item name="search_fragment_spinner" type="id" />
+    <item name="search_fragment_container" type="id" />
+    <item name="main_ui_fragment_container" type="id" />
+    <item name="search_fragment_constraint" type="id" />
+
+    <item name="spinner_position_tag_id" type="id" />
+
+    <item name="item_top_guide" type="id" />
+    <item name="item_middle_guide" type="id" />
+
+
+    <item name="artist_search_coordinator" type="id" />
+    <item name="artist_search_constraint" type="id" />
+    <item name="artist_search_search_text" type="id" />
+    <item name="artist_search_search_button" type="id" />
+    <item name="artist_search_recycler" type="id" />
+    <item name="artist_search_text_input_layout" type="id" />
+
+    <item name="artist_search_item_constraint" type="id" />
+    <item name="artist_search_item_name" type="id" />
+    <item name="artist_search_item_disambiguation" type="id" />
+    <item name="artist_search_item_type" type="id" />
+    <item name="artist_search_item_score" type="id" />
+    <item name="artist_search_item_country" type="id" />
+    <item name="artist_search_item_card" type="id" /><item name="artist_ui_text" type="id" />
+
 
 </resources>

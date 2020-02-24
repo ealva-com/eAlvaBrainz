@@ -111,6 +111,23 @@ class Recording(
     Genres("genres")
   }
 
+  /**
+   * Recording relationships
+   *
+   * * [Recording-Recording](https://musicbrainz.org/relationships/recording-recording)
+   * * [Recording-Release](https://musicbrainz.org/relationships/recording-release)
+   * * [Recording-Series](https://musicbrainz.org/relationships/recording-series)
+   * * [Recording-URL](https://musicbrainz.org/relationships/recording-url)
+   * * [Recording-Work](https://musicbrainz.org/relationships/recording-work)
+   */
+  enum class Relations(override val value: String) : Lookup {
+    Recording("recording-rels"),
+    Release("release-rels"),
+    Series("series-rels"),
+    Url("url-rels"),
+    Work("work-rels")
+  }
+
   @Suppress("unused")
   enum class SearchField(val value: String) {
     /** the artist's MBID */
