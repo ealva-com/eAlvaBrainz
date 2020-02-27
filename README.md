@@ -164,26 +164,16 @@ Most MusicBrainzService functions return a MusicBrainzResult sealed class based 
 The implementation of the returned MusicBrainzResult indicates success, error, or an exception.
 ```kotlin
 sealed class MusicBrainzResult<out T : Any> {
-
-  /** Call was successful and contains the [value] */
+  
   data class Success<T : Any>(val value: T) : MusicBrainzResult<T>()
 
-  /** Group non-success subclasses under this sealed class */
   sealed class Unsuccessful : MusicBrainzResult<Nothing>() {
 
-    /** Server returned an error and was converted to the common error body response */
     data class ErrorResult(val error: BrainzError) : Unsuccessful()
 
-    /** An [exception] was thrown */
     data class Exceptional(val exception: MusicBrainzException) : Unsuccessful()
 
-    /**
-     * If using a [MusicBrainzResult.Unsuccessful] in a LiveData, or some other data holder, use
-     * this as a "No Error" marker instead of null
-     */
-    object None : Unsuccessful()
   }
-
 }
 ```
 ## app

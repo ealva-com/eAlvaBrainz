@@ -49,7 +49,9 @@
 
     <item name="artist_ui_coordinator" type="id" />
     <item name="artist_ui_constraint" type="id" />
-    <item name="artist_ui_name" type="id" /><item name="artist_ui_circular_progress" type="id" />
+    <item name="artist_ui_name" type="id" />
+    <item name="artist_ui_circular_progress" type="id" />
+    <item name="artist_ui_type" type="id"/>
 
 
 </resources>

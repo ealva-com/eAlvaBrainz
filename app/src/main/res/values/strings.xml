@@ -32,4 +32,29 @@
         <item>Release</item>
     </string-array>
 
+    <string name="Group">Group</string>
+    <string name="Person">Person</string>
+    <string name="Orchestra">Orchestra</string>
+    <string name="Choir">Choir</string>
+    <string name="Character">Character</string>
+    <string name="Other">Other</string>
+
+    <string name="FoundedLabel">Founded:</string>
+    <string name="DissolvedLabel">Dissolved:</string>
+    <string name="FoundedInLabel">Founded in:</string>
+    <string name="DissolvedInLabel">Dissolved In:</string>
+
+    <string name="BornLabel">Born:</string>
+    <string name="DiedLabel">Died:</string>
+    <string name="BornInLabel">Born In:</string>
+    <string name="DiedInLabel">Died In:</string>
+
+    <string name="CreatedLabel">Created:</string>
+    <string name="CreatedInLabel">Created In:</string>
+
+    <string name="StartedLabel">Started:</string>
+    <string name="EndedLabel">Ended:</string>
+    <string name="StartedInLabel">Started In:</string>
+    <string name="EndedInLabel">Ended In:</string>
+
 </resources>

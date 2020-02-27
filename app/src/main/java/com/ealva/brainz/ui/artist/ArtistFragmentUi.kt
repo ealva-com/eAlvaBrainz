@@ -59,8 +59,9 @@ class ArtistFragmentUi(
   private val scope = uiContext.scope
   private val lifecycleOwner = uiContext.lifecycleOwner
 
-  private val artistNameView: TextView
   private val progress: CircularProgressBar
+  private val artistNameView: TextView
+  private val artistTypeView: TextView
 
   override val ctx = uiContext.context
   override val root = coordinatorLayout(ID_COORDINATOR) {
@@ -78,7 +79,15 @@ class ArtistFragmentUi(
         endToEnd = PARENT_ID
         bottomToBottom = PARENT_ID
       })
+
+      artistTypeView = add(textView(R.id.artist_ui_type) {
+
+      }, lParams {
+
+      })
+
     }, defaultLParams(matchParent, matchParent))
+
   }.also { root ->
     scope.launch {
       lifecycleOwner.whenStarted {

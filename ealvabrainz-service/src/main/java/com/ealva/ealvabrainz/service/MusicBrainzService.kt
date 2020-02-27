@@ -64,6 +64,7 @@ import java.io.File
  * Result of various calls to [MusicBrainzService]
  */
 sealed class MusicBrainzResult<out T : Any> {
+
   /** Call was successful and contains the [value] */
   data class Success<T : Any>(val value: T) : MusicBrainzResult<T>()
 
@@ -73,7 +74,12 @@ sealed class MusicBrainzResult<out T : Any> {
     /** Server returned an error and was converted to the common error body response */
     data class ErrorResult(val error: BrainzError) : Unsuccessful()
 
-    /** An [exception] was thrown */
+    /**
+     * An [exception] of type [MusicBrainzException] or subclass [MusicBrainzUnknownError] was
+     * thrown. MusicBrainzUnknownError contains a
+     * [RawResponse][com.ealva.ealvabrainz.net.RawResponse] which provides the https status
+     * code/message and the error body.
+     */
     data class Exceptional(val exception: MusicBrainzException) : Unsuccessful()
 
     /**
@@ -82,7 +88,6 @@ sealed class MusicBrainzResult<out T : Any> {
      */
     object None : Unsuccessful()
   }
-
 }
 
 /**

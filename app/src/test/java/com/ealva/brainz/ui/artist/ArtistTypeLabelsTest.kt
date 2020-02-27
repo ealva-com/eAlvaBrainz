@@ -17,8 +17,8 @@
 
 package com.ealva.brainz.ui.artist
 
+import com.ealva.ealvabrainz.R
 import com.ealva.ealvabrainz.brainz.data.ArtistType
-import com.ealva.ealvabrainz.service.R
 import com.nhaarman.expect.expect
 import org.junit.Test
 

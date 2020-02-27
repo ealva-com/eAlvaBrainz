@@ -18,8 +18,8 @@
 package com.ealva.brainz.ui.artist
 
 import androidx.annotation.StringRes
+import com.ealva.ealvabrainz.R
 import com.ealva.ealvabrainz.brainz.data.ArtistType
-import com.ealva.ealvabrainz.service.R
 
 /**
  * Groups an ArtistType with the labels to be presented in the user interface representing the
