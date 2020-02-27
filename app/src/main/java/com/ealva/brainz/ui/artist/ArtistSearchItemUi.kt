@@ -75,7 +75,7 @@ class ArtistSearchItemUi(
       artistName = add(textView(ID_ARTIST_NAME) {
         ellipsize = END
         maxLines = 1
-        textAppearance = R.style.TextAppearance_AppCompat_Subhead
+        textAppearance = R.style.TextAppearance_MaterialComponents_Subtitle1
       }, lParams(height = wrapContent) {
         startToStart = PARENT_ID
         endToStart = ID_SCORE
@@ -85,7 +85,7 @@ class ArtistSearchItemUi(
       score = add(textView(ID_SCORE) {
         ellipsize = END
         maxLines = 1
-        textAppearance = R.style.TextAppearance_AppCompat_Small
+        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
       }, lParams(wrapContent, wrapContent) {
         startToEnd = ID_ARTIST_NAME
         endToEnd = PARENT_ID
@@ -95,7 +95,7 @@ class ArtistSearchItemUi(
       disambiguation = add(textView(ID_DISAMBIGUATION) {
         ellipsize = END
         maxLines = 1
-        textAppearance = R.style.TextAppearance_AppCompat_Small
+        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
       }, lParams(height = wrapContent) {
         startToStart = PARENT_ID
         topToTop = PARENT_ID
@@ -106,7 +106,7 @@ class ArtistSearchItemUi(
       type = add(textView(ID_ARTIST_TYPE) {
         ellipsize = END
         maxLines = 1
-        textAppearance = R.style.TextAppearance_AppCompat_Small
+        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
       }, lParams(height = wrapContent) {
         startToStart = PARENT_ID
         endToStart = ID_COUNTRY
@@ -117,7 +117,7 @@ class ArtistSearchItemUi(
       country = add(textView(ID_COUNTRY) {
         ellipsize = END
         maxLines = 1
-        textAppearance = R.style.TextAppearance_AppCompat_Small
+        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
       }, lParams(wrapContent, wrapContent) {
         startToEnd = ID_ARTIST_TYPE
         endToEnd = PARENT_ID
@@ -141,8 +141,8 @@ class ArtistSearchItemUi(
   fun bind(artist: ArtistSearchResult) {
     artistName.text = artist.name.value
     disambiguation.text = artist.disambiguation
-    type.text = artist.type
+    type.text = artist.type.value
     score.text = artist.score.toString()
-    country.text = artist.country
+    country.text = artist.country.alpha2
   }
 }

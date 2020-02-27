@@ -43,6 +43,7 @@ class ReleaseGroupTest {
       expect(title).toBe("Sgt. Pepper’s Lonely Hearts Club Band")
       expect(primaryTypeId).toBe("f529b476-6e62-324f-b0aa-1f3e33d313fc")
       expect(primaryType).toBe("Album")
+      expect(secondaryTypes).toBeEmpty()
       expect(secondaryTypeIds).toBeEmpty()
       expect(tags).toHaveSize(3)
       expect(tags).toContain(

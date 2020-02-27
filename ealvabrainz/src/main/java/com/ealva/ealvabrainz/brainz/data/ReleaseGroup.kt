@@ -147,6 +147,15 @@ class ReleaseGroup(
   }
 
   @Suppress("unused")
+  enum class Browse(override val value: String) : Lookup {
+    ArtistCredits("artist-credits"),
+    Annotation("annotation"),
+    Tags("tags"),
+    Genres("genres"),
+    Ratings("ratings");
+  }
+
+  @Suppress("unused")
   enum class SearchField(val value: String) {
     /** MBID of the release group’s artist */
     ArtistId("arid"),

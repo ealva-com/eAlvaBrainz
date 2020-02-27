@@ -332,7 +332,7 @@ class Release(
    * the that particular type of Release.
    */
   @Suppress("unused")
-  enum class Type(val value: String?) {
+  enum class Type(override val value: String) : Lookup {
     Nat("nat"),
     Album("album"),
     Single("single"),
@@ -344,9 +344,7 @@ class Release(
     Audiobook("audiobook"),
     Live("live"),
     Remix("remix"),
-    Other("other"),
-    /** Any is equivalent to not specifying a Type = any type */
-    Any(null)
+    Other("other")
   }
 
   /**
@@ -354,13 +352,11 @@ class Release(
    * [status][Release.status]
    */
   @Suppress("unused")
-  enum class Status(val value: String?) {
+  enum class Status(override val value: String) : Lookup {
     Official("official"),
     Promotion("promotion"),
     Bootleg("bootleg"),
-    PseudoRelease("pseudo-release"),
-    /** Any is equivalent to not specifying a Status = any status */
-    Any(null)
+    PseudoRelease("pseudo-release")
   }
 
   companion object {

@@ -28,7 +28,6 @@ import com.ealva.brainz.ui.fragment.Navigation
 import com.ealva.brainz.ui.fragment.makeUiContext
 import com.ealva.brainz.ui.main.instantiate
 import com.ealva.ealvabrainz.service.MusicBrainzService
-import splitties.toast.toast
 
 class ArtistSearchFragment private constructor(
   private val brainz: MusicBrainzService,
@@ -38,17 +37,12 @@ class ArtistSearchFragment private constructor(
   private lateinit var uiContext: FragmentUiContext
   private lateinit var ui: ArtistSearchUi
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    toast("savedInstanceState is null: ${savedInstanceState == null}")
-    viewModel = getArtistSearchViewModel(brainz)
-  }
-
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
+    viewModel = getArtistSearchViewModel(brainz)
     uiContext = makeUiContext()
     ui = ArtistSearchUi.make(uiContext, viewModel, navigation)
     return ui.root

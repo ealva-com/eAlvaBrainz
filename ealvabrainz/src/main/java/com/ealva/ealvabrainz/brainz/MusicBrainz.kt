@@ -19,6 +19,7 @@ package com.ealva.ealvabrainz.brainz
 
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistList
+import com.ealva.ealvabrainz.brainz.data.BrowseReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.RecordingList
 import com.ealva.ealvabrainz.brainz.data.Release
@@ -189,6 +190,49 @@ interface MusicBrainz {
      */
     @Query("status") status: String? = null
   ): Response<Artist>
+
+  /**
+   * Browse albums (Release Groups) for a given artist with [artistId], starting at [offset] with
+   * a [limit] to page results. As an example, Black Sabbath currently has 176 related
+   * Release Groups, which include albums, compilations, EPs, singles, etc.
+   *
+   * Results are sorted by id, so any proper sorting requires paging though all items and then
+   * performing a sort.
+   *
+   * Example for browsing Black Sabbath albums starting at offset 100 and
+   * requesting the maximum limit of 100. In this case artist="Black Sabbath MBID", ie.
+   * "5182c1d9-c7d2-4dad-afa0-ccfeada921a"
+   *
+   * [http://musicbrainz.org/ws/2/release-group?artist=5182c1d9-c7d2-4dad-afa0-ccfeada921a8&limit=100&offset=100&fmt=json]
+   *
+   * @param artistId the artist mbid
+   * @param limit max entries returned, required, maximum 100
+   * @param offset offset into total list, required
+   * @param type limit the results to a particular release type(s), optional
+   */
+  @GET("release-group")
+  suspend fun browseArtistReleaseGroups(
+    /**
+     * The artist MBID to search for
+     */
+    @Query("artist") artistId: String,
+    /**
+     * Maximum number of release groups to return. With [offset] used for paging results
+     */
+    @Query("limit") limit: Int = 25,
+    /**
+     * Offset at where to start in the total list. With [limit] used for paging results
+     */
+    @Query("offset") offset: Int = 0,
+    @Query("inc") include: String? = null,
+    /**
+     * Limit linked entities to this Release type.
+     *
+     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
+     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
+     */
+    @Query("type") type: String? = null
+    ): Response<BrowseReleaseGroupList>
 
   /**
    * Example is a query for Recording with MBID of "0fc4f7e7-8dcc-4dd3-8d35-d6f4c1f6b0f2", which is

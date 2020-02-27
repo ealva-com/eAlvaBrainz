@@ -30,6 +30,7 @@ import com.ealva.ealvabrainz.brainz.data.ReleaseRelation
 import com.ealva.ealvabrainz.brainz.data.SeriesRelation
 import com.ealva.ealvabrainz.brainz.data.UrlRelation
 import com.ealva.ealvabrainz.brainz.data.WorkRelation
+import com.ealva.ealvabrainz.common.ensureExhaustive
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonAdapter.Factory
 import com.squareup.moshi.JsonReader
@@ -96,7 +97,10 @@ class RelationAdapter(private val moshi: Moshi) : JsonAdapter<Relation>() {
         is ReleaseRelation -> ReleaseRelation::class.java.adapter.toJson(writer, value)
         is ReleaseGroupRelation -> ReleaseGroupRelation::class.java.adapter.toJson(writer, value)
         is WorkRelation -> WorkRelation::class.java.adapter.toJson(writer, value)
-      }
+        is InstrumentRelation -> InstrumentRelation::class.java.adapter.toJson(writer, value)
+        is SeriesRelation -> SeriesRelation::class.java.adapter.toJson(writer, value)
+        is UrlRelation -> UrlRelation::class.java.adapter.toJson(writer, value)
+      }.ensureExhaustive
     }
   }
 

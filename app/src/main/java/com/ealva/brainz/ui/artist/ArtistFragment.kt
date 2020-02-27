@@ -51,6 +51,7 @@ class ArtistFragment(
 ) : Fragment() {
 
   private var artistMbid: ArtistMbid = "".toArtistMbid()
+  private lateinit var viewModel: ArtistViewModel
   private lateinit var uiContext: FragmentUiContext
   private lateinit var ui: ArtistFragmentUi
 
@@ -73,8 +74,9 @@ class ArtistFragment(
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
+    viewModel = getArtistViewModel(brainz)
     uiContext = makeUiContext()
-    ui = ArtistFragmentUi(uiContext)
+    ui = ArtistFragmentUi(uiContext, viewModel, artistMbid)
     return ui.root
   }
 

@@ -23,16 +23,46 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.ealva.brainz.data.Country
+import com.ealva.brainz.data.toCountry
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
-import com.ealva.ealvabrainz.service.MusicBrainzResult
+import com.ealva.ealvabrainz.brainz.data.ArtistType
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.toArtistMbid
+import com.ealva.ealvabrainz.brainz.data.toArtistType
+import com.ealva.ealvabrainz.brainz.data.toReleaseGroupMbid
+import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.ensureExhaustive
+import com.ealva.ealvabrainz.common.toArtistName
+import com.ealva.ealvabrainz.service.MusicBrainzResult.Success
+import com.ealva.ealvabrainz.service.MusicBrainzResult.Unsuccessful
 import com.ealva.ealvabrainz.service.MusicBrainzService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
+
+data class DisplayArtist(
+  val mbid: ArtistMbid,
+  val type: ArtistType,
+  val name: ArtistName,
+  val country: Country
+)
+
+data class DisplayReleaseGroup(
+  val mbid: ReleaseGroupMbid,
+  val name: String,
+  val type: String,
+  /** rating value 0.0..5.0 inclusive */
+  val rating: Float
+)
 
 interface ArtistViewModel {
-  val artist: LiveData<Artist>
+  val artist: LiveData<DisplayArtist>
+  val releaseGroups: LiveData<List<DisplayReleaseGroup>>
   val isBusy: LiveData<Boolean>
-  val error: LiveData<MusicBrainzResult<Nothing>>
+  val unsuccessful: LiveData<Unsuccessful>
 
   fun lookupArtist(mbid: ArtistMbid)
 }
@@ -48,34 +78,76 @@ private class ArtistViewModelFactory(
   private val brainz: MusicBrainzService
 ) : ViewModelProvider.Factory {
   override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-    require(modelClass.isAssignableFrom(ArtistSearchViewModelImpl::class.java))
+    require(modelClass.isAssignableFrom(ArtistViewModelImpl::class.java))
     @Suppress("UNCHECKED_CAST")
-    return ArtistSearchViewModelImpl(brainz) as T
+    return ArtistViewModelImpl(brainz) as T
   }
 }
 
 internal class ArtistViewModelImpl(
   private val brainz: MusicBrainzService
 ) : ViewModel(), ArtistViewModel {
-  override val artist: MutableLiveData<Artist> = MutableLiveData()
+  override val artist: MutableLiveData<DisplayArtist> = MutableLiveData()
+  override val releaseGroups: MutableLiveData<List<DisplayReleaseGroup>> =
+    MutableLiveData(emptyList())
   override val isBusy: MutableLiveData<Boolean> = MutableLiveData(false)
-  override val error: MutableLiveData<MusicBrainzResult<Nothing>> = MutableLiveData()
-
-  private data class QueryData(
-    val query: String
-  )
+  override val unsuccessful: MutableLiveData<Unsuccessful> = MutableLiveData()
 
   override fun lookupArtist(mbid: ArtistMbid) {
-    viewModelScope.launch {
-      when(val result = brainz.lookupArtist(mbid, listOf(Artist.Subquery.ReleaseGroups))) {
-        is MusicBrainzResult.Success -> handleArtist(result.value)
-        is MusicBrainzResult.Error -> error.postValue(result)
-        is MusicBrainzResult.Exceptional -> error.postValue(result)
+    viewModelScope.launch(Dispatchers.Default) {
+      unsuccessful.postValue(Unsuccessful.None)
+      busy(isBusy) {
+        if (doArtistLookup(mbid)) {
+          when (val result =
+            brainz.getArtistReleaseGroups(mbid, ReleaseGroup.Browse.values().toList())) {
+            is Success -> handleReleaseGroups(result.value)
+            is Unsuccessful -> unsuccessful.postValue(result)
+          }.ensureExhaustive
+        }
       }
     }
   }
 
-  private fun handleArtist(artist: Artist) {
+  private fun handleReleaseGroups(groupList: List<ReleaseGroup>) {
+    val list = groupList.asSequence()
+      .sortedBy { it.firstReleaseDate }
+      .map { brainzGroup ->
+        DisplayReleaseGroup(
+          brainzGroup.id.toReleaseGroupMbid(),
+          brainzGroup.title,
+          brainzGroup.primaryType,
+          brainzGroup.rating.value
+        )
+      }
+      .toList()
+    releaseGroups.postValue(list)
+  }
 
+  private suspend fun doArtistLookup(mbid: ArtistMbid): Boolean =
+    when (val result = brainz.lookupArtist(mbid)) {
+      is Success -> {
+        handleArtist(result.value, mbid)
+        true
+      }
+      is Unsuccessful -> {
+        unsuccessful.postValue(result)
+        false
+      }
+    }
+
+  private fun handleArtist(
+    brainzArtist: Artist,
+    searchMbid: ArtistMbid
+  ) = brainzArtist.run {
+    val resultMbid = id.toArtistMbid()
+    if (resultMbid != searchMbid) Timber.e("Result %s != search %s", resultMbid, searchMbid)
+    artist.postValue(
+      DisplayArtist(
+        resultMbid,
+        type.toArtistType(),
+        name.toArtistName(),
+        country.toCountry()
+      )
+    )
   }
 }

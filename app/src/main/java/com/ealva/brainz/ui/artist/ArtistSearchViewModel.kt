@@ -23,11 +23,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.ealva.brainz.data.Country
+import com.ealva.brainz.data.toCountry
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistType
 import com.ealva.ealvabrainz.brainz.data.toArtistMbid
+import com.ealva.ealvabrainz.brainz.data.toArtistType
 import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.ensureExhaustive
 import com.ealva.ealvabrainz.common.toArtistName
-import com.ealva.ealvabrainz.service.MusicBrainzResult
+import com.ealva.ealvabrainz.service.MusicBrainzResult.Success
+import com.ealva.ealvabrainz.service.MusicBrainzResult.Unsuccessful
 import com.ealva.ealvabrainz.service.MusicBrainzService
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -39,15 +45,16 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 data class ArtistSearchResult(
-  val mdid: ArtistMbid,
-  val type: String,
+  val mbid: ArtistMbid,
+  val type: ArtistType,
   val name: ArtistName,
-  val country: String,
+  val country: Country,
   val disambiguation: String,
   val score: Int
 ) {
   companion object {
-    val NullArtistSearchResult = ArtistSearchResult(ArtistMbid(""), "", ArtistName(""), "", "", 0)
+    val NullArtistSearchResult = ArtistSearchResult(
+      "".toArtistMbid(), "".toArtistType(), "".toArtistName(), "".toCountry(), "", 0)
   }
 }
 
@@ -55,14 +62,14 @@ interface ArtistSearchViewModel {
   val itemList: LiveData<List<ArtistSearchResult>>
   val lastQuery: LiveData<String>
   val isBusy: LiveData<Boolean>
-  val error: LiveData<MusicBrainzResult<Nothing>>
+  val unsuccessful: LiveData<Unsuccessful>
 
   fun findArtist(query: String)
 
-  fun isEmptyAndNotBusy(): Boolean {
-    val list = itemList.value
-    return list.isNullOrEmpty() || isBusy.value != true
-  }
+//  fun isEmptyAndNotBusy(): Boolean {
+//    val list = itemList.value
+//    return list.isNullOrEmpty() || isBusy.value != true
+//  }
 
 }
 
@@ -89,7 +96,7 @@ internal class ArtistSearchViewModelImpl(
   override val itemList: MutableLiveData<List<ArtistSearchResult>> = MutableLiveData(emptyList())
   override val lastQuery: MutableLiveData<String> = MutableLiveData("")
   override val isBusy: MutableLiveData<Boolean> = MutableLiveData(false)
-  override val error: MutableLiveData<MusicBrainzResult<Nothing>> = MutableLiveData()
+  override val unsuccessful: MutableLiveData<Unsuccessful> = MutableLiveData()
 
   private data class QueryData(
     val query: String
@@ -107,28 +114,27 @@ internal class ArtistSearchViewModelImpl(
 
   private suspend fun handleQuery(query: String) {
     viewModelScope.launch(Dispatchers.Default) {
-      error.postValue(null)
+      unsuccessful.postValue(Unsuccessful.None)
       lastQuery.postValue(query)
       val theJob = coroutineContext[Job] as Job
       loadJob = theJob
       busy(isBusy) {
         when (val result = brainz.brainz { it.findArtist(query) }) {
-          is MusicBrainzResult.Success -> {
+          is Success -> {
             val list = result.value.artists.map { artist ->
               ArtistSearchResult(
                 artist.id.toArtistMbid(),
-                artist.type,
+                artist.type.toArtistType(),
                 artist.name.toArtistName(),
-                artist.country,
+                artist.country.toCountry(),
                 artist.disambiguation,
                 artist.score
               )
             }
             itemList.postValue(list)
           }
-          is MusicBrainzResult.Error -> error.postValue(result)
-          is MusicBrainzResult.Exceptional -> error.postValue(result)
-        }
+          is Unsuccessful -> unsuccessful.postValue(result)
+        }.ensureExhaustive
       }
       loadJob = null
     }

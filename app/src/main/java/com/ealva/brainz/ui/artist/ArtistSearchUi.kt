@@ -19,22 +19,28 @@ package com.ealva.brainz.ui.artist
 
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.whenStarted
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ealva.brainz.ui.fragment.FragmentUiContext
 import com.ealva.brainz.ui.fragment.Navigation
+import com.ealva.brainz.ui.view.addCircularProgress
 import com.ealva.brainz.ui.view.addOnTouchOvalRipple
 import com.ealva.brainz.ui.view.clickFlow
 import com.ealva.brainz.ui.view.hideKeyboard
 import com.ealva.ealvabrainz.R
-import com.ealva.ealvabrainz.service.MusicBrainzResult
+import com.ealva.ealvabrainz.common.ensureExhaustive
+import com.ealva.ealvabrainz.service.MusicBrainzResult.Unsuccessful
+import com.ealva.ealvabrainz.service.MusicBrainzResult.Unsuccessful.ErrorResult
+import com.ealva.ealvabrainz.service.MusicBrainzResult.Unsuccessful.Exceptional
 import com.google.android.material.textfield.TextInputLayout
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial
 import com.mikepenz.iconics.utils.paddingDp
 import com.mikepenz.iconics.utils.sizeDp
+import fr.castorflex.android.circularprogressbar.CircularProgressBar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -61,6 +67,7 @@ import splitties.views.dsl.material.MaterialComponentsStyles
 import splitties.views.dsl.material.addInput
 import splitties.views.dsl.recyclerview.recyclerView
 import splitties.views.type
+import com.ealva.ealvabrainz.R.id.artist_search_circular_progress as ID_CIRCULAR_PROGRESS
 import com.ealva.ealvabrainz.R.id.artist_search_constraint as ID_CONSTRAINT
 import com.ealva.ealvabrainz.R.id.artist_search_coordinator as ID_COORDINATOR
 import com.ealva.ealvabrainz.R.id.artist_search_recycler as ID_RECYCLER
@@ -94,18 +101,12 @@ internal class ArtistSearchUiImpl(
   private val searchBtn: ImageView
   private val recycler: RecyclerView
   private val searchItemAdapter: ArtistSearchItemAdapter
+  private val progress: CircularProgressBar
 
   private val materialStyles = MaterialComponentsStyles(ctx)
 
   @UseExperimental(ExperimentalSplittiesApi::class, ExperimentalCoroutinesApi::class)
   override val root = coordinatorLayout(ID_COORDINATOR) {
-    viewModel.error.observe(uiContext.lifecycleOwner, Observer { result ->
-      when (result) {
-        is MusicBrainzResult.Error -> longSnack(result.error.error)
-        is MusicBrainzResult.Exceptional -> longSnack(result.exception.message ?: "Exception")
-      }
-    })
-
     add(constraintLayout(ID_CONSTRAINT) {
 
       textInputLayout = add(materialStyles.textInputLayout.filledBox(ID_TEXT_INPUT_LAYOUT) {
@@ -147,7 +148,7 @@ internal class ArtistSearchUiImpl(
 
       searchItemAdapter = ArtistSearchItemAdapter(uiContext) { selection ->
         navigation.push(
-          ArtistFragment.make(uiContext.fragmentManager, selection.mdid),
+          ArtistFragment.make(uiContext.fragmentManager, selection.mbid),
           ArtistFragment.NAME
         )
       }
@@ -161,21 +162,38 @@ internal class ArtistSearchUiImpl(
         bottomToBottom = PARENT_ID
         bottomMargin = dip(4)
       })
-      viewModel.itemList.observe(uiContext.lifecycleOwner, Observer { list ->
-        if (list != null && list.isNotEmpty()) {
-          searchItemAdapter.setItems(list)
-        }
-      })
 
     }, defaultLParams(matchParent, matchParent) {
 
     })
-  }.also {
+
+    progress = addCircularProgress(ID_CIRCULAR_PROGRESS)
+
+  }.also { root ->
     scope.launch {
       lifecycleOwner.whenStarted {
         searchBtn.clickFlow().onEach {
           doSearch(textInputLayout.editText?.text?.toString())
         }.launchIn(scope)
+
+        viewModel.itemList.observe(uiContext.lifecycleOwner, Observer { list ->
+          if (list != null && list.isNotEmpty()) {
+            searchItemAdapter.setItems(list)
+          }
+          recycler.layoutManager?.scrollToPosition(0)
+        })
+
+        viewModel.unsuccessful.observe(uiContext.lifecycleOwner, Observer { result ->
+          when (result) {
+            is ErrorResult -> root.longSnack(result.error.error)
+            is Exceptional -> root.longSnack(result.exception.message ?: "Exception")
+            is Unsuccessful.None -> Any()
+          }.ensureExhaustive
+        })
+
+        viewModel.isBusy.observe(uiContext.lifecycleOwner, Observer { busy ->
+          progress.isVisible = busy == true
+        })
       }
     }
   }
@@ -188,5 +206,5 @@ internal class ArtistSearchUiImpl(
       root.snack(R.string.query_field_empty)
     }
   }
-
 }
+

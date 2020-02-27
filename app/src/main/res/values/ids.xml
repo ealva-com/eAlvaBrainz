@@ -37,6 +37,7 @@
     <item name="artist_search_search_button" type="id" />
     <item name="artist_search_recycler" type="id" />
     <item name="artist_search_text_input_layout" type="id" />
+    <item name="artist_search_circular_progress" type="id" />
 
     <item name="artist_search_item_constraint" type="id" />
     <item name="artist_search_item_name" type="id" />
@@ -44,7 +45,11 @@
     <item name="artist_search_item_type" type="id" />
     <item name="artist_search_item_score" type="id" />
     <item name="artist_search_item_country" type="id" />
-    <item name="artist_search_item_card" type="id" /><item name="artist_ui_text" type="id" />
+    <item name="artist_search_item_card" type="id" />
+
+    <item name="artist_ui_coordinator" type="id" />
+    <item name="artist_ui_constraint" type="id" />
+    <item name="artist_ui_name" type="id" /><item name="artist_ui_circular_progress" type="id" />
 
 
 </resources>

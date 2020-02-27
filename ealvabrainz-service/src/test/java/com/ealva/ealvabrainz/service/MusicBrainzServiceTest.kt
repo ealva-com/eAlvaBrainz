@@ -25,6 +25,7 @@ import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.Release.Companion.NullRelease
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseList
+import com.ealva.ealvabrainz.brainz.data.joinToInc
 import com.ealva.ealvabrainz.brainz.data.toReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.toReleaseMbid
 import com.ealva.ealvabrainz.common.AlbumName
@@ -33,8 +34,9 @@ import com.ealva.ealvabrainz.common.toAlbumName
 import com.ealva.ealvabrainz.common.toArtistName
 import com.ealva.ealvabrainz.common.toRecordingName
 import com.ealva.ealvabrainz.runBlockingTest
-import com.ealva.ealvabrainz.service.MusicBrainzResult.Exceptional
 import com.ealva.ealvabrainz.service.MusicBrainzResult.Success
+import com.ealva.ealvabrainz.service.MusicBrainzResult.Unsuccessful.ErrorResult
+import com.ealva.ealvabrainz.service.MusicBrainzResult.Unsuccessful.Exceptional
 import com.nhaarman.expect.expect
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.doThrow
@@ -118,7 +120,7 @@ class MusicBrainzServiceTest {
     expect(
       service.lookupReleaseGroup(
         mbid,
-        status = Release.Status.Official
+        status = Release.Status.values().toList()
       )
     ).toBeInstanceOf<Exceptional> { result ->
       expect(result.exception).toBeInstanceOf<MusicBrainzException> {
@@ -132,9 +134,11 @@ class MusicBrainzServiceTest {
   fun `test lookupReleaseGroup status used`() = coroutineRule.runBlockingTest {
     val dummy = ReleaseGroup(title = "dummy")
     val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseGroupMbid()
+    val allStatus = Release.Status.values().toList()
+    val status = allStatus.joinToInc()
     val mockBrainz = mock<MusicBrainz> {
       onBlocking {
-        lookupReleaseGroup(mbid.value, include = "releases", status = "official")
+        lookupReleaseGroup(mbid.value, include = "releases", status = status)
       } doReturn makeSuccess(dummy)
     }
     val service = makeServiceForTest(mockBrainz)
@@ -142,7 +146,7 @@ class MusicBrainzServiceTest {
       service.lookupReleaseGroup(
         mbid,
         listOf(ReleaseGroup.Subquery.Releases),
-        status = Release.Status.Official
+        status = allStatus
       )
     ).toBeInstanceOf<Success<ReleaseGroup>> { result ->
       expect(result.value).toBeTheSameAs(dummy)
@@ -202,7 +206,7 @@ class MusicBrainzServiceTest {
     val service = makeServiceForTest(mockBrainz)
     expect(service.brainz { brainz ->
       brainz.lookupRelease(mbid.value, null)
-    }).toBeInstanceOf<MusicBrainzResult.Error> { result ->
+    }).toBeInstanceOf<ErrorResult> { result ->
       expect(result.error.error).toBe("404")
       expect(result.error.help).toBe("Not found")
     }
