@@ -25,4 +25,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="EaLabelTextAppearance" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

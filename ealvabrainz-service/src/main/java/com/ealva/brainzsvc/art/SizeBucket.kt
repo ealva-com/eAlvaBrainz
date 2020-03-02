@@ -15,23 +15,15 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.brainz.data
+package com.ealva.brainzsvc.art
 
-import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
-import com.squareup.moshi.JsonClass
+import com.ealva.brainzsvc.service.R
 
-@JsonClass(generateAdapter = true)
-data class Genre(
-  /** Genre name in lowercase */
-  var name: String = "",
-  /** Number of votes for this genres applicability to the entity */
-  var count: Int = 0
-) {
-  companion object {
-    val NullGenre = Genre(name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Genre::class.java.name to NullGenre
-  }
+enum class SizeBucket(val maybeVeryLarge: Boolean, val stringRes: Int) {
+  ORIGINAL(true, R.string.Original),
+  EXTRA_LARGE(true, R.string.ExtraLarge),
+  LARGE(false, R.string.Large),
+  MEDIUM(false, R.string.Medium),
+  SMALL(false, R.string.Small),
+  UNKNOWN(false, R.string.Unknown)
 }
-
-val Genre.isNullObject
-  get() = this === NullGenre

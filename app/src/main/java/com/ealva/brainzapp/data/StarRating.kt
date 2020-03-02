@@ -15,23 +15,15 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.brainz.data
+package com.ealva.brainzapp.data
 
-import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
-import com.squareup.moshi.JsonClass
-
-@JsonClass(generateAdapter = true)
-data class Genre(
-  /** Genre name in lowercase */
-  var name: String = "",
-  /** Number of votes for this genres applicability to the entity */
-  var count: Int = 0
-) {
+inline class StarRating(val value: Float) {
   companion object {
-    val NullGenre = Genre(name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Genre::class.java.name to NullGenre
+    /** Prefer this for error correction instead of calling ctor directly */
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun make(value: Float) = StarRating(value.coerceIn(0.0F..5.0F))
   }
 }
 
-val Genre.isNullObject
-  get() = this === NullGenre
+@Suppress("NOTHING_TO_INLINE")
+inline fun Float.toStarRating() = StarRating.make(this)

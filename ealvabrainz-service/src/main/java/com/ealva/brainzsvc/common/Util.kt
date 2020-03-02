@@ -15,23 +15,11 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.brainz.data
+package com.ealva.brainzsvc.common
 
-import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
-import com.squareup.moshi.JsonClass
+import com.ealva.ealvabrainz.BuildConfig
 
-@JsonClass(generateAdapter = true)
-data class Genre(
-  /** Genre name in lowercase */
-  var name: String = "",
-  /** Number of votes for this genres applicability to the entity */
-  var count: Int = 0
-) {
-  companion object {
-    val NullGenre = Genre(name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Genre::class.java.name to NullGenre
-  }
+inline fun debug(block: () -> Unit) {
+  if (BuildConfig.DEBUG) block()
 }
 
-val Genre.isNullObject
-  get() = this === NullGenre

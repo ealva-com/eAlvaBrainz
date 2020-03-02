@@ -15,23 +15,23 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.brainz.data
+package com.ealva.brainzsvc.art
 
-import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
-import com.squareup.moshi.JsonClass
+import android.content.Intent
+import android.net.Uri
+import android.util.Size
 
-@JsonClass(generateAdapter = true)
-data class Genre(
-  /** Genre name in lowercase */
-  var name: String = "",
-  /** Number of votes for this genres applicability to the entity */
-  var count: Int = 0
-) {
-  companion object {
-    val NullGenre = Genre(name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Genre::class.java.name to NullGenre
-  }
+/**
+ * It's expected that [location] will be the sole determinant for equality. This interface
+ * is provided as common facade over the source of images.
+ */
+@Suppress("unused")
+interface RemoteImage : Comparable<RemoteImage> {
+  val location: Uri
+  val sizeBucket: SizeBucket
+  val sourceLogoDrawableRes: Int
+  val sourceIntent: Intent
+  val actualSize: Size?
 }
 
-val Genre.isNullObject
-  get() = this === NullGenre
+

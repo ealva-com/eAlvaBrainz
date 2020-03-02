@@ -15,23 +15,25 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.brainz.data
+package com.ealva.brainzapp.services
 
-import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
-import com.squareup.moshi.JsonClass
+import com.ealva.brainzsvc.service.CoverArtService
+import com.ealva.brainzsvc.service.MusicBrainzService
+import org.kodein.di.Kodein
+import org.kodein.di.generic.bind
+import org.kodein.di.generic.instance
+import org.kodein.di.generic.singleton
 
-@JsonClass(generateAdapter = true)
-data class Genre(
-  /** Genre name in lowercase */
-  var name: String = "",
-  /** Number of votes for this genres applicability to the entity */
-  var count: Int = 0
-) {
-  companion object {
-    val NullGenre = Genre(name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Genre::class.java.name to NullGenre
+private const val appName = "My App"
+private const val appVersion = "0.1"
+private const val contactEmail = "YourName@YourAddress.com"
+
+
+val brainzModule = Kodein.Module("BrainzModule") {
+  bind<CoverArtService>() with singleton {
+    CoverArtService.make(instance(), appName, appVersion, contactEmail)
+  }
+  bind<MusicBrainzService>() with singleton {
+    MusicBrainzService.make(instance(), appName, appVersion, contactEmail, instance())
   }
 }
-
-val Genre.isNullObject
-  get() = this === NullGenre

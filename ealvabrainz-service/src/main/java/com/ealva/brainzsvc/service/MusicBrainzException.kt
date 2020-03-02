@@ -15,23 +15,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.brainz.data
+package com.ealva.brainzsvc.service
 
-import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
-import com.squareup.moshi.JsonClass
+import com.ealva.brainzsvc.net.RawResponse
 
-@JsonClass(generateAdapter = true)
-data class Genre(
-  /** Genre name in lowercase */
-  var name: String = "",
-  /** Number of votes for this genres applicability to the entity */
-  var count: Int = 0
-) {
-  companion object {
-    val NullGenre = Genre(name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Genre::class.java.name to NullGenre
-  }
-}
+open class MusicBrainzException(message: String, cause: Throwable? = null) :
+  RuntimeException(message, cause)
 
-val Genre.isNullObject
-  get() = this === NullGenre
+class MusicBrainzUnknownError(val rawResponse: RawResponse) :
+  MusicBrainzException("Error body could not be deserialized", null)

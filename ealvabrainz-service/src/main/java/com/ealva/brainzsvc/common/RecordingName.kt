@@ -15,23 +15,23 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.brainz.data
+package com.ealva.brainzsvc.common
 
-import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
-import com.squareup.moshi.JsonClass
+/**
+ * Convert this String to an [RecordingName] or [RecordingName.UNKNOWN] if this is null.
+ */
+@Suppress("NOTHING_TO_INLINE")
+inline fun String?.toRecordingName(): RecordingName {
+  return this?.let { RecordingName.make(this) } ?: RecordingName.UNKNOWN
+}
 
-@JsonClass(generateAdapter = true)
-data class Genre(
-  /** Genre name in lowercase */
-  var name: String = "",
-  /** Number of votes for this genres applicability to the entity */
-  var count: Int = 0
-) {
+inline class RecordingName(val value: String) {
   companion object {
-    val NullGenre = Genre(name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Genre::class.java.name to NullGenre
+    val UNKNOWN = RecordingName("Unknown")
+
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun make(value: String): RecordingName =
+      RecordingName(value.trim())
   }
 }
 
-val Genre.isNullObject
-  get() = this === NullGenre

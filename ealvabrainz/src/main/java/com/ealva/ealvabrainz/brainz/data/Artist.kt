@@ -60,11 +60,6 @@ class Artist(
    */
   @field:Json(name = "sort-name") var sortName: String = "",
   var country: String = "",
-  /**
-   * The artist area, as the name suggests, indicates the area with which an artist is primarily
-   * identified with. It is often, but not always, its birth/formation country.
-   */
-  @field:FallbackOnNull var area: Area = Area.NullArea,
   @field:Json(name = "begin-area") @field:FallbackOnNull var beginArea: Area = Area.NullArea,
   @field:Json(name = "end-area") @field:FallbackOnNull var endArea: Area = Area.NullArea,
   /**
@@ -108,6 +103,11 @@ class Artist(
   var gender: String = "",
   @field:Json(name = "gender-id") var genderId: String = "",
   @field:Json(name = "type-id") var typeId: String = "",
+  /**
+   * The artist area, as the name suggests, indicates the area with which an artist is primarily
+   * identified with. It is often, but not always, its birth/formation country.
+   */
+  @field:FallbackOnNull var area: Area = Area.NullArea,
   var genres: List<Genre> = emptyList(),
   /**
    * Aliases are used to store alternate names or misspellings. For more information and examples,
@@ -176,7 +176,11 @@ class Artist(
     Annotation("annotation"),
     Tags("tags"),
     Ratings("ratings"),
-    Genres("genres")
+    Genres("genres");
+    companion object {
+      /** Doesn't create a values() array and/or list every time */
+      val all: List<Misc> by lazy { values().asList() }
+    }
   }
 
   /**

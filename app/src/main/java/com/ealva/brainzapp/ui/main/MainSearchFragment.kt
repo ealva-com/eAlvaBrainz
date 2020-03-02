@@ -15,23 +15,37 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.brainz.data
+package com.ealva.brainzapp.ui.main
 
-import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
-import com.squareup.moshi.JsonClass
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 
-@JsonClass(generateAdapter = true)
-data class Genre(
-  /** Genre name in lowercase */
-  var name: String = "",
-  /** Number of votes for this genres applicability to the entity */
-  var count: Int = 0
-) {
+class MainSearchFragment private constructor() : Fragment() {
+  private lateinit var ui: MainSearchFragmentUi
+
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View? {
+    ui = makeSearchFragmentUi()
+    return ui.root
+  }
+
   companion object {
-    val NullGenre = Genre(name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Genre::class.java.name to NullGenre
+    val NAME: String = MainSearchFragment::class.java.name
+
+    fun make(): MainSearchFragment {
+      return MainSearchFragment()
+    }
+
+    fun make(fm: FragmentManager): MainSearchFragment {
+      return fm.instantiate()
+    }
+
   }
 }
-
-val Genre.isNullObject
-  get() = this === NullGenre

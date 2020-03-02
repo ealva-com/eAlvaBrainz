@@ -15,23 +15,22 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.brainz.data
+package com.ealva.brainzsvc.net
 
-import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
-import com.squareup.moshi.JsonClass
+import retrofit2.Response
 
-@JsonClass(generateAdapter = true)
-data class Genre(
-  /** Genre name in lowercase */
-  var name: String = "",
-  /** Number of votes for this genres applicability to the entity */
-  var count: Int = 0
-) {
-  companion object {
-    val NullGenre = Genre(name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Genre::class.java.name to NullGenre
-  }
+interface RawResponse {
+  val httpStatusCode: Int
+  val httpStatus: String
+  val errorBody: String
 }
 
-val Genre.isNullObject
-  get() = this === NullGenre
+internal class RetrofitRawResponse<T: Any>(private val response: Response<T>): RawResponse {
+  override val httpStatusCode: Int
+    get() = response.code()
+  override val httpStatus: String
+    get() = response.message()
+  override val errorBody: String
+    get() = response.errorBody()?.string() ?: "null"
+
+}

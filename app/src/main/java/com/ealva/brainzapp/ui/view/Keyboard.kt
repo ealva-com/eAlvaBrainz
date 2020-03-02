@@ -15,23 +15,21 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.brainz.data
+package com.ealva.brainzapp.ui.view
 
-import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
-import com.squareup.moshi.JsonClass
+import android.app.Activity
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import androidx.fragment.app.FragmentActivity
 
-@JsonClass(generateAdapter = true)
-data class Genre(
-  /** Genre name in lowercase */
-  var name: String = "",
-  /** Number of votes for this genres applicability to the entity */
-  var count: Int = 0
-) {
-  companion object {
-    val NullGenre = Genre(name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Genre::class.java.name to NullGenre
+fun Activity.hideKeyboard() {
+  val inputMethodManager =
+    getSystemService(FragmentActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+  //Find the currently focused view, so we can grab the correct window token from it.
+  var view = currentFocus
+  //If no view currently has focus, create a new one, just so we can grab a window token from it
+  if (view == null) {
+    view = View(this)
   }
+  inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }
-
-val Genre.isNullObject
-  get() = this === NullGenre

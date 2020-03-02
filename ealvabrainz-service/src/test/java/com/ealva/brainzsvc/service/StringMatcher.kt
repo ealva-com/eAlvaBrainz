@@ -15,23 +15,14 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.brainz.data
+package com.ealva.brainzsvc.service
 
-import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
-import com.squareup.moshi.JsonClass
+import com.nhaarman.expect.StringMatcher
+import com.nhaarman.expect.fail
 
-@JsonClass(generateAdapter = true)
-data class Genre(
-  /** Genre name in lowercase */
-  var name: String = "",
-  /** Number of votes for this genres applicability to the entity */
-  var count: Int = 0
-) {
-  companion object {
-    val NullGenre = Genre(name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Genre::class.java.name to NullGenre
+fun StringMatcher.toEndWith(value: String) {
+  if (actual?.endsWith(value) != true) {
+    fail("Expected \"$actual\" to end with $value")
   }
 }
 
-val Genre.isNullObject
-  get() = this === NullGenre

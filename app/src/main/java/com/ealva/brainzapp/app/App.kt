@@ -15,23 +15,27 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.brainz.data
+package com.ealva.brainzapp.app
 
-import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
-import com.squareup.moshi.JsonClass
+import android.app.Application
+import com.ealva.brainzapp.services.brainzModule
+import com.ealva.ealvabrainz.BuildConfig
+import org.kodein.di.Kodein
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.x.androidXModule
+import timber.log.Timber
 
-@JsonClass(generateAdapter = true)
-data class Genre(
-  /** Genre name in lowercase */
-  var name: String = "",
-  /** Number of votes for this genres applicability to the entity */
-  var count: Int = 0
-) {
-  companion object {
-    val NullGenre = Genre(name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Genre::class.java.name to NullGenre
+@Suppress("unused") // It's in the manifest
+class App : Application(), KodeinAware {
+  override val kodein by Kodein.lazy {
+    import(androidXModule(this@App))
+    import(brainzModule)
+  }
+
+  override fun onCreate() {
+    super.onCreate()
+    if (BuildConfig.DEBUG) {
+      Timber.plant(Timber.DebugTree())
+    }
   }
 }
-
-val Genre.isNullObject
-  get() = this === NullGenre

@@ -56,5 +56,28 @@
     <string name="EndedLabel">Ended:</string>
     <string name="StartedInLabel">Started In:</string>
     <string name="EndedInLabel">Ended In:</string>
+    <string name="TypeLabel">Type:</string>
+    <string name="AreaLabel">Area:</string>
+
+    <string name="Album">Album</string>
+    <string name="Single">Single</string>
+    <string name="EP">EP</string>
+    <string name="Broadcast">Broadcast</string>
+    <string name="Compilation">Compilation</string>
+    <string name="Soundtrack">Soundtrack</string>
+    <string name="Spoken_word">Spoken word</string>
+    <string name="Interview">Interview</string>
+    <string name="Audiobook">Audiobook</string>
+    <string name="Audio_drama">Audio drama</string>
+    <string name="Live">Live</string>
+    <string name="Remix">Remix</string>
+    <string name="DJ_mix">DJ mix</string>
+    <string name="MixtapeSlashStreet">Mixtape/Streeet</string>
+    <string name="Demo">Demo</string>
+
+    <string name="IsniCodeLabel">ISNI code:</string>
+    <string name="RatingLabel">Rating:</string>
+    <string name="GenresLabel">Genres:</string>
+    <string name="none_in_parens">(none)</string>
 
 </resources>

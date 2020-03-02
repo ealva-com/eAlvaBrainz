@@ -52,6 +52,31 @@
     <item name="artist_ui_name" type="id" />
     <item name="artist_ui_circular_progress" type="id" />
     <item name="artist_ui_type" type="id"/>
+    <item name="artist_ui_recycler" type="id" />
+    <item name="artist_ui_type_label" type="id" />
+    <item name="artist_ui_lifespan_begin_label" type="id" />
+    <item name="artist_ui_lifespan_begin" type="id" />
+    <item name="artist_ui_start_area_label" type="id" />
+    <item name="artist_ui_start_area" type="id" />
+    <item name="artist_ui_lifespan_end_label" type="id" />
+    <item name="artist_ui_lifespan_end" type="id" />
+    <item name="artist_ui_end_area_label" type="id" />
+    <item name="artist_ui_end_area" type="id" />
+    <item name="artist_ui_area_label" type="id" />
+    <item name="artist_ui_area" type="id" />
+    <item name="artist_ui_rating_bar" type="id" />
+    <item name="artist_ui_isni_label" type="id" />
+    <item name="artist_ui_isni" type="id" />
+    <item name="artist_ui_isni_tag_key" type="id" />
+    <item name="artist_ui_rating_label" type="id" />
+    <item name="artist_ui_genres_label" type="id" />
+    <item name="artist_ui_genres" type="id" />
+
+    <item name="release_group_item_card" type="id" />
+    <item name="release_group_item_name" type="id" />
+    <item name="release_group_item_constraint" type="id" />
+    <item name="release_group_item_type" type="id" />
+    <item name="release_group_item_date" type="id" /><item name="release_group_item_rating" type="id" />
 
 
 </resources>
