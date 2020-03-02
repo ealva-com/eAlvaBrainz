@@ -37,20 +37,16 @@ import com.ealva.brainzapp.ui.fragment.FragmentUiContext
 import com.ealva.brainzapp.ui.view.addCircularProgress
 import com.ealva.brainzapp.ui.view.clickFlow
 import com.ealva.brainzapp.ui.view.setStarRatingDrawable
+import com.ealva.brainzapp.ui.view.snackErrors
 import com.ealva.brainzsvc.common.ArtistName
-import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful
-import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful.ErrorResult
-import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful.Exceptional
 import com.ealva.ealvabrainz.R
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
-import com.ealva.ealvabrainz.common.ensureExhaustive
 import fr.castorflex.android.circularprogressbar.CircularProgressBar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import splitties.dimensions.dip
-import splitties.snackbar.longSnack
 import splitties.toast.toast
 import splitties.views.dsl.constraintlayout.constraintLayout
 import splitties.views.dsl.constraintlayout.lParams
@@ -290,14 +286,8 @@ class ArtistFragmentUi(
         viewModel.artist.observe(lifecycleOwner, Observer { artist ->
           updateArtistInfo(artist)
         })
-        viewModel.unsuccessful.observe(uiContext.lifecycleOwner, Observer { result ->
-          when (result) {
-            is ErrorResult -> root.longSnack(result.error.error)
-            is Exceptional -> root.longSnack(result.exception.message ?: "Exception")
-            is Unsuccessful.None -> Any()
-          }.ensureExhaustive
-        })
-        viewModel.isBusy.observe(uiContext.lifecycleOwner, Observer { busy ->
+        viewModel.unsuccessful.snackErrors(lifecycleOwner, root)
+        viewModel.isBusy.observe(lifecycleOwner, Observer { busy ->
           progress.isVisible = busy == true
         })
         viewModel.releaseGroups.observe(lifecycleOwner, Observer { list ->

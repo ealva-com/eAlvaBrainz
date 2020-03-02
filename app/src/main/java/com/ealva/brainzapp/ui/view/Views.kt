@@ -19,7 +19,13 @@ package com.ealva.brainzapp.ui.view
 
 import android.os.Build
 import android.view.View
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import com.ealva.brainzsvc.service.MusicBrainzResult
 import com.ealva.ealvabrainz.R
+import com.ealva.ealvabrainz.common.ensureExhaustive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
@@ -27,6 +33,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
+import splitties.snackbar.longSnack
 
 fun View.addOnTouchOvalRipple() {
   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -42,3 +49,17 @@ fun View.clickFlow(): Flow<View> = callbackFlow {
   }
   awaitClose { setOnClickListener(null) }
 }.conflate().flowOn(Dispatchers.Main)
+
+fun LiveData<MusicBrainzResult.Unsuccessful>.snackErrors(
+  lifecycleOwner: LifecycleOwner,
+  root: CoordinatorLayout
+) {
+  observe(lifecycleOwner, Observer { result ->
+    when (result) {
+      is MusicBrainzResult.Unsuccessful.ErrorResult -> root.longSnack(result.error.error)
+      is MusicBrainzResult.Unsuccessful.Exceptional -> root.longSnack(result.exception.message ?: "Exception")
+      is MusicBrainzResult.Unsuccessful.None -> Any()
+    }.ensureExhaustive
+  })
+}
+

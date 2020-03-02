@@ -68,8 +68,6 @@ dependencies {
     implementation "com.louiscad.splitties:splitties-views-dsl-recyclerview:$splitties_version"
     implementation "com.louiscad.splitties:splitties-views-dsl-material:$splitties_version"
     implementation "com.louiscad.splitties:splitties-views-dsl-appcompat:$splitties_version"
-    //    implementation("com.louiscad.splitties:splitties-views-dsl-appcompat:$splitties_version")
-    //    implementation "com.louiscad.splitties:splitties-views-dsl-material:$splitties_version"
     implementation "com.louiscad.splitties:splitties-toast:$splitties_version"
     implementation "com.louiscad.splitties:splitties-snackbar:$splitties_version"
     implementation "com.louiscad.splitties:splitties-resources:$splitties_version"

@@ -30,11 +30,8 @@ import com.ealva.brainzapp.ui.view.addCircularProgress
 import com.ealva.brainzapp.ui.view.addOnTouchOvalRipple
 import com.ealva.brainzapp.ui.view.clickFlow
 import com.ealva.brainzapp.ui.view.hideKeyboard
-import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful
-import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful.ErrorResult
-import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful.Exceptional
+import com.ealva.brainzapp.ui.view.snackErrors
 import com.ealva.ealvabrainz.R
-import com.ealva.ealvabrainz.common.ensureExhaustive
 import com.google.android.material.textfield.TextInputLayout
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial
@@ -47,7 +44,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import splitties.dimensions.dip
 import splitties.experimental.ExperimentalSplittiesApi
-import splitties.snackbar.longSnack
 import splitties.snackbar.snack
 import splitties.views.InputType
 import splitties.views.dsl.constraintlayout.constraintLayout
@@ -183,13 +179,7 @@ internal class ArtistSearchUiImpl(
           recycler.layoutManager?.scrollToPosition(0)
         })
 
-        viewModel.unsuccessful.observe(uiContext.lifecycleOwner, Observer { result ->
-          when (result) {
-            is ErrorResult -> root.longSnack(result.error.error)
-            is Exceptional -> root.longSnack(result.exception.message ?: "Exception")
-            is Unsuccessful.None -> Any()
-          }.ensureExhaustive
-        })
+        viewModel.unsuccessful.snackErrors(uiContext.lifecycleOwner, root)
 
         viewModel.isBusy.observe(uiContext.lifecycleOwner, Observer { busy ->
           progress.isVisible = busy == true
