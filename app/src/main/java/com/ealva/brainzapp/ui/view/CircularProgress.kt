@@ -36,7 +36,7 @@ import splitties.views.dsl.core.NO_THEME
 import splitties.views.dsl.core.Ui
 import splitties.views.dsl.core.add
 import splitties.views.dsl.core.view
-import splitties.views.gravityTopCenter
+import splitties.views.gravityCenter
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
@@ -77,6 +77,7 @@ private const val GPLUS_RED = 0xFF_B2_34_24.toInt()
 
 fun CoordinatorLayout.addCircularProgress(viewId: Int): CircularProgressBar {
   return add(circularProgress(viewId) {
+    elevation = 4f
     isVisible = false
     isIndeterminate = true
     indeterminateDrawable = CircularProgressDrawable
@@ -89,8 +90,7 @@ fun CoordinatorLayout.addCircularProgress(viewId: Int): CircularProgressBar {
       .maxSweepAngle(300)
       .build()
   }, defaultLParams(dip(40), dip(40)) {
-    topMargin = dip(120)
-    gravity = gravityTopCenter
+    gravity = gravityCenter
   })
 }
 

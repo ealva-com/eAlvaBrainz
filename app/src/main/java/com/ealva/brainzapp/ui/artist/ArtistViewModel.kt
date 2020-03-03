@@ -133,15 +133,18 @@ internal class ArtistViewModelImpl(
   override val unsuccessful: MutableLiveData<Unsuccessful> = MutableLiveData()
 
   override fun lookupArtist(mbid: ArtistMbid) {
-    viewModelScope.launch(Dispatchers.Default) {
-      unsuccessful.postValue(Unsuccessful.None)
-      busy(isBusy) {
-        if (doArtistLookup(mbid)) {
-          when (val result =
-            brainz.getArtistReleaseGroups(mbid, ReleaseGroup.Browse.values().toList())) {
-            is Success -> handleReleaseGroups(result.value)
-            is Unsuccessful -> unsuccessful.postValue(result)
-          }.ensureExhaustive
+    val currentArtist = artist.value
+    if (currentArtist == null || currentArtist.mbid != mbid) {
+      viewModelScope.launch(Dispatchers.Default) {
+        unsuccessful.postValue(Unsuccessful.None)
+        busy(isBusy) {
+          if (doArtistLookup(mbid)) {
+            when (val result =
+              brainz.getArtistReleaseGroups(mbid, ReleaseGroup.Browse.values().toList())) {
+              is Success -> handleReleaseGroups(result.value)
+              is Unsuccessful -> unsuccessful.postValue(result)
+            }.ensureExhaustive
+          }
         }
       }
     }

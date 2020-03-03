@@ -19,22 +19,27 @@ package com.ealva.brainzapp.ui.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.ealva.brainzapp.ui.fragment.Navigation
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
 import com.ealva.ealvabrainz.R.id.main_ui_fragment_container as ID_FRAGMENT_CONTAINER
 
-class MainActivity : AppCompatActivity(), KodeinAware {
+class MainActivity : AppCompatActivity(), MainPresenter, KodeinAware {
   override val kodein: Kodein by closestKodein()
   private lateinit var ui: MainActivityUi
   private lateinit var navigation: Navigation
 
   override fun onCreate(savedInstanceState: Bundle?) {
     navigation = Navigation.make(supportFragmentManager, ID_FRAGMENT_CONTAINER)
-    supportFragmentManager.fragmentFactory = AppFragmentFactory(kodein, navigation)
+    supportFragmentManager.fragmentFactory = AppFragmentFactory(kodein, navigation, this)
     super.onCreate(savedInstanceState)
     ui = MainActivityUi(makeUiContext(), navigation)
+  }
+
+  override fun setActionBar(toolbar: Toolbar) {
+    setSupportActionBar(toolbar)
   }
 
 }

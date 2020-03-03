@@ -20,6 +20,7 @@ package com.ealva.brainzapp.ui.main
 import android.content.Context
 import android.widget.ArrayAdapter
 import androidx.annotation.IdRes
+import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -40,6 +41,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import splitties.dimensions.dip
+import splitties.resources.styledColor
+import splitties.views.backgroundColor
+import splitties.views.dsl.appcompat.toolbar
 import splitties.views.dsl.constraintlayout.constraintLayout
 import splitties.views.dsl.constraintlayout.lParams
 import splitties.views.dsl.coordinatorlayout.coordinatorLayout
@@ -49,17 +53,19 @@ import splitties.views.dsl.core.add
 import splitties.views.dsl.core.frameLayout
 import splitties.views.dsl.core.matchParent
 import splitties.views.dsl.core.spinner
+import splitties.views.dsl.core.wrapContent
 import com.ealva.ealvabrainz.R.id.search_fragment_constraint as ID_CONSTRAINT
 import com.ealva.ealvabrainz.R.id.search_fragment_container as ID_FRAGMENT_CONTAINER
 import com.ealva.ealvabrainz.R.id.search_fragment_coordinator as ID_COORDINATOR
 import com.ealva.ealvabrainz.R.id.search_fragment_spinner as ID_SPINNER
+import com.ealva.ealvabrainz.R.id.search_fragment_toolbar as ID_TOOLBAR
 
 interface MainSearchFragmentUi : Ui {
 
 }
 
-fun Fragment.makeSearchFragmentUi(): MainSearchFragmentUi {
-  return MainSearchFragmentUiImpl(makeUiContext())
+fun Fragment.makeSearchFragmentUi(mainPresenter: MainPresenter): MainSearchFragmentUi {
+  return MainSearchFragmentUiImpl(makeUiContext(), mainPresenter)
 }
 
 @Suppress("unused")
@@ -107,23 +113,37 @@ private enum class FragmentMaker(@field:IdRes val value: Int) {
 }
 
 private class MainSearchFragmentUiImpl(
-  private val uiContext: FragmentUiContext
+  private val uiContext: FragmentUiContext,
+  mainPresenter: MainPresenter
 ) : MainSearchFragmentUi {
   private val fm = uiContext.fragmentManager
   private val scope = uiContext.scope
   private val lifecycleOwner = uiContext.lifecycleOwner
   private val localNavigation: Navigation = Navigation.make(fm, ID_FRAGMENT_CONTAINER)
 
+  private val toolbar: Toolbar
   private val spinnerWrapper: SpinnerWrapper
 
   override val ctx = uiContext.fragment.requireContext()
   @UseExperimental(ExperimentalCoroutinesApi::class)
   override val root = coordinatorLayout(ID_COORDINATOR) {
+
     add(constraintLayout(ID_CONSTRAINT) {
+      toolbar = add(toolbar(ID_TOOLBAR, R.style.ThemeOverlay_AppCompat_Dark_ActionBar) {
+        backgroundColor = styledColor(R.attr.colorPrimary)
+        setTitle(R.string.app_name)
+        mainPresenter.setActionBar(this)
+      }, lParams(height = wrapContent) {
+        startToStart = PARENT_ID
+        topToTop = PARENT_ID
+        endToEnd = PARENT_ID
+        bottomToTop = ID_SPINNER
+      })
+
       spinnerWrapper = SpinnerWrapper(add(spinner(ID_SPINNER) {
       }, lParams(height = dip(40)) {
         startToStart = PARENT_ID
-        topToTop = PARENT_ID
+        topToBottom = ID_TOOLBAR
         endToEnd = PARENT_ID
         bottomToTop = ID_FRAGMENT_CONTAINER
       })).apply {
@@ -142,7 +162,8 @@ private class MainSearchFragmentUiImpl(
         bottomToBottom = PARENT_ID
       })
 
-    }, defaultLParams(matchParent, matchParent))
+    }, defaultLParams(matchParent, matchParent) {
+    })
 
   }.also {
     scope.launch {

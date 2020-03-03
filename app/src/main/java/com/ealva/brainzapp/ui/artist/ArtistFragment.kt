@@ -28,6 +28,7 @@ import androidx.fragment.app.FragmentManager
 import com.ealva.brainzapp.ui.fragment.FragmentUiContext
 import com.ealva.brainzapp.ui.fragment.Navigation
 import com.ealva.brainzapp.ui.fragment.makeUiContext
+import com.ealva.brainzapp.ui.main.MainPresenter
 import com.ealva.brainzapp.ui.main.instantiate
 import com.ealva.brainzsvc.common.ArtistName
 import com.ealva.brainzsvc.common.toArtistName
@@ -61,9 +62,10 @@ var Bundle?.artistName: ArtistName
     putString(KEY_ARTIST_NAME, value.value)
   }
 
-class ArtistFragment(
+class ArtistFragment private constructor(
   private val brainz: MusicBrainzService,
-  private val navigation: Navigation
+  private val navigation: Navigation,
+  private val mainPresenter: MainPresenter
 ) : Fragment() {
 
   private var artistMbid: ArtistMbid = "".toArtistMbid()
@@ -94,15 +96,19 @@ class ArtistFragment(
   ): View? {
     viewModel = getArtistViewModel(brainz)
     uiContext = makeUiContext()
-    ui = ArtistFragmentUi(uiContext, viewModel, artistMbid, artistName)
+    ui = ArtistFragmentUi(uiContext, mainPresenter, viewModel, artistMbid, artistName)
     return ui.root
   }
 
   companion object {
     val NAME: String = ArtistFragment::class.java.name
 
-    fun make(navigation: Navigation, brainz: MusicBrainzService): ArtistFragment =
-      ArtistFragment(brainz, navigation)
+    fun make(
+      brainz: MusicBrainzService,
+      navigation: Navigation,
+      mainPresenter: MainPresenter
+    ): ArtistFragment =
+      ArtistFragment(brainz, navigation, mainPresenter)
 
     fun make(fm: FragmentManager, mbid: ArtistMbid, name: ArtistName): ArtistFragment =
       fm.instantiate(

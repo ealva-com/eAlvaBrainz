@@ -24,7 +24,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 
-class MainSearchFragment private constructor() : Fragment() {
+class MainSearchFragment private constructor(val mainPresenter: MainPresenter) : Fragment() {
   private lateinit var ui: MainSearchFragmentUi
 
   override fun onCreateView(
@@ -32,15 +32,15 @@ class MainSearchFragment private constructor() : Fragment() {
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    ui = makeSearchFragmentUi()
+    ui = makeSearchFragmentUi(mainPresenter)
     return ui.root
   }
 
   companion object {
     val NAME: String = MainSearchFragment::class.java.name
 
-    fun make(): MainSearchFragment {
-      return MainSearchFragment()
+    fun make(mainPresenter: MainPresenter): MainSearchFragment {
+      return MainSearchFragment(mainPresenter)
     }
 
     fun make(fm: FragmentManager): MainSearchFragment {

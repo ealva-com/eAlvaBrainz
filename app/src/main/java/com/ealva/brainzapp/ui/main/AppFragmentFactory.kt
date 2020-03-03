@@ -36,16 +36,17 @@ typealias FragmentFactoryFn = () -> Fragment
 
 class AppFragmentFactory(
   override val kodein: Kodein,
-  navigation: Navigation
+  navigation: Navigation,
+  mainPresenter: MainPresenter
 ) : FragmentFactory(), KodeinAware {
   private val brainz: MusicBrainzService by instance()
 
   private val factories: MutableMap<String, FragmentFactoryFn> = mutableMapOf(
-    MainSearchFragment.NAME to { MainSearchFragment.make() },
+    MainSearchFragment.NAME to { MainSearchFragment.make(mainPresenter) },
     ArtistSearchFragment.NAME to { ArtistSearchFragment.make(brainz, navigation) },
     ReleaseGroupSearchFragment.NAME to { ReleaseGroupSearchFragment.make(brainz, navigation) },
     ReleaseSearchFragment.NAME to { ReleaseSearchFragment.make(brainz, navigation) },
-    ArtistFragment.NAME to { ArtistFragment(brainz, navigation) }
+    ArtistFragment.NAME to { ArtistFragment.make(brainz, navigation, mainPresenter) }
   )
 
   /**

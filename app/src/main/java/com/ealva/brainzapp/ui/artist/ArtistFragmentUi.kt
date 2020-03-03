@@ -20,8 +20,10 @@ package com.ealva.brainzapp.ui.artist
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
+import android.view.View.NO_ID
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
 import androidx.core.content.ContextCompat.startActivity
@@ -34,6 +36,7 @@ import com.ealva.brainzapp.data.appearsValid
 import com.ealva.brainzapp.data.setAsClickableLink
 import com.ealva.brainzapp.data.toDisplayString
 import com.ealva.brainzapp.ui.fragment.FragmentUiContext
+import com.ealva.brainzapp.ui.main.MainPresenter
 import com.ealva.brainzapp.ui.view.addCircularProgress
 import com.ealva.brainzapp.ui.view.clickFlow
 import com.ealva.brainzapp.ui.view.setStarRatingDrawable
@@ -41,15 +44,22 @@ import com.ealva.brainzapp.ui.view.snackErrors
 import com.ealva.brainzsvc.common.ArtistName
 import com.ealva.ealvabrainz.R
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import fr.castorflex.android.circularprogressbar.CircularProgressBar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import splitties.dimensions.dip
+import splitties.resources.styledColor
+import splitties.resources.styledDimenPxSize
 import splitties.toast.toast
+import splitties.views.backgroundColor
+import splitties.views.dsl.appcompat.toolbar
 import splitties.views.dsl.constraintlayout.constraintLayout
 import splitties.views.dsl.constraintlayout.lParams
+import splitties.views.dsl.coordinatorlayout.appBarLParams
 import splitties.views.dsl.coordinatorlayout.coordinatorLayout
 import splitties.views.dsl.coordinatorlayout.defaultLParams
 import splitties.views.dsl.core.Ui
@@ -58,14 +68,24 @@ import splitties.views.dsl.core.matchParent
 import splitties.views.dsl.core.ratingBar
 import splitties.views.dsl.core.textView
 import splitties.views.dsl.core.wrapContent
+import splitties.views.dsl.material.ENTER_ALWAYS
+import splitties.views.dsl.material.EXIT_UNTIL_COLLAPSED
+import splitties.views.dsl.material.PARALLAX
+import splitties.views.dsl.material.PIN
+import splitties.views.dsl.material.SCROLL
+import splitties.views.dsl.material.appBarLayout
+import splitties.views.dsl.material.collapsingToolbarLayout
+import splitties.views.dsl.material.defaultLParams
 import splitties.views.dsl.recyclerview.recyclerView
 import splitties.views.gravityStart
 import splitties.views.textAppearance
 import splitties.views.textResource
-import timber.log.Timber
+import splitties.views.topPadding
+import com.ealva.ealvabrainz.R.id.artist_ui_app_bar as ID_APP_BAR
 import com.ealva.ealvabrainz.R.id.artist_ui_area as ID_AREA
 import com.ealva.ealvabrainz.R.id.artist_ui_area_label as ID_AREA_LABEL
 import com.ealva.ealvabrainz.R.id.artist_ui_circular_progress as ID_PROGRESS
+import com.ealva.ealvabrainz.R.id.artist_ui_collapsing_toolbar as ID_COLLAPSING
 import com.ealva.ealvabrainz.R.id.artist_ui_constraint as ID_CONSTRAINT
 import com.ealva.ealvabrainz.R.id.artist_ui_coordinator as ID_COORDINATOR
 import com.ealva.ealvabrainz.R.id.artist_ui_end_area as ID_END_AREA
@@ -79,17 +99,18 @@ import com.ealva.ealvabrainz.R.id.artist_ui_lifespan_begin as ID_LIFESPAN_BEGIN
 import com.ealva.ealvabrainz.R.id.artist_ui_lifespan_begin_label as ID_LIFESPAN_BEGIN_LABEL
 import com.ealva.ealvabrainz.R.id.artist_ui_lifespan_end as ID_LIFESPAN_END
 import com.ealva.ealvabrainz.R.id.artist_ui_lifespan_end_label as ID_LIFESPAN_END_LABEL
-import com.ealva.ealvabrainz.R.id.artist_ui_name as ID_ARTIST_NAME
 import com.ealva.ealvabrainz.R.id.artist_ui_rating_bar as ID_RATING
 import com.ealva.ealvabrainz.R.id.artist_ui_rating_label as ID_RATING_LABEL
 import com.ealva.ealvabrainz.R.id.artist_ui_recycler as ID_RECYCLER
 import com.ealva.ealvabrainz.R.id.artist_ui_start_area as ID_START_AREA
 import com.ealva.ealvabrainz.R.id.artist_ui_start_area_label as ID_START_AREA_LABEL
+import com.ealva.ealvabrainz.R.id.artist_ui_toolbar as ID_TOOLBAR
 import com.ealva.ealvabrainz.R.id.artist_ui_type as ID_ARTIST_TYPE
 import com.ealva.ealvabrainz.R.id.artist_ui_type_label as ID_TYPE_LABEL
 
 class ArtistFragmentUi(
   private val uiContext: FragmentUiContext,
+  private val mainPresenter: MainPresenter,
   private val viewModel: ArtistViewModel,
   private val artistMbid: ArtistMbid,
   private val artistName: ArtistName
@@ -100,7 +121,6 @@ class ArtistFragmentUi(
   private val itemAdapter: ReleaseGroupItemAdapter
 
   private val progress: CircularProgressBar
-  private val artistNameView: TextView
   private val artistTypeView: TextView
   private val lifespanBeginLabel: TextView
   private val lifespanBegin: TextView
@@ -118,167 +138,172 @@ class ArtistFragmentUi(
   private val recycler: RecyclerView
   private val genresLabel: TextView
   private val genres: TextView
+  private val collapsing: CollapsingToolbarLayout
+  private val toolbar: Toolbar
 
   override val ctx = uiContext.context
   @UseExperimental(ExperimentalCoroutinesApi::class)
   override val root = coordinatorLayout(ID_COORDINATOR) {
     progress = addCircularProgress(ID_PROGRESS)
 
-    add(constraintLayout(ID_CONSTRAINT) {
-      artistNameView = add(textView(ID_ARTIST_NAME) {
-        text = artistName.value
-        textAppearance = R.style.TextAppearance_MaterialComponents_Headline6
-      }, lParams(height = wrapContent) {
-        startToStart = PARENT_ID
-        topToTop = PARENT_ID
-        endToEnd = PARENT_ID
-        bottomToTop = ID_TYPE_LABEL
-        leftMargin = dip(16)
-      })
+    add(appBarLayout(ID_APP_BAR, R.style.ThemeOverlay_MaterialComponents_ActionBar) {
 
-      addLabel(
-        viewId = ID_TYPE_LABEL,
-        textRes = R.string.TypeLabel,
-        belowView = ID_ARTIST_NAME,
-        valueView = ID_ARTIST_TYPE,
-        aboveView = ID_LIFESPAN_BEGIN_LABEL
-      )
+      collapsing = add(collapsingToolbarLayout(ID_COLLAPSING) {
+        isTitleEnabled = false
 
-      artistTypeView = addValueView(
-        viewId = ID_ARTIST_TYPE,
-        labelView = ID_TYPE_LABEL
-      )
+        add(constraintLayout(ID_CONSTRAINT) {
+          topPadding = styledDimenPxSize(android.R.attr.actionBarSize)
+          backgroundColor = styledColor(android.R.attr.colorBackground)
+          fitsSystemWindows = true
 
-      lifespanBeginLabel = addLabel(
-        viewId = ID_LIFESPAN_BEGIN_LABEL,
-        textRes = R.string.empty,
-        belowView = ID_TYPE_LABEL,
-        valueView = ID_LIFESPAN_BEGIN,
-        aboveView = ID_START_AREA_LABEL
-      )
+          addLabel(
+            viewId = ID_TYPE_LABEL,
+            textRes = R.string.TypeLabel,
+            belowView = NO_ID,
+            valueView = ID_ARTIST_TYPE,
+            aboveView = ID_LIFESPAN_BEGIN_LABEL
+          )
 
-      lifespanBegin = addValueView(
-        viewId = ID_LIFESPAN_BEGIN,
-        labelView = ID_LIFESPAN_BEGIN_LABEL
-      )
+          artistTypeView = addValueView(
+            viewId = ID_ARTIST_TYPE,
+            labelView = ID_TYPE_LABEL
+          )
 
-      startAreaLabel = addLabel(
-        viewId = ID_START_AREA_LABEL,
-        textRes = R.string.empty,
-        belowView = ID_LIFESPAN_BEGIN_LABEL,
-        valueView = ID_START_AREA,
-        aboveView = ID_LIFESPAN_END_LABEL
-      )
+          lifespanBeginLabel = addLabel(
+            viewId = ID_LIFESPAN_BEGIN_LABEL,
+            textRes = R.string.empty,
+            belowView = ID_TYPE_LABEL,
+            valueView = ID_LIFESPAN_BEGIN,
+            aboveView = ID_START_AREA_LABEL
+          )
 
-      startArea = addValueView(
-        viewId = ID_START_AREA,
-        labelView = ID_START_AREA_LABEL
-      )
+          lifespanBegin = addValueView(
+            viewId = ID_LIFESPAN_BEGIN,
+            labelView = ID_LIFESPAN_BEGIN_LABEL
+          )
 
-      lifespanEndLabel = addLabel(
-        viewId = ID_LIFESPAN_END_LABEL,
-        textRes = R.string.empty,
-        belowView = ID_START_AREA_LABEL,
-        valueView = ID_LIFESPAN_END,
-        aboveView = ID_END_AREA_LABEL
-      )
+          startAreaLabel = addLabel(
+            viewId = ID_START_AREA_LABEL,
+            textRes = R.string.empty,
+            belowView = ID_LIFESPAN_BEGIN_LABEL,
+            valueView = ID_START_AREA,
+            aboveView = ID_LIFESPAN_END_LABEL
+          )
 
-      lifespanEnd = addValueView(
-        viewId = ID_LIFESPAN_END,
-        labelView = ID_LIFESPAN_END_LABEL
-      )
+          startArea = addValueView(
+            viewId = ID_START_AREA,
+            labelView = ID_START_AREA_LABEL
+          )
 
-      endAreaLabel = addLabel(
-        viewId = ID_END_AREA_LABEL,
-        textRes = R.string.empty,
-        belowView = ID_LIFESPAN_END_LABEL,
-        valueView = ID_END_AREA,
-        aboveView = ID_AREA_LABEL
-      )
+          lifespanEndLabel = addLabel(
+            viewId = ID_LIFESPAN_END_LABEL,
+            textRes = R.string.empty,
+            belowView = ID_START_AREA_LABEL,
+            valueView = ID_LIFESPAN_END,
+            aboveView = ID_END_AREA_LABEL
+          )
 
-      endArea = addValueView(
-        viewId = ID_END_AREA,
-        labelView = ID_END_AREA_LABEL
-      )
+          lifespanEnd = addValueView(
+            viewId = ID_LIFESPAN_END,
+            labelView = ID_LIFESPAN_END_LABEL
+          )
 
-      areaLabel = addLabel(
-        viewId = ID_AREA_LABEL,
-        textRes = R.string.AreaLabel,
-        belowView = ID_END_AREA_LABEL,
-        valueView = ID_AREA,
-        aboveView = ID_ISNI_LABEL
-      )
+          endAreaLabel = addLabel(
+            viewId = ID_END_AREA_LABEL,
+            textRes = R.string.empty,
+            belowView = ID_LIFESPAN_END_LABEL,
+            valueView = ID_END_AREA,
+            aboveView = ID_AREA_LABEL
+          )
 
-      area = addValueView(
-        viewId = ID_AREA,
-        labelView = ID_AREA_LABEL
-      )
+          endArea = addValueView(
+            viewId = ID_END_AREA,
+            labelView = ID_END_AREA_LABEL
+          )
 
-      isniLabel = addLabel(
-        viewId = ID_ISNI_LABEL,
-        textRes = R.string.IsniCodeLabel,
-        belowView = ID_AREA_LABEL,
-        valueView = ID_ISNI,
-        aboveView = ID_RATING_LABEL
-      )
+          areaLabel = addLabel(
+            viewId = ID_AREA_LABEL,
+            textRes = R.string.AreaLabel,
+            belowView = ID_END_AREA_LABEL,
+            valueView = ID_AREA,
+            aboveView = ID_ISNI_LABEL
+          )
 
-      isni = addValueView(
-        viewId = ID_ISNI,
-        labelView = ID_ISNI_LABEL
-      )
+          area = addValueView(
+            viewId = ID_AREA,
+            labelView = ID_AREA_LABEL
+          )
 
-      addLabel(
-        viewId = ID_RATING_LABEL,
-        textRes = R.string.RatingLabel,
-        belowView = ID_ISNI_LABEL,
-        valueView = ID_RATING,
-        aboveView = ID_GENRES_LABEL
-      )
+          isniLabel = addLabel(
+            viewId = ID_ISNI_LABEL,
+            textRes = R.string.IsniCodeLabel,
+            belowView = ID_AREA_LABEL,
+            valueView = ID_ISNI,
+            aboveView = ID_RATING_LABEL
+          )
 
-      ratingBar = add(
-        ratingBar(ID_RATING) {
-          setIsIndicator(true)
-          numStars = 5
-          stepSize = 0.5f
-          rating = 0f
-          minimumHeight = dip(16)
-          setStarRatingDrawable(Color.BLUE, Color.BLUE, dip(16), dip(1), 0)
-        }, lParams(width = dip(80), height = dip(16)) {
-          leftMargin = dip(8)
-          startToEnd = ID_RATING_LABEL
-          topToTop = ID_RATING_LABEL
-          bottomToBottom = ID_RATING_LABEL
-        })
+          isni = addValueView(
+            viewId = ID_ISNI,
+            labelView = ID_ISNI_LABEL
+          )
 
-      genresLabel = addLabel(
-        viewId = ID_GENRES_LABEL,
-        textRes = R.string.GenresLabel,
-        belowView = ID_RATING_LABEL,
-        valueView = ID_GENRES,
-        aboveView = ID_RECYCLER
-      )
+          addLabel(
+            viewId = ID_RATING_LABEL,
+            textRes = R.string.RatingLabel,
+            belowView = ID_ISNI_LABEL,
+            valueView = ID_RATING,
+            aboveView = ID_GENRES_LABEL
+          )
 
-      genres = addValueView(
-        viewId = ID_GENRES,
-        labelView = ID_GENRES_LABEL
-      )
+          ratingBar = add(
+            ratingBar(ID_RATING) {
+              setIsIndicator(true)
+              numStars = 5
+              stepSize = 0.5f
+              rating = 0f
+              minimumHeight = dip(16)
+              setStarRatingDrawable(Color.BLUE, Color.BLUE, dip(16), dip(1), 0)
+            }, lParams(width = dip(80), height = dip(16)) {
+              leftMargin = dip(8)
+              startToEnd = ID_RATING_LABEL
+              topToTop = ID_RATING_LABEL
+              bottomToBottom = ID_RATING_LABEL
+            })
 
-      itemAdapter = ReleaseGroupItemAdapter(uiContext) { displayGroup ->
+          genresLabel = addLabel(
+            viewId = ID_GENRES_LABEL,
+            textRes = R.string.GenresLabel,
+            belowView = ID_RATING_LABEL,
+            valueView = ID_GENRES,
+            aboveView = ID_RECYCLER
+          )
+
+          genres = addValueView(
+            viewId = ID_GENRES,
+            labelView = ID_GENRES_LABEL
+          )
+        }, defaultLParams(collapseMode = PARALLAX))
+
+        toolbar = add(toolbar(ID_TOOLBAR, R.style.ThemeOverlay_AppCompat_Dark_ActionBar) {
+          title = artistName.value
+          backgroundColor = styledColor(R.attr.colorPrimary)
+          mainPresenter.setActionBar(this)
+        }, defaultLParams(collapseMode = PIN))
+
+
+      }, defaultLParams(scrollFlags = SCROLL or ENTER_ALWAYS or EXIT_UNTIL_COLLAPSED))
+
+    }, appBarLParams())
+
+    recycler = add(recyclerView(ID_RECYCLER) {
+      adapter = ReleaseGroupItemAdapter(uiContext) { displayGroup ->
         ctx.toast("Selected: ${displayGroup.name}")
-      }
-
-      recycler = add(recyclerView(ID_RECYCLER) {
-        adapter = itemAdapter
-        layoutManager = LinearLayoutManager(context)
-      }, lParams {
-        startToStart = PARENT_ID
-        topToBottom = ID_GENRES
-        endToEnd = PARENT_ID
-        bottomToBottom = PARENT_ID
-        bottomMargin = dip(4)
-      })
-
-    }, defaultLParams(matchParent, matchParent))
+      }.also { itemAdapter = it }
+      layoutManager = LinearLayoutManager(context)
+    }, defaultLParams(width = matchParent) {
+      behavior = AppBarLayout.ScrollingViewBehavior()
+      bottomMargin = dip(4)
+    })
 
   }.also { root ->
     scope.launch {
@@ -334,17 +359,15 @@ class ArtistFragmentUi(
     }, lParams(width = wrapContent, height = wrapContent) {
       leftMargin = dip(16)
       startToStart = PARENT_ID
-      topToBottom = belowView
+      if (belowView > 0) topToBottom = belowView else topToTop = PARENT_ID
       endToStart = valueView
       bottomToTop = aboveView
     })
   }
 
   private fun updateArtistInfo(artist: DisplayArtist) {
-    if (artistNameView.text != artist.name.value) {
-      Timber.e("Name mismatch from artist find to artist lookup")
-      artistNameView.text = artist.name.value
-    }
+    toolbar.title = artist.name.value
+
     artistTypeView.text = artist.type.value
 
     val labels = artist.type.labels
