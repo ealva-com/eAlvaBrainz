@@ -24,6 +24,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.FragmentManager
 import com.ealva.brainzapp.ui.fragment.FragmentUiContext
 import com.ealva.brainzapp.ui.fragment.Navigation
@@ -75,18 +76,25 @@ class ArtistFragment private constructor(
   private lateinit var ui: ArtistFragmentUi
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    viewModel = getArtistViewModel(brainz)
+    childFragmentManager.fragmentFactory =
+      ArtistFragmentFactory(parentFragmentManager.fragmentFactory, viewModel)
     super.onCreate(savedInstanceState)
     artistMbid = arguments.artistMbid
     artistName = arguments.artistName
+    viewModel.lookupArtist(artistMbid)
   }
 
   override fun onAttach(context: Context) {
     super.onAttach(context)
-    requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-      override fun handleOnBackPressed() {
-        navigation.pop()
+    requireActivity().onBackPressedDispatcher.addCallback(
+      this,
+      object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+          navigation.pop()
+        }
       }
-    })
+    )
   }
 
   override fun onCreateView(
@@ -94,7 +102,6 @@ class ArtistFragment private constructor(
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    viewModel = getArtistViewModel(brainz)
     uiContext = makeUiContext()
     ui = ArtistFragmentUi(uiContext, mainPresenter, viewModel, artistMbid, artistName)
     return ui.root
@@ -117,5 +124,18 @@ class ArtistFragment private constructor(
           artistName = name
         }
       )
+  }
+}
+
+class ArtistFragmentFactory(
+  private val parentFactory: FragmentFactory,
+  private val viewModel: ArtistViewModel
+) : FragmentFactory() {
+  override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
+    return when (className) {
+      ArtistReleaseGroupsFragment.NAME -> ArtistReleaseGroupsFragment.make(viewModel)
+      ArtistReleasesFragment.NAME -> ArtistReleasesFragment.make(viewModel)
+      else -> parentFactory.instantiate(classLoader, className)
+    }
   }
 }

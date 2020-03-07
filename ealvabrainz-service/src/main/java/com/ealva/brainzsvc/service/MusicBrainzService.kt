@@ -33,6 +33,7 @@ import com.ealva.ealvabrainz.brainz.data.ArtistList
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.BrainzError
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseGroupList
+import com.ealva.ealvabrainz.brainz.data.BrowseReleaseList
 import com.ealva.ealvabrainz.brainz.data.Include
 import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.RecordingList
@@ -43,7 +44,7 @@ import com.ealva.ealvabrainz.brainz.data.ReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.ReleaseList
 import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
-import com.ealva.ealvabrainz.brainz.data.joinToInc
+import com.ealva.ealvabrainz.brainz.data.join
 import com.ealva.ealvabrainz.brainz.data.mbid
 import com.ealva.ealvabrainz.brainz.data.theMoshi
 import com.ealva.ealvabrainz.common.ensureExhaustive
@@ -52,6 +53,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
@@ -182,6 +184,20 @@ interface MusicBrainzService {
     include: List<ReleaseGroup.Browse> = emptyList(),
     type: List<Release.Type> = emptyList()
   ): MusicBrainzResult<List<ReleaseGroup>>
+
+  suspend fun getArtistReleases(
+    artistMbid: ArtistMbid,
+    include: List<Release.Browse> = emptyList(),
+    type: List<Release.Type> = emptyList(),
+    status: List<Release.Status> = emptyList()
+  ): MusicBrainzResult<List<Release>>
+
+  suspend fun artistReleases(
+    artistMbid: ArtistMbid,
+    include: List<Release.Browse> = emptyList(),
+    type: List<Release.Type> = emptyList(),
+    status: List<Release.Status> = emptyList()
+  ): Flow<List<Release>>
 
   /**
    * Find [ReleaseGroup]s based on [artist] and [album] and convert the results to a flow
@@ -336,10 +352,10 @@ internal class MusicBrainzServiceImpl(
     type: List<Release.Type>,
     status: List<Release.Status>
   ) = brainz {
-    musicBrainz.lookupRelease(mbid.value, include.joinToInc(), type.joinToInc(), status.joinToInc())
+    musicBrainz.lookupRelease(mbid.value, include.join(), type.join(), status.join())
   }
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   override fun getReleaseArt(
     artist: ArtistName,
     album: AlbumName,
@@ -365,9 +381,9 @@ internal class MusicBrainzServiceImpl(
     include.ensureTypeValidity(type)
     musicBrainz.lookupReleaseGroup(
       mbid.value,
-      include.joinToInc(),
-      type.joinToInc(),
-      status.joinToInc()
+      include.join(),
+      type.join(),
+      status.join()
     )
   }
 
@@ -376,12 +392,12 @@ internal class MusicBrainzServiceImpl(
     include: List<ReleaseGroup.Browse>,
     type: List<Release.Type>
   ): MusicBrainzResult<List<ReleaseGroup>> {
-    val list = ArrayList<ReleaseGroup>(200)
+    val list = ArrayList<ReleaseGroup>(100)
     var offset = 0
-    val brainzInc = include.joinToInc()
-    val brainzType = type.joinToInc()
+    val brainzInc = include.join()
+    val brainzType = type.join()
     do {
-      val result = brainz {
+      when (val result = brainz {
         musicBrainz.browseArtistReleaseGroups(
           artistMbid.value,
           100,
@@ -389,30 +405,122 @@ internal class MusicBrainzServiceImpl(
           brainzInc,
           brainzType
         )
-      }
-      when (result) {
+      }) {
         is Success<BrowseReleaseGroupList> -> {
           val resultList = result.value
-          val totalCount = resultList.releaseGroupCount
-          val resultCount = resultList.releaseGroups.size
-          offsetSanityCheck(resultList, offset)
-          list.addAll(resultList.releaseGroups)
-          offset = if (list.size < totalCount) offset + resultCount else -1
+          offset = handleBrowseList(
+            offset,
+            resultList.releaseGroups,
+            resultList.releaseGroupOffset,
+            resultList.releaseGroupCount,
+            list
+          ) { "BrowseReleaseGroupList" }
         }
         is ErrorResult -> return ErrorResult(result.error)
         is Exceptional -> return Exceptional(result.exception)
-        is Unsuccessful.None -> {}
+        is Unsuccessful.None -> {
+        }
       }.ensureExhaustive
     } while (offset > 0)
     return Success(list)
   }
 
-  private fun offsetSanityCheck(resultList: BrowseReleaseGroupList, offset: Int) {
-    if (resultList.releaseGroupOffset != offset)
-      Timber.e("Offset mismatch, requested:%d result:%d", offset, resultList.releaseGroupOffset)
+  override suspend fun getArtistReleases(
+    artistMbid: ArtistMbid,
+    include: List<Release.Browse>,
+    type: List<Release.Type>,
+    status: List<Release.Status>
+  ): MusicBrainzResult<List<Release>> {
+    val list = ArrayList<Release>(100)
+    var offset = 0
+    val brainzInc = include.join()
+    val brainzType = type.join()
+    val brainzStatus = status.join()
+    do {
+      when (val result = brainz {
+        musicBrainz.browseArtistReleases(
+          artistMbid.value,
+          100,
+          offset,
+          brainzInc,
+          brainzType,
+          brainzStatus
+        )
+      }) {
+        is Success<BrowseReleaseList> -> {
+          val resultList = result.value
+          offset = handleBrowseList(
+            offset,
+            resultList.releases,
+            resultList.releaseOffset,
+            resultList.releaseCount,
+            list
+          ) { "BrowseReleaseList" }
+        }
+        is ErrorResult -> return ErrorResult(result.error)
+        is Exceptional -> return Exceptional(result.exception)
+        is Unsuccessful.None -> {
+        }
+      }.ensureExhaustive
+    } while (offset > 0)
+    return Success(list)
   }
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  override suspend fun artistReleases(
+    artistMbid: ArtistMbid,
+    include: List<Release.Browse>,
+    type: List<Release.Type>,
+    status: List<Release.Status>
+  ): Flow<List<Release>> = flow {
+    val list = ArrayList<Release>(100)
+    var offset = 0
+    val brainzInc = include.join()
+    val brainzType = type.join()
+    val brainzStatus = status.join()
+    do {
+      val result = musicBrainz.browseArtistReleases(
+        artistMbid.value,
+        100,
+        offset,
+        brainzInc,
+        brainzType,
+        brainzStatus
+      )
+      if (result.isSuccessful) {
+        result.body()?.let { releaseList ->
+          offset = emitReleaseList(
+            offset,
+            releaseList.releases,
+            releaseList.releaseOffset,
+            releaseList.releaseCount,
+            list
+          )
+        }
+      }
+    } while (offset > 0)
+  }
+
+  private suspend fun FlowCollector<List<Release>>.emitReleaseList(
+    currentOffset: Int,
+    resultList: List<Release>,
+    resultOffset: Int,
+    resultTotalCount: Int,
+    collector: ArrayList<Release>,
+    message: () -> String = { "" }
+  ): Int {
+    val newOffset = handleBrowseList(
+      currentOffset,
+      resultList,
+      resultOffset,
+      resultTotalCount,
+      collector,
+      message
+    )
+    emit(collector)
+    return newOffset
+  }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
   override fun getReleaseGroupArt(
     artist: ArtistName,
     album: AlbumName,
@@ -434,7 +542,7 @@ internal class MusicBrainzServiceImpl(
   ) = brainz {
     include.ensureTypeValidity(type)
     include.ensureStatusValidity(status)
-    musicBrainz.lookupArtist(mbid.value, include.joinToInc(), type.joinToInc(), status.joinToInc())
+    musicBrainz.lookupArtist(mbid.value, include.join(), type.join(), status.join())
   }
 
   private fun List<Include>.ensureStatusValidity(status: List<Release.Status>) {
@@ -491,9 +599,9 @@ internal class MusicBrainzServiceImpl(
     include.ensureStatusValidity(status)
     musicBrainz.lookupRecording(
       mbid.value,
-      include.joinToInc(),
-      type.joinToInc(),
-      status.joinToInc()
+      include.join(),
+      type.join(),
+      status.join()
     )
   }
 
@@ -510,7 +618,7 @@ internal class MusicBrainzServiceImpl(
     }
   }
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   private fun findReleases(artist: ArtistName, album: AlbumName, maxReleases: Int) = flow {
     val query = """artist:"${artist.value}" AND release:"${album.value}""""
     musicBrainz.findRelease(query, maxReleases)
@@ -519,7 +627,7 @@ internal class MusicBrainzServiceImpl(
       .forEach { emit(it.mbid) }
   }.flowOn(dispatcher)
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   private fun findReleaseGroups(artist: ArtistName, album: AlbumName, maxReleases: Int) = flow {
     val query = """artist:"${artist.value}" AND release:"${album.value}""""
     musicBrainz.findReleaseGroup(query, maxReleases)
@@ -589,5 +697,29 @@ private fun Exception.makeExceptional(): Exceptional {
       }
     }.ensureExhaustive
   )
+}
+
+private fun <T> handleBrowseList(
+  currentOffset: Int,
+  resultList: List<T>,
+  resultOffset: Int,
+  resultTotalCount: Int,
+  collector: ArrayList<T>,
+  message: () -> String = { "" }
+): Int {
+  collector.ensureCapacity(resultTotalCount)
+  val resultCount = resultList.size
+  offsetSanityCheck(resultOffset, currentOffset, message)
+  collector.addAll(resultList)
+  return if (collector.size < resultTotalCount) resultOffset + resultCount else -1
+}
+
+private inline fun offsetSanityCheck(
+  offset: Int,
+  resultOffset: Int,
+  message: () -> String = { "" }
+) {
+  if (resultOffset != offset)
+    Timber.e("Offset mismatch, requested:%d result:%d %s", offset, resultOffset, message())
 }
 

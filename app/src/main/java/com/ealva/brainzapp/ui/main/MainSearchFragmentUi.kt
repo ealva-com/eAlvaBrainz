@@ -113,7 +113,7 @@ private enum class FragmentMaker(@field:IdRes val value: Int) {
 }
 
 private class MainSearchFragmentUiImpl(
-  private val uiContext: FragmentUiContext,
+  uiContext: FragmentUiContext,
   mainPresenter: MainPresenter
 ) : MainSearchFragmentUi {
   private val fm = uiContext.fragmentManager
@@ -125,7 +125,7 @@ private class MainSearchFragmentUiImpl(
   private val spinnerWrapper: SpinnerWrapper
 
   override val ctx = uiContext.fragment.requireContext()
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   override val root = coordinatorLayout(ID_COORDINATOR) {
 
     add(constraintLayout(ID_CONSTRAINT) {
@@ -170,7 +170,7 @@ private class MainSearchFragmentUiImpl(
       lifecycleOwner.whenStarted {
         spinnerWrapper.itemSelectedFlow()
           .onEach { spinnerSelection(it) }
-          .launchIn(uiContext.scope)
+          .launchIn(scope)
       }
     }
   }

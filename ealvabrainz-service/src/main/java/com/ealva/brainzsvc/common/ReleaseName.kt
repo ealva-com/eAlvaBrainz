@@ -15,25 +15,23 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.brainz.data
+package com.ealva.brainzsvc.common
 
 /**
- * Represents a single part of a MusicBrainz inc= parameter. An Include allows you to request
- * more information to be included about an entity
+ * Convert this String to an [ReleaseName] or [ReleaseName.UNKNOWN] if this is null.
  */
-interface Include {
-  val value: String
+@Suppress("NOTHING_TO_INLINE")
+inline fun String?.toReleaseName(): ReleaseName {
+  return this?.let { ReleaseName.make(this) } ?: ReleaseName.UNKNOWN
 }
 
-/**
- * Join each [Include] instance into an inc= value for MusicBrainz lookup.
- *
- * @return list entries concatenated together separated by "+" as required by MusicBrainz Lucene
- * query, or null if the list isEmpty
- */
-fun List<Include>.join(): String? {
-  return if (isEmpty()) null else joinToString("+") { it.value }
+inline class ReleaseName(val value: String) {
+  companion object {
+    val UNKNOWN = ReleaseName("Unknown")
+
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun make(value: String): ReleaseName =
+      ReleaseName(value.trim())
+  }
 }
 
-// All possible includes, some do not apply to all entities
-// discids+media+isrcs+artist-credits+various-artists+aliases+annotation+tags+ratings+genres

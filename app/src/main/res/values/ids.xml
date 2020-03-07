@@ -19,18 +19,15 @@
 
 <resources>
 
+    <item name="main_ui_fragment_container" type="id" />
+
+    <item name="spinner_position_tag_id" type="id" />
+
     <item name="search_fragment_coordinator" type="id" />
     <item name="search_fragment_spinner" type="id" />
     <item name="search_fragment_container" type="id" />
     <item name="search_fragment_toolbar" type="id" />
-    <item name="main_ui_fragment_container" type="id" />
     <item name="search_fragment_constraint" type="id" />
-
-    <item name="spinner_position_tag_id" type="id" />
-
-    <item name="item_top_guide" type="id" />
-    <item name="item_middle_guide" type="id" />
-
 
     <item name="artist_search_coordinator" type="id" />
     <item name="artist_search_constraint" type="id" />
@@ -49,6 +46,9 @@
     <item name="artist_search_item_card" type="id" />
 
     <item name="artist_ui_coordinator" type="id" />
+    <item name="artist_ui_app_bar" type="id" />
+    <item name="artist_ui_collapsing_toolbar" type="id" />
+    <item name="artist_ui_toolbar" type="id" />
     <item name="artist_ui_constraint" type="id" />
     <item name="artist_ui_circular_progress" type="id" />
     <item name="artist_ui_type" type="id"/>
@@ -64,16 +64,15 @@
     <item name="artist_ui_end_area" type="id" />
     <item name="artist_ui_area_label" type="id" />
     <item name="artist_ui_area" type="id" />
-    <item name="artist_ui_rating_bar" type="id" />
     <item name="artist_ui_isni_label" type="id" />
     <item name="artist_ui_isni" type="id" />
     <item name="artist_ui_isni_tag_key" type="id" />
     <item name="artist_ui_rating_label" type="id" />
+    <item name="artist_ui_rating_bar" type="id" />
     <item name="artist_ui_genres_label" type="id" />
     <item name="artist_ui_genres" type="id" />
-    <item name="artist_ui_app_bar" type="id" />
-    <item name="artist_ui_collapsing_toolbar" type="id" />
-    <item name="artist_ui_toolbar" type="id" />
+    <item name="artist_ui_tabbed_layout" type="id" />
+    <item name="artist_ui_view_pager" type="id" />
 
     <item name="release_group_item_card" type="id" />
     <item name="release_group_item_name" type="id" />
@@ -81,6 +80,9 @@
     <item name="release_group_item_type" type="id" />
     <item name="release_group_item_date" type="id" />
     <item name="release_group_item_rating" type="id" />
+    <item name="release_group_item_release_count" type="id" />
 
+
+    <item name="artist_release_groups_recycler" type="id" /><item name="artist_releass_recycler" type="id" /><item name="release_item_card" type="id" /><item name="release_item_constraint" type="id" /><item name="release_item_name" type="id" />
 
 </resources>

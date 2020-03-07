@@ -79,5 +79,6 @@
     <string name="RatingLabel">Rating:</string>
     <string name="GenresLabel">Genres:</string>
     <string name="none_in_parens">(none)</string>
+    <string name="ReleaseCount">Releases: %1$d</string><string name="Discography">Discography</string><string name="Releases">Releases</string>
 
 </resources>

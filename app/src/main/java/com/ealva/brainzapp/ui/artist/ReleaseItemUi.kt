@@ -43,23 +43,19 @@ import splitties.views.dsl.core.wrapContent
 import splitties.views.dsl.material.materialCardView
 import splitties.views.gravityCenter
 import splitties.views.textAppearance
-import com.ealva.ealvabrainz.R.id.artist_search_item_card as ID_CARD
-import com.ealva.ealvabrainz.R.id.artist_search_item_constraint as ID_CONSTRAINT
-import com.ealva.ealvabrainz.R.id.artist_search_item_country as ID_COUNTRY
-import com.ealva.ealvabrainz.R.id.artist_search_item_disambiguation as ID_DISAMBIGUATION
-import com.ealva.ealvabrainz.R.id.artist_search_item_name as ID_ARTIST_NAME
-import com.ealva.ealvabrainz.R.id.artist_search_item_score as ID_SCORE
-import com.ealva.ealvabrainz.R.id.artist_search_item_type as ID_ARTIST_TYPE
+import com.ealva.ealvabrainz.R.id.release_item_card as ID_CARD
+import com.ealva.ealvabrainz.R.id.release_item_constraint as ID_CONSTRAINT
+import com.ealva.ealvabrainz.R.id.release_item_name as ID_GROUP_NAME
 
-class ArtistSearchItemUi(
+class ReleaseItemUi(
   uiContext: FragmentUiContext,
   onClick: (v: View) -> Unit
 ) : Ui {
-  private val artistName: TextView
-  private val disambiguation: TextView
-  private val type: TextView
-  private val score: TextView
-  private val country: TextView
+  private val releaseName: TextView
+//  private val type: TextView
+//  private val releaseCount: TextView
+//  private val firstDate: TextView
+//  private val ratingBar: RatingBar
 
   private val scope = uiContext.scope
   override val ctx = uiContext.context
@@ -72,30 +68,10 @@ class ArtistSearchItemUi(
 
     add(constraintLayout(ID_CONSTRAINT) {
 
-      artistName = add(textView(ID_ARTIST_NAME) {
+      releaseName = add(textView(ID_GROUP_NAME) {
         ellipsize = END
         maxLines = 1
         textAppearance = R.style.TextAppearance_MaterialComponents_Subtitle1
-      }, lParams(height = wrapContent) {
-        startToStart = PARENT_ID
-        endToStart = ID_SCORE
-        bottomToTop = ID_DISAMBIGUATION
-      })
-
-      score = add(textView(ID_SCORE) {
-        ellipsize = END
-        maxLines = 1
-        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
-      }, lParams(wrapContent, wrapContent) {
-        startToEnd = ID_ARTIST_NAME
-        endToEnd = PARENT_ID
-        bottomToTop = ID_DISAMBIGUATION
-      })
-
-      disambiguation = add(textView(ID_DISAMBIGUATION) {
-        ellipsize = END
-        maxLines = 1
-        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
       }, lParams(height = wrapContent) {
         startToStart = PARENT_ID
         topToTop = PARENT_ID
@@ -103,25 +79,52 @@ class ArtistSearchItemUi(
         bottomToBottom = PARENT_ID
       })
 
-      type = add(textView(ID_ARTIST_TYPE) {
-        ellipsize = END
-        maxLines = 1
-        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
-      }, lParams(height = wrapContent) {
-        startToStart = PARENT_ID
-        endToStart = ID_COUNTRY
-        topToBottom = ID_DISAMBIGUATION
-      })
+//      type = add(textView(ID_TYPE) {
+//        ellipsize = END
+//        maxLines = 1
+//        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
+//        gravity = gravityStartCenter
+//      }, lParams(height = wrapContent) {
+//        startToStart = PARENT_ID
+//        topToTop = PARENT_ID
+//        endToStart = ID_RELEASE_COUNT
+//        bottomToBottom = PARENT_ID
+//      })
+//
+//      releaseCount = add(textView(ID_RELEASE_COUNT) {
+//        maxLines = 1
+//        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
+//      }, lParams(wrapContent, wrapContent) {
+//        startToEnd = ID_TYPE
+//        topToTop = PARENT_ID
+//        endToEnd = PARENT_ID
+//        bottomToBottom = PARENT_ID
+//      })
+//
+//      firstDate = add(textView(ID_RELEASE_DATE) {
+//        ellipsize = END
+//        maxLines = 1
+//        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
+//      }, lParams(height = wrapContent) {
+//        startToStart = PARENT_ID
+//        topToBottom = ID_TYPE
+//        endToStart = ID_RATING_BAR
+//      })
+//
+//      ratingBar = add(
+//        ratingBar(ID_RATING_BAR) {
+//          setIsIndicator(true)
+//          numStars = 5
+//          stepSize = 0.5f
+//          rating = 0f
+//          minimumHeight = dip(16)
+//          setStarRatingDrawable(Color.BLUE, Color.BLUE, dip(16), dip(1), 0)
+//        }, lParams(width = dip(80), height = dip(16)) {
+//          startToEnd = ID_RELEASE_DATE
+//          topToBottom = ID_TYPE
+//          endToEnd = PARENT_ID
+//        })
 
-      country = add(textView(ID_COUNTRY) {
-        ellipsize = END
-        maxLines = 1
-        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
-      }, lParams(wrapContent, wrapContent) {
-        startToEnd = ID_ARTIST_TYPE
-        endToEnd = PARENT_ID
-        bottomToBottom = ID_ARTIST_TYPE
-      })
 
     }, lParams(matchParent, totalHeight, gravityCenter) {
       horizontalMargin = dip(8)
@@ -137,11 +140,11 @@ class ArtistSearchItemUi(
       .launchIn(scope)
   }
 
-  fun bind(artist: ArtistSearchResult) {
-    artistName.text = artist.name.value
-    disambiguation.text = artist.disambiguation
-    type.text = artist.type.value
-    score.text = artist.score.toString()
-    country.text = artist.country.alpha2
+  fun bind(release: DisplayRelease) {
+    releaseName.text = release.name.value
+//    type.text = releaseGroup.type.toDisplayString(releaseGroup.secondaryTypes) { ctx.getString(it)}
+//    firstDate.text = releaseGroup.date
+//    ratingBar.rating = releaseGroup.rating.value
+//    releaseCount.text = ctx.getString(R.string.ReleaseCount, releaseGroup.releaseCount)
   }
 }

@@ -42,7 +42,7 @@ fun View.addOnTouchOvalRipple() {
   }
 }
 
-@UseExperimental(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class)
 fun View.clickFlow(): Flow<View> = callbackFlow {
   setOnClickListener { v ->
     offer(v)

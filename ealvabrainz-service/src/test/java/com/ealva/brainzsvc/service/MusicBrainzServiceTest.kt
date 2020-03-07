@@ -33,7 +33,7 @@ import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.Release.Companion.NullRelease
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseList
-import com.ealva.ealvabrainz.brainz.data.joinToInc
+import com.ealva.ealvabrainz.brainz.data.join
 import com.ealva.ealvabrainz.brainz.data.toReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.toReleaseMbid
 import com.ealva.ealvabrainz.runBlockingTest
@@ -54,7 +54,7 @@ class MusicBrainzServiceTest {
 
   private val dummyException = RuntimeException("I O, let's go!")
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun `test findRelease`() = coroutineRule.runBlockingTest {
     doTestFindRelease(null, null)
@@ -63,7 +63,7 @@ class MusicBrainzServiceTest {
     doTestFindRelease(100, 10)
   }
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun `test findRelease on thrown exception`() = coroutineRule.runBlockingTest {
     val artistName = ArtistName("David Bowie")
@@ -82,7 +82,7 @@ class MusicBrainzServiceTest {
     }
   }
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun `test lookupRelease`() = coroutineRule.runBlockingTest {
     val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseMbid()
@@ -94,7 +94,7 @@ class MusicBrainzServiceTest {
     expect(release).toNotBeNull()
   }
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun `test lookupRelease with includes`() = coroutineRule.runBlockingTest {
     val dummy = Release("dummy")
@@ -110,7 +110,7 @@ class MusicBrainzServiceTest {
     }
   }
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun `test lookupReleaseGroup status-include mismatch`() = coroutineRule.runBlockingTest {
     val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseGroupMbid()
@@ -129,13 +129,13 @@ class MusicBrainzServiceTest {
     }
   }
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun `test lookupReleaseGroup status used`() = coroutineRule.runBlockingTest {
     val dummy = ReleaseGroup(title = "dummy")
     val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseGroupMbid()
     val allStatus = Release.Status.values().toList()
-    val status = allStatus.joinToInc()
+    val status = allStatus.join()
     val mockBrainz = mock<MusicBrainz> {
       onBlocking {
         lookupReleaseGroup(mbid.value, include = "releases", status = status)
@@ -153,7 +153,7 @@ class MusicBrainzServiceTest {
     }
   }
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun `test find recording query string`() = coroutineRule.runBlockingTest {
     val dummy = RecordingList()
@@ -177,7 +177,7 @@ class MusicBrainzServiceTest {
     }
   }
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun `test direct brainz call`() = coroutineRule.runBlockingTest {
     val dummy = Release(title = "dummy")
@@ -194,7 +194,7 @@ class MusicBrainzServiceTest {
     }
   }
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun `test direct brainz call error response`() = coroutineRule.runBlockingTest {
     val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseMbid()
@@ -212,7 +212,7 @@ class MusicBrainzServiceTest {
     }
   }
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun `test direct brainz call exception`() = coroutineRule.runBlockingTest {
     val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseMbid()
@@ -230,7 +230,7 @@ class MusicBrainzServiceTest {
     }
   }
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun `test direct brainz call unknown error response`() = coroutineRule.runBlockingTest {
     val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseMbid()

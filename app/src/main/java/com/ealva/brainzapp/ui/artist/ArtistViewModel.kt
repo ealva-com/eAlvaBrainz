@@ -27,7 +27,6 @@ import com.ealva.brainzapp.data.Country
 import com.ealva.brainzapp.data.DisplayGenre
 import com.ealva.brainzapp.data.Isni
 import com.ealva.brainzapp.data.Isni.Companion.NullIsni
-import com.ealva.brainzapp.data.ReleaseGroupType
 import com.ealva.brainzapp.data.StarRating
 import com.ealva.brainzapp.data.toCountry
 import com.ealva.brainzapp.data.toDisplayGenres
@@ -36,7 +35,6 @@ import com.ealva.brainzapp.data.toPrimaryReleaseGroupType
 import com.ealva.brainzapp.data.toSecondaryReleaseGroupList
 import com.ealva.brainzapp.data.toStarRating
 import com.ealva.brainzsvc.common.ArtistName
-import com.ealva.brainzsvc.common.ReleaseGroupName
 import com.ealva.brainzsvc.common.toArtistName
 import com.ealva.brainzsvc.common.toReleaseGroupName
 import com.ealva.brainzsvc.service.MusicBrainzResult.Success
@@ -45,18 +43,19 @@ import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.ArtistType
+import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.appearsValid
+import com.ealva.ealvabrainz.brainz.data.mbid
 import com.ealva.ealvabrainz.brainz.data.toArtistMbid
 import com.ealva.ealvabrainz.brainz.data.toArtistType
-import com.ealva.ealvabrainz.brainz.data.toJson
-import com.ealva.ealvabrainz.brainz.data.toReleaseGroupMbid
-import com.ealva.ealvabrainz.common.ensureExhaustive
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-data class DisplayArtist(
+class DisplayArtist(
   val mbid: ArtistMbid,
   val type: ArtistType,
   val name: ArtistName,
@@ -69,31 +68,9 @@ data class DisplayArtist(
   val endArea: String,
   val isni: Isni,
   val rating: StarRating,
-  val ratingVotes: Int,
+  @Suppress("unused") val ratingVotes: Int,
   val genres: List<DisplayGenre>
 )
-
-data class DisplayReleaseGroup(
-  val mbid: ReleaseGroupMbid,
-  val name: ReleaseGroupName,
-  val type: ReleaseGroupType.Primary,
-  val secondaryTypes: List<ReleaseGroupType.Secondary>,
-  val rating: StarRating,
-  val ratingVotes: Int,
-  val date: String
-) {
-  companion object {
-    val NullDisplayReleaseGroup = DisplayReleaseGroup(
-      "".toReleaseGroupMbid(),
-      "".toReleaseGroupName(),
-      ReleaseGroupType.Primary.Unknown,
-      emptyList(),
-      0.0F.toStarRating(),
-      0,
-      ""
-      )
-  }
-}
 
 interface ArtistViewModel {
   val artist: LiveData<DisplayArtist>
@@ -137,37 +114,70 @@ internal class ArtistViewModelImpl(
     if (currentArtist == null || currentArtist.mbid != mbid) {
       viewModelScope.launch(Dispatchers.Default) {
         unsuccessful.postValue(Unsuccessful.None)
+        val groupToReleaseMap = mutableMapOf<ReleaseGroupMbid, MutableList<Release>>()
+        val displayMap = mutableMapOf<ReleaseGroupMbid, DisplayReleaseGroup>()
         busy(isBusy) {
           if (doArtistLookup(mbid)) {
-            when (val result =
-              brainz.getArtistReleaseGroups(mbid, ReleaseGroup.Browse.values().toList())) {
-              is Success -> handleReleaseGroups(result.value)
-              is Unsuccessful -> unsuccessful.postValue(result)
-            }.ensureExhaustive
+            brainz.artistReleases(
+              mbid,
+              listOf(
+                Release.Browse.ReleaseGroups,
+                Release.Browse.Tags,
+                Release.Browse.Ratings,
+                Release.Browse.Genres,
+                Release.Browse.Media
+              ),
+              status = listOf(Release.Status.Official)
+            ).collect {
+              handleReleases(it, groupToReleaseMap, displayMap)
+            }
           }
         }
       }
     }
   }
 
-  private fun handleReleaseGroups(groupList: List<ReleaseGroup>) {
-    val list = groupList.asSequence()
-      .sortedBy {
-        val date = it.firstReleaseDate
-        if (date.isBlank()) {
-          "${sorterForEmpty}${it.title}"
-        } else date
+  private fun handleReleases(
+    releaseList: List<Release>,
+    groupToReleaseMap: MutableMap<ReleaseGroupMbid, MutableList<Release>>,
+    displayMap: MutableMap<ReleaseGroupMbid, DisplayReleaseGroup>
+  ) {
+    val newGroupMap = mutableMapOf<ReleaseGroupMbid, ReleaseGroup>()
+    releaseList.forEach { release ->
+      val group = release.releaseGroup
+      val mbid = group.mbid
+      if (mbid.appearsValid()) {
+        newGroupMap[mbid] = group
+        val groupReleases =
+          if (groupToReleaseMap.containsKey(mbid)) groupToReleaseMap[mbid]!! else mutableListOf()
+        groupToReleaseMap[mbid] = groupReleases.apply { add(release) }
       }
-      .map { brainzGroup ->
-        DisplayReleaseGroup(
-          brainzGroup.id.toReleaseGroupMbid(),
-          brainzGroup.title.toReleaseGroupName(),
-          brainzGroup.primaryType.toPrimaryReleaseGroupType(),
-          brainzGroup.secondaryTypes.toSecondaryReleaseGroupList(),
-          brainzGroup.rating.value.toStarRating(),
-          brainzGroup.rating.votesCount,
-          brainzGroup.firstReleaseDate
-        )
+    }
+    newGroupMap.entries.forEach { entry ->
+      val mbid = entry.value.mbid
+      if (!displayMap.containsKey(entry.key)) {
+        entry.value.run {
+          displayMap[entry.key] = DisplayReleaseGroup.make(
+            mbid,
+            title.toReleaseGroupName(),
+            primaryType.toPrimaryReleaseGroupType(),
+            secondaryTypes.toSecondaryReleaseGroupList(),
+            rating.value.toStarRating(),
+            rating.votesCount,
+            firstReleaseDate,
+            groupToReleaseMap[mbid]?.size ?: 0
+          )
+        }
+      } else {
+        displayMap[entry.key]?.releaseCount = groupToReleaseMap[mbid]?.size ?: 0
+      }
+    }
+    val list = displayMap.values.asSequence()
+      .sortedBy {
+        val date = it.date
+        if (date.isBlank()) {
+          "${sorterForEmpty}${it.name.value}"
+        } else date
       }
       .toList()
     releaseGroups.postValue(list)
@@ -191,7 +201,6 @@ internal class ArtistViewModelImpl(
   ) = brainzArtist.run {
     val resultMbid = id.toArtistMbid()
     if (resultMbid != searchMbid) Timber.e("Result %s != search %s", resultMbid, searchMbid)
-    Timber.e(brainzArtist.toJson())
     artist.postValue(
       DisplayArtist(
         mbid = resultMbid,

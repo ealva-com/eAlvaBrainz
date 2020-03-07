@@ -192,7 +192,7 @@ may be used as examples or a starting point:
 * Retrofit, OkHttp, and Moshi builders to fully support the Rest client
 * Sealed class MusicBrainzResult from MusicBrainzService as opposed to exceptions
 * Coroutine test strategy with a JUnit rule and a test dispatcher (test concurrent code)
-* 
+* App uses Kotlin Views DSL for UI ([Splitties][splitties]) - no XML layout files 
 
 Related
 =======
@@ -202,6 +202,7 @@ Related
 * [Moshi][moshi]
 * [OkHttp][okhttp]
 * [Kotlin coroutines][coroutines] and [flows][flow]
+* [Splitties][splitties]
   
 [brainz]: https://musicbrainz.org/
 [coverart]: https://musicbrainz.org/doc/Cover_Art_Archive
@@ -210,3 +211,4 @@ Related
 [okhttp]: https://github.com/square/okhttp/
 [coroutines]: https://kotlinlang.org/docs/reference/coroutines-overview.html
 [flow]: https://kotlinlang.org/docs/reference/coroutines/flow.html  
+[splitties]: https://github.com/LouisCAD/Splitties

@@ -128,8 +128,8 @@ data class SpinnerSelection(
   val id: Long
 )
 
-@UseExperimental(ExperimentalCoroutinesApi::class)
-fun SpinnerWrapper.itemSelectedFlow(): Flow<SpinnerSelection> = callbackFlow {
+@OptIn(ExperimentalCoroutinesApi::class)
+fun SpinnerWrapper.itemSelectedFlow(): Flow<SpinnerSelection> = callbackFlow<SpinnerSelection> {
   setOnItemSelectedListener(object : OnItemSelectedListener {
     override fun onNothingSelected(parent: AdapterView<*>?) {}
 

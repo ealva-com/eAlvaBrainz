@@ -26,17 +26,17 @@ import kotlinx.coroutines.test.setMain
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
-class MainCoroutineRule @UseExperimental(ExperimentalCoroutinesApi::class) constructor(
+class MainCoroutineRule @OptIn(ExperimentalCoroutinesApi::class) constructor(
   val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
 ) : TestWatcher() {
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   override fun starting(description: Description?) {
     super.starting(description)
     Dispatchers.setMain(testDispatcher)
   }
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   override fun finished(description: Description?) {
     super.finished(description)
     Dispatchers.resetMain()

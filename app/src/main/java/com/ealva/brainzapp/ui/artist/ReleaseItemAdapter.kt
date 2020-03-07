@@ -21,12 +21,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.ealva.brainzapp.ui.fragment.FragmentUiContext
 
-class ReleaseGroupItemAdapter(
+class ReleaseItemAdapter(
   private val uiContext: FragmentUiContext,
-  private val selection: (DisplayReleaseGroup) -> Unit
-) : RecyclerView.Adapter<ReleaseGroupItemAdapter.ViewHolder>() {
+  private val selection: (DisplayRelease) -> Unit
+) : RecyclerView.Adapter<ReleaseItemAdapter.ViewHolder>() {
 
-  private val itemList: MutableList<DisplayReleaseGroup> = mutableListOf()
+  private val scope = uiContext.scope
+  private val itemList: MutableList<DisplayRelease> = mutableListOf()
   private var recycler: RecyclerView? = null
 
   init {
@@ -35,35 +36,34 @@ class ReleaseGroupItemAdapter(
 
   override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
     recycler = recyclerView
-    if (itemList.isNotEmpty()) notifyDataSetChanged()
   }
 
   override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
     recycler = null
   }
 
-  fun setItems(newList: List<DisplayReleaseGroup>) {
+  fun setItems(newList: List<DisplayRelease>) {
     itemList.clear()
     itemList.addAll(newList)
     notifyDataSetChanged()
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-    ViewHolder(ReleaseGroupItemUi(uiContext) { v ->
+    ViewHolder(ReleaseItemUi(uiContext) { v ->
       val position: Int = recycler?.getChildAdapterPosition(v) ?: -1
       if (position in itemList.indices) selection(itemList[position])
     })
 
-  class ViewHolder(val ui: ReleaseGroupItemUi) : RecyclerView.ViewHolder(ui.root) {
-    fun bind(item: DisplayReleaseGroup) = ui.bind(item)
+  class ViewHolder(val ui: ReleaseItemUi) : RecyclerView.ViewHolder(ui.root) {
+    fun bind(item: DisplayRelease) = ui.bind(item)
   }
 
   override fun getItemCount(): Int {
     return itemList.size
   }
 
-  private fun getItemAt(position: Int): DisplayReleaseGroup {
-    return itemList.elementAtOrElse(position) { DisplayReleaseGroup.NullDisplayReleaseGroup }
+  private fun getItemAt(position: Int): DisplayRelease {
+    return itemList.elementAtOrElse(position) { DisplayRelease.NullDisplayRelease }
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {

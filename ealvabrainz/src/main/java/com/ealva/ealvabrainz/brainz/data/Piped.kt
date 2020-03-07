@@ -17,23 +17,10 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-/**
- * Represents a single part of a MusicBrainz inc= parameter. An Include allows you to request
- * more information to be included about an entity
- */
-interface Include {
+interface Piped {
   val value: String
 }
 
-/**
- * Join each [Include] instance into an inc= value for MusicBrainz lookup.
- *
- * @return list entries concatenated together separated by "+" as required by MusicBrainz Lucene
- * query, or null if the list isEmpty
- */
-fun List<Include>.join(): String? {
-  return if (isEmpty()) null else joinToString("+") { it.value }
+fun List<Piped>.join(): String? {
+  return if (isEmpty()) null else joinToString("|") { it.value }
 }
-
-// All possible includes, some do not apply to all entities
-// discids+media+isrcs+artist-credits+various-artists+aliases+annotation+tags+ratings+genres

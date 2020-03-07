@@ -24,73 +24,41 @@ import android.content.Context
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.annotation.StyleRes
-import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.view.isVisible
-import fr.castorflex.android.circularprogressbar.CircularProgressBar
-import fr.castorflex.android.circularprogressbar.CircularProgressDrawable
-import splitties.dimensions.dip
-import splitties.dimensions.dp
+import androidx.viewpager2.widget.ViewPager2
 import splitties.experimental.InternalSplittiesApi
-import splitties.views.dsl.coordinatorlayout.defaultLParams
 import splitties.views.dsl.core.NO_THEME
 import splitties.views.dsl.core.Ui
-import splitties.views.dsl.core.add
 import splitties.views.dsl.core.view
-import splitties.views.gravityCenter
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 @OptIn(InternalSplittiesApi::class)
-inline fun Context.circularProgress(
+inline fun Context.viewPager2(
   @IdRes id: Int,
   @StyleRes theme: Int = NO_THEME,
-  initView: CircularProgressBar.() -> Unit = {}
-): CircularProgressBar {
+  initView: ViewPager2.() -> Unit = {}
+): ViewPager2 {
   contract { callsInPlace(initView, InvocationKind.EXACTLY_ONCE) }
   return view(id, theme, initView)
 }
 
 @SuppressLint("ResourceType")
-inline fun View.circularProgress(
+inline fun View.viewPager2(
   @IdRes id: Int,
   @StyleRes theme: Int = NO_THEME,
-  initView: CircularProgressBar.() -> Unit = {}
-): CircularProgressBar {
+  initView: ViewPager2.() -> Unit = {}
+): ViewPager2 {
   contract { callsInPlace(initView, InvocationKind.EXACTLY_ONCE) }
-  return context.circularProgress(id, theme, initView)
+  return context.viewPager2(id, theme, initView)
 }
 
 @SuppressLint("ResourceType")
-inline fun Ui.circularProgress(
+inline fun Ui.viewPager2(
   @IdRes id: Int,
   @StyleRes theme: Int = NO_THEME,
-  initView: CircularProgressBar.() -> Unit = {}
-): CircularProgressBar {
+  initView: ViewPager2.() -> Unit = {}
+): ViewPager2 {
   contract { callsInPlace(initView, InvocationKind.EXACTLY_ONCE) }
-  return ctx.circularProgress(id, theme, initView)
-}
-
-private const val GPLUS_GREEN = 0xFF_3E_80_2F.toInt()
-private const val GPLUS_YELLOW = 0xFF_F4_B4_00.toInt()
-private const val GPLUS_BLUE = 0xFF_42_7F_ED.toInt()
-private const val GPLUS_RED = 0xFF_B2_34_24.toInt()
-
-fun CoordinatorLayout.addCircularProgress(viewId: Int): CircularProgressBar {
-  return add(circularProgress(viewId) {
-    elevation = 4f
-    isVisible = false
-    isIndeterminate = true
-    indeterminateDrawable = CircularProgressDrawable
-      .Builder(context)
-      .colors(intArrayOf(GPLUS_GREEN, GPLUS_YELLOW, GPLUS_BLUE, GPLUS_RED))
-      .rotationSpeed(1.0F)
-      .sweepSpeed(1.0F)
-      .strokeWidth(dp(4))
-      .minSweepAngle(10)
-      .maxSweepAngle(300)
-      .build()
-  }, defaultLParams(dip(40), dip(40)) {
-    gravity = gravityCenter
-  })
+  return ctx.viewPager2(id, theme, initView)
 }
 

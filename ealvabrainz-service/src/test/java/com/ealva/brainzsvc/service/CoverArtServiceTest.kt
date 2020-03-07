@@ -39,7 +39,7 @@ internal class CoverArtServiceTest {
   @get:Rule var coroutineRule = MainCoroutineRule()
 
   @Test
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   fun `get artwork success with Null Object`() = coroutineRule.runBlockingTest {
     val entity = ReleaseEntity
     val mbid = "mbid"
@@ -55,7 +55,7 @@ internal class CoverArtServiceTest {
   }
 
   @Test
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   fun `get artwork error response`() = coroutineRule.runBlockingTest {
     val entity = ReleaseEntity
     val mbid = "mbid"
@@ -72,7 +72,7 @@ internal class CoverArtServiceTest {
   }
 
   @Test(expected = MusicBrainzException::class)
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   fun `get artwork throws`() = coroutineRule.runBlockingTest {
     val entity = ReleaseEntity
     val mbid = "mbid"

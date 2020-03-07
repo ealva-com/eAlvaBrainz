@@ -105,7 +105,7 @@ internal class ArtistSearchViewModelImpl(
   private var lastQueryData: QueryData? = null
   private var loadJob: Job? = null
 
-  @UseExperimental(ObsoleteCoroutinesApi::class)
+  @OptIn(ObsoleteCoroutinesApi::class)
   private val actor = viewModelScope.actor<QueryData>(capacity = Channel.CONFLATED) {
     for ((query) in channel) {
       handleQuery(query)

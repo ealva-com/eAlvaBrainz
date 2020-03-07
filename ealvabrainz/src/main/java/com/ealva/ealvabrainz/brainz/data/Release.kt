@@ -21,6 +21,7 @@ import com.ealva.ealvabrainz.brainz.data.CoverArtArchive.Companion.NullCoverArtA
 import com.ealva.ealvabrainz.brainz.data.Release.Companion.NullRelease
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
+
 //import com.squareup.moshi.JsonClass
 
 /**
@@ -188,9 +189,11 @@ class Release(
     Labels("labels"),
     Recordings("recordings"),
     ReleaseGroups("release-groups"),
+
     /** An ID calculated from the TOC of a CD */
     DiscIds("discids"),              // include discids for all media in the releases
     Media("media"),                  // include media for all releases, this includes the # of tracks on each medium and its format.
+
     /**
      * The International Standard Recording Code, an identification system for audio and music
      * video recordings. Includes isrcs for all recordings
@@ -222,28 +225,52 @@ class Release(
   }
 
   @Suppress("unused")
+  enum class Browse(override val value: String) : Lookup {
+    ArtistCredits("artist-credits"),
+    Labels("labels"),
+    Recordings("recordings"),
+    ReleaseGroups("release-groups"),
+    Media("media"),
+    DiscIds("discids"),
+    Isrcs("isrcs"),
+    Annotation("annotation"),
+    Tags("tags"),
+    Genres("genres"),
+    Ratings("ratings")
+  }
+
+  @Suppress("unused")
   enum class SearchField(val value: String) {
     /** artist MusicBrainz id (MBID) */
     ArtistId("arid"),
+
     /** complete artist name(s) as it appears on the release */
     Artist("artist"),
+
     /** an artist on the release, each artist added as a separate field */
     ArtistName("artistname"),
+
     /** the Amazon ASIN for this release */
     Asin("asin"),
+
     /**
      * The barcode of this release which is a machine-readable number used as stock control
      * mechanisms by retailers.
      */
     Barcode("barcode"),
+
     /** The catalog number for this release, can have multiples when major using an imprint */
     CatalogueNumber("catno"),
+
     /** Disambiguation comment */
     Comment("comment"),
+
     /** The two letter country code for the release country */
     Country("country"),
+
     /** name credit on the release, each artist added as a separate field */
     CreditName("creditname"),
+
     /** The release date (format: YYYY-MM-DD) */
     Date("date"),
 
@@ -332,7 +359,7 @@ class Release(
    * the that particular type of Release.
    */
   @Suppress("unused")
-  enum class Type(override val value: String) : Lookup {
+  enum class Type(override val value: String) : Piped {
     Nat("nat"),
     Album("album"),
     Single("single"),
@@ -352,7 +379,7 @@ class Release(
    * [status][Release.status]
    */
   @Suppress("unused")
-  enum class Status(override val value: String) : Lookup {
+  enum class Status(override val value: String) : Piped {
     Official("official"),
     Promotion("promotion"),
     Bootleg("bootleg"),

@@ -30,8 +30,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.whenStarted
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.ealva.brainzapp.data.appearsValid
 import com.ealva.brainzapp.data.setAsClickableLink
 import com.ealva.brainzapp.data.toDisplayString
@@ -41,20 +40,23 @@ import com.ealva.brainzapp.ui.view.addCircularProgress
 import com.ealva.brainzapp.ui.view.clickFlow
 import com.ealva.brainzapp.ui.view.setStarRatingDrawable
 import com.ealva.brainzapp.ui.view.snackErrors
+import com.ealva.brainzapp.ui.view.viewPager2
 import com.ealva.brainzsvc.common.ArtistName
 import com.ealva.ealvabrainz.R
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import fr.castorflex.android.circularprogressbar.CircularProgressBar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import splitties.dimensions.dip
+import splitties.experimental.ExperimentalSplittiesApi
 import splitties.resources.styledColor
 import splitties.resources.styledDimenPxSize
-import splitties.toast.toast
 import splitties.views.backgroundColor
 import splitties.views.dsl.appcompat.toolbar
 import splitties.views.dsl.constraintlayout.constraintLayout
@@ -70,17 +72,18 @@ import splitties.views.dsl.core.textView
 import splitties.views.dsl.core.wrapContent
 import splitties.views.dsl.material.ENTER_ALWAYS
 import splitties.views.dsl.material.EXIT_UNTIL_COLLAPSED
+import splitties.views.dsl.material.MaterialComponentsStyles
 import splitties.views.dsl.material.PARALLAX
 import splitties.views.dsl.material.PIN
 import splitties.views.dsl.material.SCROLL
 import splitties.views.dsl.material.appBarLayout
 import splitties.views.dsl.material.collapsingToolbarLayout
 import splitties.views.dsl.material.defaultLParams
-import splitties.views.dsl.recyclerview.recyclerView
 import splitties.views.gravityStart
 import splitties.views.textAppearance
 import splitties.views.textResource
 import splitties.views.topPadding
+import timber.log.Timber
 import com.ealva.ealvabrainz.R.id.artist_ui_app_bar as ID_APP_BAR
 import com.ealva.ealvabrainz.R.id.artist_ui_area as ID_AREA
 import com.ealva.ealvabrainz.R.id.artist_ui_area_label as ID_AREA_LABEL
@@ -101,15 +104,16 @@ import com.ealva.ealvabrainz.R.id.artist_ui_lifespan_end as ID_LIFESPAN_END
 import com.ealva.ealvabrainz.R.id.artist_ui_lifespan_end_label as ID_LIFESPAN_END_LABEL
 import com.ealva.ealvabrainz.R.id.artist_ui_rating_bar as ID_RATING
 import com.ealva.ealvabrainz.R.id.artist_ui_rating_label as ID_RATING_LABEL
-import com.ealva.ealvabrainz.R.id.artist_ui_recycler as ID_RECYCLER
 import com.ealva.ealvabrainz.R.id.artist_ui_start_area as ID_START_AREA
 import com.ealva.ealvabrainz.R.id.artist_ui_start_area_label as ID_START_AREA_LABEL
 import com.ealva.ealvabrainz.R.id.artist_ui_toolbar as ID_TOOLBAR
 import com.ealva.ealvabrainz.R.id.artist_ui_type as ID_ARTIST_TYPE
 import com.ealva.ealvabrainz.R.id.artist_ui_type_label as ID_TYPE_LABEL
+import com.ealva.ealvabrainz.R.id.artist_ui_view_pager as ID_PAGER
+import com.google.android.material.tabs.TabLayoutMediator.TabConfigurationStrategy as ConfigStrategy
 
 class ArtistFragmentUi(
-  private val uiContext: FragmentUiContext,
+  uiContext: FragmentUiContext,
   private val mainPresenter: MainPresenter,
   private val viewModel: ArtistViewModel,
   private val artistMbid: ArtistMbid,
@@ -118,9 +122,9 @@ class ArtistFragmentUi(
   private val scope = uiContext.scope
   private val lifecycleOwner = uiContext.lifecycleOwner
 
-  private val itemAdapter: ReleaseGroupItemAdapter
-
   private val progress: CircularProgressBar
+  private val tabLayout: TabLayout
+  private val viewPager: ViewPager2
   private val artistTypeView: TextView
   private val lifespanBeginLabel: TextView
   private val lifespanBegin: TextView
@@ -135,15 +139,17 @@ class ArtistFragmentUi(
   private val isniLabel: TextView
   private val isni: TextView
   private val ratingBar: RatingBar
-  private val recycler: RecyclerView
   private val genresLabel: TextView
   private val genres: TextView
   private val collapsing: CollapsingToolbarLayout
   private val toolbar: Toolbar
 
   override val ctx = uiContext.context
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+
+  @OptIn(ExperimentalCoroutinesApi::class, ExperimentalSplittiesApi::class)
   override val root = coordinatorLayout(ID_COORDINATOR) {
+    val materialStyles = MaterialComponentsStyles(ctx)
+
     progress = addCircularProgress(ID_PROGRESS)
 
     add(appBarLayout(ID_APP_BAR, R.style.ThemeOverlay_MaterialComponents_ActionBar) {
@@ -275,7 +281,7 @@ class ArtistFragmentUi(
             textRes = R.string.GenresLabel,
             belowView = ID_RATING_LABEL,
             valueView = ID_GENRES,
-            aboveView = ID_RECYCLER
+            aboveView = NO_ID
           )
 
           genres = addValueView(
@@ -290,21 +296,26 @@ class ArtistFragmentUi(
           mainPresenter.setActionBar(this)
         }, defaultLParams(collapseMode = PIN))
 
-
       }, defaultLParams(scrollFlags = SCROLL or ENTER_ALWAYS or EXIT_UNTIL_COLLAPSED))
+
+      tabLayout = add(materialStyles.tabLayout.default(R.id.artist_ui_tabbed_layout) {
+      }, defaultLParams {
+      })
 
     }, appBarLParams())
 
-    recycler = add(recyclerView(ID_RECYCLER) {
-      adapter = ReleaseGroupItemAdapter(uiContext) { displayGroup ->
-        ctx.toast("Selected: ${displayGroup.name}")
-      }.also { itemAdapter = it }
-      layoutManager = LinearLayoutManager(context)
+    viewPager = add(viewPager2(ID_PAGER) {
+      adapter = ArtistFragmentPagerAdapter(uiContext)
     }, defaultLParams(width = matchParent) {
       behavior = AppBarLayout.ScrollingViewBehavior()
-      bottomMargin = dip(4)
     })
 
+    TabLayoutMediator(tabLayout, viewPager, true, ConfigStrategy { tab, position ->
+      when (position) {
+        0 -> tab.setText(R.string.Discography)
+        1 -> tab.setText(R.string.Releases)
+      }
+    }).attach()
   }.also { root ->
     scope.launch {
       lifecycleOwner.whenStarted {
@@ -315,11 +326,6 @@ class ArtistFragmentUi(
         viewModel.isBusy.observe(lifecycleOwner, Observer { busy ->
           progress.isVisible = busy == true
         })
-        viewModel.releaseGroups.observe(lifecycleOwner, Observer { list ->
-          itemAdapter.setItems(list ?: emptyList())
-          recycler.layoutManager?.scrollToPosition(0)
-        })
-        viewModel.lookupArtist(artistMbid)
         isni.clickFlow().onEach {
           startActivity(
             isni.context,
@@ -361,11 +367,14 @@ class ArtistFragmentUi(
       startToStart = PARENT_ID
       if (belowView > 0) topToBottom = belowView else topToTop = PARENT_ID
       endToStart = valueView
-      bottomToTop = aboveView
+      if (aboveView > 0) bottomToTop = aboveView else bottomToBottom = PARENT_ID
     })
   }
 
   private fun updateArtistInfo(artist: DisplayArtist) {
+    if (artistMbid.value != artist.mbid.value) {
+      Timber.e("Model mbid %s != requested mbid %s", artist.mbid, artistMbid)
+    }
     toolbar.title = artist.name.value
 
     artistTypeView.text = artist.type.value

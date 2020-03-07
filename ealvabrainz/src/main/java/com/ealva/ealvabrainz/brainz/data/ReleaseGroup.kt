@@ -111,13 +111,13 @@ class ReleaseGroup(
 
   override fun toString() = toJson()
 
-
   interface Lookup : Include
 
   @Suppress("unused")
   enum class Subquery(override val value: String) : Lookup {
     Artists("artists"),
     Releases("releases"),
+
     /** An ID calculated from the TOC of a CD */
     DiscIds("discids"),             // include discids for all media in the releases
     Media("media"),                 // include media for all releases, this includes the # of tracks on each medium and its format.

@@ -54,6 +54,7 @@ import com.ealva.ealvabrainz.R.id.release_group_item_constraint as ID_CONSTRAINT
 import com.ealva.ealvabrainz.R.id.release_group_item_date as ID_RELEASE_DATE
 import com.ealva.ealvabrainz.R.id.release_group_item_name as ID_GROUP_NAME
 import com.ealva.ealvabrainz.R.id.release_group_item_rating as ID_RATING_BAR
+import com.ealva.ealvabrainz.R.id.release_group_item_release_count as ID_RELEASE_COUNT
 import com.ealva.ealvabrainz.R.id.release_group_item_type as ID_TYPE
 
 class ReleaseGroupItemUi(
@@ -62,13 +63,14 @@ class ReleaseGroupItemUi(
 ) : Ui {
   private val groupName: TextView
   private val type: TextView
+  private val releaseCount: TextView
   private val firstDate: TextView
   private val ratingBar: RatingBar
 
   private val scope = uiContext.scope
   override val ctx = uiContext.context
 
-  @UseExperimental(ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalCoroutinesApi::class)
   override val root = materialCardView(ID_CARD) {
     radius = dp(10)
     cardElevation = dp(4)
@@ -93,6 +95,16 @@ class ReleaseGroupItemUi(
         gravity = gravityStartCenter
       }, lParams(height = wrapContent) {
         startToStart = PARENT_ID
+        topToTop = PARENT_ID
+        endToStart = ID_RELEASE_COUNT
+        bottomToBottom = PARENT_ID
+      })
+
+      releaseCount = add(textView(ID_RELEASE_COUNT) {
+        maxLines = 1
+        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
+      }, lParams(wrapContent, wrapContent) {
+        startToEnd = ID_TYPE
         topToTop = PARENT_ID
         endToEnd = PARENT_ID
         bottomToBottom = PARENT_ID
@@ -142,5 +154,6 @@ class ReleaseGroupItemUi(
     type.text = releaseGroup.type.toDisplayString(releaseGroup.secondaryTypes) { ctx.getString(it)}
     firstDate.text = releaseGroup.date
     ratingBar.rating = releaseGroup.rating.value
+    releaseCount.text = ctx.getString(R.string.ReleaseCount, releaseGroup.releaseCount)
   }
 }

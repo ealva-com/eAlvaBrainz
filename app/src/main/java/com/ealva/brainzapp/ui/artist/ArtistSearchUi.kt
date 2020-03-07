@@ -34,7 +34,7 @@ import com.ealva.brainzapp.ui.view.snackErrors
 import com.ealva.ealvabrainz.R
 import com.google.android.material.textfield.TextInputLayout
 import com.mikepenz.iconics.IconicsDrawable
-import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial
+import com.mikepenz.iconics.typeface.library.materialdesigniconic.MaterialDesignIconic
 import com.mikepenz.iconics.utils.paddingDp
 import com.mikepenz.iconics.utils.sizeDp
 import fr.castorflex.android.circularprogressbar.CircularProgressBar
@@ -101,7 +101,7 @@ internal class ArtistSearchUiImpl(
 
   private val materialStyles = MaterialComponentsStyles(ctx)
 
-  @UseExperimental(ExperimentalSplittiesApi::class, ExperimentalCoroutinesApi::class)
+  @OptIn(ExperimentalSplittiesApi::class, ExperimentalCoroutinesApi::class)
   override val root = coordinatorLayout(ID_COORDINATOR) {
     add(constraintLayout(ID_CONSTRAINT) {
 
@@ -128,7 +128,7 @@ internal class ArtistSearchUiImpl(
       })
 
       searchBtn = add(imageView(ID_SEARCH_BUTTON) {
-        setImageDrawable(IconicsDrawable(context, GoogleMaterial.Icon.gmd_search).apply {
+        setImageDrawable(IconicsDrawable(context, MaterialDesignIconic.Icon.gmi_search).apply {
           sizeDp = 40
           paddingDp = 8
         })
@@ -142,14 +142,14 @@ internal class ArtistSearchUiImpl(
         endMargin = dip(4)
       })
 
-      searchItemAdapter = ArtistSearchItemAdapter(uiContext) { selection ->
-        navigation.push(
-          ArtistFragment.make(uiContext.fragmentManager, selection.mbid, selection.name),
-          ArtistFragment.NAME
-        )
-      }
       recycler = add(recyclerView(ID_RECYCLER) {
-        adapter = searchItemAdapter
+        setHasFixedSize(true)
+        adapter = ArtistSearchItemAdapter(uiContext) { selection ->
+          navigation.push(
+            ArtistFragment.make(uiContext.fragmentManager, selection.mbid, selection.name),
+            ArtistFragment.NAME
+          )
+        }.also { searchItemAdapter = it }
         layoutManager = LinearLayoutManager(context)
       }, lParams {
         startToStart = PARENT_ID
