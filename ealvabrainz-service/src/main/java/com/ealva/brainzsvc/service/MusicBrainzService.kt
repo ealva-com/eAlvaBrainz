@@ -466,12 +466,13 @@ internal class MusicBrainzServiceImpl(
     return Success(list)
   }
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   override suspend fun artistReleases(
     artistMbid: ArtistMbid,
     include: List<Release.Browse>,
     type: List<Release.Type>,
     status: List<Release.Status>
-  ): Flow<List<Release>> = flow {
+  ): Flow<List<Release>> = flow<List<Release>> {
     val list = ArrayList<Release>(100)
     var offset = 0
     val brainzInc = include.join()
@@ -498,7 +499,7 @@ internal class MusicBrainzServiceImpl(
         }
       }
     } while (offset > 0)
-  }
+  }.flowOn(dispatcher)
 
   private suspend fun FlowCollector<List<Release>>.emitReleaseList(
     currentOffset: Int,

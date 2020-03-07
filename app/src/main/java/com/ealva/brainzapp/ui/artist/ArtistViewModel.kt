@@ -37,6 +37,7 @@ import com.ealva.brainzapp.data.toStarRating
 import com.ealva.brainzsvc.common.ArtistName
 import com.ealva.brainzsvc.common.toArtistName
 import com.ealva.brainzsvc.common.toReleaseGroupName
+import com.ealva.brainzsvc.service.MusicBrainzException
 import com.ealva.brainzsvc.service.MusicBrainzResult.Success
 import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful
 import com.ealva.brainzsvc.service.MusicBrainzService
@@ -51,6 +52,8 @@ import com.ealva.ealvabrainz.brainz.data.mbid
 import com.ealva.ealvabrainz.brainz.data.toArtistMbid
 import com.ealva.ealvabrainz.brainz.data.toArtistType
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -109,6 +112,7 @@ internal class ArtistViewModelImpl(
   override val isBusy: MutableLiveData<Boolean> = MutableLiveData(false)
   override val unsuccessful: MutableLiveData<Unsuccessful> = MutableLiveData()
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   override fun lookupArtist(mbid: ArtistMbid) {
     val currentArtist = artist.value
     if (currentArtist == null || currentArtist.mbid != mbid) {
@@ -119,19 +123,28 @@ internal class ArtistViewModelImpl(
         busy(isBusy) {
           if (doArtistLookup(mbid)) {
             brainz.artistReleases(
-              mbid,
-              listOf(
-                Release.Browse.ReleaseGroups,
-                Release.Browse.Tags,
-                Release.Browse.Ratings,
-                Release.Browse.Genres,
-                Release.Browse.Media
-              ),
-              status = listOf(Release.Status.Official)
-            ).collect {
-              handleReleases(it, groupToReleaseMap, displayMap)
-            }
+                mbid,
+                listOf(
+                  Release.Browse.ReleaseGroups,
+                  Release.Browse.Tags,
+                  Release.Browse.Ratings,
+                  Release.Browse.Genres,
+                  Release.Browse.Media
+                ),
+                status = listOf(Release.Status.Official)
+              ).catch { cause ->
+                unsuccessful.postValue(
+                  Unsuccessful.Exceptional(
+                    MusicBrainzException("Exception artist release flow", cause)
+                  )
+                )
+              }
+              .collect {
+                handleReleases(it, groupToReleaseMap, displayMap)
+              }
+
           }
+
         }
       }
     }
