@@ -83,6 +83,21 @@
     <item name="release_group_item_release_count" type="id" />
 
 
-    <item name="artist_release_groups_recycler" type="id" /><item name="artist_releass_recycler" type="id" /><item name="release_item_card" type="id" /><item name="release_item_constraint" type="id" /><item name="release_item_name" type="id" />
+    <item name="artist_release_groups_recycler" type="id" />
+    <item name="artist_releases_recycler" type="id" />
+
+    <item name="release_item_card" type="id" />
+    <item name="release_item_constraint" type="id" />
+    <item name="release_item_name" type="id" />
+    <item name="release_item_format" type="id" />
+    <item name="release_item_artist" type="id" />
+    <item name="release_item_tracks" type="id" />
+    <item name="release_item_country" type="id" />
+    <item name="release_item_date" type="id" />
+    <item name="release_item_cat_number" type="id" />
+    <item name="release_item_barcode" type="id" />
+    <item name="release_item_catalog_label" type="id" />
+    <item name="release_item_barcode_label" type="id" />
+    <item name="release_item_record_label" type="id" />
 
 </resources>

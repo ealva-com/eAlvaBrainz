@@ -27,19 +27,17 @@ import com.ealva.brainzapp.ui.fragment.Navigation
 import com.ealva.brainzapp.ui.release.ReleaseSearchFragment
 import com.ealva.brainzapp.ui.rgroup.ReleaseGroupSearchFragment
 import com.ealva.brainzsvc.service.MusicBrainzService
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.generic.instance
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import timber.log.Timber
 
 typealias FragmentFactoryFn = () -> Fragment
 
 class AppFragmentFactory(
-  override val kodein: Kodein,
   navigation: Navigation,
   mainPresenter: MainPresenter
-) : FragmentFactory(), KodeinAware {
-  private val brainz: MusicBrainzService by instance()
+) : FragmentFactory(), KoinComponent {
+  private val brainz: MusicBrainzService by inject()
 
   private val factories: MutableMap<String, FragmentFactoryFn> = mutableMapOf(
     MainSearchFragment.NAME to { MainSearchFragment.make(mainPresenter) },

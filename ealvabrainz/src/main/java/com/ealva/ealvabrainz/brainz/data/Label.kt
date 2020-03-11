@@ -69,7 +69,7 @@ class Label(
    * A label code should not be confused with a release's catalog number. A catalog number
    * identifies a particular release, whereas a label code identifies an entire label.
    */
-  @field:Json(name = "label-code") var labelCode: String = "",
+  @field:Json(name = "label-code") var labelCode: Long = 0,
   /**
    * Aliases are used to store alternate names or misspellings. For more information and examples,
    * see the page about [aliases](https://musicbrainz.org/doc/Aliases).

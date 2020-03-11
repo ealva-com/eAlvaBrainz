@@ -73,7 +73,6 @@ import splitties.views.dsl.core.wrapContent
 import splitties.views.dsl.material.ENTER_ALWAYS
 import splitties.views.dsl.material.EXIT_UNTIL_COLLAPSED
 import splitties.views.dsl.material.MaterialComponentsStyles
-import splitties.views.dsl.material.PARALLAX
 import splitties.views.dsl.material.PIN
 import splitties.views.dsl.material.SCROLL
 import splitties.views.dsl.material.appBarLayout
@@ -288,7 +287,7 @@ class ArtistFragmentUi(
             viewId = ID_GENRES,
             labelView = ID_GENRES_LABEL
           )
-        }, defaultLParams(collapseMode = PARALLAX))
+        }, defaultLParams(collapseMode = PIN))
 
         toolbar = add(toolbar(ID_TOOLBAR, R.style.ThemeOverlay_AppCompat_Dark_ActionBar) {
           title = artistName.value

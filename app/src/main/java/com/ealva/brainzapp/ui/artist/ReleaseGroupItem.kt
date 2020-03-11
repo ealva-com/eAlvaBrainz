@@ -25,7 +25,7 @@ import com.ealva.brainzsvc.common.toReleaseGroupName
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.toReleaseGroupMbid
 
-class DisplayReleaseGroup private constructor(
+class ReleaseGroupItem private constructor(
   val id: Long,
   val mbid: ReleaseGroupMbid,
   val name: ReleaseGroupName,
@@ -41,7 +41,7 @@ class DisplayReleaseGroup private constructor(
     if (this === other) return true
     if (javaClass != other?.javaClass) return false
 
-    other as DisplayReleaseGroup
+    other as ReleaseGroupItem
 
     if (id != other.id) return false
     if (releaseCount != other.releaseCount) return false
@@ -70,9 +70,9 @@ class DisplayReleaseGroup private constructor(
       ratingVotes: Int,
       date: String,
       releaseCount: Int
-    ): DisplayReleaseGroup {
+    ): ReleaseGroupItem {
       ++latestId
-      return DisplayReleaseGroup(
+      return ReleaseGroupItem(
         latestId,
         mbid,
         name,
@@ -86,7 +86,7 @@ class DisplayReleaseGroup private constructor(
     }
 
     val NullDisplayReleaseGroup =
-      DisplayReleaseGroup(
+      ReleaseGroupItem(
         -1L,
         "".toReleaseGroupMbid(),
         "".toReleaseGroupName(),

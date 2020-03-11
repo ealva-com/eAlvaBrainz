@@ -82,7 +82,17 @@ sealed class MusicBrainzResult<out T : Any> {
      * [RawResponse][com.ealva.brainzsvc.net.RawResponse] which provides the https status
      * code/message and the error body.
      */
-    data class Exceptional(val exception: MusicBrainzException) : Unsuccessful()
+    data class Exceptional(val exception: MusicBrainzException) : Unsuccessful() {
+      companion object {
+        fun make(message: String, cause: Throwable? = null): Exceptional {
+          return when (cause) {
+            null -> Exceptional(MusicBrainzException(message))
+            is MusicBrainzException -> Exceptional(cause)
+            else -> Exceptional(MusicBrainzException(message, cause))
+          }
+        }
+      }
+    }
 
     /**
      * If using a [MusicBrainzResult.Unsuccessful] in a LiveData, or some other data holder, use
@@ -293,7 +303,7 @@ interface MusicBrainzService {
    */
   suspend fun <T : Any> brainz(block: BrainzCall<T>): MusicBrainzResult<T>
 
-  @Suppress("MemberVisibilityCanBePrivate", "unused")
+//  @Suppress("MemberVisibilityCanBePrivate", "unused")
   companion object {
     const val DEFAULT_MAX_RELEASE_COUNT = 10
 
@@ -318,10 +328,10 @@ interface MusicBrainzService {
       return MusicBrainzServiceImpl(brainz, coverArt, dispatcher)
     }
 
-    const val website = "https://musicbrainz.org/"
-    const val registerUrl = """${website}register"""
-    const val forgotPasswordUrl = """${website}lost-password"""
-    const val donateUrl = "http://metabrainz.org/donate"
+//    const val website = "https://musicbrainz.org/"
+//    const val registerUrl = """${website}register"""
+//    const val forgotPasswordUrl = """${website}lost-password"""
+//    const val donateUrl = "http://metabrainz.org/donate"
   }
 }
 
@@ -466,6 +476,7 @@ internal class MusicBrainzServiceImpl(
     return Success(list)
   }
 
+  @Suppress("RemoveExplicitTypeArguments") // intellij and compiler currently can't agree
   @OptIn(ExperimentalCoroutinesApi::class)
   override suspend fun artistReleases(
     artistMbid: ArtistMbid,
@@ -517,7 +528,7 @@ internal class MusicBrainzServiceImpl(
       collector,
       message
     )
-    emit(collector)
+    emit(collector.toList())
     return newOffset
   }
 
@@ -654,7 +665,6 @@ private fun buildMusicBrainz(
 @JvmName(name = "getReleaseList")
 private fun Response<ReleaseList>.list(): List<Release> {
   return if (isSuccessful) body()?.releases.orEmpty() else {
-    Timber.e("%d %s", code(), raw().toString())
     emptyList()
   }
 }
@@ -662,7 +672,6 @@ private fun Response<ReleaseList>.list(): List<Release> {
 @JvmName(name = "getReleaseGroupList")
 private fun Response<ReleaseGroupList>.list(): List<ReleaseGroup> {
   return if (isSuccessful) body()?.releaseGroups.orEmpty() else {
-    Timber.e("%d %s", code(), raw().toString())
     emptyList()
   }
 }

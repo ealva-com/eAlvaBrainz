@@ -18,10 +18,12 @@
 package com.ealva.brainzapp.ui.artist
 
 import android.text.TextUtils.TruncateAt.END
+import android.text.method.LinkMovementMethod
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
+import androidx.core.view.isVisible
 import com.ealva.brainzapp.ui.fragment.FragmentUiContext
 import com.ealva.brainzapp.ui.view.clickFlow
 import com.ealva.ealvabrainz.R
@@ -30,6 +32,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import splitties.dimensions.dip
 import splitties.dimensions.dp
+import splitties.toast.toast
 import splitties.views.dsl.constraintlayout.constraintLayout
 import splitties.views.dsl.constraintlayout.lParams
 import splitties.views.dsl.core.Ui
@@ -37,100 +40,185 @@ import splitties.views.dsl.core.add
 import splitties.views.dsl.core.horizontalMargin
 import splitties.views.dsl.core.lParams
 import splitties.views.dsl.core.matchParent
+import splitties.views.dsl.core.startMargin
 import splitties.views.dsl.core.textView
 import splitties.views.dsl.core.verticalMargin
 import splitties.views.dsl.core.wrapContent
 import splitties.views.dsl.material.materialCardView
-import splitties.views.gravityCenter
+import splitties.views.gravityEnd
+import splitties.views.gravityStart
 import splitties.views.textAppearance
+import splitties.views.textResource
+import com.ealva.ealvabrainz.R.id.release_item_artist as ID_ARTIST
+import com.ealva.ealvabrainz.R.id.release_item_barcode as ID_BARCODE
+import com.ealva.ealvabrainz.R.id.release_item_barcode_label as ID_BARCODE_LABEL
 import com.ealva.ealvabrainz.R.id.release_item_card as ID_CARD
+import com.ealva.ealvabrainz.R.id.release_item_cat_number as ID_CATALOG_NUM
+import com.ealva.ealvabrainz.R.id.release_item_catalog_label as ID_CATALOG_LABEL
 import com.ealva.ealvabrainz.R.id.release_item_constraint as ID_CONSTRAINT
-import com.ealva.ealvabrainz.R.id.release_item_name as ID_GROUP_NAME
+import com.ealva.ealvabrainz.R.id.release_item_country as ID_COUNTRY
+import com.ealva.ealvabrainz.R.id.release_item_date as ID_DATE
+import com.ealva.ealvabrainz.R.id.release_item_format as ID_FORMAT
+import com.ealva.ealvabrainz.R.id.release_item_name as ID_RELEASE_NAME
+import com.ealva.ealvabrainz.R.id.release_item_record_label as ID_RECORD_LABEL
+import com.ealva.ealvabrainz.R.id.release_item_tracks as ID_TRACKS
 
-class ReleaseItemUi(
-  uiContext: FragmentUiContext,
-  onClick: (v: View) -> Unit
-) : Ui {
-  private val releaseName: TextView
-//  private val type: TextView
-//  private val releaseCount: TextView
-//  private val firstDate: TextView
-//  private val ratingBar: RatingBar
+class ReleaseItemUi(uiContext: FragmentUiContext, onClick: (v: View) -> Unit) : Ui {
 
   private val scope = uiContext.scope
   override val ctx = uiContext.context
+
+  private val releaseName: TextView = textView(ID_RELEASE_NAME) {
+    ellipsize = END
+    maxLines = 1
+    textAppearance = R.style.TextAppearance_MaterialComponents_Subtitle1
+  }
+
+  private val format: TextView = textView(ID_FORMAT) {
+    textAppearance = R.style.TextAppearance_MaterialComponents_Body2
+    gravity = gravityStart
+  }
+
+  private val artist: TextView = textView(ID_ARTIST) {
+    textAppearance = R.style.TextAppearance_MaterialComponents_Body2
+    movementMethod = LinkMovementMethod.getInstance()
+  }
+
+  private val tracks: TextView = textView(ID_TRACKS) {
+    textAppearance = R.style.TextAppearance_MaterialComponents_Body2
+    gravity = gravityStart
+  }
+
+  private val country: TextView = textView(ID_COUNTRY) {
+    ellipsize = END
+    maxLines = 1
+    textAppearance = R.style.TextAppearance_MaterialComponents_Body2
+    gravity = gravityEnd
+  }
+
+  private val date: TextView = textView(ID_DATE) {
+    ellipsize = END
+    maxLines = 1
+    textAppearance = R.style.TextAppearance_MaterialComponents_Body2
+    gravity = gravityEnd
+  }
+
+  private val recordLabel: TextView = textView(ID_RECORD_LABEL) {
+    textAppearance = R.style.TextAppearance_MaterialComponents_Body2
+    movementMethod = LinkMovementMethod.getInstance()
+    gravity = gravityStart
+  }
+
+  private val catalogNumber: TextView = textView(ID_CATALOG_NUM) {
+    textAppearance = R.style.TextAppearance_MaterialComponents_Caption
+    gravity = gravityStart
+  }
+
+  private val barcode: TextView = textView(ID_BARCODE) {
+    textAppearance = R.style.TextAppearance_MaterialComponents_Caption
+    gravity = gravityEnd
+  }
 
   @OptIn(ExperimentalCoroutinesApi::class)
   override val root = materialCardView(ID_CARD) {
     radius = dp(10)
     cardElevation = dp(4)
-    val totalHeight = dip(88)
+
+    val catalogLabel = textView(ID_CATALOG_LABEL) {
+      textResource = R.string.CatNumberLabel
+      textAppearance = R.style.TextAppearance_MaterialComponents_Caption
+      gravity = gravityStart
+    }
+
+    val barcodeLabel = textView(ID_BARCODE_LABEL) {
+      textResource = R.string.BarcodeLabel
+      textAppearance = R.style.TextAppearance_MaterialComponents_Caption
+      gravity = gravityEnd
+    }
 
     add(constraintLayout(ID_CONSTRAINT) {
 
-      releaseName = add(textView(ID_GROUP_NAME) {
-        ellipsize = END
-        maxLines = 1
-        textAppearance = R.style.TextAppearance_MaterialComponents_Subtitle1
-      }, lParams(height = wrapContent) {
+      add(releaseName, lParams(height = wrapContent) {
         startToStart = PARENT_ID
         topToTop = PARENT_ID
         endToEnd = PARENT_ID
-        bottomToBottom = PARENT_ID
+        bottomToTop = ID_ARTIST
       })
 
-//      type = add(textView(ID_TYPE) {
-//        ellipsize = END
-//        maxLines = 1
-//        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
-//        gravity = gravityStartCenter
-//      }, lParams(height = wrapContent) {
-//        startToStart = PARENT_ID
-//        topToTop = PARENT_ID
-//        endToStart = ID_RELEASE_COUNT
-//        bottomToBottom = PARENT_ID
-//      })
-//
-//      releaseCount = add(textView(ID_RELEASE_COUNT) {
-//        maxLines = 1
-//        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
-//      }, lParams(wrapContent, wrapContent) {
-//        startToEnd = ID_TYPE
-//        topToTop = PARENT_ID
-//        endToEnd = PARENT_ID
-//        bottomToBottom = PARENT_ID
-//      })
-//
-//      firstDate = add(textView(ID_RELEASE_DATE) {
-//        ellipsize = END
-//        maxLines = 1
-//        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
-//      }, lParams(height = wrapContent) {
-//        startToStart = PARENT_ID
-//        topToBottom = ID_TYPE
-//        endToStart = ID_RATING_BAR
-//      })
-//
-//      ratingBar = add(
-//        ratingBar(ID_RATING_BAR) {
-//          setIsIndicator(true)
-//          numStars = 5
-//          stepSize = 0.5f
-//          rating = 0f
-//          minimumHeight = dip(16)
-//          setStarRatingDrawable(Color.BLUE, Color.BLUE, dip(16), dip(1), 0)
-//        }, lParams(width = dip(80), height = dip(16)) {
-//          startToEnd = ID_RELEASE_DATE
-//          topToBottom = ID_TYPE
-//          endToEnd = PARENT_ID
-//        })
+      add(artist, lParams(height = wrapContent) {
+        startToStart = PARENT_ID
+        topToBottom = ID_RELEASE_NAME
+        endToEnd = PARENT_ID
+        bottomToTop = ID_RECORD_LABEL
+      })
 
+      add(recordLabel, lParams(height = wrapContent) {
+        startToStart = PARENT_ID
+        topToBottom = ID_ARTIST
+        endToEnd = PARENT_ID
+        bottomToTop = ID_FORMAT
+      })
 
-    }, lParams(matchParent, totalHeight, gravityCenter) {
+      add(format, lParams(wrapContent, wrapContent) {
+        startToStart = PARENT_ID
+        topToBottom = ID_RECORD_LABEL
+        endToStart = ID_TRACKS
+        bottomToTop = ID_CATALOG_LABEL
+      })
+
+      add(tracks, lParams(height = wrapContent) {
+        startToEnd = ID_FORMAT
+        endToStart = ID_COUNTRY
+        baselineToBaseline = ID_FORMAT
+        startMargin = dip(6)
+      })
+
+      add(country, lParams(wrapContent, wrapContent) {
+        startToEnd = ID_TRACKS
+        endToStart = ID_DATE
+        baselineToBaseline = ID_FORMAT
+        horizontalMargin = dip(4)
+      })
+
+      add(date, lParams(wrapContent, wrapContent) {
+        startToEnd = ID_COUNTRY
+        endToEnd = PARENT_ID
+        baselineToBaseline = ID_FORMAT
+        horizontalMargin = dip(4)
+      })
+
+      add(catalogLabel, lParams(wrapContent, wrapContent) {
+        startToStart = PARENT_ID
+        topToBottom = ID_FORMAT
+        endToStart = ID_CATALOG_NUM
+        bottomToBottom = PARENT_ID
+        bottomMargin = dip(4)  // because our card has rounded edges
+      })
+
+      add(catalogNumber, lParams(height = wrapContent) {
+        startToEnd = ID_CATALOG_LABEL
+        endToEnd = ID_BARCODE_LABEL
+        baselineToBaseline = ID_CATALOG_LABEL
+      })
+
+      add(barcodeLabel, lParams(wrapContent, wrapContent) {
+        startToEnd = ID_CATALOG_NUM
+        endToStart = ID_BARCODE
+        baselineToBaseline = ID_CATALOG_LABEL
+      })
+
+      add(barcode, lParams(wrapContent, wrapContent) {
+        startToEnd = ID_BARCODE_LABEL
+        endToEnd = PARENT_ID
+        baselineToBaseline = ID_CATALOG_LABEL
+      })
+
+    }, lParams(matchParent, wrapContent) {
+      verticalMargin = dip(4)
       horizontalMargin = dip(8)
     })
 
-    layoutParams = ViewGroup.MarginLayoutParams(matchParent, totalHeight).apply {
+    layoutParams = ViewGroup.MarginLayoutParams(matchParent, wrapContent).apply {
       verticalMargin = dip(4)
       horizontalMargin = dip(8)
     }
@@ -140,11 +228,30 @@ class ReleaseItemUi(
       .launchIn(scope)
   }
 
-  fun bind(release: DisplayRelease) {
+  fun bind(release: ReleaseItem) {
+    val none = ctx.getString(R.string.NoneInBrackets)
+
     releaseName.text = release.name.value
-//    type.text = releaseGroup.type.toDisplayString(releaseGroup.secondaryTypes) { ctx.getString(it)}
-//    firstDate.text = releaseGroup.date
-//    ratingBar.rating = releaseGroup.rating.value
-//    releaseCount.text = ctx.getString(R.string.ReleaseCount, releaseGroup.releaseCount)
+    format.text = release.format
+
+    artist.setText(
+      release.artistCredits.toSpannable { credit -> toast("clicked ${credit.artistName}") },
+      TextView.BufferType.SPANNABLE
+    )
+
+    tracks.text = release.tracks
+    date.text = release.date
+    country.text = release.country
+
+    recordLabel.isVisible = release.labels.isNotEmpty()
+    recordLabel.setText(
+      release.labels.toSpannable(ctx) { label -> toast("clicked ${label.name}") },
+      TextView.BufferType.SPANNABLE
+    )
+
+    catalogNumber.text = if (release.catalogNumber.isNotBlank()) release.catalogNumber else none
+    barcode.text = if (release.barcode.isNotBlank()) release.barcode else none
   }
 }
+
+

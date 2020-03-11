@@ -23,10 +23,10 @@ import com.ealva.brainzapp.ui.fragment.FragmentUiContext
 
 class ReleaseGroupItemAdapter(
   private val uiContext: FragmentUiContext,
-  private val selection: (DisplayReleaseGroup) -> Unit
+  private val selection: (ReleaseGroupItem) -> Unit
 ) : RecyclerView.Adapter<ReleaseGroupItemAdapter.ViewHolder>() {
 
-  private val itemList: MutableList<DisplayReleaseGroup> = mutableListOf()
+  private val itemList: MutableList<ReleaseGroupItem> = mutableListOf()
   private var recycler: RecyclerView? = null
 
   init {
@@ -42,7 +42,7 @@ class ReleaseGroupItemAdapter(
     recycler = null
   }
 
-  fun setItems(newList: List<DisplayReleaseGroup>) {
+  fun setItems(newList: List<ReleaseGroupItem>) {
     itemList.clear()
     itemList.addAll(newList)
     notifyDataSetChanged()
@@ -55,15 +55,15 @@ class ReleaseGroupItemAdapter(
     })
 
   class ViewHolder(val ui: ReleaseGroupItemUi) : RecyclerView.ViewHolder(ui.root) {
-    fun bind(item: DisplayReleaseGroup) = ui.bind(item)
+    fun bind(item: ReleaseGroupItem) = ui.bind(item)
   }
 
   override fun getItemCount(): Int {
     return itemList.size
   }
 
-  private fun getItemAt(position: Int): DisplayReleaseGroup {
-    return itemList.elementAtOrElse(position) { DisplayReleaseGroup.NullDisplayReleaseGroup }
+  private fun getItemAt(position: Int): ReleaseGroupItem {
+    return itemList.elementAtOrElse(position) { ReleaseGroupItem.NullDisplayReleaseGroup }
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {

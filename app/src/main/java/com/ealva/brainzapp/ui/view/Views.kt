@@ -23,7 +23,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import com.ealva.brainzsvc.service.MusicBrainzResult
+import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful
 import com.ealva.ealvabrainz.R
 import com.ealva.ealvabrainz.common.ensureExhaustive
 import kotlinx.coroutines.Dispatchers
@@ -50,16 +50,30 @@ fun View.clickFlow(): Flow<View> = callbackFlow {
   awaitClose { setOnClickListener(null) }
 }.conflate().flowOn(Dispatchers.Main)
 
-fun LiveData<MusicBrainzResult.Unsuccessful>.snackErrors(
+fun LiveData<Unsuccessful>.snackErrors(
   lifecycleOwner: LifecycleOwner,
   root: CoordinatorLayout
 ) {
   observe(lifecycleOwner, Observer { result ->
     when (result) {
-      is MusicBrainzResult.Unsuccessful.ErrorResult -> root.longSnack(result.error.error)
-      is MusicBrainzResult.Unsuccessful.Exceptional -> root.longSnack(result.exception.message ?: "Exception")
-      is MusicBrainzResult.Unsuccessful.None -> Any()
+      is Unsuccessful.ErrorResult -> root.longSnack(result.message)
+      is Unsuccessful.Exceptional -> root.longSnack(result.message)
+      is Unsuccessful.None -> Any()
     }.ensureExhaustive
   })
 }
 
+val Unsuccessful.ErrorResult.message: String
+  get() = error.error
+
+val Unsuccessful.Exceptional.message: String
+  get() = exception.typeAndMessage
+
+val Throwable.typeAndMessage: String
+  get() = "${causeOrSelf.javaClass.simpleName} $messageOrEmpty"
+
+val Throwable.causeOrSelf: Throwable
+  get() = cause ?: this
+
+val Throwable.messageOrEmpty: String
+  get() = message ?: ""

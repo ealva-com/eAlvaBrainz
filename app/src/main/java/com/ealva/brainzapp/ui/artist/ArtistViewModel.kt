@@ -24,7 +24,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ealva.brainzapp.data.Country
-import com.ealva.brainzapp.data.DisplayGenre
+import com.ealva.brainzapp.data.GenreItem
 import com.ealva.brainzapp.data.Isni
 import com.ealva.brainzapp.data.Isni.Companion.NullIsni
 import com.ealva.brainzapp.data.StarRating
@@ -36,17 +36,24 @@ import com.ealva.brainzapp.data.toSecondaryReleaseGroupList
 import com.ealva.brainzapp.data.toStarRating
 import com.ealva.brainzsvc.common.ArtistName
 import com.ealva.brainzsvc.common.toArtistName
+import com.ealva.brainzsvc.common.toLabelName
 import com.ealva.brainzsvc.common.toReleaseGroupName
-import com.ealva.brainzsvc.service.MusicBrainzException
+import com.ealva.brainzsvc.common.toReleaseName
 import com.ealva.brainzsvc.service.MusicBrainzResult.Success
 import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful
+import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful.Exceptional
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.ealvabrainz.brainz.data.Artist
+import com.ealva.ealvabrainz.brainz.data.ArtistCredit
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.ArtistType
+import com.ealva.ealvabrainz.brainz.data.LabelInfo
+import com.ealva.ealvabrainz.brainz.data.Medium
 import com.ealva.ealvabrainz.brainz.data.Release
+import com.ealva.ealvabrainz.brainz.data.ReleaseEvent
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.brainz.data.appearsValid
 import com.ealva.ealvabrainz.brainz.data.mbid
 import com.ealva.ealvabrainz.brainz.data.toArtistMbid
@@ -72,12 +79,13 @@ class DisplayArtist(
   val isni: Isni,
   val rating: StarRating,
   @Suppress("unused") val ratingVotes: Int,
-  val genres: List<DisplayGenre>
+  val genres: List<GenreItem>
 )
 
 interface ArtistViewModel {
   val artist: LiveData<DisplayArtist>
-  val releaseGroups: LiveData<List<DisplayReleaseGroup>>
+  val releaseGroups: LiveData<List<ReleaseGroupItem>>
+  val releases: LiveData<List<ReleaseItem>>
   val isBusy: LiveData<Boolean>
   val unsuccessful: LiveData<Unsuccessful>
 
@@ -101,14 +109,64 @@ private class ArtistViewModelFactory(
   }
 }
 
+private fun List<Medium>.toFormatStrings(): Pair<String, String> {
+  val map = mutableMapOf<String, Int>()
+  val tracks = buildString {
+    append("(")
+    this@toFormatStrings.forEachIndexed { index, medium ->
+      var count = map[medium.format] ?: 0
+      map[medium.format] = ++count
+      if (index > 0) append(" + ")
+      append(medium.trackCount)
+    }
+    append(")")
+  }
+
+  return Pair(buildString {
+    map.keys.forEachIndexed { index, format ->
+      val count = map[format] ?: 0
+      if (index > 0) append(" + ")
+      if (count > 0) {
+        if (count > 1) {
+          append(count)
+          append("x")
+        }
+        append(if (format.isNotBlank()) format else "(unknown)")
+      }
+    }
+  }, tracks)
+}
+
+private val List<LabelInfo>.catalogNumber: String
+  get() {
+    forEach { labelnfo ->
+      if (labelnfo.catalogNumber.isNotBlank()) return labelnfo.catalogNumber
+    }
+    return ""
+  }
+
+private val List<ReleaseEvent>.firstDate: String
+  get() {
+    forEach { event ->
+      if (event.date.isNotBlank()) return event.date
+    }
+    return ""
+  }
+
 private const val sorterForEmpty = "aaaa"
+inline fun <reified T> mutableDataEmptyList(): MutableLiveData<List<T>> {
+  return MutableLiveData(emptyList())
+}
+
+/** Have seen more than 1600 for a single artist - 2048 should rarely need to be grown */
+private const val RELEASE_HASHMAP_MAX_SIZE = 2048
 
 internal class ArtistViewModelImpl(
   private val brainz: MusicBrainzService
 ) : ViewModel(), ArtistViewModel {
   override val artist: MutableLiveData<DisplayArtist> = MutableLiveData()
-  override val releaseGroups: MutableLiveData<List<DisplayReleaseGroup>> =
-    MutableLiveData(emptyList())
+  override val releaseGroups: MutableLiveData<List<ReleaseGroupItem>> = mutableDataEmptyList()
+  override val releases: MutableLiveData<List<ReleaseItem>> = mutableDataEmptyList()
   override val isBusy: MutableLiveData<Boolean> = MutableLiveData(false)
   override val unsuccessful: MutableLiveData<Unsuccessful> = MutableLiveData()
 
@@ -119,32 +177,27 @@ internal class ArtistViewModelImpl(
       viewModelScope.launch(Dispatchers.Default) {
         unsuccessful.postValue(Unsuccessful.None)
         val groupToReleaseMap = mutableMapOf<ReleaseGroupMbid, MutableList<Release>>()
-        val displayMap = mutableMapOf<ReleaseGroupMbid, DisplayReleaseGroup>()
+        val releaseMap = mutableMapOf<ReleaseMbid, ReleaseItem>()
+        val displayMap = HashMap<ReleaseGroupMbid, ReleaseGroupItem>(RELEASE_HASHMAP_MAX_SIZE)
         busy(isBusy) {
           if (doArtistLookup(mbid)) {
             brainz.artistReleases(
                 mbid,
                 listOf(
+                  Release.Browse.ArtistCredits,
                   Release.Browse.ReleaseGroups,
-                  Release.Browse.Tags,
                   Release.Browse.Ratings,
-                  Release.Browse.Genres,
-                  Release.Browse.Media
+                  Release.Browse.Media,
+                  Release.Browse.Labels
                 ),
                 status = listOf(Release.Status.Official)
-              ).catch { cause ->
-                unsuccessful.postValue(
-                  Unsuccessful.Exceptional(
-                    MusicBrainzException("Exception artist release flow", cause)
-                  )
-                )
+              )
+              .catch { ex ->
+                Timber.e(ex)
+                unsuccessful.postValue(Exceptional.make("Artist release flow", ex))
               }
-              .collect {
-                handleReleases(it, groupToReleaseMap, displayMap)
-              }
-
+              .collect { handleReleases(it, groupToReleaseMap, displayMap, releaseMap) }
           }
-
         }
       }
     }
@@ -153,10 +206,27 @@ internal class ArtistViewModelImpl(
   private fun handleReleases(
     releaseList: List<Release>,
     groupToReleaseMap: MutableMap<ReleaseGroupMbid, MutableList<Release>>,
-    displayMap: MutableMap<ReleaseGroupMbid, DisplayReleaseGroup>
+    displayMap: MutableMap<ReleaseGroupMbid, ReleaseGroupItem>,
+    releaseMap: MutableMap<ReleaseMbid, ReleaseItem>
   ) {
     val newGroupMap = mutableMapOf<ReleaseGroupMbid, ReleaseGroup>()
     releaseList.forEach { release ->
+      val (format, tracks) = release.media.toFormatStrings()
+      val releaseMbid = release.mbid
+      if (!releaseMap.containsKey(releaseMbid)) {
+        releaseMap[releaseMbid] = ReleaseItem.make(
+          releaseMbid,
+          release.title.toReleaseName(),
+          format,
+          tracks,
+          release.country,
+          release.releaseEvents.firstDate,
+          release.labelInfo.toDisplayLabels(),
+          release.labelInfo.catalogNumber,
+          release.barcode,
+          release.artistCredit.toDisplayCredits()
+        )
+      }
       val group = release.releaseGroup
       val mbid = group.mbid
       if (mbid.appearsValid()) {
@@ -170,7 +240,7 @@ internal class ArtistViewModelImpl(
       val mbid = entry.value.mbid
       if (!displayMap.containsKey(entry.key)) {
         entry.value.run {
-          displayMap[entry.key] = DisplayReleaseGroup.make(
+          displayMap[entry.key] = ReleaseGroupItem.make(
             mbid,
             title.toReleaseGroupName(),
             primaryType.toPrimaryReleaseGroupType(),
@@ -194,6 +264,17 @@ internal class ArtistViewModelImpl(
       }
       .toList()
     releaseGroups.postValue(list)
+
+    releases.postValue(
+      releaseMap.values.asSequence()
+        .sortedBy {
+          val date = it.date
+          if (date.isBlank()) {
+            "${sorterForEmpty}${it.name.value}"
+          } else date
+        }
+        .toList()
+    )
   }
 
   private suspend fun doArtistLookup(mbid: ArtistMbid): Boolean =
@@ -233,5 +314,18 @@ internal class ArtistViewModelImpl(
       )
     )
   }
-
 }
+
+private fun List<ArtistCredit>.toDisplayCredits() = map {
+  CreditItem(it.artist.mbid, it.artist.name.toArtistName(), it.joinphrase)
+}.toList()
+
+private fun List<LabelInfo>.toDisplayLabels() = asSequence()
+  .distinctBy { it.label.id }
+  .mapTo(ArrayList(size)) { labelInfo ->
+    LabelItem(
+      labelInfo.label.mbid,
+      labelInfo.label.name.toLabelName(),
+      labelInfo.label.disambiguation
+    )
+  }

@@ -23,11 +23,11 @@ import com.ealva.brainzapp.ui.fragment.FragmentUiContext
 
 class ReleaseItemAdapter(
   private val uiContext: FragmentUiContext,
-  private val selection: (DisplayRelease) -> Unit
+  private val selection: (ReleaseItem) -> Unit
 ) : RecyclerView.Adapter<ReleaseItemAdapter.ViewHolder>() {
 
   private val scope = uiContext.scope
-  private val itemList: MutableList<DisplayRelease> = mutableListOf()
+  private val itemList: MutableList<ReleaseItem> = mutableListOf()
   private var recycler: RecyclerView? = null
 
   init {
@@ -42,7 +42,7 @@ class ReleaseItemAdapter(
     recycler = null
   }
 
-  fun setItems(newList: List<DisplayRelease>) {
+  fun setItems(newList: List<ReleaseItem>) {
     itemList.clear()
     itemList.addAll(newList)
     notifyDataSetChanged()
@@ -55,15 +55,15 @@ class ReleaseItemAdapter(
     })
 
   class ViewHolder(val ui: ReleaseItemUi) : RecyclerView.ViewHolder(ui.root) {
-    fun bind(item: DisplayRelease) = ui.bind(item)
+    fun bind(item: ReleaseItem) = ui.bind(item)
   }
 
   override fun getItemCount(): Int {
     return itemList.size
   }
 
-  private fun getItemAt(position: Int): DisplayRelease {
-    return itemList.elementAtOrElse(position) { DisplayRelease.NullDisplayRelease }
+  private fun getItemAt(position: Int): ReleaseItem {
+    return itemList.elementAtOrElse(position) { ReleaseItem.NullDisplayRelease }
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {

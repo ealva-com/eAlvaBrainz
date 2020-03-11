@@ -149,7 +149,7 @@ class ReleaseGroupItemUi(
       .launchIn(scope)
   }
 
-  fun bind(releaseGroup: DisplayReleaseGroup) {
+  fun bind(releaseGroup: ReleaseGroupItem) {
     groupName.text = releaseGroup.name.value
     type.text = releaseGroup.type.toDisplayString(releaseGroup.secondaryTypes) { ctx.getString(it)}
     firstDate.text = releaseGroup.date

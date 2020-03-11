@@ -20,20 +20,22 @@ package com.ealva.brainzapp.app
 import android.app.Application
 import com.ealva.brainzapp.services.brainzModule
 import com.ealva.ealvabrainz.BuildConfig
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.x.androidXModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
 import timber.log.Timber
 
 @Suppress("unused") // It's in the manifest
-class App : Application(), KodeinAware {
-  override val kodein by Kodein.lazy {
-    import(androidXModule(this@App))
-    import(brainzModule)
-  }
+class App : Application() {
 
   override fun onCreate() {
     super.onCreate()
+    startKoin {
+      androidLogger()
+      androidContext(this@App)
+      modules(brainzModule)
+    }
+
     if (BuildConfig.DEBUG) {
       Timber.plant(Timber.DebugTree())
     }

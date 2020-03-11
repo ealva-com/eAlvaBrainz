@@ -260,7 +260,7 @@ class Release(
     Barcode("barcode"),
 
     /** The catalog number for this release, can have multiples when major using an imprint */
-    CatalogueNumber("catno"),
+    CatalogNumber("catno"),
 
     /** Disambiguation comment */
     Comment("comment"),

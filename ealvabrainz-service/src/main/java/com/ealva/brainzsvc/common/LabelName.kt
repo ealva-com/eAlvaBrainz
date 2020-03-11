@@ -15,18 +15,23 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainzapp.services
+package com.ealva.brainzsvc.common
 
-import com.ealva.brainzsvc.service.CoverArtService
-import com.ealva.brainzsvc.service.MusicBrainzService
-import org.koin.android.ext.koin.androidContext
-import org.koin.dsl.module
-
-private const val appName = "My App"
-private const val appVersion = "0.1"
-private const val contactEmail = "YourName@YourAddress.com"
-
-val brainzModule = module {
-  single { CoverArtService.make(androidContext(), appName, appVersion, contactEmail) }
-  single { MusicBrainzService.make(androidContext(), appName, appVersion, contactEmail, get()) }
+/**
+ * Convert this String to an [LabelName] or [LabelName.UNKNOWN] if this is null.
+ */
+@Suppress("NOTHING_TO_INLINE")
+inline fun String?.toLabelName(): LabelName {
+  return this?.let { LabelName.make(this) } ?: LabelName.UNKNOWN
 }
+
+inline class LabelName(val value: String) {
+  companion object {
+    val UNKNOWN = LabelName("Unknown")
+
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun make(value: String): LabelName =
+      LabelName(value.trim())
+  }
+}
+

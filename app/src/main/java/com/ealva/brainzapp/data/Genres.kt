@@ -22,28 +22,28 @@ import com.ealva.ealvabrainz.brainz.data.Genre
 import timber.log.Timber
 import kotlin.math.min
 
-interface DisplayGenre {
+interface GenreItem {
   val name: String
   val count: Int
   fun getDisplayName(fetch: (stringRes: Int) -> String): String
 
   companion object {
-    fun make(name: String, count: Int): DisplayGenre =
+    fun make(name: String, count: Int): GenreItem =
       DisplayGenreImpl(name, count, genreToNameMap[name] ?: nameNotInMap(name))
   }
 }
 
-/** Convert to a sorted (by count descending), list of [DisplayGenre], of maximum size 4 */
-fun List<Genre>.toDisplayGenres(): List<DisplayGenre> {
+/** Convert to a sorted (by count descending), list of [GenreItem], of maximum size 4 */
+fun List<Genre>.toDisplayGenres(): List<GenreItem> {
   val length = size
   return asSequence()
     .sortedByDescending { it.count }
     .take(min(4, length))
-    .map { DisplayGenre.make(it.name, it.count) }
+    .map { GenreItem.make(it.name, it.count) }
     .toList()
 }
 
-fun List<DisplayGenre>.toDisplayString(fetch: (stringRes: Int) -> String): String {
+fun List<GenreItem>.toDisplayString(fetch: (stringRes: Int) -> String): String {
   if (isEmpty()) return fetch(R.string.none_in_parens)
   return buildString {
     this@toDisplayString.forEachIndexed { index, genre ->
@@ -57,7 +57,7 @@ private class DisplayGenreImpl(
   override val name: String,
   override val count: Int,
   private val nameRes: Int
-) : DisplayGenre {
+) : GenreItem {
   override fun getDisplayName(fetch: (stringRes: Int) -> String): String {
     return try {
       if (nameRes != R.string.empty) fetch(nameRes) else name
