@@ -177,7 +177,202 @@ sealed class MusicBrainzResult<out T : Any> {
 }
 ```
 ## app
-TBD
+The application demonstrates searching, browsing, and display of various MusicBrainz entities.
+Currently the user needs to know how to build a MusicBrainz 
+[query](https://musicbrainz.org/doc/Development/XML_Web_Service/Version_2/Search).
+
+There are examples of callback flows, such as:
+```kotlin
+sealed class TabSelection(val tab: TabLayout.Tab) {
+  class Selected(tab: TabLayout.Tab) : TabSelection(tab)
+  class Reselected(tab: TabLayout.Tab) : TabSelection(tab)
+  class Unselected(tab: TabLayout.Tab) : TabSelection(tab)
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+fun TabLayout.tabSelectionFlow(): Flow<TabSelection> = callbackFlow<TabSelection> {
+  val listener = object : TabLayout.OnTabSelectedListener {
+    override fun onTabReselected(tab: TabLayout.Tab) {
+      offer(TabSelection.Reselected(tab))
+    }
+
+    override fun onTabUnselected(tab: TabLayout.Tab) {
+      offer(TabSelection.Unselected(tab))
+    }
+
+    override fun onTabSelected(tab: TabLayout.Tab) {
+      offer(TabSelection.Selected(tab))
+    }
+  }
+  addOnTabSelectedListener(listener)
+  awaitClose { removeOnTabSelectedListener(listener) }
+}.flowOn(Dispatchers.Main)
+
+// Example usage
+tabLayout.tabSelectionFlow().onEach { selection ->
+  when (selection) {
+    is TabSelection.Reselected -> appBarLayout.setExpanded(true)
+    is TabSelection.Unselected, is TabSelection.Selected -> {}
+  }.ensureExhaustive
+}.launchIn(scope)
+
+``` 
+Given Kotlin coroutines, flows, and lifecycle scope, it is easy to define flows that properly
+set and remove listeners based on component lifecycle, to conflate events, and to possibly emit
+richer objects than provided by underlying Views. Consumers only need to collect from a flow and 
+the underlying listener is properly registered/unregistered based on lifecycle.
+
+The app uses no layout XML and instead uses a Kotlin DSL from the [Splitties][splitties] library.
+The UI is defined in a way so as to segregate UI functionality and, as a result, classes such as
+Activities, Fragments, ViewHolders, etc. are very small. Using this DSL keeps the UI definition
+and implementation together in a single file/class, is inherently type safe/null safe, eliminates 
+the need for findViewById or view binding, eliminates reflection used during inflation, and greatly 
+reduces development friction (1 language/1 class vs 2 languages/multiple files). 
+  
+An example of the UI for a fragment that is used by the new ViewPager2 is:
+```kotlin
+class ArtistReleaseGroupsUi(
+  private val uiContext: FragmentUiContext,
+  private val viewModel: ArtistViewModel
+) : Ui {
+  private val lifecycleOwner = uiContext.lifecycleOwner
+  override val ctx: Context = uiContext.context
+
+  private val itemAdapter: ReleaseGroupItemAdapter
+
+  override val root: RecyclerView = recyclerView(ID_RECYCLER) {
+    setHasFixedSize(true)
+    layoutManager = LinearLayoutManager(context)
+    adapter = ReleaseGroupItemAdapter(uiContext) { displayGroup ->
+      ctx.toast("Selected: ${displayGroup.name}")
+    }.also {
+      itemAdapter = it
+      lifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
+        override fun onResume(owner: LifecycleOwner) {
+          viewModel.releaseGroups.observe(lifecycleOwner, Observer { list ->
+            itemAdapter.setItems(list ?: emptyList())
+          })
+        }
+
+        override fun onPause(owner: LifecycleOwner) {
+          viewModel.releaseGroups.removeObservers(lifecycleOwner)
+        }
+      })
+    }
+  }
+}
+```
+This example simply presents a recycler that displays a list from a specific adapter and observes a 
+view model to populate the adapter. The lifecycle owner is observed to add and remove listeners at
+the appropriate time (resume and pause in this example given its use in a ViewPager2).
+
+The UI created by the adapter is a larger example and appears similar to the equivalent XML, but
+is a little less verbose, already has all view object references (no need for view binding), and
+contains the binding logic with the view description.
+```kotlin
+class ReleaseGroupItemUi(
+  uiContext: FragmentUiContext,
+  onClick: (v: View) -> Unit
+) : Ui {
+  private val groupName: TextView
+  private val type: TextView
+  private val releaseCount: TextView
+  private val firstDate: TextView
+  private val ratingBar: RatingBar
+
+  private val scope = uiContext.scope
+  override val ctx = uiContext.context
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  override val root = materialCardView(ID_CARD) {
+    radius = dp(10)
+    cardElevation = dp(4)
+    val totalHeight = dip(88)
+
+    add(constraintLayout(ID_CONSTRAINT) {
+
+      groupName = add(textView(ID_GROUP_NAME) {
+        ellipsize = END
+        maxLines = 1
+        textAppearance = R.style.TextAppearance_MaterialComponents_Subtitle1
+      }, lParams(height = wrapContent) {
+        startToStart = PARENT_ID
+        endToEnd = PARENT_ID
+        bottomToTop = ID_TYPE
+      })
+
+      type = add(textView(ID_TYPE) {
+        ellipsize = END
+        maxLines = 1
+        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
+        gravity = gravityStartCenter
+      }, lParams(height = wrapContent) {
+        startToStart = PARENT_ID
+        topToTop = PARENT_ID
+        endToStart = ID_RELEASE_COUNT
+        bottomToBottom = PARENT_ID
+      })
+
+      releaseCount = add(textView(ID_RELEASE_COUNT) {
+        maxLines = 1
+        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
+      }, lParams(wrapContent, wrapContent) {
+        startToEnd = ID_TYPE
+        topToTop = PARENT_ID
+        endToEnd = PARENT_ID
+        bottomToBottom = PARENT_ID
+      })
+
+      firstDate = add(textView(ID_RELEASE_DATE) {
+        ellipsize = END
+        maxLines = 1
+        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
+      }, lParams(height = wrapContent) {
+        startToStart = PARENT_ID
+        topToBottom = ID_TYPE
+        endToStart = ID_RATING_BAR
+      })
+
+      ratingBar = add(ratingBar(ID_RATING_BAR) {
+          setIsIndicator(true)
+          numStars = 5
+          stepSize = 0.5f
+          rating = 0f
+          minimumHeight = dip(16)
+          setStarRatingDrawable(Color.BLUE, Color.BLUE, dip(16), dip(1), 0)
+        }, lParams(width = dip(80), height = dip(16)) {
+          startToEnd = ID_RELEASE_DATE
+          topToBottom = ID_TYPE
+          endToEnd = PARENT_ID
+        })
+
+
+    }, lParams(matchParent, totalHeight, gravityCenter) {
+      horizontalMargin = dip(8)
+    })
+
+    layoutParams = ViewGroup.MarginLayoutParams(matchParent, totalHeight).apply {
+      verticalMargin = dip(4)
+      horizontalMargin = dip(8)
+    }
+  }.also { card ->
+    card.clickFlow()
+      .onEach { onClick(card) }
+      .launchIn(scope)
+  }
+
+  fun bind(releaseGroup: ReleaseGroupItem) {
+    groupName.text = releaseGroup.name.value
+    type.text = releaseGroup.type.toDisplayString(releaseGroup.secondaryTypes) { ctx.getString(it)}
+    firstDate.text = releaseGroup.date
+    ratingBar.rating = releaseGroup.rating.value
+    releaseCount.text = ctx.getString(R.string.ReleaseCount, releaseGroup.releaseCount)
+  }
+}
+```
+In this example the layout and view creation attributes are located together, as would be found in
+equivalent XML, but it is easy to separate view definition from layout, to customize portrait vs
+landscape for example, as in done in other areas of the app.
 
 Of Note
 =======
@@ -193,6 +388,7 @@ may be used as examples or a starting point:
 * Sealed class MusicBrainzResult from MusicBrainzService as opposed to exceptions
 * Coroutine test strategy with a JUnit rule and a test dispatcher (test concurrent code)
 * App uses Kotlin Views DSL for UI ([Splitties][splitties]) - no XML layout files 
+* App defines some event callback flows to automate listener register/unregister based on lifecycle resulting in less client boilerplate
 
 Related
 =======

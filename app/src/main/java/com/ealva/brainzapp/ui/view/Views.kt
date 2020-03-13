@@ -17,6 +17,8 @@
 
 package com.ealva.brainzapp.ui.view
 
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Build
 import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -77,3 +79,13 @@ val Throwable.causeOrSelf: Throwable
 
 val Throwable.messageOrEmpty: String
   get() = message ?: ""
+
+val Context.inPortrait: Boolean
+  get() = Configuration.ORIENTATION_PORTRAIT == resources.configuration.orientation
+
+inline val View.inPortrait: Boolean
+  get() = context.inPortrait
+
+//val Context.inLandscape: Boolean
+//  get() = Configuration.ORIENTATION_LANDSCAPE == resources.configuration.orientation
+

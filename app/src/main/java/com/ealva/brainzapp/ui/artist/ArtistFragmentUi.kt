@@ -36,14 +36,17 @@ import com.ealva.brainzapp.data.setAsClickableLink
 import com.ealva.brainzapp.data.toDisplayString
 import com.ealva.brainzapp.ui.fragment.FragmentUiContext
 import com.ealva.brainzapp.ui.main.MainPresenter
+import com.ealva.brainzapp.ui.view.TabSelection
 import com.ealva.brainzapp.ui.view.addCircularProgress
 import com.ealva.brainzapp.ui.view.clickFlow
 import com.ealva.brainzapp.ui.view.setStarRatingDrawable
 import com.ealva.brainzapp.ui.view.snackErrors
+import com.ealva.brainzapp.ui.view.tabSelectionFlow
 import com.ealva.brainzapp.ui.view.viewPager2
 import com.ealva.brainzsvc.common.ArtistName
 import com.ealva.ealvabrainz.R
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.common.ensureExhaustive
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.tabs.TabLayout
@@ -70,7 +73,6 @@ import splitties.views.dsl.core.matchParent
 import splitties.views.dsl.core.ratingBar
 import splitties.views.dsl.core.textView
 import splitties.views.dsl.core.wrapContent
-import splitties.views.dsl.material.ENTER_ALWAYS
 import splitties.views.dsl.material.EXIT_UNTIL_COLLAPSED
 import splitties.views.dsl.material.MaterialComponentsStyles
 import splitties.views.dsl.material.PIN
@@ -105,6 +107,7 @@ import com.ealva.ealvabrainz.R.id.artist_ui_rating_bar as ID_RATING
 import com.ealva.ealvabrainz.R.id.artist_ui_rating_label as ID_RATING_LABEL
 import com.ealva.ealvabrainz.R.id.artist_ui_start_area as ID_START_AREA
 import com.ealva.ealvabrainz.R.id.artist_ui_start_area_label as ID_START_AREA_LABEL
+import com.ealva.ealvabrainz.R.id.artist_ui_tabbed_layout as ID_TABBED_LAYOUT
 import com.ealva.ealvabrainz.R.id.artist_ui_toolbar as ID_TOOLBAR
 import com.ealva.ealvabrainz.R.id.artist_ui_type as ID_ARTIST_TYPE
 import com.ealva.ealvabrainz.R.id.artist_ui_type_label as ID_TYPE_LABEL
@@ -122,6 +125,7 @@ class ArtistFragmentUi(
   private val lifecycleOwner = uiContext.lifecycleOwner
 
   private val progress: CircularProgressBar
+  private val appBarLayout: AppBarLayout
   private val tabLayout: TabLayout
   private val viewPager: ViewPager2
   private val artistTypeView: TextView
@@ -151,13 +155,15 @@ class ArtistFragmentUi(
 
     progress = addCircularProgress(ID_PROGRESS)
 
-    add(appBarLayout(ID_APP_BAR, R.style.ThemeOverlay_MaterialComponents_ActionBar) {
+    val actionBarSize = styledDimenPxSize(android.R.attr.actionBarSize)
+
+    appBarLayout = add(appBarLayout(ID_APP_BAR, R.style.ThemeOverlay_MaterialComponents_ActionBar) {
 
       collapsing = add(collapsingToolbarLayout(ID_COLLAPSING) {
         isTitleEnabled = false
 
         add(constraintLayout(ID_CONSTRAINT) {
-          topPadding = styledDimenPxSize(android.R.attr.actionBarSize)
+          topPadding = actionBarSize
           backgroundColor = styledColor(android.R.attr.colorBackground)
           fitsSystemWindows = true
 
@@ -293,13 +299,11 @@ class ArtistFragmentUi(
           title = artistName.value
           backgroundColor = styledColor(R.attr.colorPrimary)
           mainPresenter.setActionBar(this)
-        }, defaultLParams(collapseMode = PIN))
+        }, defaultLParams(height = actionBarSize, collapseMode = PIN))
 
-      }, defaultLParams(scrollFlags = SCROLL or ENTER_ALWAYS or EXIT_UNTIL_COLLAPSED))
+      }, defaultLParams(scrollFlags = SCROLL or EXIT_UNTIL_COLLAPSED))
 
-      tabLayout = add(materialStyles.tabLayout.default(R.id.artist_ui_tabbed_layout) {
-      }, defaultLParams {
-      })
+      tabLayout = add(materialStyles.tabLayout.default(ID_TABBED_LAYOUT), defaultLParams())
 
     }, appBarLParams())
 
@@ -334,6 +338,13 @@ class ArtistFragmentUi(
             ),
             null
           )
+        }.launchIn(scope)
+        tabLayout.tabSelectionFlow().onEach { selection ->
+          when (selection) {
+            is TabSelection.Reselected -> appBarLayout.setExpanded(true)
+            is TabSelection.Unselected, is TabSelection.Selected -> {
+            }
+          }.ensureExhaustive
         }.launchIn(scope)
       }
     }

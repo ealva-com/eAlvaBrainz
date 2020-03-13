@@ -84,7 +84,7 @@ interface ArtistSearchUi : Ui {
   }
 }
 
-internal class ArtistSearchUiImpl(
+private class ArtistSearchUiImpl(
   private val uiContext: FragmentUiContext,
   private val viewModel: ArtistSearchViewModel,
   private val navigation: Navigation
