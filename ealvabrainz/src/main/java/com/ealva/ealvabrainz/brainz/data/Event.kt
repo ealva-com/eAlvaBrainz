@@ -20,6 +20,7 @@ package com.ealva.ealvabrainz.brainz.data
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import timber.log.Timber
 
 /**
  * An event refers to an organised event which people can attend, and is relevant to MusicBrainz.
@@ -179,6 +180,16 @@ data class Event(
   }
 }
 
-inline val Event.isNullObject
+inline val Event.isNullObject: Boolean
   get() = this === Event.NullEvent
 
+inline class EventMbid(override val value: String) : Mbid
+
+inline val Event.mbid: EventMbid
+  get() = id.toEventMbid()
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun String.toEventMbid(): EventMbid {
+  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid EventMbid")
+  return EventMbid(this)
+}

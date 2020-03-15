@@ -121,7 +121,7 @@ class AreaRelation(
   }
 }
 
-val AreaRelation.isNullObject
+val AreaRelation.isNullObject: Boolean
   get() = this === NullAreaRelation
 
 /**
@@ -174,7 +174,7 @@ class ArtistRelation(
   }
 }
 
-val ArtistRelation.isNullObject
+val ArtistRelation.isNullObject: Boolean
   get() = this === NullArtistRelation
 
 /**
@@ -224,7 +224,7 @@ class EventRelation(
   }
 }
 
-val EventRelation.isNullObject
+val EventRelation.isNullObject: Boolean
   get() = this === NullEventRelation
 
 /**
@@ -270,7 +270,7 @@ class InstrumentRelation(
   }
 }
 
-val InstrumentRelation.isNullObject
+val InstrumentRelation.isNullObject: Boolean
   get() = this === NullInstrumentRelation
 
 /**
@@ -319,7 +319,7 @@ class LabelRelation(
   }
 }
 
-val LabelRelation.isNullObject
+val LabelRelation.isNullObject: Boolean
   get() = this === NullLabelRelation
 
 /**
@@ -366,7 +366,7 @@ class PlaceRelation(
   }
 }
 
-val PlaceRelation.isNullObject
+val PlaceRelation.isNullObject: Boolean
   get() = this === NullPlaceRelation
 
 /**
@@ -414,7 +414,7 @@ class RecordingRelation(
   }
 }
 
-val RecordingRelation.isNullObject
+val RecordingRelation.isNullObject: Boolean
   get() = this === NullRecordingRelation
 
 /**
@@ -459,7 +459,7 @@ class ReleaseRelation(
   }
 }
 
-val ReleaseRelation.isNullObject
+val ReleaseRelation.isNullObject: Boolean
   get() = this === NullReleaseRelation
 
 /**
@@ -506,7 +506,7 @@ class ReleaseGroupRelation(
   }
 }
 
-val ReleaseGroupRelation.isNullObject
+val ReleaseGroupRelation.isNullObject: Boolean
   get() = this === NullReleaseGroupRelation
 
 /**
@@ -551,7 +551,7 @@ class SeriesRelation(
   }
 }
 
-val SeriesRelation.isNullObject
+val SeriesRelation.isNullObject: Boolean
   get() = this === NullSeriesRelation
 
 /**
@@ -594,7 +594,7 @@ class UrlRelation(
   }
 }
 
-val UrlRelation.isNullObject
+val UrlRelation.isNullObject: Boolean
   get() = this === NullUrlRelation
 
 /**
@@ -637,7 +637,7 @@ class WorkRelation(
   }
 }
 
-val WorkRelation.isNullObject
+val WorkRelation.isNullObject: Boolean
   get() = this === NullWorkRelation
 
 //area-rels+artist-rels+event-rels+instrument-rels+label-rels+place-rels+recording-rels+release-rels+release-group-rels+series-rels+url-rels+work-rels

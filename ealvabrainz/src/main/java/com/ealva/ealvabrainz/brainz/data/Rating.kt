@@ -38,5 +38,5 @@ data class Rating(
   }
 }
 
-inline val Rating.isNullObject
+inline val Rating.isNullObject: Boolean
   get() = this === NullRating

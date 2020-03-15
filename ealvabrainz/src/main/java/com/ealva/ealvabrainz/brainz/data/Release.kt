@@ -21,6 +21,7 @@ import com.ealva.ealvabrainz.brainz.data.CoverArtArchive.Companion.NullCoverArtA
 import com.ealva.ealvabrainz.brainz.data.Release.Companion.NullRelease
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
+import timber.log.Timber
 
 //import com.squareup.moshi.JsonClass
 
@@ -393,16 +394,17 @@ class Release(
 
 }
 
-inline val Release.isNullObject
+inline val Release.isNullObject: Boolean
   get() = this === NullRelease
 
 inline class ReleaseMbid(override val value: String) : Mbid
 
-inline val Release.mbid
-  get() = ReleaseMbid(id)
+inline val Release.mbid: ReleaseMbid
+  get() = id.toReleaseMbid()
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun String.toReleaseMbid(): ReleaseMbid {
+  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid ReleaseMbid")
   return ReleaseMbid(this)
 }
 
@@ -433,9 +435,13 @@ inline val Release.theArtistName: String
 inline val Release.theArtistSortName: String
   get() {
     return try {
-      artistCredit[0].artist.theSortName
+      artistCredit[0].artist.sortName
     } catch (e: Exception) {
       ""
     }
   }
 
+data class PackagingInfo(val id: PackagingMbid, val name: String)
+
+val Release.packagingInfo: PackagingInfo
+  get() = PackagingInfo(packagingId.toPackagingMbid(), packaging)

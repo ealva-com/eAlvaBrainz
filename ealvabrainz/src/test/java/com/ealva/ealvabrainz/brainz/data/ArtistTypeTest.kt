@@ -37,6 +37,5 @@ class ArtistTypeTest {
     expect("choir".toArtistType()).toBe(ArtistType.Unknown)
     expect("character".toArtistType()).toBe(ArtistType.Unknown)
     expect("unknown".toArtistType()).toBe(ArtistType.Unknown)
-
   }
 }

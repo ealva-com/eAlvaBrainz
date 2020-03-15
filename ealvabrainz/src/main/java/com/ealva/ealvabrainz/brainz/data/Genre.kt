@@ -33,5 +33,5 @@ data class Genre(
   }
 }
 
-val Genre.isNullObject
+val Genre.isNullObject: Boolean
   get() = this === NullGenre

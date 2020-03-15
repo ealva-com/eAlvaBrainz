@@ -31,5 +31,5 @@ data class Tag(
   }
 }
 
-val Tag.isNullObject
+val Tag.isNullObject: Boolean
   get() = this === NullTag

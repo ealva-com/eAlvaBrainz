@@ -19,6 +19,7 @@ package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.Url.Companion.NullUrl
 import com.squareup.moshi.JsonClass
+import timber.log.Timber
 
 /**
  * A MusicBrainz URL consists of its ID and the actual Url
@@ -54,5 +55,16 @@ class Url(
   }
 }
 
-inline val Url.isNullObject
+inline val Url.isNullObject: Boolean
   get() = this === NullUrl
+
+inline class UrlMbid(override val value: String) : Mbid
+
+inline val Url.mbid: UrlMbid
+  get() = id.toUrlMbid()
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun String.toUrlMbid(): UrlMbid {
+  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid UrlMbid")
+  return UrlMbid(this)
+}

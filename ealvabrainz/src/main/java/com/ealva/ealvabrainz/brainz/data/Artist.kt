@@ -23,6 +23,7 @@ import com.ealva.ealvabrainz.brainz.data.Artist.Companion.NullArtist
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import timber.log.Timber
 
 /**
  * Result from artist mbid lookup
@@ -257,16 +258,12 @@ class Artist(
   }
 }
 
-inline val Artist.isNullObject
+inline val Artist.isNullObject: Boolean
   get() = this === NullArtist
-
-inline val Artist.theSortName: String
-  get() = sortName
 
 inline class ArtistMbid(override val value: String) : Mbid {
   companion object {
 
-    // Not making these an enum or sealed hierarchy because list may be incomplete
     // https://musicbrainz.org/doc/Style/Unknown_and_untitled/Special_purpose_artist
     val ANONYMOUS = ArtistMbid("f731ccc4-e22a-43af-a747-64213329e088")
     val DATA = ArtistMbid("33cf029c-63b0-41a0-9855-be2a3665fb3b")
@@ -288,8 +285,11 @@ inline class ArtistMbid(override val value: String) : Mbid {
   }
 }
 
-inline val Artist.mbid
-  get() = ArtistMbid(id)
+inline val Artist.mbid: ArtistMbid
+  get() = id.toArtistMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toArtistMbid() = ArtistMbid(this)
+inline fun String.toArtistMbid(): ArtistMbid {
+  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid ArtistMbid")
+  return ArtistMbid(this)
+}

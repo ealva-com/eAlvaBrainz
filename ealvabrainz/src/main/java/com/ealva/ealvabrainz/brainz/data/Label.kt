@@ -19,6 +19,7 @@ package com.ealva.ealvabrainz.brainz.data
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import timber.log.Timber
 
 /**
  * Labels are one of the most complicated and controversial parts of the music industry. The
@@ -223,13 +224,16 @@ class Label(
   }
 }
 
-inline val Label.isNullObject
+inline val Label.isNullObject: Boolean
   get() = this === Label.NullLabel
 
 inline class LabelMbid(override val value: String) : Mbid
 
-inline val Label.mbid
-  get() = LabelMbid(id)
+inline val Label.mbid: LabelMbid
+  get() = id.toLabelMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toLabelMbid() = LabelMbid(this)
+inline fun String.toLabelMbid(): LabelMbid {
+  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid LabelMbid")
+  return LabelMbid(this)
+}

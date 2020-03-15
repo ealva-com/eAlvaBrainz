@@ -36,5 +36,5 @@ data class CoverArtRelease(
   }
 }
 
-inline val CoverArtRelease.isNullObject
+inline val CoverArtRelease.isNullObject: Boolean
   get() = this === NullCoverArtRelease

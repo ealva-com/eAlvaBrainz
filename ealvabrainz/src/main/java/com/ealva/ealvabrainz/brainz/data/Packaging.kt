@@ -18,6 +18,7 @@
 package com.ealva.ealvabrainz.brainz.data
 
 import com.squareup.moshi.JsonClass
+import timber.log.Timber
 
 /**
  * * **Book** A book with a sleeve containing a medium (usually a CD).
@@ -50,5 +51,16 @@ data class Packaging(
   }
 }
 
-inline val Packaging.isNullObject
+inline val Packaging.isNullObject: Boolean
   get() = this === Packaging.NullPackaging
+
+inline class PackagingMbid(override val value: String) : Mbid
+
+inline val Packaging.mbid: PackagingMbid
+  get() = id.toPackagingMbid()
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun String.toPackagingMbid(): PackagingMbid {
+  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid PackagingMbid")
+  return PackagingMbid(this)
+}

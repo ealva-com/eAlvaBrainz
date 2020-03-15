@@ -19,6 +19,7 @@ package com.ealva.ealvabrainz.brainz.data
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import timber.log.Timber
 
 @JsonClass(generateAdapter = true)
 class Instrument(
@@ -131,14 +132,17 @@ class Instrument(
   }
 }
 
-inline val Instrument.isNullObject
+inline val Instrument.isNullObject: Boolean
   get() = this === Instrument.NullInstrument
 
 inline class InstrumentMbid(override val value: String) : Mbid
 
 inline val Instrument.mbid
-  get() = InstrumentMbid(id)
+  get() = id.toInstrumentMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toInstrumentMbid() = InstrumentMbid(this)
+inline fun String.toInstrumentMbid(): InstrumentMbid {
+  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid InstrumentMbid")
+  return InstrumentMbid(this)
+}
 

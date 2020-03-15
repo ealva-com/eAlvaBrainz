@@ -18,6 +18,7 @@
 package com.ealva.ealvabrainz.brainz.data
 
 import com.squareup.moshi.JsonClass
+import timber.log.Timber
 
 /**
  * ```json
@@ -30,8 +31,8 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 class Series(
-  var name: String = "",
   var id: String = "",
+  var name: String = "",
   var disambiguation: String = ""
 ) {
   interface Lookup : Include
@@ -71,15 +72,18 @@ class Series(
   }
 }
 
-inline val Series.isNullObject
+inline val Series.isNullObject: Boolean
   get() = this === Series.NullSeries
 
 inline class SeriesMbid(override val value: String) : Mbid
 
-inline val Series.mbid
-  get() = SeriesMbid(id)
+inline val Series.mbid: SeriesMbid
+  get() = id.toSeriesMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toSeriesMbid() = SeriesMbid(this)
+inline fun String.toSeriesMbid(): SeriesMbid {
+  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid SeriesMbid")
+  return SeriesMbid(this)
+}
 
 

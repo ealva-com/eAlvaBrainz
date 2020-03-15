@@ -32,5 +32,5 @@ data class ArtistCredit(
   }
 }
 
-inline val ArtistCredit.isNullObject
+inline val ArtistCredit.isNullObject: Boolean
   get() = this === ArtistCredit.NullArtistCredit

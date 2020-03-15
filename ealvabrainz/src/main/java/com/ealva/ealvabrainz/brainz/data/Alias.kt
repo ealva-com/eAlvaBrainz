@@ -86,7 +86,7 @@ class Alias(
   }
 }
 
-inline val Alias.isNullObject
+inline val Alias.isNullObject: Boolean
   get() = this === NullAlias
 
 /** [Alias.beginDate] if not empty, else [Alias.begin] */

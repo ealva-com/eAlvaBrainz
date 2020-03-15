@@ -21,6 +21,7 @@ import com.ealva.ealvabrainz.brainz.data.Place.Companion.NullPlace
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import timber.log.Timber
 
 /**
  * A place is a building or outdoor area used for performing or producing music.
@@ -166,13 +167,16 @@ class Place(
   }
 }
 
-inline val Place.isNullObject
+inline val Place.isNullObject: Boolean
   get() = this === NullPlace
 
 inline class PlaceMbid(override val value: String) : Mbid
 
-inline val Place.mbid
-  get() = PlaceMbid(id)
+inline val Place.mbid: PlaceMbid
+  get() = id.toPlaceMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toPlaceMbid() = PlaceMbid(this)
+inline fun String.toPlaceMbid(): PlaceMbid {
+  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid PlaceMbid")
+  return PlaceMbid(this)
+}

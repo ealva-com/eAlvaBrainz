@@ -25,8 +25,7 @@ data class Target(
   var type: String =""
 ) {
   companion object {
-    val NullTarget =
-      Target(id = NullObject.ID)
+    val NullTarget = Target(id = NullObject.ID)
     val fallbackMapping: Pair<String, Any> = Target::class.java.name to NullTarget
   }
 }

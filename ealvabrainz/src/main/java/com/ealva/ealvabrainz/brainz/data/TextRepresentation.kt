@@ -76,5 +76,5 @@ data class TextRepresentation(
   }
 }
 
-inline val TextRepresentation.isNullObject
+inline val TextRepresentation.isNullObject: Boolean
   get() = this === NullTextRepresentation

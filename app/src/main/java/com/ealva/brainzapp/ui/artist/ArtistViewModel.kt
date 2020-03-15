@@ -29,7 +29,7 @@ import com.ealva.brainzapp.data.Isni
 import com.ealva.brainzapp.data.Isni.Companion.NullIsni
 import com.ealva.brainzapp.data.StarRating
 import com.ealva.brainzapp.data.toCountry
-import com.ealva.brainzapp.data.toDisplayGenres
+import com.ealva.brainzapp.data.toGenreItems
 import com.ealva.brainzapp.data.toIsni
 import com.ealva.brainzapp.data.toPrimaryReleaseGroupType
 import com.ealva.brainzapp.data.toSecondaryReleaseGroupList
@@ -54,10 +54,11 @@ import com.ealva.ealvabrainz.brainz.data.ReleaseEvent
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
-import com.ealva.ealvabrainz.brainz.data.appearsValid
+import com.ealva.ealvabrainz.brainz.data.artistType
+import com.ealva.ealvabrainz.brainz.data.isNullObject
+import com.ealva.ealvabrainz.brainz.data.isValid
 import com.ealva.ealvabrainz.brainz.data.mbid
 import com.ealva.ealvabrainz.brainz.data.toArtistMbid
-import com.ealva.ealvabrainz.brainz.data.toArtistType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
@@ -221,15 +222,15 @@ internal class ArtistViewModelImpl(
           tracks,
           release.country,
           release.releaseEvents.firstDate,
-          release.labelInfo.toDisplayLabels(),
+          release.labelInfo.toLabelItems(),
           release.labelInfo.catalogNumber,
           release.barcode,
-          release.artistCredit.toDisplayCredits()
+          release.artistCredit.toCreditItems()
         )
       }
       val group = release.releaseGroup
       val mbid = group.mbid
-      if (mbid.appearsValid()) {
+      if (mbid.isValid()) {
         newGroupMap[mbid] = group
         val groupReleases =
           if (groupToReleaseMap.containsKey(mbid)) groupToReleaseMap[mbid]!! else mutableListOf()
@@ -298,7 +299,7 @@ internal class ArtistViewModelImpl(
     artist.postValue(
       DisplayArtist(
         mbid = resultMbid,
-        type = brainzArtist.type.toArtistType(),
+        type = brainzArtist.artistType,
         name = brainzArtist.name.toArtistName(),
         country = brainzArtist.country.toCountry(),
         area = brainzArtist.area.name,
@@ -310,17 +311,18 @@ internal class ArtistViewModelImpl(
         isni = brainzArtist.isnis.firstOrNull()?.toIsni() ?: NullIsni,
         rating = brainzArtist.rating.value.toStarRating(),
         ratingVotes = brainzArtist.rating.votesCount,
-        genres = brainzArtist.genres.toDisplayGenres()
+        genres = brainzArtist.genres.toGenreItems()
       )
     )
   }
 }
 
-private fun List<ArtistCredit>.toDisplayCredits() = map {
+private fun List<ArtistCredit>.toCreditItems(): List<CreditItem> = map {
   CreditItem(it.artist.mbid, it.artist.name.toArtistName(), it.joinphrase)
 }.toList()
 
-private fun List<LabelInfo>.toDisplayLabels() = asSequence()
+private fun List<LabelInfo>.toLabelItems(): MutableList<LabelItem> = asSequence()
+  .filterNot { it.label.isNullObject }
   .distinctBy { it.label.id }
   .mapTo(ArrayList(size)) { labelInfo ->
     LabelItem(

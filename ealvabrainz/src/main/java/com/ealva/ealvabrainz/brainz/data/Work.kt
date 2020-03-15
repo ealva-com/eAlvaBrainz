@@ -20,6 +20,7 @@ package com.ealva.ealvabrainz.brainz.data
 import com.ealva.ealvabrainz.brainz.data.Work.Companion.NullWork
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import timber.log.Timber
 
 /**
  * In MusicBrainz terminology, a work is a distinct intellectual or artistic creation, which can
@@ -140,13 +141,16 @@ class Work(
   }
 }
 
-inline val Work.isNullObject
+inline val Work.isNullObject: Boolean
   get() = this === NullWork
 
 inline class WorkMbid(override val value: String) : Mbid
 
-inline val Work.mbid
-  get() = WorkMbid(id)
+inline val Work.mbid: WorkMbid
+  get() = id.toWorkMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toWorkMbid() = WorkMbid(this)
+inline fun String.toWorkMbid(): WorkMbid {
+  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid WorkMbid")
+  return WorkMbid(this)
+}

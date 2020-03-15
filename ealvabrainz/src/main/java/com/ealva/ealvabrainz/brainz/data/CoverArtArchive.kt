@@ -34,6 +34,6 @@ data class CoverArtArchive(
   }
 }
 
-inline val CoverArtArchive.isNullObject
+inline val CoverArtArchive.isNullObject: Boolean
   get() = this === NullCoverArtArchive
 

@@ -18,8 +18,10 @@
 package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.Area.Companion.NullArea
+import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.logInvalidMbid
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import timber.log.Timber
 
 /**
  * Areas are geographic regions or settlements. Areas are usually kept in sync with their
@@ -172,13 +174,16 @@ class Area(
 
 }
 
-inline val Area.isNullObject
+inline val Area.isNullObject: Boolean
   get() = this === NullArea
 
 inline class AreaMbid(override val value: String) : Mbid
 
-inline val Area.mbid
-  get() = AreaMbid(id)
+inline val Area.mbid: AreaMbid
+  get() = id.toAreaMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toAreaMbid() = AreaMbid(this)
+inline fun String.toAreaMbid(): AreaMbid {
+  if (logInvalidMbid && isInvalidMbid()) Timber.w("Invalid AreaMbid")
+  return AreaMbid(this)
+}

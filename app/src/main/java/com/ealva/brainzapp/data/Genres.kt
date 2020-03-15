@@ -34,7 +34,7 @@ interface GenreItem {
 }
 
 /** Convert to a sorted (by count descending), list of [GenreItem], of maximum size 4 */
-fun List<Genre>.toDisplayGenres(): List<GenreItem> {
+fun List<Genre>.toGenreItems(): List<GenreItem> {
   val length = size
   return asSequence()
     .sortedByDescending { it.count }

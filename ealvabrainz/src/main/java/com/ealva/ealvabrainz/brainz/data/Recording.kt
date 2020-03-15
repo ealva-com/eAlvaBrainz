@@ -20,6 +20,7 @@ package com.ealva.ealvabrainz.brainz.data
 import com.ealva.ealvabrainz.brainz.data.Recording.Companion.NullRecording
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import timber.log.Timber
 
 /**
  * A [recording](https://musicbrainz.org/doc/Recording) is an entity in MusicBrainz which can be
@@ -205,13 +206,16 @@ class Recording(
   }
 }
 
-val Recording.isNullObject
+val Recording.isNullObject: Boolean
   get() = this === NullRecording
 
 inline class RecordingMbid(override val value: String) : Mbid
 
-inline val Recording.mbid
-  get() = RecordingMbid(id)
+inline val Recording.mbid: RecordingMbid
+  get() = id.toRecordingMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toRecordingMbid() = RecordingMbid(this)
+inline fun String.toRecordingMbid(): RecordingMbid {
+  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid RecordingMbid")
+  return RecordingMbid(this)
+}

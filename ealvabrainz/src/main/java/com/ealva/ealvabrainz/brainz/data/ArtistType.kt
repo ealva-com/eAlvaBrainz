@@ -17,6 +17,8 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
+import timber.log.Timber
+
 enum class ArtistType(val value: String) {
   Person("Person"),
   Group("Group"),
@@ -48,4 +50,12 @@ private val typeNameToArtistMap = ArtistType.values().associateBy { it.value }
 /**
  * Convert a String to an ArtistType. If the string is unrecognized, returns [ArtistType.Unknown]
  */
-fun String.toArtistType(): ArtistType = typeNameToArtistMap[this] ?: ArtistType.Unknown
+fun String.toArtistType(): ArtistType {
+  return typeNameToArtistMap[this] ?: mapToUnknown(this)
+}
+
+@Suppress("NOTHING_TO_INLINE")
+private inline fun mapToUnknown(typeString: String): ArtistType {
+  Timber.w("%s is an Unknown ArtistType", typeString)
+  return ArtistType.Unknown
+}

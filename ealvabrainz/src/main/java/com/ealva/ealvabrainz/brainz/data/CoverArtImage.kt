@@ -67,7 +67,7 @@ class CoverArtImage(
   }
 }
 
-inline val CoverArtImage.isNullObject
+inline val CoverArtImage.isNullObject: Boolean
   get() = this === NullCoverArtImage
 
 /**

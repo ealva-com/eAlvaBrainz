@@ -58,8 +58,8 @@ data class Medium(
   }
 }
 
-inline val Medium.isNullObject
+inline val Medium.isNullObject: Boolean
   get() = this === NullMedium
 
-val Medium.theTracks
-get() = if (track.isNotEmpty()) track else tracks
+val Medium.theTracks: List<Track>
+  get() = if (track.isNotEmpty()) track else tracks

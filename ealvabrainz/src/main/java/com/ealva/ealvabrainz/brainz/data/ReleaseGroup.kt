@@ -21,6 +21,7 @@ import com.ealva.ealvabrainz.brainz.data.ReleaseGroup.Companion.NullReleaseGroup
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import timber.log.Timber
 
 /**
  * A release group, just as the name suggests, is used to group several different [Release]s into a
@@ -218,16 +219,19 @@ class ReleaseGroup(
   }
 }
 
-inline val ReleaseGroup.isNullObject
+inline val ReleaseGroup.isNullObject: Boolean
   get() = this === NullReleaseGroup
 
 inline class ReleaseGroupMbid(override val value: String) : Mbid
 
 inline val ReleaseGroup.mbid: ReleaseGroupMbid
-  get() = ReleaseGroupMbid(id)
+  get() = id.toReleaseGroupMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toReleaseGroupMbid() = ReleaseGroupMbid(this)
+inline fun String.toReleaseGroupMbid(): ReleaseGroupMbid {
+  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid ReleaseGroupMbid")
+  return ReleaseGroupMbid(this)
+}
 
 /**
  * Appears as primary-type-id in some places and type-id in others. Handle like this for now. Moshi

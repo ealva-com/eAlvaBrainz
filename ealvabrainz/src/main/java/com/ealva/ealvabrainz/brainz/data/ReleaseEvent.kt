@@ -32,5 +32,5 @@ data class ReleaseEvent(
   }
 }
 
-inline val ReleaseEvent.isNullObject
+inline val ReleaseEvent.isNullObject: Boolean
   get() = this === NullReleaseEvent

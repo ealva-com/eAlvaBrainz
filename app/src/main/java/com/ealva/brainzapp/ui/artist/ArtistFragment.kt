@@ -35,7 +35,7 @@ import com.ealva.brainzsvc.common.ArtistName
 import com.ealva.brainzsvc.common.toArtistName
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
-import com.ealva.ealvabrainz.brainz.data.appearsValid
+import com.ealva.ealvabrainz.brainz.data.isValid
 import com.ealva.ealvabrainz.brainz.data.toArtistMbid
 
 private const val KEY_MBID = "ArtistMbid_ArtistFragment"
@@ -45,7 +45,7 @@ var Bundle?.artistMbid: ArtistMbid
   get() {
     check(this != null) { "Null argument bundle" }
     val mbid = getString(KEY_MBID)?.toArtistMbid()
-    check(mbid != null && mbid.appearsValid()) { "Bad Artist Id $mbid" }
+    check(mbid != null && mbid.isValid()) { "Bad Artist Id $mbid" }
     return mbid
   }
   set(value) {

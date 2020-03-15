@@ -31,5 +31,5 @@ data class Coordinates(
   }
 }
 
-inline val Coordinates.isNullObject
+inline val Coordinates.isNullObject: Boolean
   get() = this === NullCoordinates

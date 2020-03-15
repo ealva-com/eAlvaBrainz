@@ -26,62 +26,65 @@ class MbidTest {
 
   @Test
   fun `test mbid appears valid`() {
-    expect("ca2866c0-e204-4b0e-8fd2-00823863e2b2".toMbid()).toBeValid()
+    expect("ca2866c0-e204-4b0e-8fd2-00823863e2b2".toTestMbid()).toBeValid()
 
-    expect("ca2866c00-e204-4b0e-8fd2-00823863e2b2".toMbid()).toBeInvalid()
-    expect("ca2866c-e204-4b0e-8fd2-00823863e2b2".toMbid()).toBeInvalid()
+    expect("ca2866c00-e204-4b0e-8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
+    expect("ca2866c-e204-4b0e-8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
 
-    expect("ca2866c-e2040-4b0e-8fd2-00823863e2b2".toMbid()).toBeInvalid()
-    expect("ca2866c0-e20-4b0e-8fd2-00823863e2b2".toMbid()).toBeInvalid()
+    expect("ca2866c-e2040-4b0e-8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
+    expect("ca2866c0-e20-4b0e-8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
 
-    expect("ca2866c0-e204-4b0e0-8fd2-00823863e2b2".toMbid()).toBeInvalid()
-    expect("ca2866c0-e204-4b0-8fd2-00823863e2b2".toMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0e0-8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0-8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
 
-    expect("ca2866c0-e204-4b0e-8fd20-00823863e2b2".toMbid()).toBeInvalid()
-    expect("ca2866c0-e204-4b0e-8fd-00823863e2b2".toMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0e-8fd20-00823863e2b2".toTestMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0e-8fd-00823863e2b2".toTestMbid()).toBeInvalid()
 
-    expect("ca2866c0-e204-4b0e-8fd2-00823863e2b20".toMbid()).toBeInvalid()
-    expect("ca2866c0-e204-4b0e-8fd2-00823863e2b".toMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0e-8fd2-00823863e2b20".toTestMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0e-8fd2-00823863e2b".toTestMbid()).toBeInvalid()
 
-    expect("ca2866c0--e204-4b0e-8fd2-00823863e2b2".toMbid()).toBeInvalid()
-    expect("ca2866c0e204-4b0e-8fd2-00823863e2b2".toMbid()).toBeInvalid()
-    expect("ca2866c0-e204--4b0e-8fd2-00823863e2b2".toMbid()).toBeInvalid()
-    expect("ca2866c0-e2044b0e-8fd2-00823863e2b2".toMbid()).toBeInvalid()
-    expect("ca2866c0-e204-4b0e--8fd2-00823863e2b2".toMbid()).toBeInvalid()
-    expect("ca2866c0-e204-4b0e8fd200823863e2b2".toMbid()).toBeInvalid()
-    expect("ca2866c0-e204-4b0e-8fd2--00823863e2b2".toMbid()).toBeInvalid()
-    expect("ca2866c0-e204-4b0e-8fd200823863e2b2".toMbid()).toBeInvalid()
+    expect("ca2866c0--e204-4b0e-8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
+    expect("ca2866c0e204-4b0e-8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
+    expect("ca2866c0-e204--4b0e-8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
+    expect("ca2866c0-e2044b0e-8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0e--8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0e8fd200823863e2b2".toTestMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0e-8fd2--00823863e2b2".toTestMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0e-8fd200823863e2b2".toTestMbid()).toBeInvalid()
 
-    expect("-ca2866c0-e204-4b0e-8fd2-00823863e2b2".toMbid()).toBeInvalid()
-    expect("ca2866c0-e204-4b0e-8fd2-00823863e2b2-".toMbid()).toBeInvalid()
+    expect("-ca2866c0-e204-4b0e-8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0e-8fd2-00823863e2b2-".toTestMbid()).toBeInvalid()
 
-    expect("ca2866c0ae204-4b0e-8fd2-00823863e2b2".toMbid()).toBeInvalid()
-    expect("ca2866c0-e204a4b0e-8fd2-00823863e2b2".toMbid()).toBeInvalid()
-    expect("ca2866c0-e204-4b0ea8fd2-00823863e2b2".toMbid()).toBeInvalid()
-    expect("ca2866c0-e204-4b0e-8fd2a00823863e2b2".toMbid()).toBeInvalid()
-    expect("2ca2866c0-e204-4b0e-8fd2-00823863e2b2".toMbid()).toBeInvalid()
-    expect("ca2866c0-e204-4b0e-8fd2-00823863e2b2c".toMbid()).toBeInvalid()
+    expect("ca2866c0ae204-4b0e-8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
+    expect("ca2866c0-e204a4b0e-8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0ea8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0e-8fd2a00823863e2b2".toTestMbid()).toBeInvalid()
+    expect("2ca2866c0-e204-4b0e-8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0e-8fd2-00823863e2b2c".toTestMbid()).toBeInvalid()
 
-    expect("ca28g6c0-e204-4b0e-8fd2-00823863e2b2c".toMbid()).toBeInvalid()
+    expect("ca28g6c0-e204-4b0e-8fd2-00823863e2b2c".toTestMbid()).toBeInvalid()
 
-    expect("".toMbid()).toBeInvalid()
+    expect("-a2866c0-e204-4b0e-8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
+    expect("ca2866c0-e204-4b0e-8fd2-00823863e2b-".toTestMbid()).toBeInvalid()
+
+    expect("".toTestMbid()).toBeInvalid()
   }
 }
 
 private fun Matcher<TestMbid>.toBeValid() {
   val mbid = actual
   if (mbid == null) fail("Expected valid Mbid but was null") else {
-    if (!mbid.appearsValid()) fail("Expected valid Mbid but was $mbid")
+    if (mbid.isInvalid()) fail("Expected valid Mbid but was $mbid")
   }
 }
 
 private fun Matcher<TestMbid>.toBeInvalid() {
   val mbid = actual
   if (mbid == null) fail("Expected invalid Mbid but was null") else {
-    if (mbid.appearsValid()) fail("Expected invalid Mbid but was $mbid")
+    if (mbid.isValid()) fail("Expected invalid Mbid but was $mbid")
   }
 }
 
 private inline class TestMbid(override val value: String) : Mbid
 
-private fun String.toMbid() = TestMbid(this)
+private fun String.toTestMbid() = TestMbid(this)

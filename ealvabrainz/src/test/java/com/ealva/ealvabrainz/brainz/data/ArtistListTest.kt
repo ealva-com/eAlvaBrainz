@@ -40,7 +40,7 @@ class ArtistListTest {
       expect(artists).toHaveSize(3)
       artists[0].run {
         expect(id).toBe("4d5447d7-c61c-4120-ba1b-d7f471d385b9")
-        expect(type).toBe("Person")
+        expect(artistType).toBe(ArtistType.Person)
         expect(typeId).toBe("b6e035f4-3ce9-331c-97df-83397230b0df")
         expect(score).toBe(100)
         expect(sortName).toBe("Lennon, John")

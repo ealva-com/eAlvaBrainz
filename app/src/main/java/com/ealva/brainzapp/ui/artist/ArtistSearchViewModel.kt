@@ -32,6 +32,7 @@ import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.ArtistType
+import com.ealva.ealvabrainz.brainz.data.artistType
 import com.ealva.ealvabrainz.brainz.data.toArtistMbid
 import com.ealva.ealvabrainz.brainz.data.toArtistType
 import com.ealva.ealvabrainz.common.ensureExhaustive
@@ -124,7 +125,7 @@ internal class ArtistSearchViewModelImpl(
             val list = result.value.artists.map { artist ->
               ArtistSearchResult(
                 artist.id.toArtistMbid(),
-                artist.type.toArtistType(),
+                artist.artistType,
                 artist.name.toArtistName(),
                 artist.country.toCountry(),
                 artist.disambiguation,

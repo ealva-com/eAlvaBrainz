@@ -37,5 +37,5 @@ data class LabelInfo(
   }
 }
 
-val LabelInfo.isNullObject
+val LabelInfo.isNullObject: Boolean
   get() = this === NullLabelInfo

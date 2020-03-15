@@ -35,5 +35,5 @@ data class LifeSpan(
   }
 }
 
-inline val LifeSpan.isNullObject
+inline val LifeSpan.isNullObject: Boolean
   get() = this === NullLifeSpan

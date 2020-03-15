@@ -17,6 +17,8 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
+import com.ealva.ealvabrainz.BuildConfig
+
 /**
  * One of MusicBrainz' aims is to be the universal lingua franca for music by providing a reliable
  * and unambiguous form of music identification; this music identification is performed through the
@@ -51,12 +53,22 @@ interface Mbid {
    * UUID
    */
   val value: String
+
+  companion object {
+    var logInvalidMbid: Boolean = BuildConfig.DEBUG
+  }
 }
 
-fun Mbid.appearsValid(): Boolean = with(value) {
+@Suppress("NOTHING_TO_INLINE")
+inline fun Mbid.isValid(): Boolean = value.isValidMbid()
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun Mbid.isInvalid(): Boolean = !isValid()
+
+fun String.isValidMbid(): Boolean {
   if (length != 36) return false
 
-  val groups = value.split("-")
+  val groups = split("-")
   if (groups.size != 5) return false
 
   return checkGroup(groups[0], 8) &&
@@ -65,6 +77,9 @@ fun Mbid.appearsValid(): Boolean = with(value) {
     checkGroup(groups[3], 4) &&
     checkGroup(groups[4], 12)
 }
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun String.isInvalidMbid(): Boolean = !isValidMbid()
 
 /**
  * Check length of group and that is a hexadecimal string

@@ -53,7 +53,7 @@ data class Thumbnails(
   }
 }
 
-inline val Thumbnails.isNullObject
+inline val Thumbnails.isNullObject: Boolean
   get() = this === NullThumbnails
 
 inline val Thumbnails.theLarge: String

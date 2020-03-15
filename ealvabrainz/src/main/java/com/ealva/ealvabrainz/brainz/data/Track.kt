@@ -22,6 +22,7 @@ import com.ealva.ealvabrainz.brainz.data.Track.Companion.NullTrack
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import timber.log.Timber
 
 /**
  * In MusicBrainz, a track is the way a recording is represented on a particular release (or, more
@@ -60,16 +61,19 @@ class Track(
   }
 }
 
-val Track.isNullObject
+val Track.isNullObject: Boolean
   get() = this === NullTrack
 
 inline class TrackMbid(override val value: String) : Mbid
 
-inline val Track.mbid
+inline val Track.mbid: TrackMbid
   get() = TrackMbid(id)
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toTrackMbid() = TrackMbid(this)
+inline fun String.toTrackMbid(): TrackMbid {
+  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid TrackMbid")
+  return TrackMbid(this)
+}
 
 /** First [ArtistCredit] [Artist.mbid] or "" if not found */
 @Suppress("unused") val Track.theArtistMbid: String
@@ -82,5 +86,5 @@ inline val Track.theArtistName: String
 /** First [ArtistCredit] [Artist.sortName] or "" if not found */
 @Suppress("unused")
 inline val Track.theArtistSortName: String
-  get() = if (artistCredit.isNotEmpty()) artistCredit[0].artist.theSortName else theArtistName
+  get() = if (artistCredit.isNotEmpty()) artistCredit[0].artist.sortName else theArtistName
 

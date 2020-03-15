@@ -33,5 +33,5 @@ data class Attribute(
   }
 }
 
-inline val Attribute.isNullObject
+inline val Attribute.isNullObject: Boolean
   get() = this === NullAttribute
