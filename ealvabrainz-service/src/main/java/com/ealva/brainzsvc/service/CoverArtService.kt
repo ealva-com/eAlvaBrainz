@@ -34,6 +34,7 @@ import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.brainz.data.imageTypes
 import com.ealva.ealvabrainz.brainz.data.theLarge
 import com.ealva.ealvabrainz.brainz.data.theSmall
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -89,6 +90,8 @@ interface CoverArtService {
    */
   suspend fun getCoverArtRelease(entity: Entity, mbid: String): CoverArtRelease?
 
+  fun getReleaseGroupArtwork(mbid: ReleaseGroupMbid): CoverArtRelease?
+
   companion object {
     /**
      * Instantiate a CoverArtService implementation which handles MusicBrainz server requirements
@@ -134,8 +137,18 @@ private class CoverArtServiceImpl(
       coverArt.getArtwork(entity.value, mbid).run {
         if (isSuccessful) body() else null
       }
+    } catch (e: CancellationException) {
+      null
     } catch (e: Exception) {
       throw MusicBrainzException("Unexpected error: '${e.message.orEmpty()}'", e)
+    }
+  }
+
+  override fun getReleaseGroupArtwork(mbid: ReleaseGroupMbid): CoverArtRelease? {
+    return try {
+      coverArt.artwork(ReleaseGroupEntity.value, mbid.value).execute().body()
+    } catch (e: Exception) {
+      null
     }
   }
 }

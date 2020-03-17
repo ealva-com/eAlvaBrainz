@@ -19,15 +19,19 @@ package com.ealva.brainzapp.ui.artist
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.ealva.brainzapp.services.lifoSingleThreadExecutor
 import com.ealva.brainzapp.ui.fragment.FragmentUiContext
+import com.ealva.brainzsvc.service.MusicBrainzService
 
 class ReleaseGroupItemAdapter(
   private val uiContext: FragmentUiContext,
+  private val brainz: MusicBrainzService,
   private val selection: (ReleaseGroupItem) -> Unit
 ) : RecyclerView.Adapter<ReleaseGroupItemAdapter.ViewHolder>() {
 
   private val itemList: MutableList<ReleaseGroupItem> = mutableListOf()
   private var recycler: RecyclerView? = null
+  private val executor = uiContext.lifecycleOwner.lifoSingleThreadExecutor()
 
   init {
     setHasStableIds(true)
@@ -49,13 +53,20 @@ class ReleaseGroupItemAdapter(
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-    ViewHolder(ReleaseGroupItemUi(uiContext) { v ->
-      val position: Int = recycler?.getChildAdapterPosition(v) ?: -1
-      if (position in itemList.indices) selection(itemList[position])
-    })
+    ViewHolder(
+      ReleaseGroupItemUi(uiContext, executor, brainz, ::itemUpdated) { v ->
+        val position: Int = recycler?.getChildAdapterPosition(v) ?: -1
+        if (position in itemList.indices) selection(itemList[position])
+      }
+    )
 
   class ViewHolder(val ui: ReleaseGroupItemUi) : RecyclerView.ViewHolder(ui.root) {
     fun bind(item: ReleaseGroupItem) = ui.bind(item)
+  }
+
+  private fun itemUpdated(releaseGroupItem: ReleaseGroupItem) {
+    val index = itemList.indexOfFirst { it.id == releaseGroupItem.id }
+    if (index >= 0) notifyItemChanged(index)
   }
 
   override fun getItemCount(): Int {

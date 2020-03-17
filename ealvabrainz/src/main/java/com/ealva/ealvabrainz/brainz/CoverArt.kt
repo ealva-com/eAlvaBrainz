@@ -18,6 +18,7 @@
 package com.ealva.ealvabrainz.brainz
 
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -42,4 +43,8 @@ interface CoverArt {
    */
   @GET("{entity}/{mbid}")
   suspend fun getArtwork(@Path("entity") entity: String, @Path("mbid") mbid: String): Response<CoverArtRelease>
+
+  @GET("{entity}/{mbid}")
+  fun artwork(@Path("entity") entity: String, @Path("mbid") mbid: String): Call<CoverArtRelease>
+
 }

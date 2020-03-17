@@ -75,6 +75,7 @@
     <item name="artist_ui_view_pager" type="id" />
 
     <item name="release_group_item_card" type="id" />
+    <item name="release_group_item_image" type="id" />
     <item name="release_group_item_name" type="id" />
     <item name="release_group_item_constraint" type="id" />
     <item name="release_group_item_type" type="id" />

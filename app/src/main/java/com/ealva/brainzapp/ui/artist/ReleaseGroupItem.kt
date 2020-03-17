@@ -17,6 +17,7 @@
 
 package com.ealva.brainzapp.ui.artist
 
+import android.net.Uri
 import com.ealva.brainzapp.data.ReleaseGroupType
 import com.ealva.brainzapp.data.StarRating
 import com.ealva.brainzapp.data.toStarRating
@@ -34,7 +35,8 @@ class ReleaseGroupItem private constructor(
   val rating: StarRating,
   val ratingVotes: Int,
   val date: String,
-  var releaseCount: Int
+  var releaseCount: Int,
+  var artwork: Uri?
 ) {
 
   override fun equals(other: Any?): Boolean {
@@ -44,15 +46,11 @@ class ReleaseGroupItem private constructor(
     other as ReleaseGroupItem
 
     if (id != other.id) return false
-    if (releaseCount != other.releaseCount) return false
-
     return true
   }
 
   override fun hashCode(): Int {
-    var result = id.hashCode()
-    result = 31 * result + releaseCount
-    return result
+    return id.hashCode()
   }
 
   override fun toString(): String {
@@ -81,7 +79,8 @@ class ReleaseGroupItem private constructor(
         rating,
         ratingVotes,
         date,
-        releaseCount
+        releaseCount,
+        null
       )
     }
 
@@ -95,7 +94,8 @@ class ReleaseGroupItem private constructor(
         0.0F.toStarRating(),
         0,
         "",
-        0
+        0,
+        null
       )
   }
 }

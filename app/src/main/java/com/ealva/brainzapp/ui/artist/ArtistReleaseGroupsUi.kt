@@ -24,6 +24,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ealva.brainzapp.ui.fragment.FragmentUiContext
+import com.ealva.brainzsvc.service.MusicBrainzService
 import splitties.toast.toast
 import splitties.views.dsl.core.Ui
 import splitties.views.dsl.recyclerview.recyclerView
@@ -31,6 +32,7 @@ import com.ealva.ealvabrainz.R.id.artist_release_groups_recycler as ID_RECYCLER
 
 class ArtistReleaseGroupsUi(
   private val uiContext: FragmentUiContext,
+  private val brainz: MusicBrainzService,
   private val viewModel: ArtistViewModel
 ) : Ui {
   private val lifecycleOwner = uiContext.lifecycleOwner
@@ -41,7 +43,7 @@ class ArtistReleaseGroupsUi(
   override val root: RecyclerView = recyclerView(ID_RECYCLER) {
     setHasFixedSize(true)
     layoutManager = LinearLayoutManager(context)
-    adapter = ReleaseGroupItemAdapter(uiContext) { displayGroup ->
+    adapter = ReleaseGroupItemAdapter(uiContext, brainz) { displayGroup ->
       ctx.toast("Selected: ${displayGroup.name}")
     }.also {
       itemAdapter = it

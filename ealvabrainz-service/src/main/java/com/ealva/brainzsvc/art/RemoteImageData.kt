@@ -20,18 +20,7 @@ package com.ealva.brainzsvc.art
 import android.content.Intent
 import android.net.Uri
 import android.util.Size
-import androidx.core.net.toUri
-
-fun String?.toUriOrEmpty(): Uri =
-  if (this != null && this.isNotEmpty()) this.toUri() else Uri.EMPTY
-
-
-private fun String?.toSecureUri(): Uri {
-  return if (this != null && startsWith("http:"))
-    "https${this.substring(4)}".toUri()
-  else
-    toUriOrEmpty()
-}
+import com.ealva.brainzsvc.net.toSecureUri
 
 /**
  * Equality/hashCode/compareTo is determined solely by [location]

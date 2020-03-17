@@ -25,9 +25,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.ealva.brainzapp.ui.fragment.makeUiContext
 import com.ealva.brainzapp.ui.main.instantiate
+import com.ealva.brainzsvc.service.MusicBrainzService
 
 class ArtistReleaseGroupsFragment private constructor(
-  private val viewModel: ArtistViewModel
+  private val viewModel: ArtistViewModel,
+  private val brainz: MusicBrainzService
 ) : Fragment() {
 
   override fun onCreateView(
@@ -36,15 +38,18 @@ class ArtistReleaseGroupsFragment private constructor(
     savedInstanceState: Bundle?
   ): View? {
     val uiContext = makeUiContext()
-    val ui = ArtistReleaseGroupsUi(uiContext, viewModel)
+    val ui = ArtistReleaseGroupsUi(uiContext, brainz, viewModel)
     return ui.root
   }
 
   companion object {
     val NAME: String = ArtistReleaseGroupsFragment::class.java.name
 
-    fun make(viewModel: ArtistViewModel): ArtistReleaseGroupsFragment {
-      return ArtistReleaseGroupsFragment(viewModel)
+    fun make(
+      viewModel: ArtistViewModel,
+      brainz: MusicBrainzService
+    ): ArtistReleaseGroupsFragment {
+      return ArtistReleaseGroupsFragment(viewModel, brainz)
     }
 
     fun make(fm: FragmentManager): ArtistReleaseGroupsFragment {

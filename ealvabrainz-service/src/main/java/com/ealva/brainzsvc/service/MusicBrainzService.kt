@@ -18,11 +18,15 @@
 package com.ealva.brainzsvc.service
 
 import android.content.Context
+import android.net.Uri
 import com.ealva.brainzsvc.art.RemoteImage
 import com.ealva.brainzsvc.common.AlbumName
 import com.ealva.brainzsvc.common.ArtistName
 import com.ealva.brainzsvc.common.RecordingName
 import com.ealva.brainzsvc.net.RetrofitRawResponse
+import com.ealva.brainzsvc.net.toSecureUri
+import com.ealva.brainzsvc.net.toUriOrEmpty
+import com.ealva.brainzsvc.service.CoverArtService.Entity.ReleaseGroupEntity
 import com.ealva.brainzsvc.service.MusicBrainzResult.Success
 import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful
 import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful.ErrorResult
@@ -34,6 +38,7 @@ import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.BrainzError
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseList
+import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
 import com.ealva.ealvabrainz.brainz.data.Include
 import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.RecordingList
@@ -303,7 +308,14 @@ interface MusicBrainzService {
    */
   suspend fun <T : Any> brainz(block: BrainzCall<T>): MusicBrainzResult<T>
 
-//  @Suppress("MemberVisibilityCanBePrivate", "unused")
+  /**
+   * Get the first image of the ReleaseGroup with [mbid].
+   */
+  suspend fun getReleaseGroupImage(mbid: ReleaseGroupMbid): Uri
+
+  fun getReleaseGroupArtwork(mbid: ReleaseGroupMbid): Uri
+
+  //  @Suppress("MemberVisibilityCanBePrivate", "unused")
   companion object {
     const val DEFAULT_MAX_RELEASE_COUNT = 10
 
@@ -627,6 +639,37 @@ internal class MusicBrainzServiceImpl(
       }
     } catch (e: Exception) {
       e.makeExceptional()
+    }
+  }
+
+  override suspend fun getReleaseGroupImage(mbid: ReleaseGroupMbid): Uri = withContext(dispatcher) {
+    coverArtService.getCoverArtRelease(ReleaseGroupEntity, mbid.value)
+      .releaseImageSequence()
+      .filterNot { it.isBlank() }
+      .firstOrNull()
+      .toUriOrEmpty()
+  }
+
+  override fun getReleaseGroupArtwork(mbid: ReleaseGroupMbid): Uri {
+    return coverArtService.getReleaseGroupArtwork(mbid)
+      .releaseImageSequence()
+      .filterNot { it.isBlank() }
+      .firstOrNull()
+      .toSecureUri()
+  }
+
+  private fun CoverArtRelease?.releaseImageSequence(): Sequence<String> {
+    return if (this == null) emptySequence() else sequence {
+      images.forEach { coverArtImage ->
+        coverArtImage.thumbnails.run {
+          yield(small)
+          yield(size250)
+          yield(size500)
+          yield(large)
+          yield(size1200)
+        }
+        yield(coverArtImage.image)
+      }
     }
   }
 

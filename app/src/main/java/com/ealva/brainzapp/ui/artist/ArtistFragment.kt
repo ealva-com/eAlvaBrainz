@@ -78,7 +78,7 @@ class ArtistFragment private constructor(
   override fun onCreate(savedInstanceState: Bundle?) {
     viewModel = getArtistViewModel(brainz)
     childFragmentManager.fragmentFactory =
-      ArtistFragmentFactory(parentFragmentManager.fragmentFactory, viewModel)
+      ArtistFragmentFactory(parentFragmentManager.fragmentFactory, viewModel, brainz)
     super.onCreate(savedInstanceState)
     artistMbid = arguments.artistMbid
     artistName = arguments.artistName
@@ -129,11 +129,12 @@ class ArtistFragment private constructor(
 
 class ArtistFragmentFactory(
   private val parentFactory: FragmentFactory,
-  private val viewModel: ArtistViewModel
+  private val viewModel: ArtistViewModel,
+  private val brainz: MusicBrainzService
 ) : FragmentFactory() {
   override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
     return when (className) {
-      ArtistReleaseGroupsFragment.NAME -> ArtistReleaseGroupsFragment.make(viewModel)
+      ArtistReleaseGroupsFragment.NAME -> ArtistReleaseGroupsFragment.make(viewModel, brainz)
       ArtistReleasesFragment.NAME -> ArtistReleasesFragment.make(viewModel)
       else -> parentFactory.instantiate(classLoader, className)
     }
