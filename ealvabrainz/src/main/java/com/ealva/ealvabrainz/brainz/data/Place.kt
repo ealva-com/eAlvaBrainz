@@ -27,11 +27,11 @@ import timber.log.Timber
  * A place is a building or outdoor area used for performing or producing music.
  */
 @JsonClass(generateAdapter = true)
-class Place(
+public class Place(
   /** MusicBrainz ID (MBID) */
-  var id: String = "",
+  public var id: String = "",
   /** The place name is the official name of a place. */
-  var name: String = "",
+  public var name: String = "",
   /**
    * The type categorises the place based on its primary function. The possible values are:
    * * **Studio**
@@ -56,19 +56,20 @@ class Place(
    * * **Other**
    * Anything which does not fit into the above categories.
    */
-  var type: String = "",
-  @field:Json(name = "type-id") var typeId: String = "",
+  public var type: String = "",
+  @field:Json(name = "type-id") public var typeId: String = "",
   /**
    * The address describes the location of the place using the standard addressing format for the
    * country it is located in.
    */
-  var address: String = "",
+  public var address: String = "",
   /** The area links to the area, such as the city, in which the place is located. */
-  @field:FallbackOnNull var area: Area = Area.NullArea,
+  @field:FallbackOnNull public var area: Area = Area.NullArea,
   /** The latitude and longitude describe the location of the place using geographic coordinates. */
-  @field:FallbackOnNull var coordinates: Coordinates = Coordinates.NullCoordinates,
+  @field:FallbackOnNull public var coordinates: Coordinates = Coordinates.NullCoordinates,
   /** Begin/end information */
-  @field:Json(name = "life-span") @field:FallbackOnNull var lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
+  @field:Json(name = "life-span") @field:FallbackOnNull public var lifeSpan: LifeSpan =
+    LifeSpan.NullLifeSpan,
   /**
    * Aliases are alternate names for a place, which currently have two main functions: localised
    * names and search hints. Localised names are used to store the official names used in different
@@ -76,22 +77,23 @@ class Place(
    * name is for. Search hints are used to help both users and the server when searching and can be
    * a number of things including alternate names, nicknames or even misspellings.
    */
-  var aliases: List<Alias> = emptyList(),
+  public var aliases: List<Alias> = emptyList(),
   /**
-   * See the [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
+   * See the
+   * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  var disambiguation: String = "",
+  public var disambiguation: String = "",
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  var annotation: String = ""
+  public var annotation: String = ""
 ) {
 
-  interface Lookup : Include
+  public interface Lookup : Include
 
   @Suppress("unused")
-  enum class Misc(override val value: String) : Lookup {
+  public enum class Misc(override val value: String) : Lookup {
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
@@ -108,7 +110,7 @@ class Place(
    * * [Place-Work](https://musicbrainz.org/relationships/place-work)
    */
   @Suppress("unused")
-  enum class Relations(override val value: String) : Lookup {
+  public enum class Relations(override val value: String) : Lookup {
     Place("place-rels"),
     Recording("recording-rels"),
     Release("release-rels"),
@@ -127,56 +129,68 @@ class Place(
     return true
   }
 
-  override fun hashCode() = id.hashCode()
+  override fun hashCode(): Int = id.hashCode()
 
-  override fun toString() = toJson()
+  override fun toString(): String = toJson()
 
   @Suppress("unused")
-  enum class SearchField(val value: String) {
+  public enum class SearchField(public val value: String) {
     /** the place ID */
     PlaceId("pid"),
+
     /** the address of this place */
     Address("address"),
+
     /** the aliases/misspellings for this area */
     Alias("alias"),
+
     /** area name */
     Area("area"),
+
     /** place begin date */
     Begin("begin"),
+
     /** disambiguation comment */
     Comment("comment"),
+
     /** place end date */
     End("end"),
+
     /** place ended */
     Ended("ended"),
+
     /** place latitude */
     Latitude("lat"),
+
     /** place longitude */
     Longitude("long"),
+
     /** the place name (without accented characters) */
-    place("place"),
+    Place("place"),
+
     /** the place name (with accented characters) */
     PlaceAccent("placeaccent"),
+
     /** the places type */
     Type("type"),
   }
 
-  companion object {
-    val NullPlace = Place(id = NullObject.ID, name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Place::class.java.name to NullPlace
+  public companion object {
+    public val NullPlace: Place = Place(id = NullObject.ID, name = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> = Place::class.java.name to NullPlace
   }
 }
 
-inline val Place.isNullObject: Boolean
+public inline val Place.isNullObject: Boolean
   get() = this === NullPlace
 
-inline class PlaceMbid(override val value: String) : Mbid
+public inline class PlaceMbid(override val value: String) : Mbid
 
-inline val Place.mbid: PlaceMbid
+public inline val Place.mbid: PlaceMbid
   get() = id.toPlaceMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toPlaceMbid(): PlaceMbid {
+public inline fun String.toPlaceMbid(): PlaceMbid {
   if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid PlaceMbid")
   return PlaceMbid(this)
 }

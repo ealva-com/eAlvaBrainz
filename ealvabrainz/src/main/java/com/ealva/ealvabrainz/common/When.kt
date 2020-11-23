@@ -38,5 +38,5 @@ package com.ealva.ealvabrainz.common
  * }.ensureExhaustive
  * ```
  */
-inline val <T> T.ensureExhaustive: T
+public inline val <T> T.ensureExhaustive: T
   get() = this

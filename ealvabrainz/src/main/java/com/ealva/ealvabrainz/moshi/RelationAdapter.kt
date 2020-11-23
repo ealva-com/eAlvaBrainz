@@ -60,7 +60,7 @@ private val options = JsonReader.Options.of(
   *(nameClassPairs.map { it.first }.toTypedArray())
 )
 
-class RelationAdapter(private val moshi: Moshi) : JsonAdapter<Relation>() {
+internal class RelationAdapter(private val moshi: Moshi) : JsonAdapter<Relation>() {
   override fun fromJson(reader: JsonReader): Relation? {
     reader.peekJson().run {
       setFailOnUnknown(false)
@@ -68,7 +68,7 @@ class RelationAdapter(private val moshi: Moshi) : JsonAdapter<Relation>() {
       while (hasNext()) {
         val index = selectName(options)
         if (index != -1) {
-          check(index in indices) {"Name adapter map misconfigured index:$index indices:$indices" }
+          check(index in indices) { "Name adapter map misconfigured index:$index indices:$indices" }
           return nameClassPairs[index].second.adapter.fromJson(reader)
         } else {
           skipName()

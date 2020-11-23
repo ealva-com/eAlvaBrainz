@@ -28,9 +28,9 @@ import timber.log.Timber
  * cases the imprint and the company controlling it have the same name.
  */
 @JsonClass(generateAdapter = true)
-class Label(
+public class Label(
   /** The MusicBrainz ID (MBID) for this label */
-  var id: String = "",
+  public var id: String = "",
   /**
    * The official name of the label.
    *
@@ -48,13 +48,14 @@ class Label(
    * help differentiate between identically named labels, you should use a disambiguation comment
    * and possibly an annotation as well.
    */
-  var name: String = "",
-  @field:Json(name = "sort-name") var sortName: String = "",
+  public var name: String = "",
+  @field:Json(name = "sort-name") public var sortName: String = "",
   /**: String
-   * See the [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
+   * See the
+   * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  var disambiguation: String = "",
+  public var disambiguation: String = "",
   /**
    * The label code is the "LC" code of the label. This is only the numeric portion; any prefix
    * is not stored. eg LC-0193 is stored as "0193"
@@ -70,31 +71,31 @@ class Label(
    * A label code should not be confused with a release's catalog number. A catalog number
    * identifies a particular release, whereas a label code identifies an entire label.
    */
-  @field:Json(name = "label-code") var labelCode: Long = 0,
+  @field:Json(name = "label-code") public var labelCode: Int = 0,
   /**
    * Aliases are used to store alternate names or misspellings. For more information and examples,
    * see the page about [aliases](https://musicbrainz.org/doc/Aliases).
    */
-  var aliases: List<Alias> = emptyList(),
+  public var aliases: List<Alias> = emptyList(),
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  var annotation: String = "",
-  var area: Area = Area.NullArea,
+  public var annotation: String = "",
+  public var area: Area = Area.NullArea,
   /** The country of origin for the label. */
-  var country: String = "",
-  var genres: List<Genre> = emptyList(),
+  public var country: String = "",
+  public var genres: List<Genre> = emptyList(),
   /**
    * An IPI (interested party information) code is an identifying number assigned by the CISAC
    * database for musical rights management. See IPI for more information, including how to find
    * these codes.
    */
-  var ipis: List<String> = emptyList(),
+  public var ipis: List<String> = emptyList(),
   /**
    * The International Standard Name Identifier for the label. See
    * [ISNI](https://musicbrainz.org/doc/Label/Label_Code) for more information.
    */
-  var isnis: List<String> = emptyList(),
+  public var isnis: List<String> = emptyList(),
   /**
    * The exact meaning of the begin and end dates depends on the type of label. Note that it's
    * usually hard to know if an imprint has folded or is just on hold, and in generally the end
@@ -115,18 +116,18 @@ class Label(
    * (or otherwise obscure/dubious companies), it's also tolerable to use the release date of the
    * last release, unless one has more accurate information.
    */
-  @Json(name = "life-span") var lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
-  var rating: Rating = Rating.NullRating,
-  var releases: List<Release> = emptyList(),
-  var tags: List<Tag> = emptyList(),
+  @Json(name = "life-span") public var lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
+  public var rating: Rating = Rating.NullRating,
+  public var releases: List<Release> = emptyList(),
+  public var tags: List<Tag> = emptyList(),
   /**
    * The [type](https://musicbrainz.org/doc/Label/Type) describes the main activity of the label.
    */
-  var type: String = "",
+  public var type: String = "",
   @Json(name = "type-id")
-  var typeId: String = "",
+  public var typeId: String = "",
   /** Used when querying Labels */
-  var count: Int = 0
+  public var count: Int = 0
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -139,19 +140,19 @@ class Label(
     return true
   }
 
-  override fun hashCode() = id.hashCode()
+  override fun hashCode(): Int = id.hashCode()
 
-  override fun toString() = toJson()
+  override fun toString(): String = toJson()
 
-  interface Lookup : Include
+  public interface Lookup : Include
 
   @Suppress("unused")
-  enum class Subquery(override val value: String) : Lookup {
+  public enum class Subquery(override val value: String) : Lookup {
     Releases("releases"),
   }
 
   @Suppress("unused")
-  enum class Misc(override val value: String) : Lookup {
+  public enum class Misc(override val value: String) : Lookup {
     /**
      * include artist, label, area or work aliases; treat these as a set, as they are not
      * deliberately ordered
@@ -164,7 +165,7 @@ class Label(
   }
 
   /**
-   * Label relatoinships
+   * Label relationships
    *
    * * [Label-Label](https://musicbrainz.org/relationships/label-label)
    * * [Label-Recording](https://musicbrainz.org/relationships/label-recording)
@@ -174,7 +175,7 @@ class Label(
    * * [Label-URL](https://musicbrainz.org/relationships/label-url)
    * * [Label-Work](https://musicbrainz.org/relationships/label-work)
    */
-  enum class Relations(override val value: String) : Lookup {
+  public enum class Relations(override val value: String) : Lookup {
     Label("label-rels"),
     Recording("recording-rels"),
     Release("release-rels"),
@@ -185,55 +186,69 @@ class Label(
   }
 
   @Suppress("unused")
-  enum class SearchField(val value: String) {
-   /** the aliases/misspellings for this label */
-   Alias("alias"),
-   /** label area */
-   Area("area"),
-   /** label founding date */
-   Begin("begin"),
-   /** label code (only the figures part, i.e. without "LC") */
-   Code("code"),
-   /** label comment to differentiate similar labels */
-   Comment("comment"),
-   /** The two letter country code of the label country */
-   Country("country"),
-   /** label dissolution date */
-   End("end"),
-   /** true if know ended even if do not know end date */
-   Ended("ended"),
-   /** ipi */
-   Ipi("ipi"),
-   /** label name */
-   Label("label"),
-   /** name of the label with any accent characters retained */
-   LabelAccent("labelaccent"),
-   /** MBID of the label */
-   LabelId("laid"),
-   /** label sortname */
-   SortName("sortname"),
-   /** label type */
-   Type("type"),
-   /** folksonomy tag */
-   Tag("tag"),
+  public enum class SearchField(public val value: String) {
+    /** the aliases/misspellings for this label */
+    Alias("alias"),
+
+    /** label area */
+    Area("area"),
+
+    /** label founding date */
+    Begin("begin"),
+
+    /** label code (only the figures part, i.e. without "LC") */
+    Code("code"),
+
+    /** label comment to differentiate similar labels */
+    Comment("comment"),
+
+    /** The two letter country code of the label country */
+    Country("country"),
+
+    /** label dissolution date */
+    End("end"),
+
+    /** true if know ended even if do not know end date */
+    Ended("ended"),
+
+    /** ipi */
+    Ipi("ipi"),
+
+    /** label name */
+    Label("label"),
+
+    /** name of the label with any accent characters retained */
+    LabelAccent("labelaccent"),
+
+    /** MBID of the label */
+    LabelId("laid"),
+
+    /** label sortname */
+    SortName("sortname"),
+
+    /** label type */
+    Type("type"),
+
+    /** folksonomy tag */
+    Tag("tag"),
   }
 
-  companion object {
-    val NullLabel = Label(id = NullObject.ID, name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Label::class.java.name to NullLabel
+  public companion object {
+    public val NullLabel: Label = Label(id = NullObject.ID, name = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> = Label::class.java.name to NullLabel
   }
 }
 
-inline val Label.isNullObject: Boolean
+public inline val Label.isNullObject: Boolean
   get() = this === Label.NullLabel
 
-inline class LabelMbid(override val value: String) : Mbid
+public inline class LabelMbid(override val value: String) : Mbid
 
-inline val Label.mbid: LabelMbid
+public inline val Label.mbid: LabelMbid
   get() = id.toLabelMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toLabelMbid(): LabelMbid {
+public inline fun String.toLabelMbid(): LabelMbid {
   if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid LabelMbid")
   return LabelMbid(this)
 }

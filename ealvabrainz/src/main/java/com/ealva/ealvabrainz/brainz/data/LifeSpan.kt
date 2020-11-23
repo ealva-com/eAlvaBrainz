@@ -21,19 +21,19 @@ import com.ealva.ealvabrainz.brainz.data.LifeSpan.Companion.NullLifeSpan
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class LifeSpan(
+public data class LifeSpan(
   /** Date this lifespan started */
-  var begin: String = "",
+  public var begin: String = "",
   /** Date this lifespan ended. Will be empty string if [ended] = false */
-  var end: String = "",
+  public var end: String = "",
   /** True if this Lifespan has ended (should be an [end] date */
-  var ended: Boolean = false
+  public var ended: Boolean = false
 ) {
-  companion object {
-    val NullLifeSpan = LifeSpan()
-    val fallbackMapping: Pair<String, Any> = LifeSpan::class.java.name to NullLifeSpan
+  public companion object {
+    public val NullLifeSpan: LifeSpan = LifeSpan()
+    public val fallbackMapping: Pair<String, Any> = LifeSpan::class.java.name to NullLifeSpan
   }
 }
 
-inline val LifeSpan.isNullObject: Boolean
+public inline val LifeSpan.isNullObject: Boolean
   get() = this === NullLifeSpan

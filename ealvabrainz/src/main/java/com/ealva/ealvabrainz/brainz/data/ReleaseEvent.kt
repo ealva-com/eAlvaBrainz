@@ -22,15 +22,16 @@ import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class ReleaseEvent(
-  var date: String = "",
-  @field:FallbackOnNull var area: Area = Area.NullArea
+public data class ReleaseEvent(
+  public var date: String = "",
+  @field:FallbackOnNull public var area: Area = Area.NullArea
 ) {
-  companion object {
-    val NullReleaseEvent = ReleaseEvent()
-    val fallbackMapping: Pair<String, Any> = ReleaseEvent::class.java.name to NullReleaseEvent
+  public companion object {
+    public val NullReleaseEvent: ReleaseEvent = ReleaseEvent()
+    public val fallbackMapping: Pair<String, Any> =
+      ReleaseEvent::class.java.name to NullReleaseEvent
   }
 }
 
-inline val ReleaseEvent.isNullObject: Boolean
+public inline val ReleaseEvent.isNullObject: Boolean
   get() = this === NullReleaseEvent

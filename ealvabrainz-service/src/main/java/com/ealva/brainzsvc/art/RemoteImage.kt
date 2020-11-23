@@ -26,12 +26,10 @@ import android.util.Size
  * is provided as common facade over the source of images.
  */
 @Suppress("unused")
-interface RemoteImage : Comparable<RemoteImage> {
-  val location: Uri
-  val sizeBucket: SizeBucket
-  val sourceLogoDrawableRes: Int
-  val sourceIntent: Intent
-  val actualSize: Size?
+public interface RemoteImage : Comparable<RemoteImage> {
+  public val location: Uri
+  public val sizeBucket: SizeBucket
+  public val sourceLogoDrawableRes: Int
+  public val sourceIntent: Intent
+  public val actualSize: Size?
 }
-
-

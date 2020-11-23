@@ -21,19 +21,19 @@ import com.ealva.ealvabrainz.brainz.data.CoverArtArchive.Companion.NullCoverArtA
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class CoverArtArchive(
-  var back: Boolean = false,
-  var front: Boolean = false,
-  var darkened: Boolean = false,
-  var count: Int = 0,
-  var artwork: Boolean = false
+public class CoverArtArchive(
+  public var back: Boolean = false,
+  public var front: Boolean = false,
+  public var darkened: Boolean = false,
+  public var count: Int = 0,
+  public var artwork: Boolean = false
 ) {
-  companion object {
-    val NullCoverArtArchive = CoverArtArchive(count = -1)
-    val fallbackMapping: Pair<String, Any> = CoverArtArchive::class.java.name to NullCoverArtArchive
+  public companion object {
+    public val NullCoverArtArchive: CoverArtArchive = CoverArtArchive(count = -1)
+    public val fallbackMapping: Pair<String, Any> =
+      CoverArtArchive::class.java.name to NullCoverArtArchive
   }
 }
 
-inline val CoverArtArchive.isNullObject: Boolean
+public inline val CoverArtArchive.isNullObject: Boolean
   get() = this === NullCoverArtArchive
-

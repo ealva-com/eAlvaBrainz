@@ -21,8 +21,8 @@ package com.ealva.ealvabrainz.brainz.data
  * Represents a single part of a MusicBrainz inc= parameter. An Include allows you to request
  * more information to be included about an entity
  */
-interface Include {
-  val value: String
+public interface Include {
+  public val value: String
 }
 
 /**
@@ -31,7 +31,7 @@ interface Include {
  * @return list entries concatenated together separated by "+" as required by MusicBrainz Lucene
  * query, or null if the list isEmpty
  */
-fun List<Include>.join(): String? {
+public fun List<Include>.join(): String? {
   return if (isEmpty()) null else joinToString("+") { it.value }
 }
 

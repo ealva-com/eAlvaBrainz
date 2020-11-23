@@ -38,28 +38,54 @@ import com.squareup.moshi.JsonClass
  * [Disc IDs][Disc.id] are linked to mediums.
  */
 @JsonClass(generateAdapter = true)
-data class Medium(
-  var title: String = "",
-  @field:Json(name = "format-id") var formatId: String = "",
-  var format: String = "",
-  @field:Json(name = "disc-count") var discCount: Int = 0,
-  @field:Json(name = "track-count") var trackCount: Int = 0,
-  @field:Json(name = "track-offset") var trackOffset: Int = 0,
-  var discs: List<Disc> = emptyList(),
-  var position: Int = 0,
-  internal var tracks: List<Track> = emptyList(),
-  internal var track: List<Track> = emptyList()
+public class Medium(
+  public var title: String = "",
+  @field:Json(name = "format-id") public var formatId: String = "",
+  public var format: String = "",
+  @field:Json(name = "disc-count") public var discCount: Int = 0,
+  @field:Json(name = "track-count") public var trackCount: Int = 0,
+  @field:Json(name = "track-offset") public var trackOffset: Int = 0,
+  public var discs: List<Disc> = emptyList(),
+  public var position: Int = 0,
+  public var tracks: List<Track> = emptyList(),
+  public var track: List<Track> = emptyList()
 ) {
-  override fun toString() = toJson()
+  override fun toString(): String = toJson()
 
-  companion object {
-    val NullMedium = Medium(title = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Medium::class.java.name to NullMedium
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as Medium
+
+    if (title != other.title) return false
+    if (formatId != other.formatId) return false
+    if (format != other.format) return false
+    if (discCount != other.discCount) return false
+    if (trackCount != other.trackCount) return false
+    if (trackOffset != other.trackOffset) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = title.hashCode()
+    result = 31 * result + formatId.hashCode()
+    result = 31 * result + format.hashCode()
+    result = 31 * result + discCount
+    result = 31 * result + trackCount
+    result = 31 * result + trackOffset
+    return result
+  }
+
+  public companion object {
+    public val NullMedium: Medium = Medium(title = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> = Medium::class.java.name to NullMedium
   }
 }
 
-inline val Medium.isNullObject: Boolean
+public inline val Medium.isNullObject: Boolean
   get() = this === NullMedium
 
-val Medium.theTracks: List<Track>
+public val Medium.theTracks: List<Track>
   get() = if (track.isNotEmpty()) track else tracks

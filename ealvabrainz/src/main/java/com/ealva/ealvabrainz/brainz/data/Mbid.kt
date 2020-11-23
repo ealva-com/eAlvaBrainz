@@ -17,8 +17,6 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.BuildConfig
-
 /**
  * One of MusicBrainz' aims is to be the universal lingua franca for music by providing a reliable
  * and unambiguous form of music identification; this music identification is performed through the
@@ -34,7 +32,7 @@ import com.ealva.ealvabrainz.BuildConfig
  * An entity can have more than one MBID. When an entity is merged into another, its MBIDs redirect
  * to the other entity.
  */
-interface Mbid {
+public interface Mbid {
   /**
    * In its canonical textual representation, the 16 octets of a
    * [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) are represented as 32
@@ -52,20 +50,21 @@ interface Mbid {
    * The canonical 8-4-4-4-12 format string is based on the record layout for the 16 bytes of the
    * UUID
    */
-  val value: String
+  public val value: String
 
-  companion object {
-    var logInvalidMbid: Boolean = BuildConfig.DEBUG
+  public companion object {
+    public var logInvalidMbid: Boolean = false
   }
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun Mbid.isValid(): Boolean = value.isValidMbid()
+public inline fun Mbid.isValid(): Boolean = value.isValidMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun Mbid.isInvalid(): Boolean = !isValid()
+public inline fun Mbid.isInvalid(): Boolean = !isValid()
 
-fun String.isValidMbid(): Boolean {
+@Suppress("ReturnCount", "MagicNumber")
+public fun String.isValidMbid(): Boolean {
   if (length != 36) return false
 
   val groups = split("-")
@@ -79,16 +78,17 @@ fun String.isValidMbid(): Boolean {
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.isInvalidMbid(): Boolean = !isValidMbid()
+public inline fun String.isInvalidMbid(): Boolean = !isValidMbid()
+
+private const val HEX_RADIX = 16
 
 /**
  * Check length of group and that is a hexadecimal string
  */
 private fun checkGroup(group: String, expectedLength: Int): Boolean {
   return try {
-    group.length == expectedLength && group.toLong(16) >= 0
+    group.length == expectedLength && group.toLong(HEX_RADIX) >= 0
   } catch (e: Exception) {
     false
   }
 }
-

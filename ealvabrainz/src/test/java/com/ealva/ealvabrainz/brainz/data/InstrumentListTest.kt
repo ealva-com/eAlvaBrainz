@@ -22,16 +22,16 @@ import com.squareup.moshi.Moshi
 import org.junit.Before
 import org.junit.Test
 
-class InstrumentListTest {
+public class InstrumentListTest {
   private lateinit var moshi: Moshi
 
   @Before
-  fun setup() {
+  public fun setup() {
     moshi = theMoshi
   }
 
   @Test
-  fun `test instrument list query result`() {
+  public fun `test instrument list query result`() {
     moshi.adapter(InstrumentList::class.java).fromJson(noseQueryJson)?.run {
       expect(created).toBe("2020-02-18T15:06:51.403Z")
       expect(count).toBe(4)
@@ -85,6 +85,7 @@ class InstrumentListTest {
   }
 }
 
+@Suppress("MaxLineLength")
 /**
  * https://musicbrainz.org/ws/2/instrument/?query=Nose&fmt=json
  */

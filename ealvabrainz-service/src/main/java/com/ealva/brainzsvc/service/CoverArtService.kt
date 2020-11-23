@@ -51,7 +51,7 @@ import java.io.File
  * Uri and contains other information about the image
  */
 @JvmName("transformReleases")
-fun Flow<ReleaseMbid>.transform(service: CoverArtService): Flow<RemoteImage> = flow {
+public fun Flow<ReleaseMbid>.transform(service: CoverArtService): Flow<RemoteImage> = flow {
   collect { mbid ->
     doTransform(service, mbid.value, ReleaseEntity)
   }
@@ -62,7 +62,7 @@ fun Flow<ReleaseMbid>.transform(service: CoverArtService): Flow<RemoteImage> = f
  * Uri and contains other information about the image
  */
 @JvmName("transformGroups")
-fun Flow<ReleaseGroupMbid>.transform(service: CoverArtService): Flow<RemoteImage> = flow {
+public fun Flow<ReleaseGroupMbid>.transform(service: CoverArtService): Flow<RemoteImage> = flow {
   collect { mbid ->
     doTransform(service, mbid.value, ReleaseGroupEntity)
   }
@@ -72,8 +72,8 @@ fun Flow<ReleaseGroupMbid>.transform(service: CoverArtService): Flow<RemoteImage
  * CoverArtService is a wrapper around a Retrofit CoverArt instance that provides higher level
  * functionality and some extra type safety.
  */
-interface CoverArtService {
-  enum class Entity(val value: String) {
+public interface CoverArtService {
+  public enum class Entity(public val value: String) {
     ReleaseEntity("release"),
     ReleaseGroupEntity("release-group")
   }
@@ -88,17 +88,17 @@ interface CoverArtService {
    * @return a [CoverArtRelease] if successful or null if the [entity]-[mbid] pair weren't found
    * @exception MusicBrainzException thrown if the underlying Retrofit service throws
    */
-  suspend fun getCoverArtRelease(entity: Entity, mbid: String): CoverArtRelease?
+  public suspend fun getCoverArtRelease(entity: Entity, mbid: String): CoverArtRelease?
 
-  fun getReleaseGroupArtwork(mbid: ReleaseGroupMbid): CoverArtRelease?
+  public fun getReleaseGroupArtwork(mbid: ReleaseGroupMbid): CoverArtRelease?
 
-  companion object {
+  public companion object {
     /**
      * Instantiate a CoverArtService implementation which handles MusicBrainz server requirements
      * such as a required User-Agent format, throttling requests, and factories/adapters to support
      * the returned data classes.
      */
-    fun make(
+    public fun make(
       ctx: Context,
       appName: String,
       appVersion: String,
@@ -117,7 +117,7 @@ interface CoverArtService {
   }
 }
 
-//private const val COVER_ART_API_URL = "http://coverartarchive.org/"
+// private const val COVER_ART_API_URL = "http://coverartarchive.org/"
 private const val COVER_ART_API_SECURE_URL = "https://coverartarchive.org/"
 
 private val SERVICE_NAME = CoverArtServiceImpl::class.java.simpleName
@@ -186,6 +186,7 @@ private suspend fun FlowCollector<RemoteImage>.doTransform(
   }
 }
 
+@Suppress("MagicNumber")
 private fun CoverArtRelease.firstImageOrNull(): CoverArtImage? = images
   .asSequence()
   .map { image -> Pair(image, image.imageTypes.firstOrNull()) }
@@ -215,5 +216,3 @@ private suspend fun FlowCollector<RemoteImageData>.emitImage(image: String, buck
     emit(RemoteImageData.fromUrl(image, bucket, R.drawable.ic_musicbrainz_logo, INTENT_BRAINZ))
     true
   } else false
-
-

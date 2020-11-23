@@ -21,17 +21,16 @@ package com.ealva.brainzsvc.common
  * Convert this String to an [RecordingName] or [RecordingName.UNKNOWN] if this is null.
  */
 @Suppress("NOTHING_TO_INLINE")
-inline fun String?.toRecordingName(): RecordingName {
+public inline fun String?.toRecordingName(): RecordingName {
   return this?.let { RecordingName.make(this) } ?: RecordingName.UNKNOWN
 }
 
-inline class RecordingName(val value: String) {
-  companion object {
-    val UNKNOWN = RecordingName("Unknown")
+public inline class RecordingName(public val value: String) {
+  public companion object {
+    public val UNKNOWN: RecordingName = RecordingName("Unknown")
 
     @Suppress("NOTHING_TO_INLINE")
-    inline fun make(value: String): RecordingName =
+    public inline fun make(value: String): RecordingName =
       RecordingName(value.trim())
   }
 }
-

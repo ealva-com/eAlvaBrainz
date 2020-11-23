@@ -20,9 +20,8 @@ package com.ealva.brainzsvc.service
 import com.nhaarman.expect.StringMatcher
 import com.nhaarman.expect.fail
 
-fun StringMatcher.toEndWith(value: String) {
+public fun StringMatcher.toEndWith(value: String) {
   if (actual?.endsWith(value) != true) {
     fail("Expected \"$actual\" to end with $value")
   }
 }
-

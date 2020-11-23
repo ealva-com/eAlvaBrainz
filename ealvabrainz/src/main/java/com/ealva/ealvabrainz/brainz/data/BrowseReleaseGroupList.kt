@@ -21,12 +21,11 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class BrowseReleaseGroupList(
+public class BrowseReleaseGroupList(
   @Json(name = "release-group-count")
-  var releaseGroupCount: Int = 0,
+  public var releaseGroupCount: Int = 0,
   @Json(name = "release-group-offset")
-  var releaseGroupOffset: Int = 0,
+  public var releaseGroupOffset: Int = 0,
   @Json(name = "release-groups")
-  var releaseGroups: List<ReleaseGroup> = emptyList()
+  public var releaseGroups: List<ReleaseGroup> = emptyList()
 )
-

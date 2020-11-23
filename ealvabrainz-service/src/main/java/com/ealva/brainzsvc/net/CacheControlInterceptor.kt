@@ -22,7 +22,7 @@ import okhttp3.Interceptor
 import okhttp3.Response
 import java.util.concurrent.TimeUnit
 
-class CacheControlInterceptor(
+internal class CacheControlInterceptor(
   private val daysMaxAge: Int,
   private val daysMinFresh: Int,
   private val daysMaxStale: Int

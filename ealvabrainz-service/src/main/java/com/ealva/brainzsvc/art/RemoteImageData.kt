@@ -26,7 +26,7 @@ import com.ealva.brainzsvc.net.toSecureUri
  * Equality/hashCode/compareTo is determined solely by [location]
  */
 @Suppress("unused")
-data class RemoteImageData(
+public class RemoteImageData(
   override val location: Uri,
   override val sizeBucket: SizeBucket,
   override val sourceLogoDrawableRes: Int,
@@ -52,8 +52,8 @@ data class RemoteImageData(
     return location.hashCode()
   }
 
-  companion object {
-    fun fromUrl(
+  public companion object {
+    public fun fromUrl(
       url: String,
       bucket: SizeBucket,
       sourceLogoDrawableRes: Int,

@@ -33,38 +33,38 @@ import timber.log.Timber
  * ```
  */
 @JsonClass(generateAdapter = true)
-class Url(
+public data class Url(
   /** UUID of the Url instance */
-  var id: String = "",
+  public var id: String = "",
   /** The url */
-  var resource: String = ""
+  public var resource: String = ""
 ) {
 
-  interface Lookup : Include
+  public interface Lookup : Include
 
   /**
    * * [Url-Work](https://musicbrainz.org/relationships/url-work)
    */
-  enum class Relation(override val value: String) : Lookup {
+  public enum class Relation(override val value: String) : Lookup {
     Work("work-rels")
   }
 
-  companion object {
-    val NullUrl = Url(id = NullObject.ID)
-    val fallbackMapping: Pair<String, Any> = Url::class.java.name to NullUrl
+  public companion object {
+    public val NullUrl: Url = Url(id = NullObject.ID)
+    public val fallbackMapping: Pair<String, Any> = Url::class.java.name to NullUrl
   }
 }
 
-inline val Url.isNullObject: Boolean
+public inline val Url.isNullObject: Boolean
   get() = this === NullUrl
 
-inline class UrlMbid(override val value: String) : Mbid
+public inline class UrlMbid(override val value: String) : Mbid
 
-inline val Url.mbid: UrlMbid
+public inline val Url.mbid: UrlMbid
   get() = id.toUrlMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toUrlMbid(): UrlMbid {
+public inline fun String.toUrlMbid(): UrlMbid {
   if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid UrlMbid")
   return UrlMbid(this)
 }

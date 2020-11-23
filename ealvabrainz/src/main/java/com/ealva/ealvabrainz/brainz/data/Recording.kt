@@ -37,41 +37,42 @@ import timber.log.Timber
  * [mixing](https://musicbrainz.org/doc/Mix_Terminology#mixing).
  */
 @JsonClass(generateAdapter = true)
-class Recording(
+public class Recording(
   /** Recording MusicBrainz ID (MBID) */
-  var id: String = "",
+  public var id: String = "",
   /** The title of the recording. */
-  var title: String = "",
+  public var title: String = "",
   /** The artist(s) that the recording is primarily credited to. */
-  @field:Json(name = "artist-credit") var artistCredit: List<ArtistCredit> = emptyList(),
+  @field:Json(name = "artist-credit") public var artistCredit: List<ArtistCredit> = emptyList(),
   /**
    * The length of the recording. It's only entered manually for standalone recordings. For
    * recordings that are being used on releases, the recording length is the median length of all
    * tracks (that have a track length) associated with that recording. If there is an even number
    * of track lengths, the smaller median candidate is used.
    */
-  var length: Int = 0,
-  var aliases: List<Alias> = emptyList(),
+  public var length: Int = 0,
+  public var aliases: List<Alias> = emptyList(),
   /**
-   * See the [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
+   * See the
+   * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  var disambiguation: String = "",
+  public var disambiguation: String = "",
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  var annotation: String = "",
-  var genres: List<Genre> = emptyList(),
+  public var annotation: String = "",
+  public var genres: List<Genre> = emptyList(),
   /** The International Standard Recording Code assigned to the recording. */
-  var isrcs: List<String> = emptyList(),
-  var rating: Rating = Rating.NullRating,
-  var relations: List<Relation> = emptyList(),
-  var releases: List<Release> = emptyList(),
-  var tags: List<Tag> = emptyList(),
+  public var isrcs: List<String> = emptyList(),
+  public var rating: Rating = Rating.NullRating,
+  public var relations: List<Relation> = emptyList(),
+  public var releases: List<Release> = emptyList(),
+  public var tags: List<Tag> = emptyList(),
   /** If this recording is video */
-  var video: Boolean = false,
+  public var video: Boolean = false,
   /** used with queries */
-  var score: Int = 0
+  public var score: Int = 0
 ) {
 
   override fun equals(other: Any?): Boolean {
@@ -85,17 +86,18 @@ class Recording(
     return true
   }
 
-  override fun hashCode() = id.hashCode()
+  override fun hashCode(): Int = id.hashCode()
 
-  override fun toString() = toJson()
+  override fun toString(): String = toJson()
 
-  interface Lookup : Include
+  public interface Lookup : Include
 
   @Suppress("unused")
-  enum class Subquery(override val value: String) : Lookup {
+  public enum class Subquery(override val value: String) : Lookup {
     Artists("artists"),
     Releases("releases"),
     UrlRels("url-rels"),
+
     /** DiscIds requires [Releases] also be specified and inc params can (currently) repeat */
     DiscIds("releases+discids"),
     Media("media"),
@@ -104,8 +106,8 @@ class Recording(
   }
 
   @Suppress("unused")
-  enum class Misc(override val value: String) : Lookup {
-    Aliases("aliases"),       // include artist, label, area or work aliases; treat these as a set, as they are not deliberately ordered
+  public enum class Misc(override val value: String) : Lookup {
+    Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
     Ratings("ratings"),
@@ -121,7 +123,7 @@ class Recording(
    * * [Recording-URL](https://musicbrainz.org/relationships/recording-url)
    * * [Recording-Work](https://musicbrainz.org/relationships/recording-work)
    */
-  enum class Relations(override val value: String) : Lookup {
+  public enum class Relations(override val value: String) : Lookup {
     Recording("recording-rels"),
     Release("release-rels"),
     Series("series-rels"),
@@ -130,92 +132,122 @@ class Recording(
   }
 
   @Suppress("unused")
-  enum class SearchField(val value: String) {
+  public enum class SearchField(public val value: String) {
     /** the artist's MBID */
     ArtistId("arid"),
+
     /** artist name is name(s) as it appears on the recording */
     Artist("artist"),
+
     /** an artist on the recording, each artist added as a separate field */
     ArtistName("artistname"),
+
     /** the artist's disambiguation comment */
     Comment("comment"),
+
     /** name credit on the recording, each artist added as a separate field */
     CreditName("creditname"),
+
     /**
      * the 2-letter code (ISO 3166-1 alpha-2) for the artist's main associated country, or “unknown”
      */
     Country("country"),
+
     /** recording release date */
     Date("date"),
 
     /** duration of track in milliseconds */
     Duration("dur"),
+
     /** recording release format */
     Format("format"),
+
     /**
      * The International Standard Recording Code, an identification system for audio and music
      * video recordings. Includes isrcs for all recordings
      */
     Isrc("isrc"),
+
     /** free text track number */
     Number("number"),
+
     /** the medium that the recording should be found on, first medium is position 1 */
     Position("position"),
+
     /** primary type of the release group (album, single, ep, other) */
     PrimaryType("primarytype"),
+
     /** quantized duration (duration / 2000) */
     QuantizedDuration("qdur"),
+
     /** name of recording or a track associated with the recording */
     Recording("recording"),
+
     /** name of the recording with any accent characters retained */
     RecordingAccent("recordingaccent"),
+
     /** release id */
     ReleaseId("reid"),
+
     /** release name */
     ReleaseName("release"),
+
     /** release group id */
     ReleaseGroupId("rgid"),
+
     /** recording id */
     RecordingId("rid"),
-    /** secondary type of the release group (audiobook, compilation, interview, live, remix soundtrack, spokenword) */
+
+    /**
+     * secondary type of the release group (audiobook, compilation, interview, live, remix
+     * soundtrack, spokenword)
+     */
     SecondaryType("secondarytype"),
+
     /** Release status (official, promotion, Bootleg, Pseudo-Release) */
     Status("status"),
+
     /** folksonomy tag */
     Tag("tag"),
+
     /** track id */
     TrackId("tid"),
+
     /** track number on medium */
     TrackNumber("tnum"),
+
     /** number of tracks in the medium on release */
     Tracks("tracks"),
+
     /** number of tracks on release as a whole */
     TracksRelease("tracksrelease"),
+
     /**
      * type of the release group, old type mapping for when we did not have separate primary and
      * secondary types or use standalone for standalone recordings
      */
     Type("type"),
+
     /** true to only show video tracks */
     Video("video"),
   }
 
-  companion object {
-    val NullRecording = Recording(id = NullObject.ID)
-    val fallbackMapping: Pair<String, Any> = Recording::class.java.name to NullRecording
+  public companion object {
+    public val NullRecording: Recording = Recording(id = NullObject.ID)
+    public val fallbackMapping: Pair<String, Any> = Recording::class.java.name to NullRecording
   }
 }
 
-val Recording.isNullObject: Boolean
+public val Recording.isNullObject: Boolean
   get() = this === NullRecording
 
-inline class RecordingMbid(override val value: String) : Mbid
+public inline class RecordingMbid(override val value: String) : Mbid
 
-inline val Recording.mbid: RecordingMbid
+public inline val Recording.mbid: RecordingMbid
   get() = id.toRecordingMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toRecordingMbid(): RecordingMbid {
+public inline fun String.toRecordingMbid(): RecordingMbid {
   if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid RecordingMbid")
   return RecordingMbid(this)
 }

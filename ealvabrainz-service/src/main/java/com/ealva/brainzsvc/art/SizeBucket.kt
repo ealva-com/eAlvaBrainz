@@ -19,7 +19,8 @@ package com.ealva.brainzsvc.art
 
 import com.ealva.brainzsvc.service.R
 
-enum class SizeBucket(val maybeVeryLarge: Boolean, val stringRes: Int) {
+@Suppress("unused")
+public enum class SizeBucket(public val maybeVeryLarge: Boolean, public val stringRes: Int) {
   ORIGINAL(true, R.string.Original),
   EXTRA_LARGE(true, R.string.ExtraLarge),
   LARGE(false, R.string.Large),

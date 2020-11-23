@@ -17,18 +17,18 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.matchers.toBeEmpty
-import com.ealva.ealvabrainz.test.expect
+import com.ealva.ealvabrainz.matchers.map.expect
+import com.ealva.ealvabrainz.matchers.string.toBeEmpty
 import com.nhaarman.expect.expect
 import com.squareup.moshi.Moshi
 import org.junit.Before
 import org.junit.Test
 
-class ReleaseGroupTest {
+public class ReleaseGroupTest {
   private lateinit var moshi: Moshi
 
   @Before
-  fun setup() {
+  public fun setup() {
     moshi = theMoshi
   }
 
@@ -37,7 +37,7 @@ class ReleaseGroupTest {
    * adapter because actual type is discovered within the json of the object
    */
   @Test
-  fun `test parse release all inc`() {
+  public fun `test parse release all inc`() {
     moshi.adapter(ReleaseGroup::class.java).fromJson(editedSgtPeppersJson)?.run {
       expect(annotation).toBeEmpty()
       expect(title).toBe("Sgt. Pepper’s Lonely Hearts Club Band")
@@ -279,10 +279,12 @@ class ReleaseGroupTest {
           }
         }
         expect(tags).toHaveSize(2)
-        expect(tags).toContain(listOf(
-          Tag("baroque pop", 1),
-          Tag("sunshine pop", 1)
-        ))
+        expect(tags).toContain(
+          listOf(
+            Tag("baroque pop", 1),
+            Tag("sunshine pop", 1)
+          )
+        )
       }
 
       expect(rating).toBe(Rating(value = 4.55F, votesCount = 51))
@@ -300,7 +302,8 @@ class ReleaseGroupTest {
       aliases[0].run {
         expect(ended).toBe(false)
         expect(end).toBeEmpty()
-        expect(sortName).toBe("The Beatles Collection, Volume 5: Sgt. Pepper's Lonely Hearts Club Band")
+        expect(sortName)
+          .toBe("The Beatles Collection, Volume 5: Sgt. Pepper's Lonely Hearts Club Band")
         expect(locale).toBeEmpty()
         expect(name).toBe("The Beatles Collection, Volume 5: Sgt. Pepper's Lonely Hearts Club Band")
         expect(primary).toBe(false)

@@ -22,16 +22,36 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class Attribute(
-  var value: String = "",
-  @field:Json(name = "type-id") var typeId: String = "",
-  var type: String = ""
+public class Attribute(
+  public var value: String = "",
+  @field:Json(name = "type-id") public var typeId: String = "",
+  public var type: String = ""
 ) {
-  companion object {
-    val NullAttribute = Attribute(value = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Attribute::class.java.name to NullAttribute
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as Attribute
+
+    if (value != other.value) return false
+    if (typeId != other.typeId) return false
+    if (type != other.type) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = value.hashCode()
+    result = 31 * result + typeId.hashCode()
+    result = 31 * result + type.hashCode()
+    return result
+  }
+
+  public companion object {
+    public val NullAttribute: Attribute = Attribute(value = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> = Attribute::class.java.name to NullAttribute
   }
 }
 
-inline val Attribute.isNullObject: Boolean
+public inline val Attribute.isNullObject: Boolean
   get() = this === NullAttribute

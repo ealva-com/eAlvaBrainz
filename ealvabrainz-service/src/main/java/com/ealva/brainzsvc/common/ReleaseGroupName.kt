@@ -21,17 +21,16 @@ package com.ealva.brainzsvc.common
  * Convert this String to an [ReleaseGroupName] or [ReleaseGroupName.UNKNOWN] if this is null.
  */
 @Suppress("NOTHING_TO_INLINE")
-inline fun String?.toReleaseGroupName(): ReleaseGroupName {
+public inline fun String?.toReleaseGroupName(): ReleaseGroupName {
   return this?.let { ReleaseGroupName.make(this) } ?: ReleaseGroupName.UNKNOWN
 }
 
-inline class ReleaseGroupName(val value: String) {
-  companion object {
-    val UNKNOWN = ReleaseGroupName("Unknown")
+public inline class ReleaseGroupName(public val value: String) {
+  public companion object {
+    public val UNKNOWN: ReleaseGroupName = ReleaseGroupName("Unknown")
 
     @Suppress("NOTHING_TO_INLINE")
-    inline fun make(value: String): ReleaseGroupName =
+    public inline fun make(value: String): ReleaseGroupName =
       ReleaseGroupName(value.trim())
   }
 }
-

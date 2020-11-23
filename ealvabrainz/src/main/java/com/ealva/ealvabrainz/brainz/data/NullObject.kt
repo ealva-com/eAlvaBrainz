@@ -17,7 +17,7 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-object NullObject {
-  const val ID = "NullObjectID"
-  const val NAME = "NullObjectName"
+public object NullObject {
+  public const val ID: String = "NullObjectID"
+  public const val NAME: String = "NullObjectName"
 }

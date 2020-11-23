@@ -29,36 +29,30 @@ import splitties.experimental.InternalSplittiesApi
 import splitties.views.dsl.core.NO_THEME
 import splitties.views.dsl.core.Ui
 import splitties.views.dsl.core.view
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 
 @OptIn(InternalSplittiesApi::class)
-inline fun Context.viewPager2(
+public inline fun Context.viewPager2(
   @IdRes id: Int,
   @StyleRes theme: Int = NO_THEME,
   initView: ViewPager2.() -> Unit = {}
 ): ViewPager2 {
-  contract { callsInPlace(initView, InvocationKind.EXACTLY_ONCE) }
   return view(id, theme, initView)
 }
 
 @SuppressLint("ResourceType")
-inline fun View.viewPager2(
+public inline fun View.viewPager2(
   @IdRes id: Int,
   @StyleRes theme: Int = NO_THEME,
   initView: ViewPager2.() -> Unit = {}
 ): ViewPager2 {
-  contract { callsInPlace(initView, InvocationKind.EXACTLY_ONCE) }
   return context.viewPager2(id, theme, initView)
 }
 
 @SuppressLint("ResourceType")
-inline fun Ui.viewPager2(
+public inline fun Ui.viewPager2(
   @IdRes id: Int,
   @StyleRes theme: Int = NO_THEME,
   initView: ViewPager2.() -> Unit = {}
 ): ViewPager2 {
-  contract { callsInPlace(initView, InvocationKind.EXACTLY_ONCE) }
   return ctx.viewPager2(id, theme, initView)
 }
-

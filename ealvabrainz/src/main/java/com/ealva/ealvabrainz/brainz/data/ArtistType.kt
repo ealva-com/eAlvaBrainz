@@ -19,7 +19,7 @@ package com.ealva.ealvabrainz.brainz.data
 
 import timber.log.Timber
 
-enum class ArtistType(val value: String) {
+public enum class ArtistType(public val value: String) {
   Person("Person"),
   Group("Group"),
   Orchestra("Orchestra"),
@@ -42,7 +42,7 @@ enum class ArtistType(val value: String) {
 /**
  * Should probably change json adapters to do this conversion
  */
-val Artist.artistType: ArtistType
+public val Artist.artistType: ArtistType
   get() = type.toArtistType()
 
 private val typeNameToArtistMap = ArtistType.values().associateBy { it.value }
@@ -50,7 +50,7 @@ private val typeNameToArtistMap = ArtistType.values().associateBy { it.value }
 /**
  * Convert a String to an ArtistType. If the string is unrecognized, returns [ArtistType.Unknown]
  */
-fun String.toArtistType(): ArtistType {
+public fun String.toArtistType(): ArtistType {
   return typeNameToArtistMap[this] ?: mapToUnknown(this)
 }
 

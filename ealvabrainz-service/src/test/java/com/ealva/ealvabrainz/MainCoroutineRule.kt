@@ -26,8 +26,8 @@ import kotlinx.coroutines.test.setMain
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
-class MainCoroutineRule @OptIn(ExperimentalCoroutinesApi::class) constructor(
-  val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
+public class MainCoroutineRule @OptIn(ExperimentalCoroutinesApi::class) constructor(
+  public val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()
 ) : TestWatcher() {
 
   @OptIn(ExperimentalCoroutinesApi::class)
@@ -45,7 +45,7 @@ class MainCoroutineRule @OptIn(ExperimentalCoroutinesApi::class) constructor(
 }
 
 @ExperimentalCoroutinesApi
-fun MainCoroutineRule.runBlockingTest(block: suspend () -> Unit) =
+public fun MainCoroutineRule.runBlockingTest(block: suspend () -> Unit): Unit =
   this.testDispatcher.runBlockingTest {
     block()
   }

@@ -42,34 +42,35 @@ import timber.log.Timber
  * database, a new release group is automatically added as well.
  */
 @JsonClass(generateAdapter = true)
-class ReleaseGroup(
+public class ReleaseGroup(
   /** Release Group MusicBrainz ID (MBID) */
-  var id: String = "",
+  public var id: String = "",
   /**
    * The title of a release group is usually very similar, if not the same, as the titles of the
    * releases contained within it.
    */
-  var title: String = "",
-  var count: Int = 0,
+  public var title: String = "",
+  public var count: Int = 0,
   /**
    * The artist of a release group is usually very similar, if not the same, as the artist of the
    * releases contained within it. Multiple artists can be linked using artist credits.
    */
-  @field:Json(name = "artist-credit") var artistCredit: List<ArtistCredit> = emptyList(),
+  @field:Json(name = "artist-credit") public var artistCredit: List<ArtistCredit> = emptyList(),
   /** The releases in this Release Group */
-  var releases: List<Release> = emptyList(),
+  public var releases: List<Release> = emptyList(),
   /** Genres associated with the releases in this group */
-  var genres: List<Genre> = emptyList(),
+  public var genres: List<Genre> = emptyList(),
   /**
-   * See the [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
+   * See the
+   * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  var disambiguation: String = "",
+  public var disambiguation: String = "",
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  var annotation: String = "",
-  var tags: List<Tag> = emptyList(),
+  public var annotation: String = "",
+  public var tags: List<Tag> = emptyList(),
   /**
    * Types may be
    * * "nat"
@@ -85,17 +86,17 @@ class ReleaseGroup(
    * * "remix"
    * * "other"
    */
-  @field:Json(name = "primary-type") var primaryType: String = "",
-  @field:Json(name = "primary-type-id") internal var primaryTypeId: String = "",
-  @field:Json(name = "type-id") internal var typeId: String = "",
-  @field:FallbackOnNull var rating: Rating = Rating.NullRating,
-  @field:Json(name = "secondary-type-ids") var secondaryTypeIds: List<String> = emptyList(),
-  @field:Json(name = "secondary-types") var secondaryTypes: List<String> = emptyList(),
-  @field:Json(name = "first-release-date") var firstReleaseDate: String = "",
-  var aliases: List<Alias> = emptyList(),
-  var relations: List<Relation> = emptyList(),
+  @field:Json(name = "primary-type") public var primaryType: String = "",
+  @field:Json(name = "primary-type-id") public var primaryTypeId: String = "",
+  @field:Json(name = "type-id") public var typeId: String = "",
+  @field:FallbackOnNull public var rating: Rating = Rating.NullRating,
+  @field:Json(name = "secondary-type-ids") public var secondaryTypeIds: List<String> = emptyList(),
+  @field:Json(name = "secondary-types") public var secondaryTypes: List<String> = emptyList(),
+  @field:Json(name = "first-release-date") public var firstReleaseDate: String = "",
+  public var aliases: List<Alias> = emptyList(),
+  public var relations: List<Relation> = emptyList(),
   /** Only used in search results */
-  var score: Int = 0
+  public var score: Int = 0
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -108,32 +109,33 @@ class ReleaseGroup(
     return true
   }
 
-  override fun hashCode() = id.hashCode()
+  override fun hashCode(): Int = id.hashCode()
 
-  override fun toString() = toJson()
+  override fun toString(): String = toJson()
 
-  interface Lookup : Include
+  public interface Lookup : Include
 
   @Suppress("unused")
-  enum class Subquery(override val value: String) : Lookup {
+  public enum class Subquery(override val value: String) : Lookup {
     Artists("artists"),
     Releases("releases"),
 
     /** An ID calculated from the TOC of a CD */
-    DiscIds("discids"),             // include discids for all media in the releases
-    Media("media"),                 // include media for all releases, this includes the # of tracks on each medium and its format.
+    DiscIds("discids"),
+    Media("media"),
     ArtistCredits("artist-credits"); // include artists credits for all releases and recordings
   }
 
   @Suppress("unused")
-  enum class Misc(override val value: String) : Lookup {
-    Aliases("aliases"),       // include artist, label, area or work aliases; treat these as a set, as they are not deliberately ordered
+  public enum class Misc(override val value: String) : Lookup {
+    Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
     Ratings("ratings"),
     Genres("genres")
   }
 
+  @Suppress("MaxLineLength")
   /**
    * Release Group relationships
    *
@@ -141,14 +143,14 @@ class ReleaseGroup(
    * * [ReleaseGroup-Series](https://musicbrainz.org/relationships/release_group-series)
    * * [ReleaseGroup-URL](https://musicbrainz.org/relationships/release_group-url)
    */
-  enum class Relations(override val value: String) : Lookup {
+  public enum class Relations(override val value: String) : Lookup {
     ReleaseGroup("release-group-rels"),
     Series("series-rels"),
     Url("url-rels")
   }
 
   @Suppress("unused")
-  enum class Browse(override val value: String) : Lookup {
+  public enum class Browse(override val value: String) : Lookup {
     ArtistCredits("artist-credits"),
     Annotation("annotation"),
     Tags("tags"),
@@ -157,7 +159,7 @@ class ReleaseGroup(
   }
 
   @Suppress("unused")
-  enum class SearchField(val value: String) {
+  public enum class SearchField(public val value: String) {
     /** MBID of the release group’s artist */
     ArtistId("arid"),
 
@@ -213,22 +215,24 @@ class ReleaseGroup(
     Type("type"),
   }
 
-  companion object {
-    val NullReleaseGroup = ReleaseGroup(id = NullObject.ID, title = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = ReleaseGroup::class.java.name to NullReleaseGroup
+  public companion object {
+    public val NullReleaseGroup: ReleaseGroup =
+      ReleaseGroup(id = NullObject.ID, title = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> =
+      ReleaseGroup::class.java.name to NullReleaseGroup
   }
 }
 
-inline val ReleaseGroup.isNullObject: Boolean
+public inline val ReleaseGroup.isNullObject: Boolean
   get() = this === NullReleaseGroup
 
-inline class ReleaseGroupMbid(override val value: String) : Mbid
+public inline class ReleaseGroupMbid(override val value: String) : Mbid
 
-inline val ReleaseGroup.mbid: ReleaseGroupMbid
+public inline val ReleaseGroup.mbid: ReleaseGroupMbid
   get() = id.toReleaseGroupMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toReleaseGroupMbid(): ReleaseGroupMbid {
+public inline fun String.toReleaseGroupMbid(): ReleaseGroupMbid {
   if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid ReleaseGroupMbid")
   return ReleaseGroupMbid(this)
 }
@@ -239,6 +243,5 @@ inline fun String.toReleaseGroupMbid(): ReleaseGroupMbid {
  *
  * [Moshi Issue](https://github.com/square/moshi/issues/1012)
  */
-val ReleaseGroup.thePrimaryTypeId: String
+public val ReleaseGroup.thePrimaryTypeId: String
   get() = if (primaryTypeId.isNotEmpty()) primaryTypeId else typeId
-

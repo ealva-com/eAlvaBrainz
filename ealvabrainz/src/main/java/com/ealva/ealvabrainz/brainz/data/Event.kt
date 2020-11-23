@@ -27,16 +27,16 @@ import timber.log.Timber
  * Generally this means live performances, like concerts and festivals.
  */
 @JsonClass(generateAdapter = true)
-data class Event(
+public class Event(
   /** Event MBID */
-  var id: String = "",
+  public var id: String = "",
   /**
    * The name is the official name of the event if it has one, or a descriptive name
    * (like "Main Artist at Place") if not.
    */
-  var name: String = "",
+  public var name: String = "",
   /** The time the event occurred/will occur */
-  var time: String = "",
+  public var time: String = "",
   /**
    * The type describes what kind of event the event is. The possible values are:
    * * **Concert**
@@ -55,9 +55,10 @@ data class Event(
    * audience and instructs them individually and/or takes questions intended to improve the
    * audience members' playing skills.
    */
-  var type: String = "",
+  public var type: String = "",
   /** The cancelled field describes whether or not the event took place. */
-  var cancelled: Boolean = false,
+  public var cancelled: Boolean = false,
+  @Suppress("MaxLineLength")
   /**
    * The setlist stores a list of songs performed, optionally including links to artists and works.
    * See the [setlist](https://musicbrainz.org/doc/Event/Setlist) documentation for syntax and
@@ -91,7 +92,7 @@ data class Event(
    * * [de4c0fa3-a578-38e6-99fd-3448f7cbd640|Rock and Roll All Nite]
    * ```
    */
-  var setList: String = "",
+  public var setList: String = "",
   /** begin date */
   /**
    * Aliases are alternate names for an event, which currently have two main functions: localised
@@ -100,27 +101,29 @@ data class Event(
    * name is for. Search hints are used to help both users and the server when searching and can be
    * a number of things including alternate names, nicknames or even misspellings.
    */
-  var aliases: List<Alias> = emptyList(),
+  public var aliases: List<Alias> = emptyList(),
   /**
    * Lifespan is begin/end dates and if the event has ended
    */
-  @Json(name = "life-span") @field:FallbackOnNull var lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
+  @Json(name = "life-span") @field:FallbackOnNull public var lifeSpan: LifeSpan =
+    LifeSpan.NullLifeSpan,
 
-  var relations: List<Relation> = emptyList(),
+  public var relations: List<Relation> = emptyList(),
   /**
-   * See the [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
+   * See the
+   * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  var disambiguation: String = "",
+  public var disambiguation: String = "",
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  var annotation: String = "",
+  public var annotation: String = "",
   /** Used when querying a list of events */
-  var score: Int = 0
+  public var score: Int = 0
 ) {
 
-  interface Lookup : Include
+  public interface Lookup : Include
   // No Misc or Subquery includes for an Event
 
   /**
@@ -136,7 +139,7 @@ data class Event(
    * * [Event-Work](https://musicbrainz.org/relationships/event-work)
    */
   @Suppress("unused")
-  enum class Relations(override val value: String) : Lookup {
+  public enum class Relations(override val value: String) : Lookup {
     Event("event-rels"),
     Place("place-rels"),
     Recording("recording-rels"),
@@ -147,49 +150,76 @@ data class Event(
     Work("work-rels")
   }
 
-  enum class SearchField(val value: String) {
-   /** an alias attached to the event */
-   Alias("alias"),
-   /** the MBID of an area related to the event */
-   AreaId("aid"),
-   /** the name of an area related to the event */
-   Area("area"),
-   /** the MBID of an artist related to the event */
-   ArtistId("arid"),
-   /** the name of an artist related to the event */
-   Artist("artist"),
-   /** the disambiguation comment for the event */
-   Comment("comment"),
-   /** the MBID of the event */
-   EventId("eid"),
-   /** the name of the event */
-   Event("event"),
-   /** the MBID of a place related to the event */
-   PlaceId("pid"),
-   /** the name of a place related to the event */
-   Place("place"),
-   /** the event's type */
-   Type("type"),
-   /** a tag attached to the event */
-   Tag("tag"),
+  @Suppress("unused")
+  public enum class SearchField(public val value: String) {
+    /** an alias attached to the event */
+    Alias("alias"),
+
+    /** the MBID of an area related to the event */
+    AreaId("aid"),
+
+    /** the name of an area related to the event */
+    Area("area"),
+
+    /** the MBID of an artist related to the event */
+    ArtistId("arid"),
+
+    /** the name of an artist related to the event */
+    Artist("artist"),
+
+    /** the disambiguation comment for the event */
+    Comment("comment"),
+
+    /** the MBID of the event */
+    EventId("eid"),
+
+    /** the name of the event */
+    Event("event"),
+
+    /** the MBID of a place related to the event */
+    PlaceId("pid"),
+
+    /** the name of a place related to the event */
+    Place("place"),
+
+    /** the event's type */
+    Type("type"),
+
+    /** a tag attached to the event */
+    Tag("tag"),
   }
 
-  companion object {
-    val NullEvent = Event()
-    val fallbackMapping: Pair<String, Any> = Event::class.java.name to NullEvent
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as Event
+
+    if (id != other.id) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    return id.hashCode()
+  }
+
+  public companion object {
+    public val NullEvent: Event = Event()
+    public val fallbackMapping: Pair<String, Any> = Event::class.java.name to NullEvent
   }
 }
 
-inline val Event.isNullObject: Boolean
+public inline val Event.isNullObject: Boolean
   get() = this === Event.NullEvent
 
-inline class EventMbid(override val value: String) : Mbid
+public inline class EventMbid(override val value: String) : Mbid
 
-inline val Event.mbid: EventMbid
+public inline val Event.mbid: EventMbid
   get() = id.toEventMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toEventMbid(): EventMbid {
+public inline fun String.toEventMbid(): EventMbid {
   if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid EventMbid")
   return EventMbid(this)
 }

@@ -20,5 +20,6 @@ package com.ealva.brainzsvc.net
 import android.net.ConnectivityManager
 import splitties.systemservices.connectivityManager
 
-fun ConnectivityManager.networkIsAvailable() = activeNetworkInfo != null
-fun networkIsAvailable() = connectivityManager.networkIsAvailable()
+@Suppress("DEPRECATION")
+internal fun ConnectivityManager.networkIsAvailable() = activeNetworkInfo != null
+internal fun networkIsAvailable() = connectivityManager.networkIsAvailable()

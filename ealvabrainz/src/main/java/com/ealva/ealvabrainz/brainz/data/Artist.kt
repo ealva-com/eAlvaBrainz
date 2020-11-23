@@ -31,9 +31,9 @@ import timber.log.Timber
  * [https://musicbrainz.org/doc/Artist]
  */
 @JsonClass(generateAdapter = true)
-class Artist(
+public class Artist(
   /** The MBID for this artist */
-  var id: String = "",
+  public var id: String = "",
   /**
    * The type is used to state whether an artist is a person, a group, or something else.
    * * Person
@@ -51,27 +51,28 @@ class Artist(
    *
    * Note that not every ensemble related to classical music is an orchestra or choir.
    */
-  var type: String = "",
+  public var type: String = "",
   /** The official name of an artist, be it a person or a band */
-  var name: String = "",
+  public var name: String = "",
   /**
    * The sort name is a variant of the artist name which would be used when sorting artists by
    * name, such as in record shops or libraries. Among other things, sort names help to ensure
    * that all the artists that start with Navigation"The" don't end up up under "T".
    */
-  @field:Json(name = "sort-name") var sortName: String = "",
-  var country: String = "",
-  @field:Json(name = "begin-area") @field:FallbackOnNull var beginArea: Area = Area.NullArea,
-  @field:Json(name = "end-area") @field:FallbackOnNull var endArea: Area = Area.NullArea,
+  @field:Json(name = "sort-name") public var sortName: String = "",
+  public var country: String = "",
+  @field:Json(name = "begin-area") @field:FallbackOnNull public var beginArea: Area = Area.NullArea,
+  @field:Json(name = "end-area") @field:FallbackOnNull public var endArea: Area = Area.NullArea,
   /**
-   * See the [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
+   * See the
+   * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  var disambiguation: String = "",
+  public var disambiguation: String = "",
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  var annotation: String = "",
+  public var annotation: String = "",
   /**
    * For an Artist lifespan, begin and end dates indicate when an artist started and finished its
    * existence. Its exact meaning depends on the type of artist:
@@ -96,45 +97,46 @@ class Artist(
    * There are no clear indications about how to use dates for artists of the type Other at the
    * moment.
    */
-  @field:Json(name = "life-span") @field:FallbackOnNull var lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
+  @field:Json(name = "life-span") @field:FallbackOnNull public var lifeSpan: LifeSpan =
+    LifeSpan.NullLifeSpan,
   /**
    * The gender is used to explicitly state whether a person or character identifies as male,
    * female or neither. Groups do not have genders.
    */
-  var gender: String = "",
-  @field:Json(name = "gender-id") var genderId: String = "",
-  @field:Json(name = "type-id") var typeId: String = "",
+  public var gender: String = "",
+  @field:Json(name = "gender-id") public var genderId: String = "",
+  @field:Json(name = "type-id") public var typeId: String = "",
   /**
    * The artist area, as the name suggests, indicates the area with which an artist is primarily
    * identified with. It is often, but not always, its birth/formation country.
    */
-  @field:FallbackOnNull var area: Area = Area.NullArea,
-  var genres: List<Genre> = emptyList(),
+  @field:FallbackOnNull public var area: Area = Area.NullArea,
+  public var genres: List<Genre> = emptyList(),
   /**
    * Aliases are used to store alternate names or misspellings. For more information and examples,
    * see the [page about aliases](https://musicbrainz.org/doc/Aliases).
    */
-  var aliases: List<Alias> = emptyList(),
+  public var aliases: List<Alias> = emptyList(),
   /**
    * An IPI (interested party information) code is an identifying number assigned by the CISAC
    * database for musical rights management. See [IPI](https://musicbrainz.org/doc/IPI) for more
    * information, including how to find these codes.
    */
-  var ipis: List<String> = emptyList(),
+  public var ipis: List<String> = emptyList(),
   /**
    * The International Standard Name Identifier for the artist. See
    * [ISNI](https://musicbrainz.org/doc/ISNI) for more information.
    */
-  var isnis: List<String> = emptyList(),
+  public var isnis: List<String> = emptyList(),
 
-  @field:FallbackOnNull var rating: Rating = Rating.NullRating,
-  var tags: List<Tag> = emptyList(),
-  @field:Json(name = "release-groups") var releaseGroups: List<ReleaseGroup> = emptyList(),
-  var recordings: List<Recording> = emptyList(),
-  var releases: List<Release> = emptyList(),
-  var relations: List<Relation> = emptyList(),
+  @field:FallbackOnNull public var rating: Rating = Rating.NullRating,
+  public var tags: List<Tag> = emptyList(),
+  @field:Json(name = "release-groups") public var releaseGroups: List<ReleaseGroup> = emptyList(),
+  public var recordings: List<Recording> = emptyList(),
+  public var releases: List<Release> = emptyList(),
+  public var relations: List<Relation> = emptyList(),
   /** score only used in query results */
-  var score: Int = 0
+  public var score: Int = 0
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -147,21 +149,21 @@ class Artist(
     return true
   }
 
-  override fun hashCode() = id.hashCode()
+  override fun hashCode(): Int = id.hashCode()
 
-  override fun toString() = toJson()
+  override fun toString(): String = toJson()
 
-  interface Lookup : Include
+  public interface Lookup : Include
 
   @Suppress("unused")
-  enum class Subquery(override val value: String) : Lookup {
+  public enum class Subquery(override val value: String) : Lookup {
     Recordings("recordings"),
     Releases("releases"),
     ReleaseGroups("release-groups"),
     Works("works"),
     /** An ID calculated from the TOC of a CD */
-    DiscIds("discids"),              // include discids for all media in the releases
-    Media("media"),                  // include media for all releases, this includes the # of tracks on each medium and its format.
+    DiscIds("discids"),
+    Media("media"),
     /**
      * The International Standard Recording Code, an identification system for audio and music
      * video recordings. Includes isrcs for all recordings
@@ -172,15 +174,15 @@ class Artist(
   }
 
   @Suppress("unused")
-  enum class Misc(override val value: String) : Lookup {
-    Aliases("aliases"),       // include artist, label, area or work aliases; treat these as a set, as they are not deliberately ordered
+  public enum class Misc(override val value: String) : Lookup {
+    Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
     Ratings("ratings"),
     Genres("genres");
-    companion object {
+    public companion object {
       /** Doesn't create a values() array and/or list every time */
-      val all: List<Misc> by lazy { values().asList() }
+      public val all: List<Misc> by lazy { values().asList() }
     }
   }
 
@@ -199,7 +201,7 @@ class Artist(
    * * [Artist-URL](https://musicbrainz.org/relationships/artist-url)
    * * [Artist-Work](https://musicbrainz.org/relationships/artist-work)
    */
-  enum class Relations(override val value: String) : Lookup {
+  public enum class Relations(override val value: String) : Lookup {
     Artist("artist-rels"),
     Event("event-rels"),
     Instrument("instrument-rels"),
@@ -213,7 +215,7 @@ class Artist(
     Work("work-rels")
   }
 
-  enum class SearchField(val value: String) {
+  public enum class SearchField(public val value: String) {
     /** an alias attached to the artist */
     Alias("alias"),
     /** the artist's main associated area */
@@ -242,7 +244,9 @@ class Artist(
     Ended("ended"),
     /** the artist's gender (“male”, “female”, or “other”) */
     Gender("gender"),
-    /** A number identifying persons connected to ISWC registered works (authors, composers, etc.). */
+    /**
+     * A number identifying persons connected to ISWC registered works (authors, composers, etc.).
+     */
     Ipi("ipi"),
     /** the artist's sort name */
     SortName("sortname"),
@@ -252,44 +256,44 @@ class Artist(
     Type("type")
   }
 
-  companion object {
-    val NullArtist = Artist(id = NullObject.ID, name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Artist::class.java.name to NullArtist
+  public companion object {
+    public val NullArtist: Artist = Artist(id = NullObject.ID, name = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> = Artist::class.java.name to NullArtist
   }
 }
 
-inline val Artist.isNullObject: Boolean
+public inline val Artist.isNullObject: Boolean
   get() = this === NullArtist
 
-inline class ArtistMbid(override val value: String) : Mbid {
-  companion object {
+public inline class ArtistMbid(override val value: String) : Mbid {
+  public companion object {
 
     // https://musicbrainz.org/doc/Style/Unknown_and_untitled/Special_purpose_artist
-    val ANONYMOUS = ArtistMbid("f731ccc4-e22a-43af-a747-64213329e088")
-    val DATA = ArtistMbid("33cf029c-63b0-41a0-9855-be2a3665fb3b")
-    val DIALOGUE = ArtistMbid("314e1c25-dde7-4e4d-b2f4-0a7b9f7c56dc")
-    val NO_ARTIST = ArtistMbid("eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61")
-    val TRADITIONAL = ArtistMbid("9be7f096-97ec-4615-8957-8d40b5dcbc41")
-    val UNKNOWN = ArtistMbid("125ec42a-7229-4250-afc5-e057484327fe")
-    val VARIOUS_ARTISTS = ArtistMbid("89ad4ac3-39f7-470e-963a-56509c546377")
-    val CHRISTMAS_MUSIC = ArtistMbid("0187fe48-c87d-4dd8-beca-9c07ef535603")
-    val DISNEY = ArtistMbid("66ea0139-149f-4a0c-8fbf-5ea9ec4a6e49")
-    val MUSICAL_THEATER = ArtistMbid("a0ef7e1d-44ff-4039-9435-7d5fefdeecc9")
-    val CLASSICAL_MUSIC = ArtistMbid("9e44f539-f3fc-4120-bce2-94c8716437fa")
-    val SOUNDTRACK = ArtistMbid("d6bd72bc-b1e2-4525-92aa-0f853cbb41bf")
-    val RELIGIOUS_MUSIC = ArtistMbid("ae636985-40e8-4010-ae02-0f35930f8017")
-    val CHURCH_CHIMES = ArtistMbid("90068d37-bae7-4292-be4a-704c145bd616")
-    val LANGUAGE_INSTRUCTION = ArtistMbid("80a8851f-444c-4539-892b-ad2a49292aa9")
-    val NATURE_SOUNDS = ArtistMbid("51118c9d-965d-4f9f-89a1-0091837ccf54")
-    val NEWS_REPORT = ArtistMbid("49e713ce-c3be-4697-8983-ee7cd0a11ea1")
+    public val ANONYMOUS: ArtistMbid = ArtistMbid("f731ccc4-e22a-43af-a747-64213329e088")
+    public val DATA: ArtistMbid = ArtistMbid("33cf029c-63b0-41a0-9855-be2a3665fb3b")
+    public val DIALOGUE: ArtistMbid = ArtistMbid("314e1c25-dde7-4e4d-b2f4-0a7b9f7c56dc")
+    public val NO_ARTIST: ArtistMbid = ArtistMbid("eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61")
+    public val TRADITIONAL: ArtistMbid = ArtistMbid("9be7f096-97ec-4615-8957-8d40b5dcbc41")
+    public val UNKNOWN: ArtistMbid = ArtistMbid("125ec42a-7229-4250-afc5-e057484327fe")
+    public val VARIOUS_ARTISTS: ArtistMbid = ArtistMbid("89ad4ac3-39f7-470e-963a-56509c546377")
+    public val CHRISTMAS_MUSIC: ArtistMbid = ArtistMbid("0187fe48-c87d-4dd8-beca-9c07ef535603")
+    public val DISNEY: ArtistMbid = ArtistMbid("66ea0139-149f-4a0c-8fbf-5ea9ec4a6e49")
+    public val MUSICAL_THEATER: ArtistMbid = ArtistMbid("a0ef7e1d-44ff-4039-9435-7d5fefdeecc9")
+    public val CLASSICAL_MUSIC: ArtistMbid = ArtistMbid("9e44f539-f3fc-4120-bce2-94c8716437fa")
+    public val SOUNDTRACK: ArtistMbid = ArtistMbid("d6bd72bc-b1e2-4525-92aa-0f853cbb41bf")
+    public val RELIGIOUS_MUSIC: ArtistMbid = ArtistMbid("ae636985-40e8-4010-ae02-0f35930f8017")
+    public val CHURCH_CHIMES: ArtistMbid = ArtistMbid("90068d37-bae7-4292-be4a-704c145bd616")
+    public val LANGUAGE_INSTRUCTION: ArtistMbid = ArtistMbid("80a8851f-444c-4539-892b-ad2a49292aa9")
+    public val NATURE_SOUNDS: ArtistMbid = ArtistMbid("51118c9d-965d-4f9f-89a1-0091837ccf54")
+    public val NEWS_REPORT: ArtistMbid = ArtistMbid("49e713ce-c3be-4697-8983-ee7cd0a11ea1")
   }
 }
 
-inline val Artist.mbid: ArtistMbid
+public inline val Artist.mbid: ArtistMbid
   get() = id.toArtistMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toArtistMbid(): ArtistMbid {
+public inline fun String.toArtistMbid(): ArtistMbid {
   if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid ArtistMbid")
   return ArtistMbid(this)
 }

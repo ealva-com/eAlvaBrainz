@@ -20,9 +20,9 @@ package com.ealva.ealvabrainz.brainz.data
 import com.nhaarman.expect.expect
 import org.junit.Test
 
-class ArtistTypeTest {
+public class ArtistTypeTest {
   @Test
-  fun `test String to ArtistType`() {
+  public fun `test String to ArtistType`() {
     expect("Person".toArtistType()).toBe(ArtistType.Person)
     expect("Group".toArtistType()).toBe(ArtistType.Group)
     expect("Orchestra".toArtistType()).toBe(ArtistType.Orchestra)

@@ -22,7 +22,8 @@ import com.squareup.moshi.JsonClass
 import timber.log.Timber
 
 /**
- * Disc ID [“5MniTJ1axfp8JU.YZml7CRPArzc-”](https://musicbrainz.org/cdtoc/5MniTJ1axfp8JU.YZml7CRPArzc-)
+ * Disc ID
+ * [“5MniTJ1axfp8JU.YZml7CRPArzc-”](https://musicbrainz.org/cdtoc/5MniTJ1axfp8JU.YZml7CRPArzc-)
  *
  * CD TOC details
  * ```
@@ -43,17 +44,17 @@ import timber.log.Timber
  * ```
  */
 @JsonClass(generateAdapter = true)
-class Disc(
+public class Disc(
   /**
    * ID of the Disc. NOT a MusicBrainz ID (MBID)
    *
    * Disc ID is the code number which MusicBrainz uses to link a physical CD to a release listing.
    * It is a string of letters, like XzPS7vW.HPHsYemQh0HBUGr8vuU-.
    */
-  var id: String = "",
-  var sectors: Int = 0,
-  var offsets: List<Int> = emptyList(),
-  @field:Json(name = "offset-count") var offsetCount: Int = 0
+  public var id: String = "",
+  public var sectors: Int = 0,
+  public var offsets: List<Int> = emptyList(),
+  @field:Json(name = "offset-count") public var offsetCount: Int = 0
 ) {
 
   override fun equals(other: Any?): Boolean {
@@ -67,26 +68,26 @@ class Disc(
     return true
   }
 
-  override fun hashCode() = id.hashCode()
+  override fun hashCode(): Int = id.hashCode()
 
-  override fun toString() = toJson()
+  override fun toString(): String = toJson()
 
-  companion object {
-    val NullDisc = Disc(id = NullObject.ID)
-    val fallbackMapping: Pair<String, Any> = Disc::class.java.name to NullDisc
+  public companion object {
+    public val NullDisc: Disc = Disc(id = NullObject.ID)
+    public val fallbackMapping: Pair<String, Any> = Disc::class.java.name to NullDisc
   }
 }
 
-inline val Disc.isNullObject: Boolean
+public inline val Disc.isNullObject: Boolean
   get() = this === Disc.NullDisc
 
-inline class DiscMbid(override val value: String) : Mbid
+public inline class DiscMbid(override val value: String) : Mbid
 
-inline val Disc.mbid: DiscMbid
+public inline val Disc.mbid: DiscMbid
   get() = id.toDiscMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toDiscMbid(): DiscMbid {
+public inline fun String.toDiscMbid(): DiscMbid {
   if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid DiscMbid")
   return DiscMbid(this)
 }

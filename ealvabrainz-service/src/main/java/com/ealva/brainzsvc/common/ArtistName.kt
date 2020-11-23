@@ -21,17 +21,16 @@ package com.ealva.brainzsvc.common
  * Convert this String to an [ArtistName] or [ArtistName.UNKNOWN] if this is null.
  */
 @Suppress("NOTHING_TO_INLINE")
-inline fun String?.toArtistName(): ArtistName {
+public inline fun String?.toArtistName(): ArtistName {
   return this?.let { ArtistName.make(this) } ?: ArtistName.UNKNOWN
 }
 
-inline class ArtistName(val value: String) {
-  companion object {
-    val UNKNOWN = ArtistName("Unknown")
+public inline class ArtistName(public val value: String) {
+  public companion object {
+    public val UNKNOWN: ArtistName = ArtistName("Unknown")
 
     @Suppress("NOTHING_TO_INLINE")
-    inline fun make(value: String): ArtistName =
+    public inline fun make(value: String): ArtistName =
       ArtistName(value.trim())
   }
 }
-

@@ -15,6 +15,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("Indentation")
+
 package com.ealva.brainzsvc.service
 
 import com.ealva.brainzsvc.common.AlbumName
@@ -32,6 +34,7 @@ import com.ealva.ealvabrainz.brainz.data.RecordingList
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.Release.Companion.NullRelease
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.ReleaseList
 import com.ealva.ealvabrainz.brainz.data.join
 import com.ealva.ealvabrainz.brainz.data.toReleaseGroupMbid
@@ -49,14 +52,15 @@ import org.junit.Rule
 import org.junit.Test
 import retrofit2.Response
 
-class MusicBrainzServiceTest {
-  @get:Rule var coroutineRule = MainCoroutineRule()
+public class MusicBrainzServiceTest {
+  @get:Rule
+  public var coroutineRule: MainCoroutineRule = MainCoroutineRule()
 
   private val dummyException = RuntimeException("I O, let's go!")
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun `test findRelease`() = coroutineRule.runBlockingTest {
+  public fun `test findRelease`(): Unit = coroutineRule.runBlockingTest {
     doTestFindRelease(null, null)
     doTestFindRelease(20, null)
     doTestFindRelease(null, 10)
@@ -65,7 +69,7 @@ class MusicBrainzServiceTest {
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun `test findRelease on thrown exception`() = coroutineRule.runBlockingTest {
+  public fun `test findRelease on thrown exception`(): Unit = coroutineRule.runBlockingTest {
     val artistName = ArtistName("David Bowie")
     val albumName = AlbumName("The Man Who Sold the World")
     val query = """artist:"${artistName.value}" AND release:"${albumName.value}""""
@@ -84,7 +88,7 @@ class MusicBrainzServiceTest {
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun `test lookupRelease`() = coroutineRule.runBlockingTest {
+  public fun `test lookupRelease`(): Unit = coroutineRule.runBlockingTest {
     val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseMbid()
     val mockBrainz = mock<MusicBrainz> {
       onBlocking { lookupRelease(mbid.value, null) } doReturn makeSuccess(NullRelease)
@@ -96,7 +100,7 @@ class MusicBrainzServiceTest {
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun `test lookupRelease with includes`() = coroutineRule.runBlockingTest {
+  public fun `test lookupRelease with includes`(): Unit = coroutineRule.runBlockingTest {
     val dummy = Release("dummy")
     val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseMbid()
     val mockBrainz = mock<MusicBrainz> {
@@ -112,26 +116,25 @@ class MusicBrainzServiceTest {
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun `test lookupReleaseGroup status-include mismatch`() = coroutineRule.runBlockingTest {
-    val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseGroupMbid()
-    val mockBrainz = mock<MusicBrainz>()  // should not be called
-    val service = makeServiceForTest(mockBrainz)
-    // expect lookupReleaseGroup to throw
-    expect(
-      service.lookupReleaseGroup(
-        mbid,
-        status = Release.Status.values().toList()
-      )
-    ).toBeInstanceOf<Exceptional> { result ->
-      expect(result.exception).toBeInstanceOf<MusicBrainzException> {
-
+  public fun `test lookupReleaseGroup status-include mismatch`(): Unit =
+    coroutineRule.runBlockingTest {
+      val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseGroupMbid()
+      val mockBrainz = mock<MusicBrainz>() // should not be called
+      val service = makeServiceForTest(mockBrainz)
+      // expect lookupReleaseGroup to throw
+      expect(
+        service.lookupReleaseGroup(
+          mbid,
+          status = Release.Status.values().toList()
+        )
+      ).toBeInstanceOf<Exceptional> { result ->
+        expect(result.exception).toBeInstanceOf<MusicBrainzException>()
       }
     }
-  }
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun `test lookupReleaseGroup status used`() = coroutineRule.runBlockingTest {
+  public fun `test lookupReleaseGroup status used`(): Unit = coroutineRule.runBlockingTest {
     val dummy = ReleaseGroup(title = "dummy")
     val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseGroupMbid()
     val allStatus = Release.Status.values().toList()
@@ -155,13 +158,14 @@ class MusicBrainzServiceTest {
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun `test find recording query string`() = coroutineRule.runBlockingTest {
+  public fun `test find recording query string`(): Unit = coroutineRule.runBlockingTest {
     val dummy = RecordingList()
     val recordingName = "Her Majesty".toRecordingName()
     val albumName = "Abbey Road".toAlbumName()
     val artistName = "The Beatles".toArtistName()
     val query =
-      """recording:"${recordingName.value}" AND artist:"${artistName.value}" AND release:"${albumName.value}""""
+      """recording:"${recordingName.value}" AND artist:"${artistName.value}" """ +
+        """AND release:"${albumName.value}""""
     val mockBrainz = mock<MusicBrainz> {
       onBlocking { findRecording(query, null, null) } doReturn makeSuccess(dummy)
     }
@@ -179,7 +183,7 @@ class MusicBrainzServiceTest {
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun `test direct brainz call`() = coroutineRule.runBlockingTest {
+  public fun `test direct brainz call`(): Unit = coroutineRule.runBlockingTest {
     val dummy = Release(title = "dummy")
     val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseMbid()
     val mockBrainz = mock<MusicBrainz> {
@@ -196,7 +200,7 @@ class MusicBrainzServiceTest {
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun `test direct brainz call error response`() = coroutineRule.runBlockingTest {
+  public fun `test direct brainz call error response`(): Unit = coroutineRule.runBlockingTest {
     val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseMbid()
     val mockBrainz = mock<MusicBrainz> {
       onBlocking {
@@ -214,7 +218,7 @@ class MusicBrainzServiceTest {
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun `test direct brainz call exception`() = coroutineRule.runBlockingTest {
+  public fun `test direct brainz call exception`(): Unit = coroutineRule.runBlockingTest {
     val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseMbid()
     val dummyEx = IllegalStateException()
     val mockBrainz = mock<MusicBrainz> {
@@ -232,22 +236,23 @@ class MusicBrainzServiceTest {
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun `test direct brainz call unknown error response`() = coroutineRule.runBlockingTest {
-    val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseMbid()
-    val mockBrainz = mock<MusicBrainz> {
-      onBlocking {
-        lookupRelease(mbid.value, null)
-      } doReturn Response.error(404, "won't work".toResponseBody())
-    }
-    val service = makeServiceForTest(mockBrainz)
-    expect(service.brainz { brainz ->
-      brainz.lookupRelease(mbid.value, null)
-    }).toBeInstanceOf<Exceptional> { result ->
-      expect(result.exception).toBeInstanceOf<MusicBrainzUnknownError> { ex ->
-        expect(ex.rawResponse.httpStatusCode).toBe(404)
+  public fun `test direct brainz call unknown error response`(): Unit =
+    coroutineRule.runBlockingTest {
+      val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseMbid()
+      val mockBrainz = mock<MusicBrainz> {
+        onBlocking {
+          lookupRelease(mbid.value, null)
+        } doReturn Response.error(404, "won't work".toResponseBody())
+      }
+      val service = makeServiceForTest(mockBrainz)
+      expect(service.brainz { brainz ->
+        brainz.lookupRelease(mbid.value, null)
+      }).toBeInstanceOf<Exceptional> { result ->
+        expect(result.exception).toBeInstanceOf<MusicBrainzUnknownError> { ex ->
+          expect(ex.rawResponse.httpStatusCode).toBe(404)
+        }
       }
     }
-  }
 
   private suspend fun doTestFindRelease(limit: Int?, offset: Int?) {
     val dummy = ReleaseList()
@@ -281,14 +286,17 @@ class MusicBrainzServiceTest {
   }
 
   private fun <T> makeSuccess(t: T) = Response.success(200, t)
-
 }
 
-object NullCoverArtService : CoverArtService {
+public object NullCoverArtService : CoverArtService {
   override suspend fun getCoverArtRelease(
     entity: CoverArtService.Entity,
     mbid: String
   ): CoverArtRelease? {
+    return null
+  }
+
+  override fun getReleaseGroupArtwork(mbid: ReleaseGroupMbid): CoverArtRelease? {
     return null
   }
 }

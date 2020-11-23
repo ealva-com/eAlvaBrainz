@@ -19,14 +19,13 @@ package com.ealva.brainzapp.app
 
 import android.app.Application
 import com.ealva.brainzapp.services.brainzModule
-import com.ealva.ealvabrainz.BuildConfig
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import timber.log.Timber
 
 @Suppress("unused") // It's in the manifest
-class App : Application() {
+public class App : Application() {
 
   override fun onCreate() {
     super.onCreate()
@@ -35,9 +34,6 @@ class App : Application() {
       androidContext(this@App)
       modules(brainzModule)
     }
-
-    if (BuildConfig.DEBUG) {
-      Timber.plant(Timber.DebugTree())
-    }
+    Timber.plant(Timber.DebugTree())
   }
 }

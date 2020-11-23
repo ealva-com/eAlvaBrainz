@@ -24,7 +24,7 @@ import com.squareup.moshi.Moshi
 import org.junit.Before
 import org.junit.Test
 
-fun <T> ListMatcher<T>.toContain(expectedList: List<T>, message: (() -> Any?)? = null) {
+public fun <T> ListMatcher<T>.toContain(expectedList: List<T>, message: (() -> Any?)? = null) {
   val theActual = actual ?: fail(
     "Expected value to contain $expectedList, but the actual value was null.",
     message
@@ -34,16 +34,16 @@ fun <T> ListMatcher<T>.toContain(expectedList: List<T>, message: (() -> Any?)? =
   }
 }
 
-class RecordingListTest {
+public class RecordingListTest {
   private lateinit var moshi: Moshi
 
   @Before
-  fun setup() {
+  public fun setup() {
     moshi = theMoshi
   }
 
   @Test
-  fun `test recording list query result`() {
+  public fun `test recording list query result`() {
     moshi.adapter(RecordingList::class.java).fromJson(recordingListJson)?.run {
       expect(created).toBe("2020-02-10T17:06:49.087Z")
       expect(count).toBe(1)

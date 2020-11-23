@@ -21,17 +21,16 @@ package com.ealva.brainzsvc.common
  * Convert this String to an [LabelName] or [LabelName.UNKNOWN] if this is null.
  */
 @Suppress("NOTHING_TO_INLINE")
-inline fun String?.toLabelName(): LabelName {
+public inline fun String?.toLabelName(): LabelName {
   return this?.let { LabelName.make(this) } ?: LabelName.UNKNOWN
 }
 
-inline class LabelName(val value: String) {
-  companion object {
-    val UNKNOWN = LabelName("Unknown")
+public inline class LabelName(public val value: String) {
+  public companion object {
+    public val UNKNOWN: LabelName = LabelName("Unknown")
 
     @Suppress("NOTHING_TO_INLINE")
-    inline fun make(value: String): LabelName =
+    public inline fun make(value: String): LabelName =
       LabelName(value.trim())
   }
 }
-

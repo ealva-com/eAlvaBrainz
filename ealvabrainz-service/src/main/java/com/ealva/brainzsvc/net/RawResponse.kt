@@ -19,18 +19,17 @@ package com.ealva.brainzsvc.net
 
 import retrofit2.Response
 
-interface RawResponse {
-  val httpStatusCode: Int
-  val httpStatus: String
-  val errorBody: String
+public interface RawResponse {
+  public val httpStatusCode: Int
+  public val httpStatus: String
+  public val errorBody: String
 }
 
-internal class RetrofitRawResponse<T: Any>(private val response: Response<T>): RawResponse {
+internal class RetrofitRawResponse<T : Any>(private val response: Response<T>) : RawResponse {
   override val httpStatusCode: Int
     get() = response.code()
   override val httpStatus: String
     get() = response.message()
   override val errorBody: String
     get() = response.errorBody()?.string() ?: "null"
-
 }

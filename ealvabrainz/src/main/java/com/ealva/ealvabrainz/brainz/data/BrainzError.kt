@@ -20,13 +20,13 @@ package com.ealva.ealvabrainz.brainz.data
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class BrainzError(
+public data class BrainzError(
   /**
    * Example: "type is not a valid parameter unless releases or release-groups are requested."
    */
-  var error: String = "",
+  public var error: String = "",
   /**
    * Example: "For usage, please see: https://musicbrainz.org/development/mmd"
    */
-  var help: String = ""
+  public var help: String = ""
 )

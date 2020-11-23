@@ -15,6 +15,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("Indentation", "MagicNumber")
+
 package com.ealva.ealvabrainz.moshi
 
 import com.ealva.ealvabrainz.brainz.data.Alias
@@ -56,7 +58,7 @@ import java.lang.reflect.Constructor
  * },
  * ```
  */
-class ReleaseAdapter(moshi: Moshi) : JsonAdapter<Release>() {
+internal class ReleaseAdapter(moshi: Moshi) : JsonAdapter<Release>() {
 
   private val options: JsonReader.Options = JsonReader.Options.of(
     "id", "title", "date",

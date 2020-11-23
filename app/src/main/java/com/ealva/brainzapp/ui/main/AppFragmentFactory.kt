@@ -27,13 +27,15 @@ import com.ealva.brainzapp.ui.fragment.Navigation
 import com.ealva.brainzapp.ui.release.ReleaseSearchFragment
 import com.ealva.brainzapp.ui.rgroup.ReleaseGroupSearchFragment
 import com.ealva.brainzsvc.service.MusicBrainzService
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinApiExtension
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 
-typealias FragmentFactoryFn = () -> Fragment
+public typealias FragmentFactoryFn = () -> Fragment
 
-class AppFragmentFactory(
+@OptIn(KoinApiExtension::class)
+public class AppFragmentFactory(
   navigation: Navigation,
   mainPresenter: MainPresenter
 ) : FragmentFactory(), KoinComponent {
@@ -60,10 +62,11 @@ class AppFragmentFactory(
   }
 }
 
-inline fun <reified T : Fragment> FragmentManager.instantiate(args: Bundle? = null): T {
-  return (fragmentFactory.instantiate(
-    T::class.java.classLoader!!,
-    T::class.java.name
-  ) as T).apply { if (args != null) arguments = args }
+public inline fun <reified T : Fragment> FragmentManager.instantiate(args: Bundle? = null): T {
+  return (
+    fragmentFactory.instantiate(
+      T::class.java.classLoader!!,
+      T::class.java.name
+    ) as T
+    ).apply { if (args != null) arguments = args }
 }
-

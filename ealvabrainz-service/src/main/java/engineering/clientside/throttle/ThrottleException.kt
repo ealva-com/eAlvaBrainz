@@ -17,4 +17,4 @@
 
 package engineering.clientside.throttle
 
-class ThrottleException(cause: Throwable): RuntimeException(cause)
+public class ThrottleException(cause: Throwable) : RuntimeException(cause)

@@ -21,15 +21,15 @@ import com.ealva.ealvabrainz.brainz.data.Coordinates.Companion.NullCoordinates
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class Coordinates(
-  var latitude: Double = 0.0,
-  var longitude: Double = 0.0
+public data class Coordinates(
+  public var latitude: Double = 0.0,
+  public var longitude: Double = 0.0
 ) {
-  companion object {
-    val NullCoordinates = Coordinates()
-    val fallbackMapping: Pair<String, Any> = Coordinates::class.java.name to NullCoordinates
+  public companion object {
+    public val NullCoordinates: Coordinates = Coordinates()
+    public val fallbackMapping: Pair<String, Any> = Coordinates::class.java.name to NullCoordinates
   }
 }
 
-inline val Coordinates.isNullObject: Boolean
+public inline val Coordinates.isNullObject: Boolean
   get() = this === NullCoordinates

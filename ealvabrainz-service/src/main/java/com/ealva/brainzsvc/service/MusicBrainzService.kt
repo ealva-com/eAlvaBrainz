@@ -40,6 +40,8 @@ import com.ealva.ealvabrainz.brainz.data.BrowseReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseList
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
 import com.ealva.ealvabrainz.brainz.data.Include
+import com.ealva.ealvabrainz.brainz.data.Label
+import com.ealva.ealvabrainz.brainz.data.LabelMbid
 import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.RecordingList
 import com.ealva.ealvabrainz.brainz.data.RecordingMbid
@@ -70,16 +72,16 @@ import java.io.File
 /**
  * Result of various calls to [MusicBrainzService]
  */
-sealed class MusicBrainzResult<out T : Any> {
+public sealed class MusicBrainzResult<out T : Any> {
 
   /** Call was successful and contains the [value] */
-  data class Success<T : Any>(val value: T) : MusicBrainzResult<T>()
+  public data class Success<T : Any>(val value: T) : MusicBrainzResult<T>()
 
   /** Group non-success subclasses under this sealed class */
-  sealed class Unsuccessful : MusicBrainzResult<Nothing>() {
+  public sealed class Unsuccessful : MusicBrainzResult<Nothing>() {
 
     /** Server returned an error and was converted to the common error body response */
-    data class ErrorResult(val error: BrainzError) : Unsuccessful()
+    public data class ErrorResult(val error: BrainzError) : Unsuccessful()
 
     /**
      * An [exception] of type [MusicBrainzException] or subclass [MusicBrainzUnknownError] was
@@ -87,9 +89,9 @@ sealed class MusicBrainzResult<out T : Any> {
      * [RawResponse][com.ealva.brainzsvc.net.RawResponse] which provides the https status
      * code/message and the error body.
      */
-    data class Exceptional(val exception: MusicBrainzException) : Unsuccessful() {
-      companion object {
-        fun make(message: String, cause: Throwable? = null): Exceptional {
+    public data class Exceptional(val exception: MusicBrainzException) : Unsuccessful() {
+      public companion object {
+        public fun make(message: String, cause: Throwable? = null): Exceptional {
           return when (cause) {
             null -> Exceptional(MusicBrainzException(message))
             is MusicBrainzException -> Exceptional(cause)
@@ -103,7 +105,7 @@ sealed class MusicBrainzResult<out T : Any> {
      * If using a [MusicBrainzResult.Unsuccessful] in a LiveData, or some other data holder, use
      * this as a "No Error" marker instead of null
      */
-    object None : Unsuccessful()
+    public object None : Unsuccessful()
   }
 }
 
@@ -111,14 +113,14 @@ sealed class MusicBrainzResult<out T : Any> {
  * A BrainzCall is a suspending function which accepts a [MusicBrainz] instance and returns
  * a Retrofit Response with a type parameter of the returned MusicBrainz entity.
  */
-typealias BrainzCall<T> = suspend (brainz: MusicBrainz) -> Response<T>
+public typealias BrainzCall<T> = suspend (brainz: MusicBrainz) -> Response<T>
 
 /**
  * MusicBrainzService is a wrapper around a Retrofit MusicBrainz and CoverArt instance that
  * provides higher level functionality, including coordinating between the two to retrieve
  * artwork for Releases and Release Groups
  */
-interface MusicBrainzService {
+public interface MusicBrainzService {
 
   /**
    * Find a [ReleaseList] based on [artist] and [album] (album = release), limiting
@@ -128,7 +130,7 @@ interface MusicBrainzService {
    * @return [MusicBrainzResult] with the resulting ReleaseList or error/exception information
    * @throws MusicBrainzException if Retrofit throws
    */
-  suspend fun findRelease(
+  public suspend fun findRelease(
     artist: ArtistName,
     album: AlbumName,
     limit: Int? = null,
@@ -144,7 +146,7 @@ interface MusicBrainzService {
    * @param status limit linked entities to this [Release.Status]
    * @return a [MusicBrainzResult] with Release if successful
    */
-  suspend fun lookupRelease(
+  public suspend fun lookupRelease(
     mbid: ReleaseMbid,
     include: List<Release.Lookup> = emptyList(),
     type: List<Release.Type> = emptyList(),
@@ -155,7 +157,7 @@ interface MusicBrainzService {
    * Find [Release]s based on [artist] and [album] and convert the results to a flow
    * of [RemoteImage]
    */
-  fun getReleaseArt(
+  public fun getReleaseArt(
     artist: ArtistName,
     album: AlbumName,
     maxReleases: Int = DEFAULT_MAX_RELEASE_COUNT
@@ -169,7 +171,7 @@ interface MusicBrainzService {
    * @return the [ReleaseGroupList] or null
    * @return a [MusicBrainzResult] with ReleaseGroupList if successful
    */
-  suspend fun findReleaseGroup(
+  public suspend fun findReleaseGroup(
     artist: ArtistName,
     album: AlbumName,
     limit: Int? = null,
@@ -187,27 +189,27 @@ interface MusicBrainzService {
    * @return the [ReleaseGroup] associated with [mbid] or null
    * @throws MusicBrainzException if Retrofit throws or parameters are invalid
    */
-  suspend fun lookupReleaseGroup(
+  public suspend fun lookupReleaseGroup(
     mbid: ReleaseGroupMbid,
     include: List<ReleaseGroup.Lookup> = emptyList(),
     type: List<Release.Type> = emptyList(),
     status: List<Release.Status> = emptyList()
   ): MusicBrainzResult<ReleaseGroup>
 
-  suspend fun getArtistReleaseGroups(
+  public suspend fun getArtistReleaseGroups(
     artistMbid: ArtistMbid,
     include: List<ReleaseGroup.Browse> = emptyList(),
     type: List<Release.Type> = emptyList()
   ): MusicBrainzResult<List<ReleaseGroup>>
 
-  suspend fun getArtistReleases(
+  public suspend fun getArtistReleases(
     artistMbid: ArtistMbid,
     include: List<Release.Browse> = emptyList(),
     type: List<Release.Type> = emptyList(),
     status: List<Release.Status> = emptyList()
   ): MusicBrainzResult<List<Release>>
 
-  suspend fun artistReleases(
+  public suspend fun artistReleases(
     artistMbid: ArtistMbid,
     include: List<Release.Browse> = emptyList(),
     type: List<Release.Type> = emptyList(),
@@ -218,7 +220,7 @@ interface MusicBrainzService {
    * Find [ReleaseGroup]s based on [artist] and [album] and convert the results to a flow
    * of [RemoteImage]
    */
-  fun getReleaseGroupArt(
+  public fun getReleaseGroupArt(
     artist: ArtistName,
     album: AlbumName,
     maxReleases: Int = DEFAULT_MAX_RELEASE_COUNT
@@ -231,7 +233,7 @@ interface MusicBrainzService {
    * @return the [ArtistList] or null
    * @throws MusicBrainzException if Retrofit throws
    */
-  suspend fun findArtist(
+  public suspend fun findArtist(
     artist: ArtistName,
     limit: Int? = null,
     offset: Int? = null
@@ -247,7 +249,7 @@ interface MusicBrainzService {
    * @return the [Artist] associated with [mbid] or null
    * @throws MusicBrainzException if Retrofit throws or parameters are invalid
    */
-  suspend fun lookupArtist(
+  public suspend fun lookupArtist(
     mbid: ArtistMbid,
     include: List<Artist.Lookup> = emptyList(),
     type: List<Release.Type> = emptyList(),
@@ -266,7 +268,7 @@ interface MusicBrainzService {
    * @return the [ArtistList] or null
    * @throws MusicBrainzException if Retrofit throws
    */
-  suspend fun findRecording(
+  public suspend fun findRecording(
     recording: RecordingName,
     artist: ArtistName? = null,
     album: AlbumName? = null,
@@ -284,12 +286,40 @@ interface MusicBrainzService {
    * @return the [Recording] associated with [mbid] or null
    * @throws MusicBrainzException if Retrofit throws or parameters are invalid
    */
-  suspend fun lookupRecording(
+  public suspend fun lookupRecording(
     mbid: RecordingMbid,
     include: List<Recording.Lookup> = emptyList(),
     type: List<Release.Type> = emptyList(),
     status: List<Release.Status> = emptyList()
   ): MusicBrainzResult<Recording>
+
+  /**
+   * Lookup Label identified by the [LabelMbid] and use [include] to specify information to be
+   * included in the result.
+   *
+   * @param mbid the MusicBrainID (MBID) to lookup
+   * @param include list of [Label.Lookup] specifying how much info from linked entities to include
+   */
+  public suspend fun lookupLabel(
+    mbid: LabelMbid,
+    include: List<Label.Lookup> = emptyList()
+  ): MusicBrainzResult<Label>
+
+  /**
+   * Get the first image of the ReleaseGroup with [mbid].
+   */
+  public suspend fun getReleaseGroupImage(mbid: ReleaseGroupMbid): Uri
+
+  public fun getReleaseGroupArtwork(mbid: ReleaseGroupMbid): Uri
+
+  public suspend fun browseLabelReleases(
+    mbid: LabelMbid,
+    limit: Int,
+    offset: Int,
+    include: List<Release.Lookup> = emptyList(),
+    type: List<Release.Type> = emptyList(),
+    status: List<Release.Status> = emptyList()
+  ): MusicBrainzResult<BrowseReleaseList>
 
   /**
    * Call the [block] function, which receives [MusicBrainz] as a parameter, in the context of the
@@ -306,20 +336,13 @@ interface MusicBrainzService {
    * error body could not be decoded. If unable to decode the error body the actual exception
    * is [MusicBrainzUnknownError] which contains a [RetrofitRawResponse].
    */
-  suspend fun <T : Any> brainz(block: BrainzCall<T>): MusicBrainzResult<T>
-
-  /**
-   * Get the first image of the ReleaseGroup with [mbid].
-   */
-  suspend fun getReleaseGroupImage(mbid: ReleaseGroupMbid): Uri
-
-  fun getReleaseGroupArtwork(mbid: ReleaseGroupMbid): Uri
+  public suspend fun <T : Any> brainz(block: BrainzCall<T>): MusicBrainzResult<T>
 
   //  @Suppress("MemberVisibilityCanBePrivate", "unused")
-  companion object {
-    const val DEFAULT_MAX_RELEASE_COUNT = 10
+  public companion object {
+    public const val DEFAULT_MAX_RELEASE_COUNT: Int = 10
 
-    fun make(
+    public fun make(
       ctx: Context,
       appName: String,
       appVersion: String,
@@ -347,11 +370,13 @@ interface MusicBrainzService {
   }
 }
 
-//private const val MUSIC_BRAINZ_API_URL = "http://musicbrainz.org/ws/2/"
+// private const val MUSIC_BRAINZ_API_URL = "http://musicbrainz.org/ws/2/"
 private const val MUSIC_BRAINZ_API_SECURE_URL = "https://musicbrainz.org/ws/2/"
 
 private val SERVICE_NAME = MusicBrainzServiceImpl::class.java.simpleName
 private const val CACHE_DIR = "MusicBrainz"
+
+private const val INITIAL_LIST_SIZE = 100
 
 internal class MusicBrainzServiceImpl(
   private val musicBrainz: MusicBrainz,
@@ -364,8 +389,9 @@ internal class MusicBrainzServiceImpl(
     limit: Int?,
     offset: Int?
   ) = brainz {
-    val query = """artist:"${artist.value}" AND release:"${album.value}""""
-    musicBrainz.findRelease(query, limit, offset)
+    """artist:"${artist.value}" AND release:"${album.value}"""".let { query ->
+      musicBrainz.findRelease(query, limit, offset)
+    }
   }
 
   override suspend fun lookupRelease(
@@ -390,8 +416,9 @@ internal class MusicBrainzServiceImpl(
     limit: Int?,
     offset: Int?
   ) = brainz {
-    val query = """artist:"${artist.value}" AND release:"${album.value}""""
-    musicBrainz.findReleaseGroup(query, limit, offset)
+    """artist:"${artist.value}" AND release:"${album.value}"""".let { query ->
+      musicBrainz.findReleaseGroup(query, limit, offset)
+    }
   }
 
   override suspend fun lookupReleaseGroup(
@@ -409,25 +436,27 @@ internal class MusicBrainzServiceImpl(
     )
   }
 
+  @Suppress("ReturnCount")
   override suspend fun getArtistReleaseGroups(
     artistMbid: ArtistMbid,
     include: List<ReleaseGroup.Browse>,
     type: List<Release.Type>
   ): MusicBrainzResult<List<ReleaseGroup>> {
-    val list = ArrayList<ReleaseGroup>(100)
+    val list = ArrayList<ReleaseGroup>(INITIAL_LIST_SIZE)
     var offset = 0
     val brainzInc = include.join()
     val brainzType = type.join()
     do {
-      when (val result = brainz {
+      val result = brainz {
         musicBrainz.browseArtistReleaseGroups(
           artistMbid.value,
-          100,
+          INITIAL_LIST_SIZE,
           offset,
           brainzInc,
           brainzType
         )
-      }) {
+      }
+      when (result) {
         is Success<BrowseReleaseGroupList> -> {
           val resultList = result.value
           offset = handleBrowseList(
@@ -447,28 +476,30 @@ internal class MusicBrainzServiceImpl(
     return Success(list)
   }
 
+  @Suppress("ReturnCount")
   override suspend fun getArtistReleases(
     artistMbid: ArtistMbid,
     include: List<Release.Browse>,
     type: List<Release.Type>,
     status: List<Release.Status>
   ): MusicBrainzResult<List<Release>> {
-    val list = ArrayList<Release>(100)
+    val list = ArrayList<Release>(INITIAL_LIST_SIZE)
     var offset = 0
     val brainzInc = include.join()
     val brainzType = type.join()
     val brainzStatus = status.join()
     do {
-      when (val result = brainz {
-        musicBrainz.browseArtistReleases(
-          artistMbid.value,
-          100,
-          offset,
-          brainzInc,
-          brainzType,
-          brainzStatus
+      val result = brainz {
+        musicBrainz.browseReleases(
+          artistId = artistMbid.value,
+          limit = INITIAL_LIST_SIZE,
+          offset = offset,
+          include = brainzInc,
+          type = brainzType,
+          status = brainzStatus
         )
-      }) {
+      }
+      when (result) {
         is Success<BrowseReleaseList> -> {
           val resultList = result.value
           offset = handleBrowseList(
@@ -496,19 +527,19 @@ internal class MusicBrainzServiceImpl(
     type: List<Release.Type>,
     status: List<Release.Status>
   ): Flow<List<Release>> = flow<List<Release>> {
-    val list = ArrayList<Release>(100)
+    val list = ArrayList<Release>(INITIAL_LIST_SIZE)
     var offset = 0
     val brainzInc = include.join()
     val brainzType = type.join()
     val brainzStatus = status.join()
     do {
-      val result = musicBrainz.browseArtistReleases(
-        artistMbid.value,
-        100,
-        offset,
-        brainzInc,
-        brainzType,
-        brainzStatus
+      val result = musicBrainz.browseReleases(
+        artistId = artistMbid.value,
+        limit = INITIAL_LIST_SIZE,
+        offset = offset,
+        include = brainzInc,
+        type = brainzType,
+        status = brainzStatus
       )
       if (result.isSuccessful) {
         result.body()?.let { releaseList ->
@@ -554,8 +585,9 @@ internal class MusicBrainzServiceImpl(
     .flowOn(dispatcher)
 
   override suspend fun findArtist(artist: ArtistName, limit: Int?, offset: Int?) = brainz {
-    val query = """artist:"${artist.value}""""
-    musicBrainz.findArtist(query, limit, offset)
+    """artist:"${artist.value}"""".let { query ->
+      musicBrainz.findArtist(query, limit, offset)
+    }
   }
 
   override suspend fun lookupArtist(
@@ -629,6 +661,13 @@ internal class MusicBrainzServiceImpl(
     )
   }
 
+  override suspend fun lookupLabel(
+    mbid: LabelMbid,
+    include: List<Label.Lookup>
+  ): MusicBrainzResult<Label> = brainz {
+    musicBrainz.lookupLabel(mbid.value, include.join())
+  }
+
   override suspend fun <T : Any> brainz(block: BrainzCall<T>) = withContext(dispatcher) {
     try {
       val response = block(musicBrainz)
@@ -658,6 +697,26 @@ internal class MusicBrainzServiceImpl(
       .toSecureUri()
   }
 
+  override suspend fun browseLabelReleases(
+    mbid: LabelMbid,
+    limit: Int,
+    offset: Int,
+    include: List<Release.Lookup>,
+    type: List<Release.Type>,
+    status: List<Release.Status>
+  ): MusicBrainzResult<BrowseReleaseList> {
+    return brainz {
+      musicBrainz.browseReleases(
+        labelId = mbid.value,
+        limit = limit,
+        offset = offset,
+        include = include.join(),
+        type = type.join(),
+        status = status.join()
+      )
+    }
+  }
+
   private fun CoverArtRelease?.releaseImageSequence(): Sequence<String> {
     return if (this == null) emptySequence() else sequence {
       images.forEach { coverArtImage ->
@@ -670,13 +729,15 @@ internal class MusicBrainzServiceImpl(
         }
         yield(coverArtImage.image)
       }
-    }
+    }.distinct()
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
   private fun findReleases(artist: ArtistName, album: AlbumName, maxReleases: Int) = flow {
-    val query = """artist:"${artist.value}" AND release:"${album.value}""""
-    musicBrainz.findRelease(query, maxReleases)
+    musicBrainz.findRelease(
+      """artist:"${artist.value}" AND release:"${album.value}"""",
+      maxReleases
+    )
       .list()
       .sortedByDescending { it.score }
       .forEach { emit(it.mbid) }
@@ -684,13 +745,14 @@ internal class MusicBrainzServiceImpl(
 
   @OptIn(ExperimentalCoroutinesApi::class)
   private fun findReleaseGroups(artist: ArtistName, album: AlbumName, maxReleases: Int) = flow {
-    val query = """artist:"${artist.value}" AND release:"${album.value}""""
-    musicBrainz.findReleaseGroup(query, maxReleases)
+    musicBrainz.findReleaseGroup(
+      """artist:"${artist.value}" AND release:"${album.value}"""",
+      maxReleases
+    )
       .list()
       .sortedByDescending { it.score }
       .forEach { emit(it.mbid) }
   }.flowOn(dispatcher)
-
 }
 
 private fun buildMusicBrainz(
@@ -775,4 +837,3 @@ private inline fun offsetSanityCheck(
   if (resultOffset != offset)
     Timber.e("Offset mismatch, requested:%d result:%d %s", offset, resultOffset, message())
 }
-

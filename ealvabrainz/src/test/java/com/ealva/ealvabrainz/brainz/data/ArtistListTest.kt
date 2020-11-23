@@ -23,16 +23,16 @@ import com.squareup.moshi.Moshi
 import org.junit.Before
 import org.junit.Test
 
-class ArtistListTest {
+public class ArtistListTest {
   private lateinit var moshi: Moshi
 
   @Before
-  fun setup() {
+  public fun setup() {
     moshi = theMoshi
   }
 
   @Test
-  fun `test artist list query result`() {
+  public fun `test artist list query result`() {
     moshi.adapter(ArtistList::class.java).fromJson(johnLennonJson)?.run {
       expect(created).toBe("2020-02-10T23:01:20.201Z")
       expect(count).toBe(3)
@@ -57,7 +57,7 @@ class ArtistListTest {
         expect(endArea.type).toBe("District")
         expect(disambiguation).toBe("The Beatles")
         expect(ipis).toHaveSize(2)
-        expect(ipis).toContain(listOf("00017798450","00273545259"))
+        expect(ipis).toContain(listOf("00017798450", "00273545259"))
         expect(lifeSpan.begin).toBe("1940-10-09")
         expect(lifeSpan.ended).toBe(true)
         expect(lifeSpan.end).toBe("1980-12-08")
@@ -68,28 +68,30 @@ class ArtistListTest {
           expect(type).toBe("Artist name")
         }
         expect(tags).toHaveSize(20)
-        expect(tags.map { it.name }).toContain(listOf(
-          "rock",
-          "pop",
-          "folk",
-          "experimental",
-          "british",
-          "singer-songwriter",
-          "uk",
-          "britannique",
-          "classic rock",
-          "pop rock",
-          "english",
-          "united kingdom",
-          "classic pop and rock",
-          "peace",
-          "death by murder",
-          "death by gun",
-          "singer/songwriter",
-          "rock & roll",
-          "wifebeater",
-          "murdered"
-        ))
+        expect(tags.map { it.name }).toContain(
+          listOf(
+            "rock",
+            "pop",
+            "folk",
+            "experimental",
+            "british",
+            "singer-songwriter",
+            "uk",
+            "britannique",
+            "classic rock",
+            "pop rock",
+            "english",
+            "united kingdom",
+            "classic pop and rock",
+            "peace",
+            "death by murder",
+            "death by gun",
+            "singer/songwriter",
+            "rock & roll",
+            "wifebeater",
+            "murdered"
+          )
+        )
       }
     } ?: fail("ArtistLists is null")
   }

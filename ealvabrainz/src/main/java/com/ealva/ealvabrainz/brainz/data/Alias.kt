@@ -41,18 +41,18 @@ import com.squareup.moshi.JsonClass
  * [endingDate]
  */
 @JsonClass(generateAdapter = true)
-class Alias(
-  var name: String = "",
-  @field:Json(name = "sort-name") var sortName: String = "",
-  var type: String = "",
-  @field:Json(name = "type-id") var typeId: String = "",
-  var primary: Boolean = false,
-  var locale: String = "",
-  var begin: String = "",
-  var end: String = "",
-  var ended: Boolean = false,
-  @field:Json(name = "begin-date") var beginDate: String = "",
-  @field:Json(name = "end-date") var endDate: String = ""
+public class Alias(
+  public var name: String = "",
+  @field:Json(name = "sort-name") public var sortName: String = "",
+  public var type: String = "",
+  @field:Json(name = "type-id") public var typeId: String = "",
+  public var primary: Boolean = false,
+  public var locale: String = "",
+  public var begin: String = "",
+  public var end: String = "",
+  public var ended: Boolean = false,
+  @field:Json(name = "begin-date") public var beginDate: String = "",
+  @field:Json(name = "end-date") public var endDate: String = ""
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -78,21 +78,21 @@ class Alias(
     return result
   }
 
-  override fun toString() = toJson()
+  override fun toString(): String = toJson()
 
-  companion object {
-    val NullAlias = Alias(name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Alias::class.java.name to NullAlias
+  public companion object {
+    public val NullAlias: Alias = Alias(name = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> = Alias::class.java.name to NullAlias
   }
 }
 
-inline val Alias.isNullObject: Boolean
+public inline val Alias.isNullObject: Boolean
   get() = this === NullAlias
 
 /** [Alias.beginDate] if not empty, else [Alias.begin] */
-val Alias.startingDate
+public val Alias.startingDate: String
   get() = if (beginDate.isNotEmpty()) beginDate else begin
 
 /** [Alias.endDate] if not empty, else [Alias.end] */
-val Alias.endingDate
+public val Alias.endingDate: String
   get() = if (endDate.isNotEmpty()) endDate else end

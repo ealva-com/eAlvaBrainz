@@ -15,6 +15,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("MaxLineLength")
+
 package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.Area.Companion.NullArea
@@ -31,13 +33,13 @@ import timber.log.Timber
  * for more information.
  */
 @JsonClass(generateAdapter = true)
-class Area(
+public class Area(
   /** This area's MusicBrainz ID (MBID) */
-  var id: String = "",
+  public var id: String = "",
   /** The name of the area */
-  var name: String = "",
+  public var name: String = "",
   /** Use this field to sort a list of Area */
-  @field:Json(name = "sort-name") var sortName: String = "",
+  @field:Json(name = "sort-name") public var sortName: String = "",
   /**
    * The type of area. Possible values are:
    * * **Country**
@@ -61,32 +63,32 @@ class Area(
    * Island is used for islands and atolls which don't form subdivisions of their own, e.g. Skye.
    * These are not considered when displaying the parent areas for a given area.
    */
-  var type: String = "",
+  public var type: String = "",
   @Json(name = "type-id")
-  var typeId: String = "",
+  public var typeId: String = "",
   /**
    * See the [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  var disambiguation: String = "",
+  public var disambiguation: String = "",
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  var annotation: String = "",
+  public var annotation: String = "",
   /** The aliases are used to store alternate names or misspellings. */
-  var aliases: List<Alias> = emptyList(),
+  public var aliases: List<Alias> = emptyList(),
 
   /** The ISO 3166 codes are the codes assigned by ISO to countries and subdivisions. */
-  @field:Json(name = "iso-3166-1-codes") var iso31661Codes: List<String> = emptyList(),
-  @field:Json(name = "iso-3166-2-codes") var iso31662Codes: List<String> = emptyList(),
-  @field:Json(name = "iso-3166-3-codes") var iso31663Codes: List<String> = emptyList(),
+  @field:Json(name = "iso-3166-1-codes") public var iso31661Codes: List<String> = emptyList(),
+  @field:Json(name = "iso-3166-2-codes") public var iso31662Codes: List<String> = emptyList(),
+  @field:Json(name = "iso-3166-3-codes") public var iso31663Codes: List<String> = emptyList(),
   /**
    * The lifespan dates indicate when a certain area was founded and/or ceased to exist.
    * For example, the Soviet Union has a begin date of 1922 and an end date of 1991.
    */
   @Json(name = "life-span")
-  var lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
-  var score: Int = 0
+  public var lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
+  public var score: Int = 0
 ) {
 
   override fun equals(other: Any?): Boolean {
@@ -100,14 +102,14 @@ class Area(
     return true
   }
 
-  override fun hashCode() = id.hashCode()
+  override fun hashCode(): Int = id.hashCode()
 
-  override fun toString() = toJson()
+  override fun toString(): String = toJson()
 
-  interface Lookup : Include
+  public interface Lookup : Include
 
   @Suppress("unused")
-  enum class Misc(override val value: String) : Lookup {
+  public enum class Misc(override val value: String) : Lookup {
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
@@ -116,7 +118,7 @@ class Area(
   }
 
   @Suppress("unused")
-  enum class SearchField(val value: String) {
+  public enum class SearchField(public val value: String) {
     /** the area's MBID */
     AreaId("aid"),
     /** an alias attached to the area */
@@ -157,7 +159,7 @@ class Area(
    * * [Area-Work](https://musicbrainz.org/relationships/area-work)
    */
   @Suppress("unused")
-  enum class Relations(override val value: String) : Lookup {
+  public enum class Relations(override val value: String) : Lookup {
     Area("area-rels"),
     Event("event-rels"),
     Instrument("instrument-rels"),
@@ -167,23 +169,22 @@ class Area(
     Work("work-rels")
   }
 
-  companion object {
-    val NullArea = Area()
-    val fallbackMapping: Pair<String, Any> = Area::class.java.name to NullArea
+  public companion object {
+    public val NullArea: Area = Area()
+    public val fallbackMapping: Pair<String, Any> = Area::class.java.name to NullArea
   }
-
 }
 
-inline val Area.isNullObject: Boolean
+public inline val Area.isNullObject: Boolean
   get() = this === NullArea
 
-inline class AreaMbid(override val value: String) : Mbid
+public inline class AreaMbid(override val value: String) : Mbid
 
-inline val Area.mbid: AreaMbid
+public inline val Area.mbid: AreaMbid
   get() = id.toAreaMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toAreaMbid(): AreaMbid {
+public inline fun String.toAreaMbid(): AreaMbid {
   if (logInvalidMbid && isInvalidMbid()) Timber.w("Invalid AreaMbid")
   return AreaMbid(this)
 }

@@ -24,10 +24,9 @@ import com.nhaarman.expect.expect
 import org.junit.Test
 import java.io.File
 
-class OkHttpClientBuilderTest {
-
+public class OkHttpClientBuilderTest {
   @Test
-  fun `test okhttp built correctly`() {
+  public fun `test okhttp built correctly`() {
     val cacheDir = "CacheDir"
     val okhttp = makeOkHttpClient(
       "ServiceName",
@@ -36,11 +35,13 @@ class OkHttpClientBuilderTest {
       "email",
       File("\\dummy\\", cacheDir)
     )
-    expect(okhttp.interceptors.find { it is CacheControlInterceptor }).toNotBeNull { "Missing CacheControlInterceptor" }
-    expect(okhttp.interceptors.find { it is ThrottlingInterceptor }).toNotBeNull { "Missing ThrottlingInterceptor" }
-    expect(okhttp.interceptors.find { it is BrainzJsonFormatUserAgentInterceptor }).toNotBeNull { "Missing BrainzUserAgentInterceptor" }
+    expect(okhttp.interceptors.find { it is CacheControlInterceptor })
+      .toNotBeNull { "Missing CacheControlInterceptor" }
+    expect(okhttp.interceptors.find { it is ThrottlingInterceptor })
+      .toNotBeNull { "Missing ThrottlingInterceptor" }
+    expect(okhttp.interceptors.find { it is BrainzJsonFormatUserAgentInterceptor })
+      .toNotBeNull { "Missing BrainzUserAgentInterceptor" }
     expect(okhttp.cache).toNotBeNull { "Cache not found and MusicBrainz requires" }
     expect(okhttp.cache?.directory?.path).toEndWith(cacheDir)
   }
-
 }

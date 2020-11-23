@@ -19,13 +19,13 @@ package com.ealva.ealvabrainz.brainz.data
 
 import com.nhaarman.expect.Matcher
 import com.nhaarman.expect.expect
-import org.junit.Assert.fail
+import com.nhaarman.expect.fail
 import org.junit.Test
 
-class MbidTest {
+public class MbidTest {
 
   @Test
-  fun `test mbid appears valid`() {
+  public fun `test mbid appears valid`() {
     expect("ca2866c0-e204-4b0e-8fd2-00823863e2b2".toTestMbid()).toBeValid()
 
     expect("ca2866c00-e204-4b0e-8fd2-00823863e2b2".toTestMbid()).toBeInvalid()
@@ -72,17 +72,13 @@ class MbidTest {
 }
 
 private fun Matcher<TestMbid>.toBeValid() {
-  val mbid = actual
-  if (mbid == null) fail("Expected valid Mbid but was null") else {
-    if (mbid.isInvalid()) fail("Expected valid Mbid but was $mbid")
-  }
+  val mbid = actual ?: fail("Expected valid Mbid but was null")
+  if (mbid.isInvalid()) fail("Expected valid Mbid but was $mbid")
 }
 
 private fun Matcher<TestMbid>.toBeInvalid() {
-  val mbid = actual
-  if (mbid == null) fail("Expected invalid Mbid but was null") else {
-    if (mbid.isValid()) fail("Expected invalid Mbid but was $mbid")
-  }
+  val mbid = actual ?: fail("Expected invalid Mbid but was null")
+  if (mbid.isValid()) fail("Expected invalid Mbid but was $mbid")
 }
 
 private inline class TestMbid(override val value: String) : Mbid

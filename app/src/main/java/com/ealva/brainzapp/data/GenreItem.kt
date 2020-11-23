@@ -22,28 +22,30 @@ import com.ealva.ealvabrainz.brainz.data.Genre
 import timber.log.Timber
 import kotlin.math.min
 
-interface GenreItem {
-  val name: String
-  val count: Int
-  fun getDisplayName(fetch: (stringRes: Int) -> String): String
+public interface GenreItem {
+  public val name: String
+  public val count: Int
+  public fun getDisplayName(fetch: (stringRes: Int) -> String): String
 
-  companion object {
-    fun make(name: String, count: Int): GenreItem =
+  public companion object {
+    public fun make(name: String, count: Int): GenreItem =
       DisplayGenreImpl(name, count, genreToNameMap[name] ?: nameNotInMap(name))
   }
 }
 
+private const val MAX_GENRES = 4
+
 /** Convert to a sorted (by count descending), list of [GenreItem], of maximum size 4 */
-fun List<Genre>.toGenreItems(): List<GenreItem> {
+public fun List<Genre>.toGenreItems(): List<GenreItem> {
   val length = size
   return asSequence()
     .sortedByDescending { it.count }
-    .take(min(4, length))
+    .take(min(MAX_GENRES, length))
     .map { GenreItem.make(it.name, it.count) }
     .toList()
 }
 
-fun List<GenreItem>.toDisplayString(fetch: (stringRes: Int) -> String): String {
+public fun List<GenreItem>.toDisplayString(fetch: (stringRes: Int) -> String): String {
   if (isEmpty()) return fetch(R.string.none_in_parens)
   return buildString {
     this@toDisplayString.forEachIndexed { index, genre ->
@@ -73,10 +75,11 @@ private fun nameNotInMap(name: String): Int {
   return R.string.empty
 }
 
+@Suppress("unused")
 internal val Genre.Companion.nameMap: MutableMap<String, Int>
   get() = genreToNameMap.toMutableMap()
 
-private val genreToNameMap = mapOf<String, Int>(
+private val genreToNameMap = mapOf(
   "acid house" to R.string.genre_acid_house,
   "acid jazz" to R.string.genre_acid_jazz,
   "acid techno" to R.string.genre_acid_techno,

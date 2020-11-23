@@ -17,23 +17,23 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.matchers.toBeEmpty
+import com.ealva.ealvabrainz.matchers.string.toBeEmpty
 import com.nhaarman.expect.expect
 import com.squareup.moshi.Moshi
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 
-class RecordingTest {
+public class RecordingTest {
   private lateinit var moshi: Moshi
 
   @Before
-  fun setup() {
+  public fun setup() {
     moshi = theMoshi
   }
 
   @Test
-  fun `test parse recording all inc`() {
+  public fun `test parse recording all inc`() {
     moshi.adapter(Recording::class.java).fromJson(recordingAllIncJson)?.run {
       expect(annotation).toBeEmpty()
       expect(genres).toBeEmpty()
@@ -52,7 +52,6 @@ class RecordingTest {
       expect(artistCredit[1].artist.genres[1].name).toBe("k-pop")
     } ?: fail("Recording is null")
   }
-
 }
 
 private const val recordingAllIncJson = """

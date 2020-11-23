@@ -15,11 +15,14 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainzsvc.common
+package com.ealva.ealvabrainz.matchers.string
 
-import com.ealva.ealvabrainz.BuildConfig
+import com.nhaarman.expect.StringMatcher
+import com.nhaarman.expect.fail
 
-inline fun debug(block: () -> Unit) {
-  if (BuildConfig.DEBUG) block()
+/** Fails if [StringMatcher.actual] is null or is not empty */
+public fun StringMatcher.toBeEmpty() {
+  if (actual?.isEmpty() != true) {
+    fail("Expected \"$actual\" to be empty.")
+  }
 }
-

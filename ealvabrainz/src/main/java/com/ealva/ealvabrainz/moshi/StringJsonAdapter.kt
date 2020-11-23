@@ -21,7 +21,7 @@ import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonReader
 
 @Suppress("unused")
-class StringJsonAdapter {
+internal class StringJsonAdapter {
   @FromJson
   fun fromJson(reader: JsonReader): String {
     return when (val token = reader.peek()) {

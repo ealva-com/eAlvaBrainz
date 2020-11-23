@@ -21,6 +21,8 @@ import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.JsonReader;
 import com.squareup.moshi.JsonWriter;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 
 /**
@@ -76,7 +78,7 @@ final class FallbackOnNullJsonAdapter<T> extends JsonAdapter<T> {
   /**
    * Directly delgates to "real" {@code JsonAdapter<T>}
    */
-  @Override public void toJson(JsonWriter writer, T value) throws IOException {
+  @Override public void toJson(@NotNull JsonWriter writer, T value) throws IOException {
     delegate.toJson(writer, value);
   }
 

@@ -25,4 +25,3 @@ internal fun Retrofit.Builder.addMoshiConverterFactory(): Retrofit.Builder {
   addConverterFactory(MoshiConverterFactory.create(theMoshi))
   return this
 }
-

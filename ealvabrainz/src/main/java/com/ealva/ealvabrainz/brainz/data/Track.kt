@@ -31,14 +31,14 @@ import timber.log.Timber
  * other properties conventionally available to entities.
  */
 @JsonClass(generateAdapter = true)
-class Track(
-  var id: String = "",
-  var title: String = "",
-  var number: String = "",
-  var position: Int = 0,
-  @field:FallbackOnNull var recording: Recording = NullRecording,
-  @field:Json(name = "artist-credit") var artistCredit: List<ArtistCredit> = emptyList(),
-  var length: Int = 0
+public class Track(
+  public var id: String = "",
+  public var title: String = "",
+  public var number: String = "",
+  public var position: Int = 0,
+  @field:FallbackOnNull public var recording: Recording = NullRecording,
+  @field:Json(name = "artist-credit") public var artistCredit: List<ArtistCredit> = emptyList(),
+  public var length: Int = 0
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -51,40 +51,40 @@ class Track(
     return true
   }
 
-  override fun hashCode() = id.hashCode()
+  override fun hashCode(): Int = id.hashCode()
 
-  override fun toString() = toJson()
+  override fun toString(): String = toJson()
 
-  companion object {
-    val NullTrack = Track(id = NullObject.ID, title = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Track::class.java.name to NullTrack
+  public companion object {
+    public val NullTrack: Track = Track(id = NullObject.ID, title = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> = Track::class.java.name to NullTrack
   }
 }
 
-val Track.isNullObject: Boolean
+public val Track.isNullObject: Boolean
   get() = this === NullTrack
 
-inline class TrackMbid(override val value: String) : Mbid
+public inline class TrackMbid(override val value: String) : Mbid
 
-inline val Track.mbid: TrackMbid
-  get() = TrackMbid(id)
+public inline val Track.mbid: TrackMbid
+  get() = id.toTrackMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toTrackMbid(): TrackMbid {
+public inline fun String.toTrackMbid(): TrackMbid {
   if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid TrackMbid")
   return TrackMbid(this)
 }
 
 /** First [ArtistCredit] [Artist.mbid] or "" if not found */
-@Suppress("unused") val Track.theArtistMbid: String
+@Suppress("unused")
+public val Track.theArtistMbid: String
   get() = if (artistCredit.isNotEmpty()) artistCredit[0].artist.mbid.value else ""
 
 /** First [ArtistCredit] [Artist.name] or "" if not found */
-inline val Track.theArtistName: String
+public inline val Track.theArtistName: String
   get() = if (artistCredit.isNotEmpty()) artistCredit[0].artist.name else ""
 
 /** First [ArtistCredit] [Artist.sortName] or "" if not found */
 @Suppress("unused")
-inline val Track.theArtistSortName: String
+public inline val Track.theArtistSortName: String
   get() = if (artistCredit.isNotEmpty()) artistCredit[0].artist.sortName else theArtistName
-

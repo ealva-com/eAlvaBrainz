@@ -21,17 +21,35 @@ import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class Genre(
+public class Genre(
   /** Genre name in lowercase */
-  var name: String = "",
+  public var name: String = "",
   /** Number of votes for this genres applicability to the entity */
-  var count: Int = 0
+  public var count: Int = 0
 ) {
-  companion object {
-    val NullGenre = Genre(name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Genre::class.java.name to NullGenre
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as Genre
+
+    if (name != other.name) return false
+    if (count != other.count) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = name.hashCode()
+    result = 31 * result + count
+    return result
+  }
+
+  public companion object {
+    public val NullGenre: Genre = Genre(name = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> = Genre::class.java.name to NullGenre
   }
 }
 
-val Genre.isNullObject: Boolean
+public val Genre.isNullObject: Boolean
   get() = this === NullGenre

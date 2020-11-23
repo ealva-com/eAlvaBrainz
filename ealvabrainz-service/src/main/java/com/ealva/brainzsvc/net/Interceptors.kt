@@ -31,7 +31,7 @@ import timber.log.Timber
  * (https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings)
  * for querying their servers.
  */
-class ThrottlingInterceptor(maxCallsPerSecond: Double, private val serviceName: String) :
+internal class ThrottlingInterceptor(maxCallsPerSecond: Double, private val serviceName: String) :
   Interceptor {
   private val throttle = Throttle.create(maxCallsPerSecond)
 
@@ -54,7 +54,7 @@ class ThrottlingInterceptor(maxCallsPerSecond: Double, private val serviceName: 
  * (https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings)
  * for querying their servers.
  */
-class BrainzJsonFormatUserAgentInterceptor(
+internal class BrainzJsonFormatUserAgentInterceptor(
   userAgentAppName: String,
   userAgentAppVersion: String,
   userAgentContactEmail: String
@@ -67,4 +67,3 @@ class BrainzJsonFormatUserAgentInterceptor(
     return chain.proceed(request)
   }
 }
-

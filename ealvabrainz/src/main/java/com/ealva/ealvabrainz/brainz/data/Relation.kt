@@ -59,21 +59,56 @@ import com.squareup.moshi.JsonClass
  * the full date. It is optional, so it can also be left blank. As with other attributes,
  * see the documentation for the relationship types you are using.
  */
-sealed class Relation(
-  var type: String = "",
-  @field:Json(name = "type-id") var typeId: String = "",
-  @field:Json(name = "target-type") var targetType: String = "",
-  @field:Json(name = "ordering-key") var orderingKey: Int = 0,
-  var direction: String = "",
-  var attributes: List<String> = emptyList(),
-  @field:Json(name = "attribute-values") var attributeValues: Map<String, String> = emptyMap(),
-  @field:Json(name = "attribute-ids") var attributeIds: Map<String, String> = emptyMap(),
-  var begin: String = "",
-  var end: String = "",
-  var ended: Boolean = false,
-  @field:Json(name = "source-credit") var sourceCredit: String = "",
-  @field:Json(name = "target-credit") var targetCredit: String = ""
-)
+public sealed class Relation(
+  public var type: String = "",
+  @field:Json(name = "type-id") public var typeId: String = "",
+  @field:Json(name = "target-type") public var targetType: String = "",
+  @field:Json(name = "ordering-key") public var orderingKey: Int = 0,
+  public var direction: String = "",
+  public var attributes: List<String> = emptyList(),
+  @field:Json(name = "attribute-values")
+  public var attributeValues: Map<String, String> = emptyMap(),
+  @field:Json(name = "attribute-ids") public var attributeIds: Map<String, String> = emptyMap(),
+  public var begin: String = "",
+  public var end: String = "",
+  public var ended: Boolean = false,
+  @field:Json(name = "source-credit") public var sourceCredit: String = "",
+  @field:Json(name = "target-credit") public var targetCredit: String = ""
+) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as Relation
+
+    if (type != other.type) return false
+    if (typeId != other.typeId) return false
+    if (targetType != other.targetType) return false
+    if (orderingKey != other.orderingKey) return false
+    if (direction != other.direction) return false
+    if (begin != other.begin) return false
+    if (end != other.end) return false
+    if (ended != other.ended) return false
+    if (sourceCredit != other.sourceCredit) return false
+    if (targetCredit != other.targetCredit) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = type.hashCode()
+    result = 31 * result + typeId.hashCode()
+    result = 31 * result + targetType.hashCode()
+    result = 31 * result + orderingKey
+    result = 31 * result + direction.hashCode()
+    result = 31 * result + begin.hashCode()
+    result = 31 * result + end.hashCode()
+    result = 31 * result + ended.hashCode()
+    result = 31 * result + sourceCredit.hashCode()
+    result = 31 * result + targetCredit.hashCode()
+    return result
+  }
+}
 
 /**
  * * [Area-Area](https://musicbrainz.org/relationships/area-area)
@@ -85,7 +120,7 @@ sealed class Relation(
  * * [Area-Work](https://musicbrainz.org/relationships/area-work)
  */
 @JsonClass(generateAdapter = true)
-class AreaRelation(
+public class AreaRelation(
   type: String = "",
   typeId: String = "",
   targetType: String = "",
@@ -99,7 +134,7 @@ class AreaRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull var area: Area = Area.NullArea
+  @field:FallbackOnNull public var area: Area = Area.NullArea
 ) : Relation(
   type,
   typeId,
@@ -115,13 +150,14 @@ class AreaRelation(
   sourceCredit,
   targetCredit
 ) {
-  companion object {
-    val NullAreaRelation = AreaRelation(type = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = AreaRelation::class.java.name to NullAreaRelation
+  public companion object {
+    public val NullAreaRelation: AreaRelation = AreaRelation(type = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> =
+      AreaRelation::class.java.name to NullAreaRelation
   }
 }
 
-val AreaRelation.isNullObject: Boolean
+public val AreaRelation.isNullObject: Boolean
   get() = this === NullAreaRelation
 
 /**
@@ -138,7 +174,7 @@ val AreaRelation.isNullObject: Boolean
  * * [Artist-Work](https://musicbrainz.org/relationships/artist-work)
  */
 @JsonClass(generateAdapter = true)
-class ArtistRelation(
+public class ArtistRelation(
   type: String = "",
   typeId: String = "",
   targetType: String = "",
@@ -152,7 +188,7 @@ class ArtistRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull var artist: Artist = Artist.NullArtist
+  @field:FallbackOnNull public var artist: Artist = Artist.NullArtist
 ) : Relation(
   type,
   typeId,
@@ -168,13 +204,14 @@ class ArtistRelation(
   sourceCredit,
   targetCredit
 ) {
-  companion object {
-    val NullArtistRelation = ArtistRelation(type = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = ArtistRelation::class.java.name to NullArtistRelation
+  public companion object {
+    public val NullArtistRelation: ArtistRelation = ArtistRelation(type = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> =
+      ArtistRelation::class.java.name to NullArtistRelation
   }
 }
 
-val ArtistRelation.isNullObject: Boolean
+public val ArtistRelation.isNullObject: Boolean
   get() = this === NullArtistRelation
 
 /**
@@ -188,7 +225,7 @@ val ArtistRelation.isNullObject: Boolean
  * * [Event-Work](https://musicbrainz.org/relationships/event-work)
  */
 @JsonClass(generateAdapter = true)
-class EventRelation(
+public class EventRelation(
   type: String = "",
   typeId: String = "",
   targetType: String = "",
@@ -202,7 +239,7 @@ class EventRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull var event: Event = Event.NullEvent
+  @field:FallbackOnNull public var event: Event = Event.NullEvent
 ) : Relation(
   type,
   typeId,
@@ -218,13 +255,14 @@ class EventRelation(
   sourceCredit,
   targetCredit
 ) {
-  companion object {
-    val NullEventRelation = EventRelation(type = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = EventRelation::class.java.name to NullEventRelation
+  public companion object {
+    public val NullEventRelation: EventRelation = EventRelation(type = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> =
+      EventRelation::class.java.name to NullEventRelation
   }
 }
 
-val EventRelation.isNullObject: Boolean
+public val EventRelation.isNullObject: Boolean
   get() = this === NullEventRelation
 
 /**
@@ -233,7 +271,7 @@ val EventRelation.isNullObject: Boolean
  * * [Instrument-URL](https://musicbrainz.org/relationships/instrument-url)
  */
 @JsonClass(generateAdapter = true)
-class InstrumentRelation(
+public class InstrumentRelation(
   type: String = "",
   typeId: String = "",
   targetType: String = "",
@@ -247,7 +285,7 @@ class InstrumentRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull var instrument: Instrument = Instrument.NullInstrument
+  @field:FallbackOnNull public var instrument: Instrument = Instrument.NullInstrument
 ) : Relation(
   type,
   typeId,
@@ -263,14 +301,15 @@ class InstrumentRelation(
   sourceCredit,
   targetCredit
 ) {
-  companion object {
-    val NullInstrumentRelation = InstrumentRelation(type = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> =
+  public companion object {
+    public val NullInstrumentRelation: InstrumentRelation =
+      InstrumentRelation(type = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> =
       InstrumentRelation::class.java.name to NullInstrumentRelation
   }
 }
 
-val InstrumentRelation.isNullObject: Boolean
+public val InstrumentRelation.isNullObject: Boolean
   get() = this === NullInstrumentRelation
 
 /**
@@ -283,7 +322,7 @@ val InstrumentRelation.isNullObject: Boolean
  * * [Label-Work](https://musicbrainz.org/relationships/label-work)
  */
 @JsonClass(generateAdapter = true)
-class LabelRelation(
+public class LabelRelation(
   type: String = "",
   typeId: String = "",
   targetType: String = "",
@@ -297,7 +336,7 @@ class LabelRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull var label: Label = Label.NullLabel
+  @field:FallbackOnNull public var label: Label = Label.NullLabel
 ) : Relation(
   type,
   typeId,
@@ -313,13 +352,14 @@ class LabelRelation(
   sourceCredit,
   targetCredit
 ) {
-  companion object {
-    val NullLabelRelation = LabelRelation(type = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = LabelRelation::class.java.name to NullLabelRelation
+  public companion object {
+    public val NullLabelRelation: LabelRelation = LabelRelation(type = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> =
+      LabelRelation::class.java.name to NullLabelRelation
   }
 }
 
-val LabelRelation.isNullObject: Boolean
+public val LabelRelation.isNullObject: Boolean
   get() = this === NullLabelRelation
 
 /**
@@ -330,7 +370,7 @@ val LabelRelation.isNullObject: Boolean
  * * [Place-Work](https://musicbrainz.org/relationships/place-work)
  */
 @JsonClass(generateAdapter = true)
-class PlaceRelation(
+public class PlaceRelation(
   type: String = "",
   typeId: String = "",
   targetType: String = "",
@@ -344,7 +384,7 @@ class PlaceRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull var place: Place = Place.NullPlace
+  @field:FallbackOnNull public var place: Place = Place.NullPlace
 ) : Relation(
   type,
   typeId,
@@ -360,13 +400,14 @@ class PlaceRelation(
   sourceCredit,
   targetCredit
 ) {
-  companion object {
-    val NullPlaceRelation = PlaceRelation(type = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = PlaceRelation::class.java.name to NullPlaceRelation
+  public companion object {
+    public val NullPlaceRelation: PlaceRelation = PlaceRelation(type = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> =
+      PlaceRelation::class.java.name to NullPlaceRelation
   }
 }
 
-val PlaceRelation.isNullObject: Boolean
+public val PlaceRelation.isNullObject: Boolean
   get() = this === NullPlaceRelation
 
 /**
@@ -377,7 +418,7 @@ val PlaceRelation.isNullObject: Boolean
  * * [Recording-Work](https://musicbrainz.org/relationships/recording-work)
  */
 @JsonClass(generateAdapter = true)
-class RecordingRelation(
+public class RecordingRelation(
   type: String = "",
   typeId: String = "",
   targetType: String = "",
@@ -391,7 +432,7 @@ class RecordingRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull var recording: Recording = Recording.NullRecording
+  @field:FallbackOnNull public var recording: Recording = Recording.NullRecording
 ) : Relation(
   type,
   typeId,
@@ -407,14 +448,14 @@ class RecordingRelation(
   sourceCredit,
   targetCredit
 ) {
-  companion object {
-    val NullRecordingRelation = RecordingRelation(type = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> =
+  public companion object {
+    public val NullRecordingRelation: RecordingRelation = RecordingRelation(type = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> =
       RecordingRelation::class.java.name to NullRecordingRelation
   }
 }
 
-val RecordingRelation.isNullObject: Boolean
+public val RecordingRelation.isNullObject: Boolean
   get() = this === NullRecordingRelation
 
 /**
@@ -423,7 +464,7 @@ val RecordingRelation.isNullObject: Boolean
  * * [Release-URL](https://musicbrainz.org/relationships/release-url)
  */
 @JsonClass(generateAdapter = true)
-class ReleaseRelation(
+public class ReleaseRelation(
   type: String = "",
   typeId: String = "",
   targetType: String = "",
@@ -437,7 +478,7 @@ class ReleaseRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull var release: Release = Release.NullRelease
+  @field:FallbackOnNull public var release: Release = Release.NullRelease
 ) : Relation(
   type,
   typeId,
@@ -453,13 +494,14 @@ class ReleaseRelation(
   sourceCredit,
   targetCredit
 ) {
-  companion object {
-    val NullReleaseRelation = ReleaseRelation(type = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = ReleaseRelation::class.java.name to NullReleaseRelation
+  public companion object {
+    public val NullReleaseRelation: ReleaseRelation = ReleaseRelation(type = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> =
+      ReleaseRelation::class.java.name to NullReleaseRelation
   }
 }
 
-val ReleaseRelation.isNullObject: Boolean
+public val ReleaseRelation.isNullObject: Boolean
   get() = this === NullReleaseRelation
 
 /**
@@ -468,7 +510,7 @@ val ReleaseRelation.isNullObject: Boolean
  * * [ReleaseGroup-URL](https://musicbrainz.org/relationships/release_group-url)
  */
 @JsonClass(generateAdapter = true)
-class ReleaseGroupRelation(
+public class ReleaseGroupRelation(
   type: String = "",
   typeId: String = "",
   targetType: String = "",
@@ -483,7 +525,7 @@ class ReleaseGroupRelation(
   sourceCredit: String = "",
   targetCredit: String = "",
   @field:Json(name = "release_group") @field:FallbackOnNull
-  var releaseGroup: ReleaseGroup = ReleaseGroup.NullReleaseGroup
+  public var releaseGroup: ReleaseGroup = ReleaseGroup.NullReleaseGroup
 ) : Relation(
   type,
   typeId,
@@ -499,14 +541,15 @@ class ReleaseGroupRelation(
   sourceCredit,
   targetCredit
 ) {
-  companion object {
-    val NullReleaseGroupRelation = ReleaseGroupRelation(type = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> =
+  public companion object {
+    public val NullReleaseGroupRelation: ReleaseGroupRelation =
+      ReleaseGroupRelation(type = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> =
       ReleaseGroupRelation::class.java.name to NullReleaseGroupRelation
   }
 }
 
-val ReleaseGroupRelation.isNullObject: Boolean
+public val ReleaseGroupRelation.isNullObject: Boolean
   get() = this === NullReleaseGroupRelation
 
 /**
@@ -515,7 +558,7 @@ val ReleaseGroupRelation.isNullObject: Boolean
  * * [Series-Work](https://musicbrainz.org/relationships/series-work)
  */
 @JsonClass(generateAdapter = true)
-class SeriesRelation(
+public class SeriesRelation(
   type: String = "",
   typeId: String = "",
   targetType: String = "",
@@ -529,7 +572,7 @@ class SeriesRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull var series: Series = Series.NullSeries
+  @field:FallbackOnNull public var series: Series = Series.NullSeries
 ) : Relation(
   type,
   typeId,
@@ -545,20 +588,21 @@ class SeriesRelation(
   sourceCredit,
   targetCredit
 ) {
-  companion object {
-    val NullSeriesRelation = SeriesRelation(type = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = SeriesRelation::class.java.name to NullSeriesRelation
+  public companion object {
+    public val NullSeriesRelation: SeriesRelation = SeriesRelation(type = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> =
+      SeriesRelation::class.java.name to NullSeriesRelation
   }
 }
 
-val SeriesRelation.isNullObject: Boolean
+public val SeriesRelation.isNullObject: Boolean
   get() = this === NullSeriesRelation
 
 /**
  * * [Url-Work](https://musicbrainz.org/relationships/url-work)
  */
 @JsonClass(generateAdapter = true)
-class UrlRelation(
+public class UrlRelation(
   type: String = "",
   typeId: String = "",
   targetType: String = "",
@@ -572,7 +616,7 @@ class UrlRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull var url: Url = Url.NullUrl
+  @field:FallbackOnNull public var url: Url = Url.NullUrl
 ) : Relation(
   type,
   typeId,
@@ -588,20 +632,20 @@ class UrlRelation(
   sourceCredit,
   targetCredit
 ) {
-  companion object {
-    val NullUrlRelation = UrlRelation(type = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = UrlRelation::class.java.name to NullUrlRelation
+  public companion object {
+    public val NullUrlRelation: UrlRelation = UrlRelation(type = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> = UrlRelation::class.java.name to NullUrlRelation
   }
 }
 
-val UrlRelation.isNullObject: Boolean
+public val UrlRelation.isNullObject: Boolean
   get() = this === NullUrlRelation
 
 /**
  * * [Work-Work](https://musicbrainz.org/relationships/work-work)
  */
 @JsonClass(generateAdapter = true)
-class WorkRelation(
+public class WorkRelation(
   type: String = "",
   typeId: String = "",
   targetType: String = "",
@@ -615,7 +659,7 @@ class WorkRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull var work: Work = Work.NullWork
+  @field:FallbackOnNull public var work: Work = Work.NullWork
 ) : Relation(
   type,
   typeId,
@@ -631,14 +675,12 @@ class WorkRelation(
   sourceCredit,
   targetCredit
 ) {
-  companion object {
-    val NullWorkRelation = WorkRelation(type = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = WorkRelation::class.java.name to NullWorkRelation
+  public companion object {
+    public val NullWorkRelation: WorkRelation = WorkRelation(type = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> =
+      WorkRelation::class.java.name to NullWorkRelation
   }
 }
 
-val WorkRelation.isNullObject: Boolean
+public val WorkRelation.isNullObject: Boolean
   get() = this === NullWorkRelation
-
-//area-rels+artist-rels+event-rels+instrument-rels+label-rels+place-rels+recording-rels+release-rels+release-group-rels+series-rels+url-rels+work-rels
-

@@ -17,10 +17,10 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-interface Piped {
-  val value: String
+public interface Piped {
+  public val value: String
 }
 
-fun List<Piped>.join(): String? {
+public fun List<Piped>.join(): String? {
   return if (isEmpty()) null else joinToString("|") { it.value }
 }

@@ -23,11 +23,11 @@ import com.squareup.moshi.Moshi
 import org.junit.Before
 import org.junit.Test
 
-class ArtistTest {
+public class ArtistTest {
   private lateinit var moshi: Moshi
 
   @Before
-  fun setup() {
+  public fun setup() {
     moshi = theMoshi
   }
 
@@ -35,7 +35,7 @@ class ArtistTest {
    * Obviously non-exhaustive - test that various areas of a Release are parsed as expected.
    */
   @Test
-  fun `test parse release all inc`() {
+  public fun `test parse release all inc`() {
     moshi.adapter(Artist::class.java).fromJson(artistAllIncJson)?.run {
       expect(gender).toBe("Male")
       expect(beginArea.id).toBe("dc08b8ca-f6ad-4163-b78e-d29079f5521a")

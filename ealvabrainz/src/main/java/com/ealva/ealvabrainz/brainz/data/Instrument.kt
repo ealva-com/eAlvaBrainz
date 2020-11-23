@@ -22,11 +22,11 @@ import com.squareup.moshi.JsonClass
 import timber.log.Timber
 
 @JsonClass(generateAdapter = true)
-class Instrument(
+public class Instrument(
   /** The MusicBrainz ID (MBID */
-  var id: String = "",
+  public var id: String = "",
   /** Name of the instrument, typically the most common name in English. */
-  var name: String = "",
+  public var name: String = "",
   /**
    * The type categorises the instrument by the way the sound is created, similar to the
    * Hornbostel-Sachs classification. The possible values are:
@@ -48,23 +48,24 @@ class Instrument(
    * * **Other instrument**
    * An instrument which doesn't fit in the categories above.
    */
-  var type: String = "",
-  @Json(name = "type-id") var typeId: String = "",
+  public var type: String = "",
+  @Json(name = "type-id") public var typeId: String = "",
   /** A brief description of the main characteristics of the instrument. */
-  var description: String = "",
+  public var description: String = "",
   /**
-   * See the [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
+   * See the
+   * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  var disambiguation: String = "",
+  public var disambiguation: String = "",
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  var annotation: String = "",
-  var aliases: List<Alias> = emptyList(),
-  var tags: List<Tag> = emptyList(),
+  public var annotation: String = "",
+  public var aliases: List<Alias> = emptyList(),
+  public var tags: List<Tag> = emptyList(),
   /** Used in query, see [InstrumentList] */
-  var score: Int = 0
+  public var score: Int = 0
 ) {
 
   /**
@@ -87,10 +88,10 @@ class Instrument(
     return id.hashCode()
   }
 
-  interface Lookup : Include
+  public interface Lookup : Include
 
   @Suppress("unused")
-  enum class Misc(override val value: String) : Lookup {
+  public enum class Misc(override val value: String) : Lookup {
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
@@ -102,47 +103,52 @@ class Instrument(
    * * [Instrument-Label](https://musicbrainz.org/relationships/instrument-label)
    * * [Instrument-URL](https://musicbrainz.org/relationships/instrument-url)
    */
-  enum class Relations(override val value: String) : Lookup {
+  public enum class Relations(override val value: String) : Lookup {
     Instrument("instrument-rels"),
     Label("label-rels"),
     Url("url-rels")
   }
 
   @Suppress("unused")
-  enum class SearchField(val value: String) {
+  public enum class SearchField(public val value: String) {
     /** an alias attached to the instrument */
     Alias("alias"),
+
     /** the disambiguation comment for the instrument */
     Comment("comment"),
+
     /** the description of the instrument */
     Description("description"),
+
     /** the MBID of the instrument */
     InstrumentId("iid"),
+
     /** the name of the instrument */
     Instrument("instrument"),
+
     /** the instrument's type */
     Type("type"),
+
     /** a tag attached to the instrument */
     Tag("tag"),
   }
 
-  companion object {
-    val NullInstrument = Instrument(id = NullObject.ID, name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Instrument::class.java.name to NullInstrument
+  public companion object {
+    public val NullInstrument: Instrument = Instrument(id = NullObject.ID, name = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> = Instrument::class.java.name to NullInstrument
   }
 }
 
-inline val Instrument.isNullObject: Boolean
+public inline val Instrument.isNullObject: Boolean
   get() = this === Instrument.NullInstrument
 
-inline class InstrumentMbid(override val value: String) : Mbid
+public inline class InstrumentMbid(override val value: String) : Mbid
 
-inline val Instrument.mbid
+public inline val Instrument.mbid: InstrumentMbid
   get() = id.toInstrumentMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toInstrumentMbid(): InstrumentMbid {
+public inline fun String.toInstrumentMbid(): InstrumentMbid {
   if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid InstrumentMbid")
   return InstrumentMbid(this)
 }
-

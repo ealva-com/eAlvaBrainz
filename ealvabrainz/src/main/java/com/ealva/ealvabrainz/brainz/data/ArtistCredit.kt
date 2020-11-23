@@ -21,16 +21,37 @@ import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class ArtistCredit(
-  var name: String = "",
-  var joinphrase: String = "",
-  @field:FallbackOnNull var artist: Artist = Artist.NullArtist
+public class ArtistCredit(
+  public var name: String = "",
+  public var joinphrase: String = "",
+  @field:FallbackOnNull public var artist: Artist = Artist.NullArtist
 ) {
-  companion object {
-    val NullArtistCredit = ArtistCredit(name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = ArtistCredit::class.java.name to NullArtistCredit
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as ArtistCredit
+
+    if (name != other.name) return false
+    if (joinphrase != other.joinphrase) return false
+    if (artist != other.artist) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = name.hashCode()
+    result = 31 * result + joinphrase.hashCode()
+    result = 31 * result + artist.hashCode()
+    return result
+  }
+
+  public companion object {
+    public val NullArtistCredit: ArtistCredit = ArtistCredit(name = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> =
+      ArtistCredit::class.java.name to NullArtistCredit
   }
 }
 
-inline val ArtistCredit.isNullObject: Boolean
+public inline val ArtistCredit.isNullObject: Boolean
   get() = this === ArtistCredit.NullArtistCredit

@@ -26,7 +26,7 @@ import androidx.core.net.toUri
  *
  * @see String.toUri
  */
-fun String?.toUriOrEmpty(): Uri =
+public fun String?.toUriOrEmpty(): Uri =
   if (this != null && this.isNotEmpty()) this.toUri() else Uri.EMPTY
 
 /**
@@ -34,14 +34,15 @@ fun String?.toUriOrEmpty(): Uri =
  * current Uri implementation doesn't check for identity first, which is our typical case when empty
  * @return true if this Uri is the [Uri.EMPTY] instance or is [this] == [Uri.EMPTY]
  */
-fun Uri.isEmpty(): Boolean = this === Uri.EMPTY || this == Uri.EMPTY
+public fun Uri.isEmpty(): Boolean = this === Uri.EMPTY || this == Uri.EMPTY
 
-fun Uri.isNotEmpty(): Boolean = !isEmpty()
+public fun Uri.isNotEmpty(): Boolean = !isEmpty()
 
-fun String?.toSecureUri(): Uri {
+private const val HTTP_PREFIX_LEN = 4
+
+public fun String?.toSecureUri(): Uri {
   return if (this != null && startsWith("http:"))
-    "https${this.substring(4)}".toUri()
+    "https${substring(HTTP_PREFIX_LEN)}".toUri()
   else
     toUriOrEmpty()
 }
-

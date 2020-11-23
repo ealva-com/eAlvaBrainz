@@ -40,25 +40,24 @@ import com.squareup.moshi.JsonClass
  * so we adhere to the documented deprecation
  */
 @JsonClass(generateAdapter = true)
-data class Thumbnails(
-  @field:Json(name = "250") var size250: String = "",
-  @field:Json(name = "500") var size500: String = "",
-  @field:Json(name = "1200") var size1200: String = "",
-  var small: String = "",
-  var large: String = ""
+public class Thumbnails(
+  @field:Json(name = "250") public var size250: String = "",
+  @field:Json(name = "500") public var size500: String = "",
+  @field:Json(name = "1200") public var size1200: String = "",
+  public var small: String = "",
+  public var large: String = ""
 ) {
-  companion object {
-    val NullThumbnails = Thumbnails()
-    val fallbackMapping: Pair<String, Any> = Thumbnails::class.java.name to NullThumbnails
+  public companion object {
+    public val NullThumbnails: Thumbnails = Thumbnails()
+    public val fallbackMapping: Pair<String, Any> = Thumbnails::class.java.name to NullThumbnails
   }
 }
 
-inline val Thumbnails.isNullObject: Boolean
+public inline val Thumbnails.isNullObject: Boolean
   get() = this === NullThumbnails
 
-inline val Thumbnails.theLarge: String
+public inline val Thumbnails.theLarge: String
   get() = if (size500.isEmpty()) large else size500
 
-inline val Thumbnails.theSmall: String
+public inline val Thumbnails.theSmall: String
   get() = if (size250.isEmpty()) large else size250
-

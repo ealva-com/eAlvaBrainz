@@ -23,7 +23,7 @@ import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
 import timber.log.Timber
 
-//import com.squareup.moshi.JsonClass
+// import com.squareup.moshi.JsonClass
 
 /**
  * A MusicBrainz release represents the unique release (i.e. issuing) of a product on a specific
@@ -52,19 +52,19 @@ import timber.log.Timber
  *
  * [MusicBrainz Release](https://musicbrainz.org/doc/Release)
  */
-//@JsonClass(generateAdapter = true)  Only generate when changed - we use custom for "packaging"
-class Release(
+// @JsonClass(generateAdapter = true)  Only generate when changed - we use custom for "packaging"
+public class Release(
   /** The MusicBrainz ID (MBID) */
-  var id: String = "",
+  public var id: String = "",
   /** The title of the release. */
-  var title: String = "",
+  public var title: String = "",
   /** The date the release was issued */
-  var date: String = "",
+  public var date: String = "",
   @field:Json(name = "release-group") @field:FallbackOnNull
-  var releaseGroup: ReleaseGroup = ReleaseGroup.NullReleaseGroup,
-  @field:Json(name = "release-events") var releaseEvents: List<ReleaseEvent> = emptyList(),
+  public var releaseGroup: ReleaseGroup = ReleaseGroup.NullReleaseGroup,
+  @field:Json(name = "release-events") public var releaseEvents: List<ReleaseEvent> = emptyList(),
   /** The artist(s) that the release is primarily credited to, as credited on the release. */
-  @field:Json(name = "artist-credit") var artistCredit: List<ArtistCredit> = emptyList(),
+  @field:Json(name = "artist-credit") public var artistCredit: List<ArtistCredit> = emptyList(),
   /**
    * The status describes how "official" a release is. Possible values are:
    * * **official**
@@ -82,69 +82,71 @@ class Release(
    * to any real release and should be linked to the original release using the transliteration
    * relationship.
    */
-  var status: String = "",
+  public var status: String = "",
   /**
    * The name of the physical packaging that accompanies the release. See the
    * [list of packaging](https://musicbrainz.org/doc/Release/Packaging) for more information.
    */
-  var packaging: String = "",
+  public var packaging: String = "",
   /**
    * The ID of the physical packaging
    */
-  @field:Json(name = "packaging-id") var packagingId: String = "",
+  @field:Json(name = "packaging-id") public var packagingId: String = "",
   /**
    * The barcode, if the release has one, is a machine-readable number used as stock control
    * mechanisms by retailers. The most common types found on releases are 12-digit
    * UPCs and 13-digit EANs.
    */
-  var barcode: String = "",
+  public var barcode: String = "",
   @field:Json(name = "cover-art-archive") @field:FallbackOnNull
-  var coverArtArchive: CoverArtArchive = NullCoverArtArchive,
+  public var coverArtArchive: CoverArtArchive = NullCoverArtArchive,
   /**
-   * See the [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
+   * See the
+   * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  var disambiguation: String = "",
+  public var disambiguation: String = "",
   /**
    * Data quality indicates how good the data for a release is. It is not a mark of how good or
    * bad the music itself is - for that, use ratings.
    * * **High quality**
-   * All available data has been added, if possible including cover art with liner info that proves it.
+   * All available data has been added, if possible including cover art with liner info that proves
+   * it.
    * * **Default quality**
    * This is the default setting - technically "unknown" if the quality has never been modified,
    * "normal" if it has.
    * * **Low quality**
    * The release needs serious fixes, or its existence is hard to prove (but it's not clearly fake).
    */
-  var quality: String = "",
+  public var quality: String = "",
   /** The country the release was issued in. */
-  var country: String = "",
-  var asin: String = "",
+  public var country: String = "",
+  public var asin: String = "",
 
-  var media: List<Medium> = emptyList(),
+  public var media: List<Medium> = emptyList(),
   /**
    * The label which issued the release. There may be more than one.
    * */
-  @field:Json(name = "label-info") var labelInfo: List<LabelInfo> = emptyList(),
-  @field:Json(name = "track-count") var trackCount: Int = 0,
-  @field:Json(name = "status-id") var statusId: String = "",
+  @field:Json(name = "label-info") public var labelInfo: List<LabelInfo> = emptyList(),
+  @field:Json(name = "track-count") public var trackCount: Int = 0,
+  @field:Json(name = "status-id") public var statusId: String = "",
   /**
    * The language and script a release's track list is written in.
    */
   @field:Json(name = "text-representation") @field:FallbackOnNull
-  var textRepresentation: TextRepresentation = TextRepresentation.NullTextRepresentation,
-  var aliases: List<Alias> = emptyList(),
+  public var textRepresentation: TextRepresentation = TextRepresentation.NullTextRepresentation,
+  public var aliases: List<Alias> = emptyList(),
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  var annotation: String = "",
-  var genres: List<Genre> = emptyList(),
-  var tags: List<Tag> = emptyList(),
-  @field:Json(name = "primary-type-id") var primaryTypeId: String = "",
-  @field:Json(name = "secondary-types") var secondaryTypes: List<String> = emptyList(),
-  @field:Json(name = "secondary-type-ids") var secondaryTypeIds: List<String> = emptyList(),
-  @field:Json(name = "first-release-date") var firstReleaseDate: String = "",
-  @field:FallbackOnNull var rating: Rating = Rating.NullRating,
+  public var annotation: String = "",
+  public var genres: List<Genre> = emptyList(),
+  public var tags: List<Tag> = emptyList(),
+  @field:Json(name = "primary-type-id") public var primaryTypeId: String = "",
+  @field:Json(name = "secondary-types") public var secondaryTypes: List<String> = emptyList(),
+  @field:Json(name = "secondary-type-ids") public var secondaryTypeIds: List<String> = emptyList(),
+  @field:Json(name = "first-release-date") public var firstReleaseDate: String = "",
+  @field:FallbackOnNull public var rating: Rating = Rating.NullRating,
   /**
    * Types may be
    * * "nat"
@@ -160,10 +162,10 @@ class Release(
    * * "remix"
    * * "other"
    */
-  @field:Json(name = "primary-type") var primaryType: String = "",
-  var releases: List<Release> = emptyList(),
+  @field:Json(name = "primary-type") public var primaryType: String = "",
+  public var releases: List<Release> = emptyList(),
   /** Only relevant if returned from query */
-  var score: Int = 0
+  public var score: Int = 0
 ) {
 
   override fun equals(other: Any?): Boolean {
@@ -177,14 +179,14 @@ class Release(
     return true
   }
 
-  override fun hashCode() = id.hashCode()
+  override fun hashCode(): Int = id.hashCode()
 
-  override fun toString() = toJson()
+  override fun toString(): String = toJson()
 
-  interface Lookup : Include
+  public interface Lookup : Include
 
   @Suppress("unused")
-  enum class Subquery(override val value: String) : Lookup {
+  public enum class Subquery(override val value: String) : Lookup {
     Artists("artists"),
     Collections("collections"),
     Labels("labels"),
@@ -192,8 +194,8 @@ class Release(
     ReleaseGroups("release-groups"),
 
     /** An ID calculated from the TOC of a CD */
-    DiscIds("discids"),              // include discids for all media in the releases
-    Media("media"),                  // include media for all releases, this includes the # of tracks on each medium and its format.
+    DiscIds("discids"),
+    Media("media"),
 
     /**
      * The International Standard Recording Code, an identification system for audio and music
@@ -204,8 +206,8 @@ class Release(
   }
 
   @Suppress("unused")
-  enum class Misc(override val value: String) : Lookup {
-    Aliases("aliases"),       // include artist, label, area or work aliases; treat these as a set, as they are not deliberately ordered
+  public enum class Misc(override val value: String) : Lookup {
+    Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
     Ratings("ratings"),
@@ -219,14 +221,14 @@ class Release(
    * * [Release-Series](https://musicbrainz.org/relationships/release-series)
    * * [Release-URL](https://musicbrainz.org/relationships/release-url)
    */
-  enum class Relations(override val value: String) : Lookup {
+  public enum class Relations(override val value: String) : Lookup {
     Release("release-rels"),
     Series("series-rels"),
     Url("url-rels"),
   }
 
   @Suppress("unused")
-  enum class Browse(override val value: String) : Lookup {
+  public enum class Browse(override val value: String) : Lookup {
     ArtistCredits("artist-credits"),
     Labels("labels"),
     Recordings("recordings"),
@@ -241,7 +243,7 @@ class Release(
   }
 
   @Suppress("unused")
-  enum class SearchField(val value: String) {
+  public enum class SearchField(public val value: String) {
     /** artist MusicBrainz id (MBID) */
     ArtistId("arid"),
 
@@ -360,7 +362,7 @@ class Release(
    * the that particular type of Release.
    */
   @Suppress("unused")
-  enum class Type(override val value: String) : Piped {
+  public enum class Type(override val value: String) : Piped {
     Nat("nat"),
     Album("album"),
     Single("single"),
@@ -380,37 +382,36 @@ class Release(
    * [status][Release.status]
    */
   @Suppress("unused")
-  enum class Status(override val value: String) : Piped {
+  public enum class Status(override val value: String) : Piped {
     Official("official"),
     Promotion("promotion"),
     Bootleg("bootleg"),
     PseudoRelease("pseudo-release")
   }
 
-  companion object {
-    val NullRelease = Release(id = NullObject.ID)
-    val fallbackMapping: Pair<String, Any> = Release::class.java.name to NullRelease
+  public companion object {
+    public val NullRelease: Release = Release(id = NullObject.ID)
+    public val fallbackMapping: Pair<String, Any> = Release::class.java.name to NullRelease
   }
-
 }
 
-inline val Release.isNullObject: Boolean
+public inline val Release.isNullObject: Boolean
   get() = this === NullRelease
 
-inline class ReleaseMbid(override val value: String) : Mbid
+public inline class ReleaseMbid(override val value: String) : Mbid
 
-inline val Release.mbid: ReleaseMbid
+public inline val Release.mbid: ReleaseMbid
   get() = id.toReleaseMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toReleaseMbid(): ReleaseMbid {
+public inline fun String.toReleaseMbid(): ReleaseMbid {
   if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid ReleaseMbid")
   return ReleaseMbid(this)
 }
 
 /** Assumes artist credit not present is exceptional */
 @Suppress("unused")
-inline val Release.theArtistMbid: String
+public inline val Release.theArtistMbid: String
   get() {
     return try {
       artistCredit[0].artist.id
@@ -421,7 +422,7 @@ inline val Release.theArtistMbid: String
 
 /** Assumes artist credit not present is exceptional */
 @Suppress("unused")
-inline val Release.theArtistName: String
+public inline val Release.theArtistName: String
   get() {
     return try {
       artistCredit[0].artist.name
@@ -432,7 +433,7 @@ inline val Release.theArtistName: String
 
 /** Assumes artist credit not present is exceptional */
 @Suppress("unused")
-inline val Release.theArtistSortName: String
+public inline val Release.theArtistSortName: String
   get() {
     return try {
       artistCredit[0].artist.sortName
@@ -441,7 +442,23 @@ inline val Release.theArtistSortName: String
     }
   }
 
-data class PackagingInfo(val id: PackagingMbid, val name: String)
+public class PackagingInfo(public val id: PackagingMbid, public val name: String) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
 
-val Release.packagingInfo: PackagingInfo
+    other as PackagingInfo
+
+    if (id != other.id) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    return id.hashCode()
+  }
+}
+
+@Suppress("unused")
+public val Release.packagingInfo: PackagingInfo
   get() = PackagingInfo(packagingId.toPackagingMbid(), packaging)

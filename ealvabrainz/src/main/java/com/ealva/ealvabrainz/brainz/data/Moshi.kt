@@ -33,9 +33,9 @@ internal fun Moshi.Builder.addRequired(): Moshi.Builder {
   return this
 }
 
-val theMoshi: Moshi = Moshi.Builder().addRequired().build()
+public val theMoshi: Moshi = Moshi.Builder().addRequired().build()
 
-fun <T : Any> T.toJson(): String {
+public fun <T : Any> T.toJson(): String {
   return theMoshi
     .adapter<T>(this::class.java)
     .indent("  ")

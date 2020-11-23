@@ -15,7 +15,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-@file:Suppress("unused")
+@file:Suppress("unused", "Indentation", "MagicNumber")
 
 package com.ealva.brainzapp.ui.view
 
@@ -37,36 +37,31 @@ import splitties.views.dsl.core.Ui
 import splitties.views.dsl.core.add
 import splitties.views.dsl.core.view
 import splitties.views.gravityCenter
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 
 @OptIn(InternalSplittiesApi::class)
-inline fun Context.circularProgress(
+public inline fun Context.circularProgress(
   @IdRes id: Int,
   @StyleRes theme: Int = NO_THEME,
   initView: CircularProgressBar.() -> Unit = {}
 ): CircularProgressBar {
-  contract { callsInPlace(initView, InvocationKind.EXACTLY_ONCE) }
   return view(id, theme, initView)
 }
 
 @SuppressLint("ResourceType")
-inline fun View.circularProgress(
+public inline fun View.circularProgress(
   @IdRes id: Int,
   @StyleRes theme: Int = NO_THEME,
   initView: CircularProgressBar.() -> Unit = {}
 ): CircularProgressBar {
-  contract { callsInPlace(initView, InvocationKind.EXACTLY_ONCE) }
   return context.circularProgress(id, theme, initView)
 }
 
 @SuppressLint("ResourceType")
-inline fun Ui.circularProgress(
+public inline fun Ui.circularProgress(
   @IdRes id: Int,
   @StyleRes theme: Int = NO_THEME,
   initView: CircularProgressBar.() -> Unit = {}
 ): CircularProgressBar {
-  contract { callsInPlace(initView, InvocationKind.EXACTLY_ONCE) }
   return ctx.circularProgress(id, theme, initView)
 }
 
@@ -75,7 +70,7 @@ private const val GPLUS_YELLOW = 0xFF_F4_B4_00.toInt()
 private const val GPLUS_BLUE = 0xFF_42_7F_ED.toInt()
 private const val GPLUS_RED = 0xFF_B2_34_24.toInt()
 
-fun CoordinatorLayout.addCircularProgress(viewId: Int): CircularProgressBar {
+public fun CoordinatorLayout.addCircularProgress(viewId: Int): CircularProgressBar {
   return add(circularProgress(viewId) {
     elevation = 4f
     isVisible = false
@@ -93,4 +88,3 @@ fun CoordinatorLayout.addCircularProgress(viewId: Int): CircularProgressBar {
     gravity = gravityCenter
   })
 }
-

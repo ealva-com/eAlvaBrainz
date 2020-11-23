@@ -21,20 +21,36 @@ import com.ealva.ealvabrainz.brainz.data.CoverArtRelease.Companion.NullCoverArtR
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class CoverArtRelease(
+public class CoverArtRelease(
   /**
    * MusicBrainz page url for the release. Has the form:
    * * http://musicbrainz.org/release/76df3287-6cda-33eb-8e9a-044b5e15ffdd
    */
-  var release: String = "",
+  public var release: String = "",
 
-  var images: List<CoverArtImage> = emptyList()
+  public var images: List<CoverArtImage> = emptyList()
 ) {
-  companion object {
-    val NullCoverArtRelease = CoverArtRelease(release = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = CoverArtRelease::class.java.name to NullCoverArtRelease
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as CoverArtRelease
+
+    if (release != other.release) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    return release.hashCode()
+  }
+
+  public companion object {
+    public val NullCoverArtRelease: CoverArtRelease = CoverArtRelease(release = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> =
+      CoverArtRelease::class.java.name to NullCoverArtRelease
   }
 }
 
-inline val CoverArtRelease.isNullObject: Boolean
+public inline val CoverArtRelease.isNullObject: Boolean
   get() = this === NullCoverArtRelease

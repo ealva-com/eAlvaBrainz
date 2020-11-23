@@ -20,12 +20,12 @@ import com.ealva.ealvabrainz.brainz.data.TextRepresentation.Companion.NullTextRe
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class TextRepresentation(
+public data class TextRepresentation(
   /**
    * The language a release's track list is written in. The possible values are taken from the
    * [ISO 639-3](https://en.wikipedia.org/wiki/ISO_639-3) standard.
    */
-  var language: String = "",
+  public var language: String = "",
   /**
    * The script used to write the release's track list. The possible values are taken from the
    * [ISO 15924](https://en.wikipedia.org/wiki/ISO_15924) standard.
@@ -67,14 +67,14 @@ data class TextRepresentation(
    * * **Thai ไทย**
    * The Thai script is used for Thai, as well as some minor languages in south-east Asia.
    */
-  var script: String = ""
+  public var script: String = ""
 ) {
-  companion object {
-    val NullTextRepresentation = TextRepresentation()
-    val fallbackMapping: Pair<String, Any> =
+  public companion object {
+    public val NullTextRepresentation: TextRepresentation = TextRepresentation()
+    public val fallbackMapping: Pair<String, Any> =
       TextRepresentation::class.java.name to NullTextRepresentation
   }
 }
 
-inline val TextRepresentation.isNullObject: Boolean
+public inline val TextRepresentation.isNullObject: Boolean
   get() = this === NullTextRepresentation

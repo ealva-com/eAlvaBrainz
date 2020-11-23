@@ -20,6 +20,7 @@ package com.ealva.ealvabrainz.brainz.data
 import com.squareup.moshi.JsonClass
 import timber.log.Timber
 
+@Suppress("MaxLineLength")
 /**
  * * **Book** A book with a sleeve containing a medium (usually a CD).
  * * **Box** A box with a lid or an opening that contains the medium and other packaging, like posters and booklet containing lyrics.
@@ -41,26 +42,26 @@ import timber.log.Timber
  * * **None** No packaging at all. Common for digital media (downloads).
  */
 @JsonClass(generateAdapter = true)
-data class Packaging(
-  var id: String = "",
-  var name: String = ""
+public class Packaging(
+  public var id: String = "",
+  public var name: String = ""
 ) {
-  companion object {
-    val NullPackaging = Packaging(id = NullObject.ID, name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Packaging::class.java.name to NullPackaging
+  public companion object {
+    public val NullPackaging: Packaging = Packaging(id = NullObject.ID, name = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> = Packaging::class.java.name to NullPackaging
   }
 }
 
-inline val Packaging.isNullObject: Boolean
+public inline val Packaging.isNullObject: Boolean
   get() = this === Packaging.NullPackaging
 
-inline class PackagingMbid(override val value: String) : Mbid
+public inline class PackagingMbid(override val value: String) : Mbid
 
-inline val Packaging.mbid: PackagingMbid
+public inline val Packaging.mbid: PackagingMbid
   get() = id.toPackagingMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toPackagingMbid(): PackagingMbid {
+public inline fun String.toPackagingMbid(): PackagingMbid {
   if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid PackagingMbid")
   return PackagingMbid(this)
 }

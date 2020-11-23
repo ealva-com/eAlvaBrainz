@@ -20,12 +20,12 @@ package com.ealva.ealvabrainz.brainz.data
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class Target(
-  var id: String = "",
-  var type: String =""
+public data class Target(
+  public var id: String = "",
+  public var type: String = ""
 ) {
-  companion object {
-    val NullTarget = Target(id = NullObject.ID)
-    val fallbackMapping: Pair<String, Any> = Target::class.java.name to NullTarget
+  public companion object {
+    public val NullTarget: Target = Target(id = NullObject.ID)
+    public val fallbackMapping: Pair<String, Any> = Target::class.java.name to NullTarget
   }
 }

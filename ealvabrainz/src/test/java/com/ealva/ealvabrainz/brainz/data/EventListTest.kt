@@ -23,16 +23,16 @@ import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 
-class EventListTest {
+public class EventListTest {
   private lateinit var moshi: Moshi
 
   @Before
-  fun setup() {
+  public fun setup() {
     moshi = theMoshi
   }
 
   @Test
-  fun `test event list polymorphic EventRelation`() {
+  public fun `test event list polymorphic EventRelation`() {
     moshi.adapter(EventList::class.java).fromJson(wolfmotherEventListJson)?.run {
       expect(created).toBe("2020-02-12T18:34:36.302Z")
       expect(events).toHaveSize(12)

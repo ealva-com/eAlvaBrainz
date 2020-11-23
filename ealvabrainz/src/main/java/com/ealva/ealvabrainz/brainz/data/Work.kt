@@ -51,36 +51,37 @@ import timber.log.Timber
  * specifically ordered sequence of related songs (i.e. a “concept album”).
  */
 @JsonClass(generateAdapter = true)
-class Work(
+public class Work(
   /** The MusicBrainz ID (MBID) for this work */
-  var id: String = "",
+  public var id: String = "",
   /** The canonical title of the work, expressed in the language it was originally written. */
-  var title: String = "",
+  public var title: String = "",
   /**
-   * See the [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
+   * See the
+   * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  var disambiguation: String = "",
+  public var disambiguation: String = "",
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  var annotation: String = "",
+  public var annotation: String = "",
   /**
    * The International Standard Musical Work Code assigned to the work by copyright collecting
    * agencies.
    */
-  var iswcs: List<String> = emptyList(),
-  var language: String = "",
-  var languages: List<String> = emptyList(),
-  var type: String = "",
-  @field:Json(name = "type-id") var typeId: String = "",
-  var attributes: List<Attribute> = emptyList(),
+  public var iswcs: List<String> = emptyList(),
+  public var language: String = "",
+  public var languages: List<String> = emptyList(),
+  public var type: String = "",
+  @field:Json(name = "type-id") public var typeId: String = "",
+  public var attributes: List<Attribute> = emptyList(),
   /**
    * If a discrete work is known by name(s) or in language(s) other than its canonical name, these
    * are specified in the work’s aliases.
    */
-  var aliases: List<Alias> = emptyList(),
-  var tags: List<Tag> = emptyList()
+  public var aliases: List<Alias> = emptyList(),
+  public var tags: List<Tag> = emptyList()
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -93,64 +94,74 @@ class Work(
     return true
   }
 
-  override fun hashCode() = id.hashCode()
+  override fun hashCode(): Int = id.hashCode()
 
-  override fun toString() = toJson()
+  override fun toString(): String = toJson()
 
-  interface Lookup : Include
+  public interface Lookup : Include
 
   /**
    * * [Work-Work](https://musicbrainz.org/relationships/work-work)
    */
-  enum class Relations(override val value: String) : Lookup {
+  public enum class Relations(override val value: String) : Lookup {
     Work("work-rels")
   }
 
   @Suppress("unused", "UNUSED_PARAMETER")
-  enum class SearchField(value: String) {
-   /** the aliases/misspellings for this work */
-   Alias("alias"),
-   /** artist id */
-   ArtistId("arid"),
-   /**
-    * artist name, an artist in the context of a work is an artist-work relation such as composer
-    * or lyricist
-    **/
-   Artist("artist"),
-   /** disambiguation comment */
-   Comment("comment"),
-   /** ISWC of work */
-   Iswc("iswc"),
-   /** Lyrics language of work */
-   Language("lang"),
-   /** folksonomy tag */
-   Tag("tag"),
-   /** work type */
-   Type("type"),
-   /** work id */
-   WorkId("wid"),
-   /** name of work */
-   Work("work"),
-   /** name of the work with any accent characters retained */
-   WorkAccent("workaccent"),
+  public enum class SearchField(value: String) {
+    /** the aliases/misspellings for this work */
+    Alias("alias"),
+
+    /** artist id */
+    ArtistId("arid"),
+
+    /**
+     * artist name, an artist in the context of a work is an artist-work relation such as composer
+     * or lyricist
+     **/
+    Artist("artist"),
+
+    /** disambiguation comment */
+    Comment("comment"),
+
+    /** ISWC of work */
+    Iswc("iswc"),
+
+    /** Lyrics language of work */
+    Language("lang"),
+
+    /** folksonomy tag */
+    Tag("tag"),
+
+    /** work type */
+    Type("type"),
+
+    /** work id */
+    WorkId("wid"),
+
+    /** name of work */
+    Work("work"),
+
+    /** name of the work with any accent characters retained */
+    WorkAccent("workaccent"),
   }
 
-  companion object {
-    val NullWork = Work(id = NullObject.ID, title = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Work::class.java.name to NullWork
+  public companion object {
+    public val NullWork: Work = Work(id = NullObject.ID, title = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> = Work::class.java.name to NullWork
   }
 }
 
-inline val Work.isNullObject: Boolean
+public inline val Work.isNullObject: Boolean
   get() = this === NullWork
 
-inline class WorkMbid(override val value: String) : Mbid
+public inline class WorkMbid(override val value: String) : Mbid
 
-inline val Work.mbid: WorkMbid
+public inline val Work.mbid: WorkMbid
   get() = id.toWorkMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toWorkMbid(): WorkMbid {
+public inline fun String.toWorkMbid(): WorkMbid {
   if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid WorkMbid")
   return WorkMbid(this)
 }

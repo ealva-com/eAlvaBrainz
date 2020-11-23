@@ -30,7 +30,7 @@ import retrofit2.http.Path
  * (https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings)
  * for querying their servers.
  */
-interface CoverArt {
+public interface CoverArt {
   /**
    * An example for looking up release artwork by mbid would be:
    * https://coverartarchive.org/release/91975b77-c9f2-46d1-a03b-f1fffbda1d1c
@@ -42,9 +42,14 @@ interface CoverArt {
    * @return the [CoverArtRelease] associated with the mbid, wrapped in a [Response]
    */
   @GET("{entity}/{mbid}")
-  suspend fun getArtwork(@Path("entity") entity: String, @Path("mbid") mbid: String): Response<CoverArtRelease>
+  public suspend fun getArtwork(
+    @Path("entity") entity: String,
+    @Path("mbid") mbid: String
+  ): Response<CoverArtRelease>
 
   @GET("{entity}/{mbid}")
-  fun artwork(@Path("entity") entity: String, @Path("mbid") mbid: String): Call<CoverArtRelease>
-
+  public fun artwork(
+    @Path("entity") entity: String,
+    @Path("mbid") mbid: String
+  ): Call<CoverArtRelease>
 }

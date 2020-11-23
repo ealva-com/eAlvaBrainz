@@ -21,15 +21,15 @@ import com.ealva.ealvabrainz.brainz.data.Tag.Companion.NullTag
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class Tag(
-  var name: String = "",
-  var count: Int = 0
+public data class Tag(
+  public var name: String = "",
+  public var count: Int = 0
 ) {
-  companion object {
-    val NullTag = Tag(name = NullObject.NAME)
-    val fallbackMapping: Pair<String, Any> = Tag::class.java.name to NullTag
+  public companion object {
+    public val NullTag: Tag = Tag(name = NullObject.NAME)
+    public val fallbackMapping: Pair<String, Any> = Tag::class.java.name to NullTag
   }
 }
 
-val Tag.isNullObject: Boolean
+public val Tag.isNullObject: Boolean
   get() = this === NullTag
