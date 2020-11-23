@@ -15,6 +15,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("Indentation")
+
 package com.ealva.brainzapp.ui.main
 
 import android.content.Context
@@ -60,11 +62,9 @@ import com.ealva.ealvabrainz.R.id.search_fragment_coordinator as ID_COORDINATOR
 import com.ealva.ealvabrainz.R.id.search_fragment_spinner as ID_SPINNER
 import com.ealva.ealvabrainz.R.id.search_fragment_toolbar as ID_TOOLBAR
 
-interface MainSearchFragmentUi : Ui {
+internal interface MainSearchFragmentUi : Ui
 
-}
-
-fun Fragment.makeSearchFragmentUi(mainPresenter: MainPresenter): MainSearchFragmentUi {
+internal fun Fragment.makeSearchFragmentUi(mainPresenter: MainPresenter): MainSearchFragmentUi {
   return MainSearchFragmentUiImpl(makeUiContext(), mainPresenter)
 }
 
@@ -112,6 +112,8 @@ private enum class FragmentMaker(@field:IdRes val value: Int) {
   }
 }
 
+private const val SPINNER_HEIGHT = 40
+
 private class MainSearchFragmentUiImpl(
   uiContext: FragmentUiContext,
   mainPresenter: MainPresenter
@@ -125,6 +127,7 @@ private class MainSearchFragmentUiImpl(
   private val spinnerWrapper: SpinnerWrapper
 
   override val ctx = uiContext.fragment.requireContext()
+
   @OptIn(ExperimentalCoroutinesApi::class)
   override val root = coordinatorLayout(ID_COORDINATOR) {
 
@@ -141,7 +144,7 @@ private class MainSearchFragmentUiImpl(
       })
 
       spinnerWrapper = SpinnerWrapper(add(spinner(ID_SPINNER) {
-      }, lParams(height = dip(40)) {
+      }, lParams(height = dip(SPINNER_HEIGHT)) {
         startToStart = PARENT_ID
         topToBottom = ID_TOOLBAR
         endToEnd = PARENT_ID
@@ -154,17 +157,18 @@ private class MainSearchFragmentUiImpl(
         ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
       }
 
-      add(frameLayout(ID_FRAGMENT_CONTAINER) {
-      }, lParams {
-        startToStart = PARENT_ID
-        topToBottom = ID_SPINNER
-        endToEnd = PARENT_ID
-        bottomToBottom = PARENT_ID
-      })
-
-    }, defaultLParams(matchParent, matchParent) {
-    })
-
+      add(
+        frameLayout(ID_FRAGMENT_CONTAINER) { },
+        lParams {
+          startToStart = PARENT_ID
+          topToBottom = ID_SPINNER
+          endToEnd = PARENT_ID
+          bottomToBottom = PARENT_ID
+        }
+      )
+    },
+      defaultLParams(matchParent, matchParent) { }
+    )
   }.also {
     scope.launch {
       lifecycleOwner.whenStarted {
@@ -182,4 +186,3 @@ private class MainSearchFragmentUiImpl(
     }
   }
 }
-

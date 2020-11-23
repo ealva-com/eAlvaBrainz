@@ -108,4 +108,13 @@ dependencies {
 
   implementation(ThirdParty.KOIN)
   implementation(ThirdParty.KOIN_ANDROID)
+
+  testImplementation(TestingLib.JUNIT)
+  testImplementation(AndroidTestingLib.ANDROIDX_TEST_CORE) {
+    exclude("junit", "junit")
+  }
+  testImplementation(AndroidTestingLib.ANDROIDX_TEST_RULES) {
+    exclude("junit", "junit")
+  }
+  testImplementation(TestingLib.EXPECT)
 }

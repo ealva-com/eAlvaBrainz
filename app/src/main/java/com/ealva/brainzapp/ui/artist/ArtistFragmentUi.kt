@@ -15,8 +15,11 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("Indentation", "MagicNumber")
+
 package com.ealva.brainzapp.ui.artist
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -26,9 +29,9 @@ import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import androidx.lifecycle.whenStarted
 import androidx.viewpager2.widget.ViewPager2
 import com.ealva.brainzapp.data.appearsValid
@@ -112,9 +115,8 @@ import com.ealva.ealvabrainz.R.id.artist_ui_toolbar as ID_TOOLBAR
 import com.ealva.ealvabrainz.R.id.artist_ui_type as ID_ARTIST_TYPE
 import com.ealva.ealvabrainz.R.id.artist_ui_type_label as ID_TYPE_LABEL
 import com.ealva.ealvabrainz.R.id.artist_ui_view_pager as ID_PAGER
-import com.google.android.material.tabs.TabLayoutMediator.TabConfigurationStrategy as ConfigStrategy
 
-class ArtistFragmentUi(
+public class ArtistFragmentUi(
   uiContext: FragmentUiContext,
   private val mainPresenter: MainPresenter,
   private val viewModel: ArtistViewModel,
@@ -147,10 +149,10 @@ class ArtistFragmentUi(
   private val collapsing: CollapsingToolbarLayout
   private val toolbar: Toolbar
 
-  override val ctx = uiContext.context
+  override val ctx: Context = uiContext.context
 
   @OptIn(ExperimentalCoroutinesApi::class, ExperimentalSplittiesApi::class)
-  override val root = coordinatorLayout(ID_COORDINATOR) {
+  override val root: CoordinatorLayout = coordinatorLayout(ID_COORDINATOR) {
     val materialStyles = MaterialComponentsStyles(ctx)
 
     progress = addCircularProgress(ID_PROGRESS)
@@ -300,11 +302,9 @@ class ArtistFragmentUi(
           backgroundColor = styledColor(R.attr.colorPrimary)
           mainPresenter.setActionBar(this)
         }, defaultLParams(height = actionBarSize, collapseMode = PIN))
-
       }, defaultLParams(scrollFlags = SCROLL or EXIT_UNTIL_COLLAPSED))
 
       tabLayout = add(materialStyles.tabLayout.default(ID_TABBED_LAYOUT), defaultLParams())
-
     }, appBarLParams())
 
     viewPager = add(viewPager2(ID_PAGER) {
@@ -313,22 +313,18 @@ class ArtistFragmentUi(
       behavior = AppBarLayout.ScrollingViewBehavior()
     })
 
-    TabLayoutMediator(tabLayout, viewPager, true, ConfigStrategy { tab, position ->
+    TabLayoutMediator(tabLayout, viewPager, true) { tab, position ->
       when (position) {
         0 -> tab.setText(R.string.Discography)
         1 -> tab.setText(R.string.Releases)
       }
-    }).attach()
+    }.attach()
   }.also { root ->
     scope.launch {
       lifecycleOwner.whenStarted {
-        viewModel.artist.observe(lifecycleOwner, Observer { artist ->
-          updateArtistInfo(artist)
-        })
+        viewModel.artist.observe(lifecycleOwner, { artist -> updateArtistInfo(artist) })
         viewModel.unsuccessful.snackErrors(lifecycleOwner, root)
-        viewModel.isBusy.observe(lifecycleOwner, Observer { busy ->
-          progress.isVisible = busy == true
-        })
+        viewModel.isBusy.observe(lifecycleOwner, { busy -> progress.isVisible = busy == true })
         isni.clickFlow().onEach {
           startActivity(
             isni.context,

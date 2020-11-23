@@ -15,6 +15,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("Indentation", "MagicNumber", "unused")
+
 package com.ealva.brainzapp.ui.artist
 
 import android.content.Context
@@ -32,14 +34,14 @@ import com.ealva.ealvabrainz.brainz.data.toReleaseMbid
 import me.gujun.android.span.span
 import splitties.resources.appStyledColor
 
-class CreditItem(
-  val artistMbid: ArtistMbid,
-  val artistName: ArtistName,
-  val joinPhrase: String
+public class CreditItem(
+  public val artistMbid: ArtistMbid,
+  public val artistName: ArtistName,
+  public val joinPhrase: String
 )
 
 @JvmName(name = "creditListToSpannable")
-fun List<CreditItem>.toSpannable(clicked: (CreditItem) -> Unit): SpannableStringBuilder {
+public fun List<CreditItem>.toSpannable(clicked: (CreditItem) -> Unit): SpannableStringBuilder {
   return span {
     this@toSpannable.forEachIndexed { index, credit ->
       if (index > 0) append(" ")
@@ -58,14 +60,14 @@ fun List<CreditItem>.toSpannable(clicked: (CreditItem) -> Unit): SpannableString
   }
 }
 
-class LabelItem(
-  val labelMbid: LabelMbid,
-  val name: LabelName,
-  val disambiguation: String
+public class LabelItem(
+  public val labelMbid: LabelMbid,
+  public val name: LabelName,
+  public val disambiguation: String
 )
 
 @JvmName(name = "labelListToSpannable")
-fun List<LabelItem>.toSpannable(
+public fun List<LabelItem>.toSpannable(
   ctx: Context,
   clicked: (LabelItem) -> Unit
 ): SpannableStringBuilder {
@@ -90,18 +92,18 @@ fun List<LabelItem>.toSpannable(
   }
 }
 
-class ReleaseItem private constructor(
-  val id: Long,
-  val mbid: ReleaseMbid,
-  val name: ReleaseName,
-  val format: String,
-  val tracks: String,
-  val country: String,
-  val date: String,
-  val labels: List<LabelItem>,
-  val catalogNumber: String,
-  val barcode: String,
-  val artistCredits: List<CreditItem>
+public class ReleaseItem private constructor(
+  public val id: Long,
+  public val mbid: ReleaseMbid,
+  public val name: ReleaseName,
+  public val format: String,
+  public val tracks: String,
+  public val country: String,
+  public val date: String,
+  public val labels: List<LabelItem>,
+  public val catalogNumber: String,
+  public val barcode: String,
+  public val artistCredits: List<CreditItem>
 ) {
 
   override fun equals(other: Any?): Boolean {
@@ -123,9 +125,9 @@ class ReleaseItem private constructor(
     return "DisplayRelease(id=$id)"
   }
 
-  companion object {
+  public companion object {
     private var latestId = 0L
-    fun make(
+    public fun make(
       mbid: ReleaseMbid,
       name: ReleaseName,
       format: String,
@@ -153,7 +155,7 @@ class ReleaseItem private constructor(
       )
     }
 
-    val NullDisplayRelease =
+    public val NullDisplayRelease: ReleaseItem =
       ReleaseItem(
         -1L,
         "".toReleaseMbid(),

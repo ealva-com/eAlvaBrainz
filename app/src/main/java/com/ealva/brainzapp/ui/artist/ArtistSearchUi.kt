@@ -15,12 +15,13 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("Indentation", "MagicNumber")
+
 package com.ealva.brainzapp.ui.artist
 
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
 import androidx.core.view.isVisible
-import androidx.lifecycle.Observer
 import androidx.lifecycle.whenStarted
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -71,10 +72,10 @@ import com.ealva.ealvabrainz.R.id.artist_search_search_button as ID_SEARCH_BUTTO
 import com.ealva.ealvabrainz.R.id.artist_search_search_text as ID_SEARCH_TEXT
 import com.ealva.ealvabrainz.R.id.artist_search_text_input_layout as ID_TEXT_INPUT_LAYOUT
 
-interface ArtistSearchUi : Ui {
+public interface ArtistSearchUi : Ui {
 
-  companion object {
-    fun make(
+  public companion object {
+    public fun make(
       uiContext: FragmentUiContext,
       viewModel: ArtistSearchViewModel,
       navigation: Navigation
@@ -158,13 +159,10 @@ private class ArtistSearchUiImpl(
         bottomToBottom = PARENT_ID
         bottomMargin = dip(4)
       })
-
-    }, defaultLParams(matchParent, matchParent) {
-
-    })
+    }, defaultLParams(matchParent, matchParent) { }
+    )
 
     progress = addCircularProgress(ID_CIRCULAR_PROGRESS)
-
   }.also { root ->
     scope.launch {
       lifecycleOwner.whenStarted {
@@ -172,7 +170,7 @@ private class ArtistSearchUiImpl(
           doSearch(textInputLayout.editText?.text?.toString())
         }.launchIn(scope)
 
-        viewModel.itemList.observe(uiContext.lifecycleOwner, Observer { list ->
+        viewModel.itemList.observe(uiContext.lifecycleOwner, { list ->
           if (list != null && list.isNotEmpty()) {
             searchItemAdapter.setItems(list)
           }
@@ -181,7 +179,7 @@ private class ArtistSearchUiImpl(
 
         viewModel.unsuccessful.snackErrors(uiContext.lifecycleOwner, root)
 
-        viewModel.isBusy.observe(uiContext.lifecycleOwner, Observer { busy ->
+        viewModel.isBusy.observe(uiContext.lifecycleOwner, { busy ->
           progress.isVisible = busy == true
         })
       }
@@ -197,4 +195,3 @@ private class ArtistSearchUiImpl(
     }
   }
 }
-

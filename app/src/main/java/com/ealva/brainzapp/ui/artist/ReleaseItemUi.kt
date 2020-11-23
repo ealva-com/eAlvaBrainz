@@ -15,8 +15,11 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("Indentation", "MagicNumber")
+
 package com.ealva.brainzapp.ui.artist
 
+import android.content.Context
 import android.text.TextUtils.TruncateAt.END
 import android.text.method.LinkMovementMethod
 import android.view.View
@@ -29,6 +32,7 @@ import com.ealva.brainzapp.ui.fragment.FragmentUiContext
 import com.ealva.brainzapp.ui.view.clickFlow
 import com.ealva.brainzapp.ui.view.inPortrait
 import com.ealva.ealvabrainz.R
+import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -66,10 +70,10 @@ import com.ealva.ealvabrainz.R.id.release_item_name as ID_RELEASE_NAME
 import com.ealva.ealvabrainz.R.id.release_item_record_label as ID_RECORD_LABEL
 import com.ealva.ealvabrainz.R.id.release_item_tracks as ID_TRACKS
 
-class ReleaseItemUi(uiContext: FragmentUiContext, onClick: (v: View) -> Unit) : Ui {
+public class ReleaseItemUi(uiContext: FragmentUiContext, onClick: (v: View) -> Unit) : Ui {
 
   private val scope = uiContext.scope
-  override val ctx = uiContext.context
+  override val ctx: Context = uiContext.context
 
   private val releaseName: TextView = textView(ID_RELEASE_NAME) {
     ellipsize = END
@@ -119,7 +123,7 @@ class ReleaseItemUi(uiContext: FragmentUiContext, onClick: (v: View) -> Unit) : 
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
-  override val root = materialCardView(ID_CARD) {
+  override val root: MaterialCardView = materialCardView(ID_CARD) {
     radius = dp(10)
     cardElevation = dp(4)
 
@@ -162,7 +166,6 @@ class ReleaseItemUi(uiContext: FragmentUiContext, onClick: (v: View) -> Unit) : 
       } else {
         constrainInLandscape(catalogLabel, barcodeLabel)
       }
-
     }, lParams(matchParent, wrapContent) {
       verticalMargin = dip(8)
       horizontalMargin = dip(8)
@@ -286,7 +289,7 @@ class ReleaseItemUi(uiContext: FragmentUiContext, onClick: (v: View) -> Unit) : 
     })
   }
 
-  fun bind(release: ReleaseItem) {
+  public fun bind(release: ReleaseItem) {
     val none = ctx.getString(R.string.NoneInBrackets)
 
     releaseName.text = release.name.value
@@ -311,5 +314,3 @@ class ReleaseItemUi(uiContext: FragmentUiContext, onClick: (v: View) -> Unit) : 
     barcode.text = if (release.barcode.isNotBlank()) release.barcode else none
   }
 }
-
-

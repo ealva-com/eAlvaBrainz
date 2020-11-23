@@ -15,6 +15,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("MagicNumber")
+
 package com.ealva.brainzapp.data
 
 import android.content.Intent
@@ -27,19 +29,19 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 
-inline class Isni(val value: String) {
-  companion object {
-    val NullIsni = Isni("")
+public inline class Isni(public val value: String) {
+  public companion object {
+    public val NullIsni: Isni = Isni("")
   }
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.toIsni() = Isni(this)
+public inline fun String.toIsni(): Isni = Isni(this)
 
-inline val Isni.appearsValid: Boolean
+public inline val Isni.appearsValid: Boolean
   get() = value.length == 16
 
-inline val Isni.displayValue: String
+public inline val Isni.displayValue: String
   get() {
     check(appearsValid)
     return buildString {
@@ -53,7 +55,7 @@ inline val Isni.displayValue: String
     }
   }
 
-fun TextView.setAsClickableLink(isni: Isni) {
+public fun TextView.setAsClickableLink(isni: Isni) {
   isClickable = true
   val spannableString = SpannableString(isni.displayValue)
   val span: ClickableSpan = object : ClickableSpan() {

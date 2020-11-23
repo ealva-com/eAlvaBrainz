@@ -15,6 +15,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("Indentation")
+
 package com.ealva.brainzapp.ui.artist
 
 import androidx.fragment.app.Fragment
@@ -66,34 +68,35 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class DisplayArtist(
-  val mbid: ArtistMbid,
-  val type: ArtistType,
-  val name: ArtistName,
-  val country: Country,
-  val area: String,
-  val lifespanBegin: String,
-  val startArea: String,
-  val lifespanEnded: Boolean,
-  val lifespanEnd: String,
-  val endArea: String,
-  val isni: Isni,
-  val rating: StarRating,
-  @Suppress("unused") val ratingVotes: Int,
-  val genres: List<GenreItem>
+@Suppress("unused")
+public class DisplayArtist(
+  public val mbid: ArtistMbid,
+  public val type: ArtistType,
+  public val name: ArtistName,
+  public val country: Country,
+  public val area: String,
+  public val lifespanBegin: String,
+  public val startArea: String,
+  public val lifespanEnded: Boolean,
+  public val lifespanEnd: String,
+  public val endArea: String,
+  public val isni: Isni,
+  public val rating: StarRating,
+  @Suppress("unused") public val ratingVotes: Int,
+  public val genres: List<GenreItem>
 )
 
-interface ArtistViewModel {
-  val artist: LiveData<DisplayArtist>
-  val releaseGroups: LiveData<List<ReleaseGroupItem>>
-  val releases: LiveData<List<ReleaseItem>>
-  val isBusy: LiveData<Boolean>
-  val unsuccessful: LiveData<Unsuccessful>
+public interface ArtistViewModel {
+  public val artist: LiveData<DisplayArtist>
+  public val releaseGroups: LiveData<List<ReleaseGroupItem>>
+  public val releases: LiveData<List<ReleaseItem>>
+  public val isBusy: LiveData<Boolean>
+  public val unsuccessful: LiveData<Unsuccessful>
 
-  fun lookupArtist(mbid: ArtistMbid)
+  public fun lookupArtist(mbid: ArtistMbid)
 }
 
-fun Fragment.getArtistViewModel(brainz: MusicBrainzService): ArtistViewModel {
+public fun Fragment.getArtistViewModel(brainz: MusicBrainzService): ArtistViewModel {
   return ViewModelProvider(
     this,
     ArtistViewModelFactory(brainz)
@@ -154,8 +157,8 @@ private val List<ReleaseEvent>.firstDate: String
     return ""
   }
 
-private const val sorterForEmpty = "aaaa"
-inline fun <reified T> mutableDataEmptyList(): MutableLiveData<List<T>> {
+private const val SORTER_FOR_EMPTY = "aaaa"
+public inline fun <reified T> mutableDataEmptyList(): MutableLiveData<List<T>> {
   return MutableLiveData(emptyList())
 }
 
@@ -183,16 +186,16 @@ internal class ArtistViewModelImpl(
         busy(isBusy) {
           if (doArtistLookup(mbid)) {
             brainz.artistReleases(
-                mbid,
-                listOf(
-                  Release.Browse.ArtistCredits,
-                  Release.Browse.ReleaseGroups,
-                  Release.Browse.Ratings,
-                  Release.Browse.Media,
-                  Release.Browse.Labels
-                ),
-                status = listOf(Release.Status.Official)
-              )
+              mbid,
+              listOf(
+                Release.Browse.ArtistCredits,
+                Release.Browse.ReleaseGroups,
+                Release.Browse.Ratings,
+                Release.Browse.Media,
+                Release.Browse.Labels
+              ),
+              status = listOf(Release.Status.Official)
+            )
               .catch { ex ->
                 Timber.e(ex)
                 unsuccessful.postValue(Exceptional.make("Artist release flow", ex))
@@ -260,7 +263,7 @@ internal class ArtistViewModelImpl(
       .sortedBy {
         val date = it.date
         if (date.isBlank()) {
-          "${sorterForEmpty}${it.name.value}"
+          "${SORTER_FOR_EMPTY}${it.name.value}"
         } else date
       }
       .toList()
@@ -271,7 +274,7 @@ internal class ArtistViewModelImpl(
         .sortedBy {
           val date = it.date
           if (date.isBlank()) {
-            "${sorterForEmpty}${it.name.value}"
+            "${SORTER_FOR_EMPTY}${it.name.value}"
           } else date
         }
         .toList()

@@ -15,8 +15,11 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("Indentation", "MagicNumber")
+
 package com.ealva.brainzapp.ui.artist
 
+import android.content.Context
 import android.graphics.Color
 import android.net.Uri
 import android.text.TextUtils.TruncateAt.END
@@ -35,6 +38,7 @@ import com.ealva.brainzapp.ui.view.setStarRatingDrawable
 import com.ealva.brainzsvc.net.isEmpty
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.ealvabrainz.R
+import com.google.android.material.card.MaterialCardView
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.library.materialdesigniconic.MaterialDesignIconic
 import com.mikepenz.iconics.utils.colorInt
@@ -73,7 +77,7 @@ import com.ealva.ealvabrainz.R.id.release_group_item_rating as ID_RATING_BAR
 import com.ealva.ealvabrainz.R.id.release_group_item_release_count as ID_RELEASE_COUNT
 import com.ealva.ealvabrainz.R.id.release_group_item_type as ID_TYPE
 
-class ReleaseGroupItemUi(
+public class ReleaseGroupItemUi(
   uiContext: FragmentUiContext,
   private val executor: Executor,
   private val brainz: MusicBrainzService,
@@ -81,7 +85,7 @@ class ReleaseGroupItemUi(
   onClick: (v: View) -> Unit
 ) : Ui {
   private val scope = uiContext.scope
-  override val ctx = uiContext.context
+  override val ctx: Context = uiContext.context
 
   private val groupName: TextView
   private val type: TextView
@@ -100,7 +104,7 @@ class ReleaseGroupItemUi(
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
-  override val root = materialCardView(ID_CARD) {
+  override val root: MaterialCardView = materialCardView(ID_CARD) {
     radius = dp(10)
     cardElevation = dp(4)
     val totalHeight = dip(88)
@@ -169,8 +173,8 @@ class ReleaseGroupItemUi(
           startToEnd = ID_RELEASE_DATE
           topToBottom = ID_TYPE
           endToEnd = PARENT_ID
-        })
-
+        }
+      )
     }, lParams(matchParent, totalHeight, gravityCenter) {
       horizontalMargin = dip(8)
     })
@@ -190,7 +194,7 @@ class ReleaseGroupItemUi(
     .fallback(placeholder)
     .error(placeholder)
 
-  fun bind(releaseGroup: ReleaseGroupItem) {
+  public fun bind(releaseGroup: ReleaseGroupItem) {
     val artwork = releaseGroup.artwork
     when {
       artwork == null -> {
@@ -223,4 +227,3 @@ class ReleaseGroupItemUi(
     releaseCount.text = ctx.getString(R.string.ReleaseCount, releaseGroup.releaseCount)
   }
 }
-

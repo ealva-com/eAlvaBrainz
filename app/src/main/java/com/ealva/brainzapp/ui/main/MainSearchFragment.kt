@@ -24,28 +24,29 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 
-class MainSearchFragment private constructor(val mainPresenter: MainPresenter) : Fragment() {
+public class MainSearchFragment private constructor(
+  private val mainPresenter: MainPresenter
+) : Fragment() {
   private lateinit var ui: MainSearchFragmentUi
 
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
-  ): View? {
+  ): View {
     ui = makeSearchFragmentUi(mainPresenter)
     return ui.root
   }
 
-  companion object {
-    val NAME: String = MainSearchFragment::class.java.name
+  public companion object {
+    public val NAME: String = MainSearchFragment::class.java.name
 
-    fun make(mainPresenter: MainPresenter): MainSearchFragment {
+    public fun make(mainPresenter: MainPresenter): MainSearchFragment {
       return MainSearchFragment(mainPresenter)
     }
 
-    fun make(fm: FragmentManager): MainSearchFragment {
+    public fun make(fm: FragmentManager): MainSearchFragment {
       return fm.instantiate()
     }
-
   }
 }

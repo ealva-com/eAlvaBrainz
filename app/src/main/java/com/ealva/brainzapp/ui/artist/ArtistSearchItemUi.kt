@@ -15,8 +15,11 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("Indentation", "MagicNumber")
+
 package com.ealva.brainzapp.ui.artist
 
+import android.content.Context
 import android.text.TextUtils.TruncateAt.END
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +28,7 @@ import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
 import com.ealva.brainzapp.ui.fragment.FragmentUiContext
 import com.ealva.brainzapp.ui.view.clickFlow
 import com.ealva.ealvabrainz.R
+import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -51,7 +55,7 @@ import com.ealva.ealvabrainz.R.id.artist_search_item_name as ID_ARTIST_NAME
 import com.ealva.ealvabrainz.R.id.artist_search_item_score as ID_SCORE
 import com.ealva.ealvabrainz.R.id.artist_search_item_type as ID_ARTIST_TYPE
 
-class ArtistSearchItemUi(
+public class ArtistSearchItemUi(
   uiContext: FragmentUiContext,
   onClick: (v: View) -> Unit
 ) : Ui {
@@ -62,10 +66,10 @@ class ArtistSearchItemUi(
   private val country: TextView
 
   private val scope = uiContext.scope
-  override val ctx = uiContext.context
+  override val ctx: Context = uiContext.context
 
   @OptIn(ExperimentalCoroutinesApi::class)
-  override val root = materialCardView(ID_CARD) {
+  override val root: MaterialCardView = materialCardView(ID_CARD) {
     radius = dp(10)
     cardElevation = dp(4)
     val totalHeight = dip(88)
@@ -122,7 +126,6 @@ class ArtistSearchItemUi(
         endToEnd = PARENT_ID
         bottomToBottom = ID_ARTIST_TYPE
       })
-
     }, lParams(matchParent, totalHeight, gravityCenter) {
       horizontalMargin = dip(8)
     })
@@ -137,7 +140,7 @@ class ArtistSearchItemUi(
       .launchIn(scope)
   }
 
-  fun bind(artist: ArtistSearchResult) {
+  public fun bind(artist: ArtistSearchResult) {
     artistName.text = artist.name.value
     disambiguation.text = artist.disambiguation
     type.text = artist.type.value

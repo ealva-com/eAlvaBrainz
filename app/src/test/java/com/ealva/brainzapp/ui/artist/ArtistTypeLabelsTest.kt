@@ -22,9 +22,9 @@ import com.ealva.ealvabrainz.brainz.data.ArtistType
 import com.nhaarman.expect.expect
 import org.junit.Test
 
-class ArtistTypeLabelsTest {
+public class ArtistTypeLabelsTest {
   @Test
-  fun `test ArtistType to ArtistTypeLabels`() {
+  public fun `test ArtistType to ArtistTypeLabels`() {
     expect(ArtistType.Person.labels).toBe(ArtistTypeLabels.PersonLabels)
     expect(ArtistType.Group.labels).toBe(ArtistTypeLabels.GroupLabels)
     expect(ArtistType.Orchestra.labels).toBe(ArtistTypeLabels.OrchestraLabels)
@@ -35,7 +35,7 @@ class ArtistTypeLabelsTest {
   }
 
   @Test
-  fun `test ArtistType labels`() {
+  public fun `test ArtistType labels`() {
     doTestLabels(
       ArtistTypeLabels.PersonLabels,
       R.string.Person,
@@ -103,9 +103,13 @@ class ArtistTypeLabelsTest {
     endArea: Int
   ) {
     expect(artistTypeLabels.typeName).toBe(typeName) { "ArtistType:$artistTypeLabels typeName" }
-    expect(artistTypeLabels.lifespanBeginLabel).toBe(lifespanBegin) { "ArtistType:$artistTypeLabels lifespanBeginLabel" }
-    expect(artistTypeLabels.lifespanEndLabel).toBe(lifespanEnd) { "ArtistType:$artistTypeLabels lifespanEndLabel" }
-    expect(artistTypeLabels.startAreaLabel).toBe(startArea) { "ArtistType:$artistTypeLabels startAreaLabel" }
-    expect(artistTypeLabels.endAreaLabel).toBe(endArea) { "ArtistType:$artistTypeLabels endAreaLabel" }
+    expect(artistTypeLabels.lifespanBeginLabel)
+      .toBe(lifespanBegin) { "ArtistType:$artistTypeLabels lifespanBeginLabel" }
+    expect(artistTypeLabels.lifespanEndLabel)
+      .toBe(lifespanEnd) { "ArtistType:$artistTypeLabels lifespanEndLabel" }
+    expect(artistTypeLabels.startAreaLabel)
+      .toBe(startArea) { "ArtistType:$artistTypeLabels startAreaLabel" }
+    expect(artistTypeLabels.endAreaLabel)
+      .toBe(endArea) { "ArtistType:$artistTypeLabels endAreaLabel" }
   }
 }

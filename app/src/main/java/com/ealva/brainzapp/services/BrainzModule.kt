@@ -20,13 +20,14 @@ package com.ealva.brainzapp.services
 import com.ealva.brainzsvc.service.CoverArtService
 import com.ealva.brainzsvc.service.MusicBrainzService
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.Module
 import org.koin.dsl.module
 
-private const val appName = "My App"
-private const val appVersion = "0.1"
-private const val contactEmail = "YourName@YourAddress.com"
+private const val APP_NAME = "My App"
+private const val APP_VERSION = "0.1"
+private const val CONTACT_EMAIL = "YourName@YourAddress.com"
 
-val brainzModule = module {
-  single { CoverArtService.make(androidContext(), appName, appVersion, contactEmail) }
-  single { MusicBrainzService.make(androidContext(), appName, appVersion, contactEmail, get()) }
+public val brainzModule: Module = module {
+  single { CoverArtService.make(androidContext(), APP_NAME, APP_VERSION, CONTACT_EMAIL) }
+  single { MusicBrainzService.make(androidContext(), APP_NAME, APP_VERSION, CONTACT_EMAIL, get()) }
 }
