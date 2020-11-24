@@ -25,14 +25,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 
-public sealed class TabSelection(@Suppress("unused") public val tab: TabLayout.Tab) {
-  public class Selected(tab: TabLayout.Tab) : TabSelection(tab)
-  public class Reselected(tab: TabLayout.Tab) : TabSelection(tab)
-  public class Unselected(tab: TabLayout.Tab) : TabSelection(tab)
+sealed class TabSelection(@Suppress("unused") val tab: TabLayout.Tab) {
+  class Selected(tab: TabLayout.Tab) : TabSelection(tab)
+  class Reselected(tab: TabLayout.Tab) : TabSelection(tab)
+  class Unselected(tab: TabLayout.Tab) : TabSelection(tab)
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-public fun TabLayout.tabSelectionFlow(): Flow<TabSelection> = callbackFlow<TabSelection> {
+fun TabLayout.tabSelectionFlow(): Flow<TabSelection> = callbackFlow<TabSelection> {
   val listener = object : TabLayout.OnTabSelectedListener {
     override fun onTabReselected(tab: TabLayout.Tab) {
       offer(TabSelection.Reselected(tab))

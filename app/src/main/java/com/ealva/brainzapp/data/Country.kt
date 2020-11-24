@@ -23,36 +23,36 @@ import com.neovisionaries.i18n.CountryCode
 /**
  * Represents a country typically found via the 2 letter ISO code [alpha2]
  */
-public interface Country {
+interface Country {
   /**
    * Full name or empty string if [isUnknown]
    */
-  public val name: String
+  val name: String
 
   /**
    * The 2 letter [ISO 3166-1 alpha-2](http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code
    *  or empty string if [isUnknown]
    */
-  public val alpha2: String
+  val alpha2: String
 
   /**
    * The 3 letter [ISO 3166-1 alpha-3](http://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) code
    *  or empty string if [isUnknown]
    */
-  public val alpha3: String
+  val alpha3: String
 
   /**
    * The [ISO 3166-1 numeric](http://en.wikipedia.org/wiki/ISO_3166-1_numeric) code or -1 if
    * [isUnknown] or the code is
    * [exceptionally reserved](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Exceptional_reservations)
    */
-  public val code: Int
+  val code: Int
 
   /** The code is unknown/undefined */
-  public val isUnknown: Boolean
+  val isUnknown: Boolean
 }
 
-public fun String.toCountry(): Country {
+fun String.toCountry(): Country {
   return CountryImpl(CountryCode.getByCode(this, false) ?: CountryCode.UNDEFINED)
 }
 

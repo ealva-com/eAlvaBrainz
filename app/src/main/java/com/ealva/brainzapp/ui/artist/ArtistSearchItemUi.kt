@@ -27,7 +27,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
 import com.ealva.brainzapp.ui.fragment.FragmentUiContext
 import com.ealva.brainzapp.ui.view.clickFlow
-import com.ealva.ealvabrainz.R
+import com.ealva.brainzapp.R
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
@@ -47,15 +47,15 @@ import splitties.views.dsl.core.wrapContent
 import splitties.views.dsl.material.materialCardView
 import splitties.views.gravityCenter
 import splitties.views.textAppearance
-import com.ealva.ealvabrainz.R.id.artist_search_item_card as ID_CARD
-import com.ealva.ealvabrainz.R.id.artist_search_item_constraint as ID_CONSTRAINT
-import com.ealva.ealvabrainz.R.id.artist_search_item_country as ID_COUNTRY
-import com.ealva.ealvabrainz.R.id.artist_search_item_disambiguation as ID_DISAMBIGUATION
-import com.ealva.ealvabrainz.R.id.artist_search_item_name as ID_ARTIST_NAME
-import com.ealva.ealvabrainz.R.id.artist_search_item_score as ID_SCORE
-import com.ealva.ealvabrainz.R.id.artist_search_item_type as ID_ARTIST_TYPE
+import com.ealva.brainzapp.R.id.artist_search_item_card as ID_CARD
+import com.ealva.brainzapp.R.id.artist_search_item_constraint as ID_CONSTRAINT
+import com.ealva.brainzapp.R.id.artist_search_item_country as ID_COUNTRY
+import com.ealva.brainzapp.R.id.artist_search_item_disambiguation as ID_DISAMBIGUATION
+import com.ealva.brainzapp.R.id.artist_search_item_name as ID_ARTIST_NAME
+import com.ealva.brainzapp.R.id.artist_search_item_score as ID_SCORE
+import com.ealva.brainzapp.R.id.artist_search_item_type as ID_ARTIST_TYPE
 
-public class ArtistSearchItemUi(
+class ArtistSearchItemUi(
   uiContext: FragmentUiContext,
   onClick: (v: View) -> Unit
 ) : Ui {
@@ -140,7 +140,7 @@ public class ArtistSearchItemUi(
       .launchIn(scope)
   }
 
-  public fun bind(artist: ArtistSearchResult) {
+  fun bind(artist: ArtistSearchResult) {
     artistName.text = artist.name.value
     disambiguation.text = artist.disambiguation
     type.text = artist.type.value

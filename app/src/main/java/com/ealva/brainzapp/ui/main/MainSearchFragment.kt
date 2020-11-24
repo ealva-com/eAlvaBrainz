@@ -24,7 +24,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 
-public class MainSearchFragment private constructor(
+class MainSearchFragment private constructor(
   private val mainPresenter: MainPresenter
 ) : Fragment() {
   private lateinit var ui: MainSearchFragmentUi
@@ -38,14 +38,14 @@ public class MainSearchFragment private constructor(
     return ui.root
   }
 
-  public companion object {
-    public val NAME: String = MainSearchFragment::class.java.name
+  companion object {
+    val NAME: String = MainSearchFragment::class.java.name
 
-    public fun make(mainPresenter: MainPresenter): MainSearchFragment {
+    fun make(mainPresenter: MainPresenter): MainSearchFragment {
       return MainSearchFragment(mainPresenter)
     }
 
-    public fun make(fm: FragmentManager): MainSearchFragment {
+    fun make(fm: FragmentManager): MainSearchFragment {
       return fm.instantiate()
     }
   }

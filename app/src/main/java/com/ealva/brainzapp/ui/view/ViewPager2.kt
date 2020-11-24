@@ -31,7 +31,7 @@ import splitties.views.dsl.core.Ui
 import splitties.views.dsl.core.view
 
 @OptIn(InternalSplittiesApi::class)
-public inline fun Context.viewPager2(
+inline fun Context.viewPager2(
   @IdRes id: Int,
   @StyleRes theme: Int = NO_THEME,
   initView: ViewPager2.() -> Unit = {}
@@ -40,7 +40,7 @@ public inline fun Context.viewPager2(
 }
 
 @SuppressLint("ResourceType")
-public inline fun View.viewPager2(
+inline fun View.viewPager2(
   @IdRes id: Int,
   @StyleRes theme: Int = NO_THEME,
   initView: ViewPager2.() -> Unit = {}
@@ -49,7 +49,7 @@ public inline fun View.viewPager2(
 }
 
 @SuppressLint("ResourceType")
-public inline fun Ui.viewPager2(
+inline fun Ui.viewPager2(
   @IdRes id: Int,
   @StyleRes theme: Int = NO_THEME,
   initView: ViewPager2.() -> Unit = {}

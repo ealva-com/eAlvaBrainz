@@ -26,7 +26,6 @@ class ReleaseItemAdapter(
   private val selection: (ReleaseItem) -> Unit
 ) : RecyclerView.Adapter<ReleaseItemAdapter.ViewHolder>() {
 
-  private val scope = uiContext.scope
   private val itemList: MutableList<ReleaseItem> = mutableListOf()
   private var recycler: RecyclerView? = null
 
@@ -49,10 +48,12 @@ class ReleaseItemAdapter(
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-    ViewHolder(ReleaseItemUi(uiContext) { v ->
-      val position: Int = recycler?.getChildAdapterPosition(v) ?: -1
-      if (position in itemList.indices) selection(itemList[position])
-    })
+    ViewHolder(
+      ReleaseItemUi(uiContext) { v ->
+        val position: Int = recycler?.getChildAdapterPosition(v) ?: -1
+        if (position in itemList.indices) selection(itemList[position])
+      }
+    )
 
   class ViewHolder(val ui: ReleaseItemUi) : RecyclerView.ViewHolder(ui.root) {
     fun bind(item: ReleaseItem) = ui.bind(item)

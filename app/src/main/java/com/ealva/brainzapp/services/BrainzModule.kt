@@ -27,7 +27,7 @@ private const val APP_NAME = "My App"
 private const val APP_VERSION = "0.1"
 private const val CONTACT_EMAIL = "YourName@YourAddress.com"
 
-public val brainzModule: Module = module {
+val brainzModule: Module = module {
   single { CoverArtService.make(androidContext(), APP_NAME, APP_VERSION, CONTACT_EMAIL) }
   single { MusicBrainzService.make(androidContext(), APP_NAME, APP_VERSION, CONTACT_EMAIL, get()) }
 }

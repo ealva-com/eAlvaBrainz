@@ -41,7 +41,7 @@ class ArtistSearchFragment private constructor(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
-  ): View? {
+  ): View {
     viewModel = getArtistSearchViewModel(brainz)
     uiContext = makeUiContext()
     ui = ArtistSearchUi.make(uiContext, viewModel, navigation)
@@ -61,6 +61,5 @@ class ArtistSearchFragment private constructor(
     fun make(fm: FragmentManager): ArtistSearchFragment {
       return fm.instantiate()
     }
-
   }
 }

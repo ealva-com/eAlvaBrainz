@@ -21,4 +21,3 @@ import android.content.Context
 import kotlin.math.roundToInt
 
 fun Context.sp(value: Int): Int = (value * resources.displayMetrics.scaledDensity).roundToInt()
-fun Context.sp(value: Float): Int = (value * resources.displayMetrics.scaledDensity).roundToInt()

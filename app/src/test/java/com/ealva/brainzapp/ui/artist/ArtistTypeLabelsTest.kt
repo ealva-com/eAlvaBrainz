@@ -17,14 +17,14 @@
 
 package com.ealva.brainzapp.ui.artist
 
-import com.ealva.ealvabrainz.R
+import com.ealva.brainzapp.R
 import com.ealva.ealvabrainz.brainz.data.ArtistType
 import com.nhaarman.expect.expect
 import org.junit.Test
 
-public class ArtistTypeLabelsTest {
+class ArtistTypeLabelsTest {
   @Test
-  public fun `test ArtistType to ArtistTypeLabels`() {
+  fun `test ArtistType to ArtistTypeLabels`() {
     expect(ArtistType.Person.labels).toBe(ArtistTypeLabels.PersonLabels)
     expect(ArtistType.Group.labels).toBe(ArtistTypeLabels.GroupLabels)
     expect(ArtistType.Orchestra.labels).toBe(ArtistTypeLabels.OrchestraLabels)
@@ -35,7 +35,7 @@ public class ArtistTypeLabelsTest {
   }
 
   @Test
-  public fun `test ArtistType labels`() {
+  fun `test ArtistType labels`() {
     doTestLabels(
       ArtistTypeLabels.PersonLabels,
       R.string.Person,

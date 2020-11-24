@@ -37,7 +37,7 @@ import com.ealva.brainzapp.ui.view.clickFlow
 import com.ealva.brainzapp.ui.view.setStarRatingDrawable
 import com.ealva.brainzsvc.net.isEmpty
 import com.ealva.brainzsvc.service.MusicBrainzService
-import com.ealva.ealvabrainz.R
+import com.ealva.brainzapp.R
 import com.google.android.material.card.MaterialCardView
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.library.materialdesigniconic.MaterialDesignIconic
@@ -68,16 +68,16 @@ import splitties.views.gravityCenter
 import splitties.views.gravityStartCenter
 import splitties.views.textAppearance
 import java.util.concurrent.Executor
-import com.ealva.ealvabrainz.R.id.release_group_item_card as ID_CARD
-import com.ealva.ealvabrainz.R.id.release_group_item_constraint as ID_CONSTRAINT
-import com.ealva.ealvabrainz.R.id.release_group_item_date as ID_RELEASE_DATE
-import com.ealva.ealvabrainz.R.id.release_group_item_image as ID_IMAGE
-import com.ealva.ealvabrainz.R.id.release_group_item_name as ID_GROUP_NAME
-import com.ealva.ealvabrainz.R.id.release_group_item_rating as ID_RATING_BAR
-import com.ealva.ealvabrainz.R.id.release_group_item_release_count as ID_RELEASE_COUNT
-import com.ealva.ealvabrainz.R.id.release_group_item_type as ID_TYPE
+import com.ealva.brainzapp.R.id.release_group_item_card as ID_CARD
+import com.ealva.brainzapp.R.id.release_group_item_constraint as ID_CONSTRAINT
+import com.ealva.brainzapp.R.id.release_group_item_date as ID_RELEASE_DATE
+import com.ealva.brainzapp.R.id.release_group_item_image as ID_IMAGE
+import com.ealva.brainzapp.R.id.release_group_item_name as ID_GROUP_NAME
+import com.ealva.brainzapp.R.id.release_group_item_rating as ID_RATING_BAR
+import com.ealva.brainzapp.R.id.release_group_item_release_count as ID_RELEASE_COUNT
+import com.ealva.brainzapp.R.id.release_group_item_type as ID_TYPE
 
-public class ReleaseGroupItemUi(
+class ReleaseGroupItemUi(
   uiContext: FragmentUiContext,
   private val executor: Executor,
   private val brainz: MusicBrainzService,
@@ -194,7 +194,7 @@ public class ReleaseGroupItemUi(
     .fallback(placeholder)
     .error(placeholder)
 
-  public fun bind(releaseGroup: ReleaseGroupItem) {
+  fun bind(releaseGroup: ReleaseGroupItem) {
     val artwork = releaseGroup.artwork
     when {
       artwork == null -> {

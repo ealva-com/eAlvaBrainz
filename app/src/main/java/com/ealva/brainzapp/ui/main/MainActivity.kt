@@ -22,9 +22,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.ealva.brainzapp.ui.fragment.Navigation
 import kotlin.time.ExperimentalTime
-import com.ealva.ealvabrainz.R.id.main_ui_fragment_container as ID_FRAGMENT_CONTAINER
+import com.ealva.brainzapp.R.id.main_ui_fragment_container as ID_FRAGMENT_CONTAINER
 
-public class MainActivity : AppCompatActivity(), MainPresenter {
+class MainActivity : AppCompatActivity(), MainPresenter {
   private lateinit var ui: MainActivityUi
   private lateinit var navigation: Navigation
 

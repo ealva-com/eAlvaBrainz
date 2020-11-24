@@ -18,7 +18,7 @@
 package com.ealva.brainzapp.ui.artist
 
 import androidx.annotation.StringRes
-import com.ealva.ealvabrainz.R
+import com.ealva.brainzapp.R
 import com.ealva.ealvabrainz.brainz.data.ArtistType
 
 /**
@@ -87,7 +87,6 @@ enum class ArtistTypeLabels(
     R.string.empty,
     R.string.empty
   );
-
 }
 
 private val typeToLabelsMap = ArtistTypeLabels.values().associateBy { it.type }
@@ -97,4 +96,3 @@ private val typeToLabelsMap = ArtistTypeLabels.values().associateBy { it.type }
  */
 val ArtistType.labels: ArtistTypeLabels
   get() = typeToLabelsMap[this] ?: ArtistTypeLabels.UnknownLabels
-

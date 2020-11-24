@@ -17,18 +17,18 @@
 
 package com.ealva.brainzapp.data
 
-import com.ealva.ealvabrainz.R
+import com.ealva.brainzapp.R
 import com.ealva.ealvabrainz.brainz.data.Genre
 import timber.log.Timber
 import kotlin.math.min
 
-public interface GenreItem {
-  public val name: String
-  public val count: Int
-  public fun getDisplayName(fetch: (stringRes: Int) -> String): String
+interface GenreItem {
+  val name: String
+  val count: Int
+  fun getDisplayName(fetch: (stringRes: Int) -> String): String
 
-  public companion object {
-    public fun make(name: String, count: Int): GenreItem =
+  companion object {
+    fun make(name: String, count: Int): GenreItem =
       DisplayGenreImpl(name, count, genreToNameMap[name] ?: nameNotInMap(name))
   }
 }
@@ -36,7 +36,7 @@ public interface GenreItem {
 private const val MAX_GENRES = 4
 
 /** Convert to a sorted (by count descending), list of [GenreItem], of maximum size 4 */
-public fun List<Genre>.toGenreItems(): List<GenreItem> {
+fun List<Genre>.toGenreItems(): List<GenreItem> {
   val length = size
   return asSequence()
     .sortedByDescending { it.count }
@@ -45,7 +45,7 @@ public fun List<Genre>.toGenreItems(): List<GenreItem> {
     .toList()
 }
 
-public fun List<GenreItem>.toDisplayString(fetch: (stringRes: Int) -> String): String {
+fun List<GenreItem>.toDisplayString(fetch: (stringRes: Int) -> String): String {
   if (isEmpty()) return fetch(R.string.none_in_parens)
   return buildString {
     this@toDisplayString.forEachIndexed { index, genre ->

@@ -28,7 +28,7 @@ private data class Pair(val runnable: Runnable, val timestamp: Long = System.cur
 
 private const val INITIAL_CAPACITY = 1024
 
-public fun LifecycleOwner.lifoSingleThreadExecutor(): ThreadPoolExecutor {
+fun LifecycleOwner.lifoSingleThreadExecutor(): ThreadPoolExecutor {
   return ThreadPoolExecutor(
     1,
     1,

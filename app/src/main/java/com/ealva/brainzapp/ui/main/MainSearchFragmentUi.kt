@@ -37,7 +37,7 @@ import com.ealva.brainzapp.ui.rgroup.ReleaseGroupSearchFragment
 import com.ealva.brainzapp.ui.view.SpinnerSelection
 import com.ealva.brainzapp.ui.view.SpinnerWrapper
 import com.ealva.brainzapp.ui.view.itemSelectedFlow
-import com.ealva.ealvabrainz.R
+import com.ealva.brainzapp.R
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -56,11 +56,11 @@ import splitties.views.dsl.core.frameLayout
 import splitties.views.dsl.core.matchParent
 import splitties.views.dsl.core.spinner
 import splitties.views.dsl.core.wrapContent
-import com.ealva.ealvabrainz.R.id.search_fragment_constraint as ID_CONSTRAINT
-import com.ealva.ealvabrainz.R.id.search_fragment_container as ID_FRAGMENT_CONTAINER
-import com.ealva.ealvabrainz.R.id.search_fragment_coordinator as ID_COORDINATOR
-import com.ealva.ealvabrainz.R.id.search_fragment_spinner as ID_SPINNER
-import com.ealva.ealvabrainz.R.id.search_fragment_toolbar as ID_TOOLBAR
+import com.ealva.brainzapp.R.id.search_fragment_constraint as ID_CONSTRAINT
+import com.ealva.brainzapp.R.id.search_fragment_container as ID_FRAGMENT_CONTAINER
+import com.ealva.brainzapp.R.id.search_fragment_coordinator as ID_COORDINATOR
+import com.ealva.brainzapp.R.id.search_fragment_spinner as ID_SPINNER
+import com.ealva.brainzapp.R.id.search_fragment_toolbar as ID_TOOLBAR
 
 internal interface MainSearchFragmentUi : Ui
 

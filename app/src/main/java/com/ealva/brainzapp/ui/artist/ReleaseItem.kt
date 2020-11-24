@@ -34,14 +34,14 @@ import com.ealva.ealvabrainz.brainz.data.toReleaseMbid
 import me.gujun.android.span.span
 import splitties.resources.appStyledColor
 
-public class CreditItem(
-  public val artistMbid: ArtistMbid,
-  public val artistName: ArtistName,
-  public val joinPhrase: String
+class CreditItem(
+  val artistMbid: ArtistMbid,
+  val artistName: ArtistName,
+  val joinPhrase: String
 )
 
 @JvmName(name = "creditListToSpannable")
-public fun List<CreditItem>.toSpannable(clicked: (CreditItem) -> Unit): SpannableStringBuilder {
+fun List<CreditItem>.toSpannable(clicked: (CreditItem) -> Unit): SpannableStringBuilder {
   return span {
     this@toSpannable.forEachIndexed { index, credit ->
       if (index > 0) append(" ")
@@ -60,14 +60,14 @@ public fun List<CreditItem>.toSpannable(clicked: (CreditItem) -> Unit): Spannabl
   }
 }
 
-public class LabelItem(
-  public val labelMbid: LabelMbid,
-  public val name: LabelName,
-  public val disambiguation: String
+class LabelItem(
+  val labelMbid: LabelMbid,
+  val name: LabelName,
+  val disambiguation: String
 )
 
 @JvmName(name = "labelListToSpannable")
-public fun List<LabelItem>.toSpannable(
+fun List<LabelItem>.toSpannable(
   ctx: Context,
   clicked: (LabelItem) -> Unit
 ): SpannableStringBuilder {
@@ -92,18 +92,18 @@ public fun List<LabelItem>.toSpannable(
   }
 }
 
-public class ReleaseItem private constructor(
-  public val id: Long,
-  public val mbid: ReleaseMbid,
-  public val name: ReleaseName,
-  public val format: String,
-  public val tracks: String,
-  public val country: String,
-  public val date: String,
-  public val labels: List<LabelItem>,
-  public val catalogNumber: String,
-  public val barcode: String,
-  public val artistCredits: List<CreditItem>
+class ReleaseItem private constructor(
+  val id: Long,
+  val mbid: ReleaseMbid,
+  val name: ReleaseName,
+  val format: String,
+  val tracks: String,
+  val country: String,
+  val date: String,
+  val labels: List<LabelItem>,
+  val catalogNumber: String,
+  val barcode: String,
+  val artistCredits: List<CreditItem>
 ) {
 
   override fun equals(other: Any?): Boolean {
@@ -125,9 +125,9 @@ public class ReleaseItem private constructor(
     return "DisplayRelease(id=$id)"
   }
 
-  public companion object {
+  companion object {
     private var latestId = 0L
-    public fun make(
+    fun make(
       mbid: ReleaseMbid,
       name: ReleaseName,
       format: String,
@@ -155,7 +155,7 @@ public class ReleaseItem private constructor(
       )
     }
 
-    public val NullDisplayRelease: ReleaseItem =
+    val NullDisplayRelease: ReleaseItem =
       ReleaseItem(
         -1L,
         "".toReleaseMbid(),

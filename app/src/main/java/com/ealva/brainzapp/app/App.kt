@@ -25,8 +25,7 @@ import org.koin.core.context.startKoin
 import timber.log.Timber
 
 @Suppress("unused") // It's in the manifest
-public class App : Application() {
-
+class App : Application() {
   override fun onCreate() {
     super.onCreate()
     startKoin {

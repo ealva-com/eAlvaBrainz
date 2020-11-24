@@ -55,7 +55,8 @@ data class ArtistSearchResult(
 ) {
   companion object {
     val NullArtistSearchResult = ArtistSearchResult(
-      "".toArtistMbid(), "".toArtistType(), "".toArtistName(), "".toCountry(), "", 0)
+      "".toArtistMbid(), "".toArtistType(), "".toArtistName(), "".toCountry(), "", 0
+    )
   }
 }
 
@@ -71,7 +72,6 @@ interface ArtistSearchViewModel {
 //    val list = itemList.value
 //    return list.isNullOrEmpty() || isBusy.value != true
 //  }
-
 }
 
 fun Fragment.getArtistSearchViewModel(brainz: MusicBrainzService): ArtistSearchViewModel {
@@ -157,7 +157,6 @@ internal class ArtistSearchViewModelImpl(
       if (e !is CancellationException) Timber.e(e)
     }
   }
-
 }
 
 inline fun <T> busy(busy: MutableLiveData<Boolean>, block: () -> T): T {
@@ -168,4 +167,3 @@ inline fun <T> busy(busy: MutableLiveData<Boolean>, block: () -> T): T {
     busy.postValue(false)
   }
 }
-

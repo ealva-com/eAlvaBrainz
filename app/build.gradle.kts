@@ -52,10 +52,11 @@ android {
     jvmTarget = "1.8"
     suppressWarnings = false
     verbose = true
-    freeCompilerArgs = freeCompilerArgs + "-XXLanguage:+InlineClasses"
-    freeCompilerArgs = freeCompilerArgs + "-Xinline-classes"
-    freeCompilerArgs = freeCompilerArgs + "-Xopt-in=kotlin.RequiresOptIn"
-    freeCompilerArgs = freeCompilerArgs + "-Xexplicit-api=warning"
+    freeCompilerArgs = listOf(
+      "-XXLanguage:+InlineClasses",
+      "-Xinline-classes",
+      "-Xopt-in=kotlin.RequiresOptIn"
+    )
   }
 }
 

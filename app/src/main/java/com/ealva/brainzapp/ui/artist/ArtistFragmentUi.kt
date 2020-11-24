@@ -47,7 +47,7 @@ import com.ealva.brainzapp.ui.view.snackErrors
 import com.ealva.brainzapp.ui.view.tabSelectionFlow
 import com.ealva.brainzapp.ui.view.viewPager2
 import com.ealva.brainzsvc.common.ArtistName
-import com.ealva.ealvabrainz.R
+import com.ealva.brainzapp.R
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.ensureExhaustive
 import com.google.android.material.appbar.AppBarLayout
@@ -88,35 +88,35 @@ import splitties.views.textAppearance
 import splitties.views.textResource
 import splitties.views.topPadding
 import timber.log.Timber
-import com.ealva.ealvabrainz.R.id.artist_ui_app_bar as ID_APP_BAR
-import com.ealva.ealvabrainz.R.id.artist_ui_area as ID_AREA
-import com.ealva.ealvabrainz.R.id.artist_ui_area_label as ID_AREA_LABEL
-import com.ealva.ealvabrainz.R.id.artist_ui_circular_progress as ID_PROGRESS
-import com.ealva.ealvabrainz.R.id.artist_ui_collapsing_toolbar as ID_COLLAPSING
-import com.ealva.ealvabrainz.R.id.artist_ui_constraint as ID_CONSTRAINT
-import com.ealva.ealvabrainz.R.id.artist_ui_coordinator as ID_COORDINATOR
-import com.ealva.ealvabrainz.R.id.artist_ui_end_area as ID_END_AREA
-import com.ealva.ealvabrainz.R.id.artist_ui_end_area_label as ID_END_AREA_LABEL
-import com.ealva.ealvabrainz.R.id.artist_ui_genres as ID_GENRES
-import com.ealva.ealvabrainz.R.id.artist_ui_genres_label as ID_GENRES_LABEL
-import com.ealva.ealvabrainz.R.id.artist_ui_isni as ID_ISNI
-import com.ealva.ealvabrainz.R.id.artist_ui_isni_label as ID_ISNI_LABEL
-import com.ealva.ealvabrainz.R.id.artist_ui_isni_tag_key as KEY_ISNI_VALUE
-import com.ealva.ealvabrainz.R.id.artist_ui_lifespan_begin as ID_LIFESPAN_BEGIN
-import com.ealva.ealvabrainz.R.id.artist_ui_lifespan_begin_label as ID_LIFESPAN_BEGIN_LABEL
-import com.ealva.ealvabrainz.R.id.artist_ui_lifespan_end as ID_LIFESPAN_END
-import com.ealva.ealvabrainz.R.id.artist_ui_lifespan_end_label as ID_LIFESPAN_END_LABEL
-import com.ealva.ealvabrainz.R.id.artist_ui_rating_bar as ID_RATING
-import com.ealva.ealvabrainz.R.id.artist_ui_rating_label as ID_RATING_LABEL
-import com.ealva.ealvabrainz.R.id.artist_ui_start_area as ID_START_AREA
-import com.ealva.ealvabrainz.R.id.artist_ui_start_area_label as ID_START_AREA_LABEL
-import com.ealva.ealvabrainz.R.id.artist_ui_tabbed_layout as ID_TABBED_LAYOUT
-import com.ealva.ealvabrainz.R.id.artist_ui_toolbar as ID_TOOLBAR
-import com.ealva.ealvabrainz.R.id.artist_ui_type as ID_ARTIST_TYPE
-import com.ealva.ealvabrainz.R.id.artist_ui_type_label as ID_TYPE_LABEL
-import com.ealva.ealvabrainz.R.id.artist_ui_view_pager as ID_PAGER
+import com.ealva.brainzapp.R.id.artist_ui_app_bar as ID_APP_BAR
+import com.ealva.brainzapp.R.id.artist_ui_area as ID_AREA
+import com.ealva.brainzapp.R.id.artist_ui_area_label as ID_AREA_LABEL
+import com.ealva.brainzapp.R.id.artist_ui_circular_progress as ID_PROGRESS
+import com.ealva.brainzapp.R.id.artist_ui_collapsing_toolbar as ID_COLLAPSING
+import com.ealva.brainzapp.R.id.artist_ui_constraint as ID_CONSTRAINT
+import com.ealva.brainzapp.R.id.artist_ui_coordinator as ID_COORDINATOR
+import com.ealva.brainzapp.R.id.artist_ui_end_area as ID_END_AREA
+import com.ealva.brainzapp.R.id.artist_ui_end_area_label as ID_END_AREA_LABEL
+import com.ealva.brainzapp.R.id.artist_ui_genres as ID_GENRES
+import com.ealva.brainzapp.R.id.artist_ui_genres_label as ID_GENRES_LABEL
+import com.ealva.brainzapp.R.id.artist_ui_isni as ID_ISNI
+import com.ealva.brainzapp.R.id.artist_ui_isni_label as ID_ISNI_LABEL
+import com.ealva.brainzapp.R.id.artist_ui_isni_tag_key as KEY_ISNI_VALUE
+import com.ealva.brainzapp.R.id.artist_ui_lifespan_begin as ID_LIFESPAN_BEGIN
+import com.ealva.brainzapp.R.id.artist_ui_lifespan_begin_label as ID_LIFESPAN_BEGIN_LABEL
+import com.ealva.brainzapp.R.id.artist_ui_lifespan_end as ID_LIFESPAN_END
+import com.ealva.brainzapp.R.id.artist_ui_lifespan_end_label as ID_LIFESPAN_END_LABEL
+import com.ealva.brainzapp.R.id.artist_ui_rating_bar as ID_RATING
+import com.ealva.brainzapp.R.id.artist_ui_rating_label as ID_RATING_LABEL
+import com.ealva.brainzapp.R.id.artist_ui_start_area as ID_START_AREA
+import com.ealva.brainzapp.R.id.artist_ui_start_area_label as ID_START_AREA_LABEL
+import com.ealva.brainzapp.R.id.artist_ui_tabbed_layout as ID_TABBED_LAYOUT
+import com.ealva.brainzapp.R.id.artist_ui_toolbar as ID_TOOLBAR
+import com.ealva.brainzapp.R.id.artist_ui_type as ID_ARTIST_TYPE
+import com.ealva.brainzapp.R.id.artist_ui_type_label as ID_TYPE_LABEL
+import com.ealva.brainzapp.R.id.artist_ui_view_pager as ID_PAGER
 
-public class ArtistFragmentUi(
+class ArtistFragmentUi(
   uiContext: FragmentUiContext,
   private val mainPresenter: MainPresenter,
   private val viewModel: ArtistViewModel,

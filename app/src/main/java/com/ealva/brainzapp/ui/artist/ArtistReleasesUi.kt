@@ -20,14 +20,13 @@ package com.ealva.brainzapp.ui.artist
 import android.content.Context
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ealva.brainzapp.ui.fragment.FragmentUiContext
 import splitties.toast.toast
 import splitties.views.dsl.core.Ui
 import splitties.views.dsl.recyclerview.recyclerView
-import com.ealva.ealvabrainz.R.id.artist_releases_recycler as ID_RECYCLER
+import com.ealva.brainzapp.R.id.artist_releases_recycler as ID_RECYCLER
 
 class ArtistReleasesUi(
   private val uiContext: FragmentUiContext,
@@ -44,16 +43,21 @@ class ArtistReleasesUi(
       ctx.toast("Selected: ${displayRelease.name}")
     }.also { itemAdapter = it }
   }.also {
-    lifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
-      override fun onResume(owner: LifecycleOwner) {
-        viewModel.releases.observe(lifecycleOwner, Observer { list ->
-          itemAdapter.setItems(list ?: emptyList())
-        })
-      }
+    lifecycleOwner.lifecycle.addObserver(
+      object : DefaultLifecycleObserver {
+        override fun onResume(owner: LifecycleOwner) {
+          viewModel.releases.observe(
+            lifecycleOwner,
+            { list ->
+              itemAdapter.setItems(list ?: emptyList())
+            }
+          )
+        }
 
-      override fun onPause(owner: LifecycleOwner) {
-        viewModel.releases.removeObservers(lifecycleOwner)
+        override fun onPause(owner: LifecycleOwner) {
+          viewModel.releases.removeObservers(lifecycleOwner)
+        }
       }
-    })
+    )
   }
 }

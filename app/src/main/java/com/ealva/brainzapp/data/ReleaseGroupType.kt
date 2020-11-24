@@ -20,7 +20,7 @@
 package com.ealva.brainzapp.data
 
 import androidx.annotation.StringRes
-import com.ealva.ealvabrainz.R
+import com.ealva.brainzapp.R
 import timber.log.Timber
 
 /**
@@ -29,8 +29,8 @@ import timber.log.Timber
  *
  * MusicBrainz [Release Group Type](https://musicbrainz.org/doc/Release_Group/Type)
  */
-public sealed class ReleaseGroupType(
-  public val name: String,
+sealed class ReleaseGroupType(
+  val name: String,
   @field:StringRes private val displayName: Int
 ) {
 
@@ -42,7 +42,7 @@ public sealed class ReleaseGroupType(
    * [fetch] is typically a function like Context.getString() or a lambda. We don't want to have
    * Context as a dependency
    */
-  public open fun getDisplayName(fetch: (stringRes: Int) -> String): String {
+  open fun getDisplayName(fetch: (stringRes: Int) -> String): String {
     return fetch(displayName)
   }
 
@@ -77,19 +77,19 @@ public sealed class ReleaseGroupType(
    * * **Other**
    * Any release that does not fit or can't decisively be placed in any of the categories above.
    */
-  public sealed class Primary(name: String, @StringRes displayName: Int) :
+  sealed class Primary(name: String, @StringRes displayName: Int) :
     ReleaseGroupType(name, displayName) {
 
-    public object Album : Primary("Album", R.string.Album)
-    public object Single : Primary("Single", R.string.Single)
-    public object EP : Primary("EP", R.string.EP)
-    public object Broadcast : Primary("Broadcast", R.string.Broadcast)
-    public object Other : Primary("Other", R.string.Other)
-    public class Unrecognized(name: String) : Primary(name, R.string.empty) {
+    object Album : Primary("Album", R.string.Album)
+    object Single : Primary("Single", R.string.Single)
+    object EP : Primary("EP", R.string.EP)
+    object Broadcast : Primary("Broadcast", R.string.Broadcast)
+    object Other : Primary("Other", R.string.Other)
+    class Unrecognized(name: String) : Primary(name, R.string.empty) {
       override fun getDisplayName(fetch: (stringRes: Int) -> String): String = name
     }
 
-    public object Unknown : Primary("", R.string.empty)
+    object Unknown : Primary("", R.string.empty)
   }
 
   /**
@@ -137,35 +137,35 @@ public sealed class ReleaseGroupType(
    * mixtapes are generally DJ-mixed, they are distinct from commercial DJ mixes (which are usually
    * deemed compilations) and are defined by having a significant proportion of new material,
    * including original production or original vocals over top of other artists' instrumentals.
-   * They are distinct from demos in that they are designed for release directly to the public and
+   * They are distinct from demos in that they are designed for release directly to the and
    * fans; not to labels.
    */
-  public sealed class Secondary(name: String, @StringRes displayName: Int) :
+  sealed class Secondary(name: String, @StringRes displayName: Int) :
     ReleaseGroupType(name, displayName) {
-    public object Compilation : Secondary("Compilation", R.string.Compilation)
-    public object Soundtrack : Secondary("Soundtrack", R.string.Soundtrack)
-    public object SpokenWord : Secondary("Spokenword", R.string.Spoken_word)
-    public object Interview : Secondary("Interview", R.string.Interview)
-    public object Audiobook : Secondary("Audiobook", R.string.Audiobook)
-    public object AudioDrama : Secondary("Audio drama", R.string.Audio_drama)
-    public object Live : Secondary("Live", R.string.Live)
-    public object Remix : Secondary("Remix", R.string.Remix)
-    public object DJMix : Secondary("DJ-mix", R.string.DJ_mix)
-    public object MixtapeStreet : Secondary("Mixtape/Street", R.string.MixtapeSlashStreet)
-    public object Demo : Secondary("Demo", R.string.Demo)
-    public class Unrecognized(name: String) : Secondary(name, R.string.empty) {
+    object Compilation : Secondary("Compilation", R.string.Compilation)
+    object Soundtrack : Secondary("Soundtrack", R.string.Soundtrack)
+    object SpokenWord : Secondary("Spokenword", R.string.Spoken_word)
+    object Interview : Secondary("Interview", R.string.Interview)
+    object Audiobook : Secondary("Audiobook", R.string.Audiobook)
+    object AudioDrama : Secondary("Audio drama", R.string.Audio_drama)
+    object Live : Secondary("Live", R.string.Live)
+    object Remix : Secondary("Remix", R.string.Remix)
+    object DJMix : Secondary("DJ-mix", R.string.DJ_mix)
+    object MixtapeStreet : Secondary("Mixtape/Street", R.string.MixtapeSlashStreet)
+    object Demo : Secondary("Demo", R.string.Demo)
+    class Unrecognized(name: String) : Secondary(name, R.string.empty) {
       override fun getDisplayName(fetch: (stringRes: Int) -> String): String = name
     }
 
-    public object Unknown : Secondary("", R.string.empty)
+    object Unknown : Secondary("", R.string.empty)
   }
 
-  public companion object {
-    public fun mapOfPrimary(): MutableMap<String, Primary> {
+  companion object {
+    fun mapOfPrimary(): MutableMap<String, Primary> {
       return primaryMap.toMutableMap()
     }
 
-    public fun mapOfSecondary(): MutableMap<String, Secondary> {
+    fun mapOfSecondary(): MutableMap<String, Secondary> {
       return secondaryMap.toMutableMap()
     }
   }
@@ -179,7 +179,7 @@ private val primaryMap = mapOf(
   makePair(ReleaseGroupType.Primary.Other)
 )
 
-public fun String.toPrimaryReleaseGroupType(): ReleaseGroupType.Primary {
+fun String.toPrimaryReleaseGroupType(): ReleaseGroupType.Primary {
   return primaryMap[this] ?: if (this.isBlank()) ReleaseGroupType.Primary.Unknown else {
     Timber.e("Unrecognized primary ReleaseGroup type %s", this)
     ReleaseGroupType.Primary.Unrecognized(this)
@@ -200,14 +200,14 @@ private val secondaryMap = mapOf(
   makePair(ReleaseGroupType.Secondary.Demo)
 )
 
-public fun String.toSecondaryReleaseGroupType(): ReleaseGroupType.Secondary {
+fun String.toSecondaryReleaseGroupType(): ReleaseGroupType.Secondary {
   return secondaryMap[this] ?: if (isBlank()) ReleaseGroupType.Secondary.Unknown else {
     Timber.e("Unrecognized secondary ReleaseGroup type '%s'", this)
     ReleaseGroupType.Secondary.Unrecognized(this)
   }
 }
 
-public fun List<String>.toSecondaryReleaseGroupList(): List<ReleaseGroupType.Secondary> {
+fun List<String>.toSecondaryReleaseGroupList(): List<ReleaseGroupType.Secondary> {
   return mapTo(mutableListOf()) {
     it.toSecondaryReleaseGroupType()
   }
@@ -227,7 +227,7 @@ public fun List<String>.toSecondaryReleaseGroupList(): List<ReleaseGroupType.Sec
  * Single.toDisplayString(listOf()) { context.getString(it) } = "Single"
  * ```
  */
-public fun ReleaseGroupType.Primary.toDisplayString(
+fun ReleaseGroupType.Primary.toDisplayString(
   secondaryList: List<ReleaseGroupType.Secondary>,
   fetch: (stringRes: Int) -> String
 ): String {

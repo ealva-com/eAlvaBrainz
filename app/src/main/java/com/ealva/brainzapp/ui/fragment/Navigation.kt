@@ -21,12 +21,13 @@ import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
-import com.ealva.ealvabrainz.R
+import com.ealva.brainzapp.R
 
 typealias FragmentTagPair = Pair<Fragment, String?>
 
 interface Navigation {
-  @get:IdRes val containerViewId: Int
+  @get:IdRes
+  val containerViewId: Int
   val fragmentPresent: Boolean
 
   fun addIfNoFragmentPresent(factory: () -> FragmentTagPair)
@@ -47,7 +48,8 @@ inline val Navigation.noFragmentPresent
 
 private class NavigationImpl(
   private val fm: FragmentManager,
-  @field:IdRes override val containerViewId: Int) : Navigation {
+  @field:IdRes override val containerViewId: Int
+) : Navigation {
   override val fragmentPresent: Boolean
     get() = fm.findFragmentById(R.id.main_ui_fragment_container) != null
 

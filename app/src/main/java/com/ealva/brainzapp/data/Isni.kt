@@ -29,19 +29,19 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 
-public inline class Isni(public val value: String) {
-  public companion object {
-    public val NullIsni: Isni = Isni("")
+inline class Isni(val value: String) {
+  companion object {
+    val NullIsni: Isni = Isni("")
   }
 }
 
 @Suppress("NOTHING_TO_INLINE")
-public inline fun String.toIsni(): Isni = Isni(this)
+inline fun String.toIsni(): Isni = Isni(this)
 
-public inline val Isni.appearsValid: Boolean
+inline val Isni.appearsValid: Boolean
   get() = value.length == 16
 
-public inline val Isni.displayValue: String
+inline val Isni.displayValue: String
   get() {
     check(appearsValid)
     return buildString {
@@ -55,7 +55,7 @@ public inline val Isni.displayValue: String
     }
   }
 
-public fun TextView.setAsClickableLink(isni: Isni) {
+fun TextView.setAsClickableLink(isni: Isni) {
   isClickable = true
   val spannableString = SpannableString(isni.displayValue)
   val span: ClickableSpan = object : ClickableSpan() {

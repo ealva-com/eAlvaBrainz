@@ -31,7 +31,7 @@ import androidx.core.view.isVisible
 import com.ealva.brainzapp.ui.fragment.FragmentUiContext
 import com.ealva.brainzapp.ui.view.clickFlow
 import com.ealva.brainzapp.ui.view.inPortrait
-import com.ealva.ealvabrainz.R
+import com.ealva.brainzapp.R
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
@@ -56,21 +56,21 @@ import splitties.views.gravityEnd
 import splitties.views.gravityStart
 import splitties.views.textAppearance
 import splitties.views.textResource
-import com.ealva.ealvabrainz.R.id.release_item_artist as ID_ARTIST
-import com.ealva.ealvabrainz.R.id.release_item_barcode as ID_BARCODE
-import com.ealva.ealvabrainz.R.id.release_item_barcode_label as ID_BARCODE_LABEL
-import com.ealva.ealvabrainz.R.id.release_item_card as ID_CARD
-import com.ealva.ealvabrainz.R.id.release_item_cat_number as ID_CATALOG_NUM
-import com.ealva.ealvabrainz.R.id.release_item_catalog_label as ID_CATALOG_LABEL
-import com.ealva.ealvabrainz.R.id.release_item_constraint as ID_CONSTRAINT
-import com.ealva.ealvabrainz.R.id.release_item_country as ID_COUNTRY
-import com.ealva.ealvabrainz.R.id.release_item_date as ID_DATE
-import com.ealva.ealvabrainz.R.id.release_item_format as ID_FORMAT
-import com.ealva.ealvabrainz.R.id.release_item_name as ID_RELEASE_NAME
-import com.ealva.ealvabrainz.R.id.release_item_record_label as ID_RECORD_LABEL
-import com.ealva.ealvabrainz.R.id.release_item_tracks as ID_TRACKS
+import com.ealva.brainzapp.R.id.release_item_artist as ID_ARTIST
+import com.ealva.brainzapp.R.id.release_item_barcode as ID_BARCODE
+import com.ealva.brainzapp.R.id.release_item_barcode_label as ID_BARCODE_LABEL
+import com.ealva.brainzapp.R.id.release_item_card as ID_CARD
+import com.ealva.brainzapp.R.id.release_item_cat_number as ID_CATALOG_NUM
+import com.ealva.brainzapp.R.id.release_item_catalog_label as ID_CATALOG_LABEL
+import com.ealva.brainzapp.R.id.release_item_constraint as ID_CONSTRAINT
+import com.ealva.brainzapp.R.id.release_item_country as ID_COUNTRY
+import com.ealva.brainzapp.R.id.release_item_date as ID_DATE
+import com.ealva.brainzapp.R.id.release_item_format as ID_FORMAT
+import com.ealva.brainzapp.R.id.release_item_name as ID_RELEASE_NAME
+import com.ealva.brainzapp.R.id.release_item_record_label as ID_RECORD_LABEL
+import com.ealva.brainzapp.R.id.release_item_tracks as ID_TRACKS
 
-public class ReleaseItemUi(uiContext: FragmentUiContext, onClick: (v: View) -> Unit) : Ui {
+class ReleaseItemUi(uiContext: FragmentUiContext, onClick: (v: View) -> Unit) : Ui {
 
   private val scope = uiContext.scope
   override val ctx: Context = uiContext.context
@@ -289,7 +289,7 @@ public class ReleaseItemUi(uiContext: FragmentUiContext, onClick: (v: View) -> U
     })
   }
 
-  public fun bind(release: ReleaseItem) {
+  fun bind(release: ReleaseItem) {
     val none = ctx.getString(R.string.NoneInBrackets)
 
     releaseName.text = release.name.value

@@ -47,5 +47,4 @@ internal class ReleaseGroupSearchUiImpl(
   override val root = coordinatorLayout {
     backgroundColor = Color.GREEN
   }
-
 }

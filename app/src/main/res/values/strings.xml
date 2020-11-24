@@ -16,73 +16,74 @@
   -->
 
 <resources>
-    <string name="app_name">eAlva Brainz</string>
+  <string name="app_name">eAlva Brainz</string>
 
-    <string name="Artist">Artist</string>
-    <string name="ReleaseGroup">Release Group</string>
-    <string name="Release">Release</string>
+  <string name="Artist">Artist</string>
+  <string name="ReleaseGroup">Release Group</string>
+  <string name="Release">Release</string>
 
-    <string name="artist_search_hint">Artist query</string>
-    <string name="query_field_empty">Query field is empty</string>
+  <string name="artist_search_hint">Artist query</string>
+  <string name="query_field_empty">Query field is empty</string>
 
 
-    <string-array name="search_types_array">
-        <item>Artist</item>
-        <item>Release Group</item>
-        <item>Release</item>
-    </string-array>
+  <string-array name="search_types_array">
+    <item>Artist</item>
+    <item>Release Group</item>
+    <item>Release</item>
+  </string-array>
 
-    <string name="Group">Group</string>
-    <string name="Person">Person</string>
-    <string name="Orchestra">Orchestra</string>
-    <string name="Choir">Choir</string>
-    <string name="Character">Character</string>
-    <string name="Other">Other</string>
+  <string name="Group">Group</string>
+  <string name="Person">Person</string>
+  <string name="Orchestra">Orchestra</string>
+  <string name="Choir">Choir</string>
+  <string name="Character">Character</string>
+  <string name="Other">Other</string>
 
-    <string name="FoundedLabel">Founded:</string>
-    <string name="DissolvedLabel">Dissolved:</string>
-    <string name="FoundedInLabel">Founded in:</string>
-    <string name="DissolvedInLabel">Dissolved In:</string>
+  <string name="FoundedLabel">Founded:</string>
+  <string name="DissolvedLabel">Dissolved:</string>
+  <string name="FoundedInLabel">Founded in:</string>
+  <string name="DissolvedInLabel">Dissolved In:</string>
 
-    <string name="BornLabel">Born:</string>
-    <string name="DiedLabel">Died:</string>
-    <string name="BornInLabel">Born In:</string>
-    <string name="DiedInLabel">Died In:</string>
+  <string name="BornLabel">Born:</string>
+  <string name="DiedLabel">Died:</string>
+  <string name="BornInLabel">Born In:</string>
+  <string name="DiedInLabel">Died In:</string>
 
-    <string name="CreatedLabel">Created:</string>
-    <string name="CreatedInLabel">Created In:</string>
+  <string name="CreatedLabel">Created:</string>
+  <string name="CreatedInLabel">Created In:</string>
 
-    <string name="StartedLabel">Started:</string>
-    <string name="EndedLabel">Ended:</string>
-    <string name="StartedInLabel">Started In:</string>
-    <string name="EndedInLabel">Ended In:</string>
-    <string name="TypeLabel">Type:</string>
-    <string name="AreaLabel">Area:</string>
+  <string name="StartedLabel">Started:</string>
+  <string name="EndedLabel">Ended:</string>
+  <string name="StartedInLabel">Started In:</string>
+  <string name="EndedInLabel">Ended In:</string>
+  <string name="TypeLabel">Type:</string>
+  <string name="AreaLabel">Area:</string>
 
-    <string name="Album">Album</string>
-    <string name="Single">Single</string>
-    <string name="EP">EP</string>
-    <string name="Broadcast">Broadcast</string>
-    <string name="Compilation">Compilation</string>
-    <string name="Soundtrack">Soundtrack</string>
-    <string name="Spoken_word">Spoken word</string>
-    <string name="Interview">Interview</string>
-    <string name="Audiobook">Audiobook</string>
-    <string name="Audio_drama">Audio drama</string>
-    <string name="Live">Live</string>
-    <string name="Remix">Remix</string>
-    <string name="DJ_mix">DJ mix</string>
-    <string name="MixtapeSlashStreet">Mixtape/Streeet</string>
-    <string name="Demo">Demo</string>
+  <string name="Album">Album</string>
+  <string name="Single">Single</string>
+  <string name="EP">EP</string>
+  <string name="Broadcast">Broadcast</string>
+  <string name="Compilation">Compilation</string>
+  <string name="Soundtrack">Soundtrack</string>
+  <string name="Spoken_word">Spoken word</string>
+  <string name="Interview">Interview</string>
+  <string name="Audiobook">Audiobook</string>
+  <string name="Audio_drama">Audio drama</string>
+  <string name="Live">Live</string>
+  <string name="Remix">Remix</string>
+  <string name="DJ_mix">DJ mix</string>
+  <string name="MixtapeSlashStreet">Mixtape/Streeet</string>
+  <string name="Demo">Demo</string>
 
-    <string name="IsniCodeLabel">ISNI code:</string>
-    <string name="RatingLabel">Rating:</string>
-    <string name="GenresLabel">Genres:</string>
-    <string name="none_in_parens">(none)</string>
-    <string name="ReleaseCount">Releases: %1$d</string>
-    <string name="Discography">Discography</string>
-    <string name="Releases">Releases</string>
-    <string name="CatNumberLabel">Cat#:</string>
-    <string name="BarcodeLabel">Barcode:</string><string name="NoneInBrackets">[none]</string>
+  <string name="IsniCodeLabel">ISNI code:</string>
+  <string name="RatingLabel">Rating:</string>
+  <string name="GenresLabel">Genres:</string>
+  <string name="none_in_parens">(none)</string>
+  <string name="ReleaseCount">Releases: %1$d</string>
+  <string name="Discography">Discography</string>
+  <string name="Releases">Releases</string>
+  <string name="CatNumberLabel">Cat#:</string>
+  <string name="BarcodeLabel">Barcode:</string>
+  <string name="NoneInBrackets">[none]</string>
 
 </resources>

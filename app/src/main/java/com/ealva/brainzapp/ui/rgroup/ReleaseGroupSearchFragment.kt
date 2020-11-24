@@ -40,7 +40,7 @@ class ReleaseGroupSearchFragment private constructor(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
-  ): View? {
+  ): View {
     uiContext = makeUiContext()
     ui = ReleaseGroupSearchUi.make(uiContext, brainz, navigation)
     return ui.root
@@ -62,6 +62,5 @@ class ReleaseGroupSearchFragment private constructor(
     fun make(fm: FragmentManager): ReleaseGroupSearchFragment {
       return fm.instantiate()
     }
-
   }
 }

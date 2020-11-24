@@ -33,7 +33,7 @@ class ReleaseGroupItem private constructor(
   val type: ReleaseGroupType.Primary,
   val secondaryTypes: List<ReleaseGroupType.Secondary>,
   val rating: StarRating,
-  val ratingVotes: Int,
+  @Suppress("unused") val ratingVotes: Int,
   val date: String,
   var releaseCount: Int,
   var artwork: Uri?

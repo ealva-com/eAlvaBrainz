@@ -24,15 +24,15 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 
-public interface FragmentUiContext {
-  public val fragment: Fragment
-  public val context: Context
-  public val lifecycleOwner: LifecycleOwner
-  public val scope: CoroutineScope
-  public val fragmentManager: FragmentManager
+interface FragmentUiContext {
+  val fragment: Fragment
+  val context: Context
+  val lifecycleOwner: LifecycleOwner
+  val scope: CoroutineScope
+  val fragmentManager: FragmentManager
 }
 
-public fun Fragment.makeUiContext(): FragmentUiContext {
+fun Fragment.makeUiContext(): FragmentUiContext {
   return FragmentUiContextImpl(this)
 }
 

@@ -32,10 +32,10 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import timber.log.Timber
 
-public typealias FragmentFactoryFn = () -> Fragment
+typealias FragmentFactoryFn = () -> Fragment
 
 @OptIn(KoinApiExtension::class)
-public class AppFragmentFactory(
+class AppFragmentFactory(
   navigation: Navigation,
   mainPresenter: MainPresenter
 ) : FragmentFactory(), KoinComponent {
@@ -62,7 +62,7 @@ public class AppFragmentFactory(
   }
 }
 
-public inline fun <reified T : Fragment> FragmentManager.instantiate(args: Bundle? = null): T {
+inline fun <reified T : Fragment> FragmentManager.instantiate(args: Bundle? = null): T {
   return (
     fragmentFactory.instantiate(
       T::class.java.classLoader!!,

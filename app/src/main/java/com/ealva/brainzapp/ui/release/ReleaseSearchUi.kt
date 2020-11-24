@@ -47,5 +47,4 @@ internal class ReleaseSearchUiImpl(
   override val root = coordinatorLayout {
     backgroundColor = Color.YELLOW
   }
-
 }

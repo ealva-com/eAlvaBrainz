@@ -69,34 +69,34 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @Suppress("unused")
-public class DisplayArtist(
-  public val mbid: ArtistMbid,
-  public val type: ArtistType,
-  public val name: ArtistName,
-  public val country: Country,
-  public val area: String,
-  public val lifespanBegin: String,
-  public val startArea: String,
-  public val lifespanEnded: Boolean,
-  public val lifespanEnd: String,
-  public val endArea: String,
-  public val isni: Isni,
-  public val rating: StarRating,
-  @Suppress("unused") public val ratingVotes: Int,
-  public val genres: List<GenreItem>
+class DisplayArtist(
+  val mbid: ArtistMbid,
+  val type: ArtistType,
+  val name: ArtistName,
+  val country: Country,
+  val area: String,
+  val lifespanBegin: String,
+  val startArea: String,
+  val lifespanEnded: Boolean,
+  val lifespanEnd: String,
+  val endArea: String,
+  val isni: Isni,
+  val rating: StarRating,
+  @Suppress("unused") val ratingVotes: Int,
+  val genres: List<GenreItem>
 )
 
-public interface ArtistViewModel {
-  public val artist: LiveData<DisplayArtist>
-  public val releaseGroups: LiveData<List<ReleaseGroupItem>>
-  public val releases: LiveData<List<ReleaseItem>>
-  public val isBusy: LiveData<Boolean>
-  public val unsuccessful: LiveData<Unsuccessful>
+interface ArtistViewModel {
+  val artist: LiveData<DisplayArtist>
+  val releaseGroups: LiveData<List<ReleaseGroupItem>>
+  val releases: LiveData<List<ReleaseItem>>
+  val isBusy: LiveData<Boolean>
+  val unsuccessful: LiveData<Unsuccessful>
 
-  public fun lookupArtist(mbid: ArtistMbid)
+  fun lookupArtist(mbid: ArtistMbid)
 }
 
-public fun Fragment.getArtistViewModel(brainz: MusicBrainzService): ArtistViewModel {
+fun Fragment.getArtistViewModel(brainz: MusicBrainzService): ArtistViewModel {
   return ViewModelProvider(
     this,
     ArtistViewModelFactory(brainz)
@@ -158,7 +158,7 @@ private val List<ReleaseEvent>.firstDate: String
   }
 
 private const val SORTER_FOR_EMPTY = "aaaa"
-public inline fun <reified T> mutableDataEmptyList(): MutableLiveData<List<T>> {
+inline fun <reified T> mutableDataEmptyList(): MutableLiveData<List<T>> {
   return MutableLiveData(emptyList())
 }
 

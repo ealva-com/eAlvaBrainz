@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
 import timber.log.Timber
-import com.ealva.ealvabrainz.R.id.spinner_position_tag_id as KEY_SPINNER_POS
+import com.ealva.brainzapp.R.id.spinner_position_tag_id as KEY_SPINNER_POS
 
 class SpinnerWrapper(val spinner: Spinner) {
   private var proxyListener: OnItemSelectedListener? = null

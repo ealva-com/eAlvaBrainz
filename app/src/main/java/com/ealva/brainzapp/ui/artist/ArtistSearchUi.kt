@@ -32,7 +32,7 @@ import com.ealva.brainzapp.ui.view.addOnTouchOvalRipple
 import com.ealva.brainzapp.ui.view.clickFlow
 import com.ealva.brainzapp.ui.view.hideKeyboard
 import com.ealva.brainzapp.ui.view.snackErrors
-import com.ealva.ealvabrainz.R
+import com.ealva.brainzapp.R
 import com.google.android.material.textfield.TextInputLayout
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.library.materialdesigniconic.MaterialDesignIconic
@@ -64,18 +64,18 @@ import splitties.views.dsl.material.MaterialComponentsStyles
 import splitties.views.dsl.material.addInput
 import splitties.views.dsl.recyclerview.recyclerView
 import splitties.views.type
-import com.ealva.ealvabrainz.R.id.artist_search_circular_progress as ID_CIRCULAR_PROGRESS
-import com.ealva.ealvabrainz.R.id.artist_search_constraint as ID_CONSTRAINT
-import com.ealva.ealvabrainz.R.id.artist_search_coordinator as ID_COORDINATOR
-import com.ealva.ealvabrainz.R.id.artist_search_recycler as ID_RECYCLER
-import com.ealva.ealvabrainz.R.id.artist_search_search_button as ID_SEARCH_BUTTON
-import com.ealva.ealvabrainz.R.id.artist_search_search_text as ID_SEARCH_TEXT
-import com.ealva.ealvabrainz.R.id.artist_search_text_input_layout as ID_TEXT_INPUT_LAYOUT
+import com.ealva.brainzapp.R.id.artist_search_circular_progress as ID_CIRCULAR_PROGRESS
+import com.ealva.brainzapp.R.id.artist_search_constraint as ID_CONSTRAINT
+import com.ealva.brainzapp.R.id.artist_search_coordinator as ID_COORDINATOR
+import com.ealva.brainzapp.R.id.artist_search_recycler as ID_RECYCLER
+import com.ealva.brainzapp.R.id.artist_search_search_button as ID_SEARCH_BUTTON
+import com.ealva.brainzapp.R.id.artist_search_search_text as ID_SEARCH_TEXT
+import com.ealva.brainzapp.R.id.artist_search_text_input_layout as ID_TEXT_INPUT_LAYOUT
 
-public interface ArtistSearchUi : Ui {
+interface ArtistSearchUi : Ui {
 
-  public companion object {
-    public fun make(
+  companion object {
+    fun make(
       uiContext: FragmentUiContext,
       viewModel: ArtistSearchViewModel,
       navigation: Navigation

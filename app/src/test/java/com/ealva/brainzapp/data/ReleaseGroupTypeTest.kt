@@ -33,7 +33,7 @@ import com.ealva.brainzapp.data.ReleaseGroupType.Secondary.MixtapeStreet
 import com.ealva.brainzapp.data.ReleaseGroupType.Secondary.Remix
 import com.ealva.brainzapp.data.ReleaseGroupType.Secondary.Soundtrack
 import com.ealva.brainzapp.data.ReleaseGroupType.Secondary.SpokenWord
-import com.ealva.ealvabrainz.R
+import com.ealva.brainzapp.R
 import com.nhaarman.expect.expect
 import org.junit.Test
 import com.ealva.brainzapp.data.ReleaseGroupType.Primary.Unknown as PRIMARY_UNKNOWN
@@ -121,7 +121,7 @@ class ReleaseGroupTypeTest {
     expect(map.remove("EP")).toBe(EP)
     expect(map.remove("Broadcast")).toBe(Broadcast)
     expect(map.remove("Other")).toBe(Other)
-    expect(map.isEmpty()).toBe(true)  { "map not empty"}
+    expect(map.isEmpty()).toBe(true) { "map not empty" }
   }
 
   @Test
@@ -138,7 +138,7 @@ class ReleaseGroupTypeTest {
     expect(map.remove("DJ-mix")).toBe(DJMix)
     expect(map.remove("Mixtape/Street")).toBe(MixtapeStreet)
     expect(map.remove("Demo")).toBe(Demo)
-    expect(map.isEmpty()).toBe(true) { "map not empty"}
+    expect(map.isEmpty()).toBe(true) { "map not empty" }
   }
 }
 
@@ -174,4 +174,3 @@ private fun fetcher(stringRes: Int): String {
     else -> "Error"
   }
 }
-

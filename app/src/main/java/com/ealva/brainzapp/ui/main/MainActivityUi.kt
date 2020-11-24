@@ -50,9 +50,7 @@ class MainActivityUi(
   private val navigation: Navigation,
   override val ctx: Context = uiCtx.activity
 ) : Ui {
-  override val root: View = frameLayout(navigation.containerViewId) {
-
-  }.apply {
+  override val root: View = frameLayout(navigation.containerViewId).apply {
     uiCtx.activity.setContentView(this)
     maybeSetPrimaryFragment()
   }
@@ -62,5 +60,4 @@ class MainActivityUi(
       MainSearchFragment.make(uiCtx.activity.supportFragmentManager) to MainSearchFragment.NAME
     }
   }
-
 }

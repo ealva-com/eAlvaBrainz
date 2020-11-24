@@ -45,7 +45,8 @@ class ArtistSearchItemAdapter(
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-    ViewHolder(ArtistSearchItemUi(uiContext) { v ->
+    ViewHolder(
+      ArtistSearchItemUi(uiContext) { v ->
         val position: Int = recycler?.getChildAdapterPosition(v) ?: -1
         if (position in itemList.indices) selection(itemList[position])
       }

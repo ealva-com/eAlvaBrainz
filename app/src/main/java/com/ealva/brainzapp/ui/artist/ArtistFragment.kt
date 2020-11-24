@@ -101,7 +101,7 @@ class ArtistFragment private constructor(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
-  ): View? {
+  ): View {
     uiContext = makeUiContext()
     ui = ArtistFragmentUi(uiContext, mainPresenter, viewModel, artistMbid, artistName)
     return ui.root

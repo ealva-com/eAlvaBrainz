@@ -39,7 +39,7 @@ import splitties.views.dsl.core.view
 import splitties.views.gravityCenter
 
 @OptIn(InternalSplittiesApi::class)
-public inline fun Context.circularProgress(
+inline fun Context.circularProgress(
   @IdRes id: Int,
   @StyleRes theme: Int = NO_THEME,
   initView: CircularProgressBar.() -> Unit = {}
@@ -48,7 +48,7 @@ public inline fun Context.circularProgress(
 }
 
 @SuppressLint("ResourceType")
-public inline fun View.circularProgress(
+inline fun View.circularProgress(
   @IdRes id: Int,
   @StyleRes theme: Int = NO_THEME,
   initView: CircularProgressBar.() -> Unit = {}
@@ -57,7 +57,7 @@ public inline fun View.circularProgress(
 }
 
 @SuppressLint("ResourceType")
-public inline fun Ui.circularProgress(
+inline fun Ui.circularProgress(
   @IdRes id: Int,
   @StyleRes theme: Int = NO_THEME,
   initView: CircularProgressBar.() -> Unit = {}
@@ -70,7 +70,7 @@ private const val GPLUS_YELLOW = 0xFF_F4_B4_00.toInt()
 private const val GPLUS_BLUE = 0xFF_42_7F_ED.toInt()
 private const val GPLUS_RED = 0xFF_B2_34_24.toInt()
 
-public fun CoordinatorLayout.addCircularProgress(viewId: Int): CircularProgressBar {
+fun CoordinatorLayout.addCircularProgress(viewId: Int): CircularProgressBar {
   return add(circularProgress(viewId) {
     elevation = 4f
     isVisible = false

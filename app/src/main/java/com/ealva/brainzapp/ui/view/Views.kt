@@ -22,11 +22,11 @@ import android.content.res.Configuration
 import android.os.Build
 import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful
-import com.ealva.ealvabrainz.R
+import com.ealva.brainzapp.R
 import com.ealva.ealvabrainz.common.ensureExhaustive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,7 +40,7 @@ import splitties.snackbar.longSnack
 fun View.addOnTouchOvalRipple() {
   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
     isClickable = true
-    foreground = context.getDrawable(R.drawable.oval_ripple)
+    foreground = ContextCompat.getDrawable(context, R.drawable.oval_ripple)
   }
 }
 
@@ -56,13 +56,16 @@ fun LiveData<Unsuccessful>.snackErrors(
   lifecycleOwner: LifecycleOwner,
   root: CoordinatorLayout
 ) {
-  observe(lifecycleOwner, Observer { result ->
-    when (result) {
-      is Unsuccessful.ErrorResult -> root.longSnack(result.message)
-      is Unsuccessful.Exceptional -> root.longSnack(result.message)
-      is Unsuccessful.None -> Any()
-    }.ensureExhaustive
-  })
+  observe(
+    lifecycleOwner,
+    { result ->
+      when (result) {
+        is Unsuccessful.ErrorResult -> root.longSnack(result.message)
+        is Unsuccessful.Exceptional -> root.longSnack(result.message)
+        is Unsuccessful.None -> Any()
+      }.ensureExhaustive
+    }
+  )
 }
 
 val Unsuccessful.ErrorResult.message: String
@@ -85,7 +88,3 @@ val Context.inPortrait: Boolean
 
 inline val View.inPortrait: Boolean
   get() = context.inPortrait
-
-//val Context.inLandscape: Boolean
-//  get() = Configuration.ORIENTATION_LANDSCAPE == resources.configuration.orientation
-
