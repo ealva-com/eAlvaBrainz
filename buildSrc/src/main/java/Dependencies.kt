@@ -47,6 +47,7 @@ object BuildPluginsVersion {
   const val KOTLIN = "1.4.20"
   const val VERSIONS = "0.33.0"
   const val DOKKA = "1.4.10.2"
+  const val VANNIKTECH_PUBLISH = "0.13.0"
 }
 
 object SupportLibs {

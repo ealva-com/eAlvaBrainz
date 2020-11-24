@@ -37,11 +37,11 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 plugins {
   id("com.android.application") version BuildPluginsVersion.AGP apply false
   id("com.android.library") version BuildPluginsVersion.AGP apply false
-  kotlin("android") version Versions.KOTLIN apply false
+  kotlin("android") version BuildPluginsVersion.KOTLIN apply false
   id("io.gitlab.arturbosch.detekt") version BuildPluginsVersion.DETEKT
   id("com.github.ben-manes.versions") version BuildPluginsVersion.VERSIONS
   id("org.jetbrains.dokka") version BuildPluginsVersion.DOKKA
-  id("com.vanniktech.maven.publish") version "0.13.0"
+  id("com.vanniktech.maven.publish") version BuildPluginsVersion.VANNIKTECH_PUBLISH
 }
 
 allprojects {
