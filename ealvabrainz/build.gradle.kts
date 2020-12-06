@@ -61,7 +61,7 @@ android {
 
   lintOptions {
     isWarningsAsErrors = false
-    isAbortOnError = true
+    isAbortOnError = false
   }
 
   testOptions {

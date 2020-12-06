@@ -73,12 +73,12 @@ public class MbidTest {
 
 private fun Matcher<TestMbid>.toBeValid() {
   val mbid = actual ?: fail("Expected valid Mbid but was null")
-  if (mbid.isInvalid()) fail("Expected valid Mbid but was $mbid")
+  if (mbid.isInvalid) fail("Expected valid Mbid but was $mbid")
 }
 
 private fun Matcher<TestMbid>.toBeInvalid() {
   val mbid = actual ?: fail("Expected invalid Mbid but was null")
-  if (mbid.isValid()) fail("Expected invalid Mbid but was $mbid")
+  if (mbid.isValid) fail("Expected invalid Mbid but was $mbid")
 }
 
 private inline class TestMbid(override val value: String) : Mbid

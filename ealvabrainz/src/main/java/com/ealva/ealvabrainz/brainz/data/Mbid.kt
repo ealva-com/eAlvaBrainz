@@ -58,10 +58,21 @@ public interface Mbid {
 }
 
 @Suppress("NOTHING_TO_INLINE")
-public inline fun Mbid.isValid(): Boolean = value.isValidMbid()
+public inline val Mbid.isValid: Boolean
+  get() = value.isValidMbid()
 
 @Suppress("NOTHING_TO_INLINE")
-public inline fun Mbid.isInvalid(): Boolean = !isValid()
+public inline val Mbid.isInvalid: Boolean
+  get() = !isValid
+
+/**
+ * Determines if this is superseded by [newValue]. If this is invalid or [newValue] is valid
+ * and != this, then this should be replaced by [newValue].
+ */
+@Suppress("NOTHING_TO_INLINE")
+public inline fun <T : Mbid> T.isObsolete(newValue: T): Boolean {
+  return this.isInvalid || (newValue.isValid && newValue != this)
+}
 
 @Suppress("ReturnCount", "MagicNumber")
 public fun String.isValidMbid(): Boolean {

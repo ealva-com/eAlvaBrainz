@@ -233,7 +233,7 @@ internal class ArtistViewModelImpl(
       }
       val group = release.releaseGroup
       val mbid = group.mbid
-      if (mbid.isValid()) {
+      if (mbid.isValid) {
         newGroupMap[mbid] = group
         val groupReleases =
           if (groupToReleaseMap.containsKey(mbid)) groupToReleaseMap[mbid]!! else mutableListOf()

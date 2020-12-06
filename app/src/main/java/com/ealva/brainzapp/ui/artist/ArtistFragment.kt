@@ -45,7 +45,7 @@ var Bundle?.artistMbid: ArtistMbid
   get() {
     check(this != null) { "Null argument bundle" }
     val mbid = getString(KEY_MBID)?.toArtistMbid()
-    check(mbid != null && mbid.isValid()) { "Bad Artist Id $mbid" }
+    check(mbid != null && mbid.isValid) { "Bad Artist Id $mbid" }
     return mbid
   }
   set(value) {
