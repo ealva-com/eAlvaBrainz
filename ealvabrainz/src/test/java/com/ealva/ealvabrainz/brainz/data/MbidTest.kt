@@ -69,6 +69,22 @@ public class MbidTest {
 
     expect("".toTestMbid()).toBeInvalid()
   }
+
+  @Test
+  public fun `test mbid isObsolete`() {
+    val validMbid = ArtistMbid.ANONYMOUS
+    val equalToValid = ArtistMbid(ArtistMbid.ANONYMOUS.value)
+    val invalidMbid = ArtistMbid("")
+    expect(validMbid.isObsolete(null)).toBe(false)
+    expect(validMbid.isObsolete(invalidMbid)).toBe(false)
+    expect(validMbid.isObsolete(equalToValid)).toBe(false)
+    expect(validMbid.isObsolete(ArtistMbid.DISNEY)).toBe(true)
+
+    expect(invalidMbid.isObsolete(null)).toBe(false)
+    expect(invalidMbid.isObsolete(ArtistMbid(""))).toBe(false)
+    expect(invalidMbid.isObsolete(validMbid)).toBe(true)
+    expect(invalidMbid.isObsolete(ArtistMbid.DISNEY)).toBe(true)
+  }
 }
 
 private fun Matcher<TestMbid>.toBeValid() {

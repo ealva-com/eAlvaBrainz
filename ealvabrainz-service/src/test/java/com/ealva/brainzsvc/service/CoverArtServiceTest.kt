@@ -20,7 +20,6 @@ package com.ealva.brainzsvc.service
 import com.ealva.brainzsvc.service.CoverArtService.Entity.ReleaseEntity
 import com.ealva.ealvabrainz.MainCoroutineRule
 import com.ealva.ealvabrainz.brainz.CoverArt
-import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease.Companion.NullCoverArtRelease
 import com.ealva.ealvabrainz.runBlockingTest
 import com.nhaarman.expect.expect
@@ -36,7 +35,8 @@ import org.junit.Test
 import retrofit2.Response
 
 internal class CoverArtServiceTest {
-  @get:Rule var coroutineRule = MainCoroutineRule()
+  @get:Rule
+  var coroutineRule = MainCoroutineRule()
 
   @Test
   @OptIn(ExperimentalCoroutinesApi::class)
@@ -46,7 +46,7 @@ internal class CoverArtServiceTest {
     val mock = mock<CoverArt> {
       onBlocking {
         getArtwork(entity.value, mbid)
-      } doReturn Response.success<CoverArtRelease>(200, NullCoverArtRelease)
+      } doReturn Response.success(200, NullCoverArtRelease)
     }
     val service = CoverArtService.make(mock, coroutineRule.testDispatcher)
     val release = service.getCoverArtRelease(entity, mbid)
@@ -63,7 +63,6 @@ internal class CoverArtServiceTest {
       onBlocking {
         getArtwork(entity.value, mbid)
       } doReturn Response.error(404, notFoundBody.toResponseBody())
-
     }
     val service = CoverArtService.make(mock, coroutineRule.testDispatcher)
     val release = service.getCoverArtRelease(entity, mbid)
@@ -88,7 +87,8 @@ internal class CoverArtServiceTest {
   }
 }
 
-private const val notFoundBody = """
+private const val notFoundBody =
+  """
 {
   "error": "404",
   "help": "Not found"

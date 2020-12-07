@@ -97,7 +97,8 @@ public class ArtistListTest {
   }
 }
 
-private const val johnLennonJson = """
+private const val johnLennonJson =
+  """
 {
   "created": "2020-02-10T23:01:20.201Z",
   "count": 3,

@@ -82,10 +82,12 @@ internal class ReleaseAdapter(moshi: Moshi) : JsonAdapter<Release>() {
   @field:FallbackOnNull
   private val releaseGroupAtFallbackOnNullAdapter: JsonAdapter<ReleaseGroup> =
     moshi.adapter(
-      ReleaseGroup::class.java, Types.getFieldJsonQualifierAnnotations(
+      ReleaseGroup::class.java,
+      Types.getFieldJsonQualifierAnnotations(
         javaClass,
         "releaseGroupAtFallbackOnNullAdapter"
-      ), "releaseGroup"
+      ),
+      "releaseGroup"
     )
 
   private val listOfReleaseEventAdapter: JsonAdapter<List<ReleaseEvent>> =
@@ -103,10 +105,12 @@ internal class ReleaseAdapter(moshi: Moshi) : JsonAdapter<Release>() {
   @field:FallbackOnNull
   private val coverArtArchiveAtFallbackOnNullAdapter: JsonAdapter<CoverArtArchive> =
     moshi.adapter(
-      CoverArtArchive::class.java, Types.getFieldJsonQualifierAnnotations(
+      CoverArtArchive::class.java,
+      Types.getFieldJsonQualifierAnnotations(
         javaClass,
         "coverArtArchiveAtFallbackOnNullAdapter"
-      ), "coverArtArchive"
+      ),
+      "coverArtArchive"
     )
 
   private val listOfMediumAdapter: JsonAdapter<List<Medium>> =
@@ -133,7 +137,8 @@ internal class ReleaseAdapter(moshi: Moshi) : JsonAdapter<Release>() {
       Types.getFieldJsonQualifierAnnotations(
         javaClass,
         "textRepresentationAtFallbackOnNullAdapter"
-      ), "textRepresentation"
+      ),
+      "textRepresentation"
     )
 
   private val listOfAliasAdapter: JsonAdapter<List<Alias>> =
@@ -368,12 +373,8 @@ internal class ReleaseAdapter(moshi: Moshi) : JsonAdapter<Release>() {
           mask0 = mask0 and 0xfffbffff.toInt()
         }
         19 -> {
-          textRepresentation =
-            textRepresentationAtFallbackOnNullAdapter.fromJson(reader) ?: throw Util.unexpectedNull(
-              "textRepresentation",
-              "text-representation",
-              reader
-            )
+          textRepresentation = textRepresentationAtFallbackOnNullAdapter.fromJson(reader)
+            ?: throw Util.unexpectedNull("textRepresentation", "text-representation", reader)
           // $mask = $mask and (1 shl 19).inv()
           mask0 = mask0 and 0xfff7ffff.toInt()
         }

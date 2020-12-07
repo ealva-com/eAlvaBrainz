@@ -320,7 +320,8 @@ public class ReleaseGroupTest {
  *
  * http://musicbrainz.org/ws/2/release-group/9f7a4c28-8fa2-3113-929c-c47a9f7982c3?inc=artists+releases+area-rels+artist-rels+event-rels+instrument-rels+label-rels+place-rels+recording-rels+release-rels+release-group-rels+series-rels+url-rels+work-rels+discids+media+artist-credits+aliases+annotation+tags+ratings+genres&fmt=json
  */
-private const val editedSgtPeppersJson: String = """
+private const val editedSgtPeppersJson: String =
+  """
 {
   "annotation": null,
   "title": "Sgt. Pepper’s Lonely Hearts Club Band",

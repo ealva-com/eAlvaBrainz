@@ -55,7 +55,8 @@ public class ArtistTest {
   }
 }
 
-private const val artistAllIncJson = """
+private const val artistAllIncJson =
+  """
 {
   "begin_area": {
     "sort-name": "Lakewood",

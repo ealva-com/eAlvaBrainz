@@ -73,7 +73,8 @@ internal class ReleaseTest {
   }
 }
 
-private const val releaseIncAllJson = """
+private const val releaseIncAllJson =
+  """
 {
   "asin": null,
   "packaging": null,
@@ -909,7 +910,8 @@ private const val releaseIncAllJson = """
   }
 }"""
 
-private const val releaseWithNullObjects = """
+private const val releaseWithNullObjects =
+  """
 {
   "media": [
     {
@@ -992,7 +994,8 @@ private const val releaseWithNullObjects = """
 }
 """
 
-private const val releaseWithMissingObjects = """
+private const val releaseWithMissingObjects =
+  """
 {
   "media": [
     {

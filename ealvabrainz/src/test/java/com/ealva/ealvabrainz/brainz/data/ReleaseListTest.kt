@@ -143,7 +143,8 @@ internal class ReleaseListTest {
   }
 }
 
-private const val blackCrowesLions = """
+private const val blackCrowesLions =
+  """
 {
   "created": "2020-02-03T22:15:29.616Z",
   "count": 7,
@@ -517,7 +518,8 @@ private const val blackCrowesLions = """
 }
 """
 
-private const val blackCrowesLionsWithNulls = """
+private const val blackCrowesLionsWithNulls =
+  """
 {
   "created": "2020-02-03T22:15:29.616Z",
   "count": 7,
@@ -573,7 +575,8 @@ private const val blackCrowesLionsWithNulls = """
   ]
 }"""
 
-private const val blackCrowesLionsWithMissing = """
+private const val blackCrowesLionsWithMissing =
+  """
 {
   "created": "2020-02-03T22:15:29.616Z",
   "count": 7,

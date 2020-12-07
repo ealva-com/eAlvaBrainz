@@ -33,7 +33,8 @@ internal class CoverArtImageTest {
         null,
         null,
         CoverArtImageType.TYPE_POSTER.value,
-        null)
+        null
+      )
     )
     val sequence = image.imageTypes
     expect(sequence.first()).toBe(CoverArtImageType.TYPE_FRONT)

@@ -66,12 +66,14 @@ public inline val Mbid.isInvalid: Boolean
   get() = !isValid
 
 /**
- * Determines if this is superseded by [newValue]. If this is invalid or [newValue] is valid
- * and != this, then this should be replaced by [newValue].
+ * Determines if this is superseded by [newValue]. If this is invalid or, [newValue] is valid
+ * and != this, then this should be replaced by [newValue]. This may occur when reading a type of
+ * MBID from a file tag that has change since last parse or if reading a "more accurate" MBID from
+ * MusicBrainz
  */
 @Suppress("NOTHING_TO_INLINE")
-public inline fun <T : Mbid> T.isObsolete(newValue: T): Boolean {
-  return this.isInvalid || (newValue.isValid && newValue != this)
+public inline fun <T : Mbid> T.isObsolete(newValue: T?): Boolean {
+  return (newValue != null && newValue.isValid && (this.isInvalid || newValue != this))
 }
 
 @Suppress("ReturnCount", "MagicNumber")

@@ -115,7 +115,8 @@ public class RecordingListTest {
 /**
  * http://musicbrainz.org/ws/2/recording/?query=isrc:GBAHT1600302&fmt=json
  */
-private const val recordingListJson = """
+private const val recordingListJson =
+  """
 {
   "created": "2020-02-10T17:06:49.087Z",
   "count": 1,

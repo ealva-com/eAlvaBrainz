@@ -89,7 +89,8 @@ public class InstrumentListTest {
 /**
  * https://musicbrainz.org/ws/2/instrument/?query=Nose&fmt=json
  */
-private const val noseQueryJson = """
+private const val noseQueryJson =
+  """
 {
   "created": "2020-02-18T15:06:51.403Z",
   "count": 4,

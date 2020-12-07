@@ -65,7 +65,8 @@ public class EventListTest {
 /**
  * https://musicbrainz.org/ws/2/event/?query=wolfmother&fmt=json
  */
-private const val wolfmotherEventListJson = """
+private const val wolfmotherEventListJson =
+  """
 {
   "created": "2020-02-12T18:34:36.302Z",
   "count": 12,

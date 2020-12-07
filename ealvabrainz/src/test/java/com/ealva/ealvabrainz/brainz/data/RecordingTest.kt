@@ -54,7 +54,8 @@ public class RecordingTest {
   }
 }
 
-private const val recordingAllIncJson = """
+private const val recordingAllIncJson =
+  """
 {
   "annotation": null,
   "genres": [],
