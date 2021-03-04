@@ -58,13 +58,22 @@ android {
     getByName("androidTest").java.srcDir(sharedTestDir)
   }
 
-  lintOptions {
+  lint {
     isWarningsAsErrors = false
     isAbortOnError = false
   }
 
   testOptions {
     unitTests.isIncludeAndroidResources = true
+  }
+
+  packagingOptions {
+    resources {
+      excludes += listOf(
+        "META-INF/AL2.0",
+        "META-INF/LGPL2.1"
+      )
+    }
   }
 
   kotlinOptions {
@@ -98,6 +107,8 @@ dependencies {
   implementation(ThirdParty.OKHTTP)
   implementation(ThirdParty.OKHTTP_LOGGING)
   implementation(ThirdParty.SPLITTIES_SYSTEM_SERVICES)
+
+  implementation(ThirdParty.KOTLIN_RESULT)
 
   testImplementation(TestingLib.JUNIT)
   testImplementation(AndroidTestingLib.ANDROIDX_TEST_CORE) {

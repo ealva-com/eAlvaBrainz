@@ -24,6 +24,5 @@
     <string name="Medium">Medium</string>
     <string name="Small">Small</string>
     <string name="Unknown">Unknown</string>
-
-
+    <string name="ResultStatusCode">Result HTTP status code=%d</string>
 </resources>

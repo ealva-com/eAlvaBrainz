@@ -34,6 +34,7 @@ import com.ealva.brainzapp.ui.main.instantiate
 import com.ealva.brainzsvc.common.ArtistName
 import com.ealva.brainzsvc.common.toArtistName
 import com.ealva.brainzsvc.service.MusicBrainzService
+import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.isValid
 import com.ealva.ealvabrainz.brainz.data.toArtistMbid
@@ -66,7 +67,8 @@ var Bundle?.artistName: ArtistName
 class ArtistFragment private constructor(
   private val brainz: MusicBrainzService,
   private val navigation: Navigation,
-  private val mainPresenter: MainPresenter
+  private val mainPresenter: MainPresenter,
+  private val resourceFetcher: ResourceFetcher
 ) : Fragment() {
 
   private var artistMbid: ArtistMbid = "".toArtistMbid()
@@ -76,7 +78,7 @@ class ArtistFragment private constructor(
   private lateinit var ui: ArtistFragmentUi
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    viewModel = getArtistViewModel(brainz)
+    viewModel = getArtistViewModel(brainz, resourceFetcher)
     childFragmentManager.fragmentFactory =
       ArtistFragmentFactory(parentFragmentManager.fragmentFactory, viewModel, brainz)
     super.onCreate(savedInstanceState)
@@ -113,9 +115,9 @@ class ArtistFragment private constructor(
     fun make(
       brainz: MusicBrainzService,
       navigation: Navigation,
-      mainPresenter: MainPresenter
-    ): ArtistFragment =
-      ArtistFragment(brainz, navigation, mainPresenter)
+      mainPresenter: MainPresenter,
+      resourceFetcher: ResourceFetcher
+    ): ArtistFragment = ArtistFragment(brainz, navigation, mainPresenter, resourceFetcher)
 
     fun make(fm: FragmentManager, mbid: ArtistMbid, name: ArtistName): ArtistFragment =
       fm.instantiate(

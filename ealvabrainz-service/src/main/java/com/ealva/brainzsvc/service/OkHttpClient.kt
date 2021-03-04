@@ -58,11 +58,11 @@ internal inline fun OkHttpClient.Builder.interceptLoggingInDebug(
 ): OkHttpClient.Builder {
   if (addLoggingInterceptor) {
     addInterceptor(
-      HttpLoggingInterceptor(
-        object : HttpLoggingInterceptor.Logger {
-          override fun log(message: String) = Timber.i(message)
-        }
-      ).apply { level = HttpLoggingInterceptor.Level.BASIC }
+      HttpLoggingInterceptor { message ->
+        Timber.i(message)
+      }.apply {
+        level = HttpLoggingInterceptor.Level.BASIC
+      }
     )
   }
   return this

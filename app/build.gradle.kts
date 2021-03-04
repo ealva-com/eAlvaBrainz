@@ -43,7 +43,7 @@ android {
     }
   }
 
-  lintOptions {
+  lint {
     isWarningsAsErrors = false
     isAbortOnError = false
   }
@@ -71,20 +71,22 @@ dependencies {
   implementation(SupportLibs.ANDROIDX_CORE_KTX)
   implementation(SupportLibs.ANDROIDX_LIFECYCLE_RUNTIME_KTX)
 
+  implementation(ThirdParty.KOTLIN_RESULT)
+
   implementation("androidx.viewpager2:viewpager2:1.0.0")
-  implementation("androidx.activity:activity-ktx:1.1.0")
-  implementation("androidx.fragment:fragment-ktx:1.2.5")
-  implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0")
-  implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.2.0")
-  implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.2.0")
-  implementation("androidx.lifecycle:lifecycle-common-java8:2.2.0")
+  implementation("androidx.activity:activity-ktx:1.2.0")
+  implementation("androidx.fragment:fragment-ktx:1.3.0")
+  implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0")
+  implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.0")
+  implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.0")
+  implementation("androidx.lifecycle:lifecycle-common-java8:2.3.0")
   implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
   implementation("androidx.constraintlayout:constraintlayout:2.0.4")
-  implementation("com.google.android.material:material:1.2.1")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
+  implementation("com.google.android.material:material:1.3.0")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
   implementation("com.jakewharton.timber:timber:4.7.1")
-  implementation("com.squareup.retrofit2:retrofit:2.7.1")
+  implementation("com.squareup.retrofit2:retrofit:2.9.0")
   implementation("com.louiscad.splitties:splitties-systemservices:3.0.0-alpha06")
   implementation("com.louiscad.splitties:splitties-views-dsl:3.0.0-alpha06")
   implementation("com.louiscad.splitties:splitties-views-dsl-coordinatorlayout:3.0.0-alpha06")

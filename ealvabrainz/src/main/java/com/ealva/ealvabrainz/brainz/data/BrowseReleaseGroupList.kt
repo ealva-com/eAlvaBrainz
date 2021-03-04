@@ -28,4 +28,6 @@ public class BrowseReleaseGroupList(
   public var releaseGroupOffset: Int = 0,
   @Json(name = "release-groups")
   public var releaseGroups: List<ReleaseGroup> = emptyList()
-)
+) {
+  override fun toString(): String = toJson()
+}

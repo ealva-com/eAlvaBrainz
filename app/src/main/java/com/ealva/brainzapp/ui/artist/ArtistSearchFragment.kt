@@ -28,10 +28,12 @@ import com.ealva.brainzapp.ui.fragment.Navigation
 import com.ealva.brainzapp.ui.fragment.makeUiContext
 import com.ealva.brainzapp.ui.main.instantiate
 import com.ealva.brainzsvc.service.MusicBrainzService
+import com.ealva.brainzsvc.service.ResourceFetcher
 
 class ArtistSearchFragment private constructor(
   private val brainz: MusicBrainzService,
-  private val navigation: Navigation
+  private val navigation: Navigation,
+  private val resourceFetcher: ResourceFetcher
 ) : Fragment() {
   private lateinit var viewModel: ArtistSearchViewModel
   private lateinit var uiContext: FragmentUiContext
@@ -42,7 +44,7 @@ class ArtistSearchFragment private constructor(
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View {
-    viewModel = getArtistSearchViewModel(brainz)
+    viewModel = getArtistSearchViewModel(brainz, resourceFetcher)
     uiContext = makeUiContext()
     ui = ArtistSearchUi.make(uiContext, viewModel, navigation)
     return ui.root
@@ -53,9 +55,10 @@ class ArtistSearchFragment private constructor(
 
     fun make(
       brainz: MusicBrainzService,
-      navigation: Navigation
+      navigation: Navigation,
+      resourceFetcher: ResourceFetcher
     ): ArtistSearchFragment {
-      return ArtistSearchFragment(brainz, navigation)
+      return ArtistSearchFragment(brainz, navigation, resourceFetcher)
     }
 
     fun make(fm: FragmentManager): ArtistSearchFragment {

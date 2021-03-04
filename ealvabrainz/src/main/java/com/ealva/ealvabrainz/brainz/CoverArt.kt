@@ -18,16 +18,23 @@
 package com.ealva.ealvabrainz.brainz
 
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 
+@Suppress("MaxLineLength")
 /**
  * Retrofit interface to get images from Cover Art Archive
  *
- * Be sure to read [MusicBrainz requirements]
- * (https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings)
+ * Possible response status codes are:
+ * * 200 if there is a release with this MBID.
+ * * 400 if {mbid} cannot be parsed as a valid UUID.
+ * * 404 if there is no release with this MBID.
+ * * 405 if the request method is not one of GET or HEAD.
+ * * 406 if the server is unable to generate a response suitable to the Accept header.
+ * * 503 if the user has exceeded their rate limit.
+ *
+ * Be sure to read [MusicBrainz requirements](https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings)
  * for querying their servers.
  */
 public interface CoverArt {
@@ -46,10 +53,4 @@ public interface CoverArt {
     @Path("entity") entity: String,
     @Path("mbid") mbid: String
   ): Response<CoverArtRelease>
-
-  @GET("{entity}/{mbid}")
-  public fun artwork(
-    @Path("entity") entity: String,
-    @Path("mbid") mbid: String
-  ): Call<CoverArtRelease>
 }

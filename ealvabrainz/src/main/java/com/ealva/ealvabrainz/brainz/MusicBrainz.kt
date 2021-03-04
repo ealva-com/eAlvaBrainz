@@ -37,11 +37,18 @@ import retrofit2.http.Query
 /**
  * MusicBrainz Retrofit interface
  *
- * Be sure to read [MusicBrainz requirements]
- * (https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings)
+ * Possible response status codes are:
+ * * 200 Ok, the response contains an entity/entities
+ * * 400 if client data is bad, possibly a malformed MBID.
+ * * 404 if there was nothing found.
+ * * 405 if the request method is not one of GET or HEAD.
+ * * 406 if the server is unable to generate a response suitable to the Accept header.
+ * * 503 if the user has exceeded their rate limit.
+ *
+ * Be sure to read [MusicBrainz requirements](https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings)
  * for querying their servers.
  *
- * MusicBrainz query [documentation](https://musicbrainz.org/doc/Development/XML_Web_Service/Version_2/Search)
+ * [MusicBrainz query documentation](https://musicbrainz.org/doc/Development/XML_Web_Service/Version_2/Search)
  *
  * [Lucene Query syntax](https://lucene.apache.org/core/7_7_2/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package.description)
  */
@@ -53,7 +60,7 @@ public interface MusicBrainz {
    * specified. Optional [offset] is used to page results. The count and offset are both
    * returned in the resulting ReleaseList
    *
-   * [Example: http://musicbrainz.org/ws/2/release/?query=release:Houses%20of%20the%20Holy%20AND%20artist:Led%20Zeppelin&fmt=json](http://musicbrainz.org/ws/2/release/?query=release:Houses%20of%20the%20Holy%20AND%20artist:Led%20Zeppelin&fmt=json)
+   * Example: [http://musicbrainz.org/ws/2/release/?query=release:Houses%20of%20the%20Holy%20AND%20artist:Led%20Zeppelin&fmt=json](http://musicbrainz.org/ws/2/release/?query=release:Houses%20of%20the%20Holy%20AND%20artist:Led%20Zeppelin&fmt=json)
    *
    * @param query full MusicBrainz lucene query
    * @param limit 1..100 inclusive are valid. If skipped, defaults to 25
@@ -209,8 +216,8 @@ public interface MusicBrainz {
    * [http://musicbrainz.org/ws/2/release-group?artist=5182c1d9-c7d2-4dad-afa0-ccfeada921a8&limit=100&offset=100&fmt=json]
    *
    * @param artistId the artist mbid
-   * @param limit max entries returned, required, maximum 100
-   * @param offset offset into total list, required
+   * @param limit 1..100 inclusive are valid. If skipped, defaults to 25
+   * @param offset specifies starting offset into list, used to page results. Defaults to 0
    * @param type limit the results to a particular release type(s), optional
    */
   @GET("release-group")
@@ -220,13 +227,15 @@ public interface MusicBrainz {
      */
     @Query("artist") artistId: String,
     /**
-     * Maximum number of release groups to return. With [offset] used for paging results
+     * Maximum number of release groups to return. Default is 25. Use with [offset] used for paging
+     * results
      */
-    @Query("limit") limit: Int = 25,
+    @Query("limit") limit: Int? = null,
     /**
-     * Offset at where to start in the total list. With [limit] used for paging results
+     * Offset at where to start in the total list. Default is 0. Use With [limit] used for paging
+     * results
      */
-    @Query("offset") offset: Int = 0,
+    @Query("offset") offset: Int? = null,
     /** Specify how much data linked entities should contain */
     @Query("inc") include: String? = null,
     /**
@@ -266,13 +275,15 @@ public interface MusicBrainz {
      */
     @Query("release-group") releaseGroupId: String? = null,
     /**
-     * Maximum number of release groups to return. With [offset] used for paging results
+     * Maximum number of release groups to return. Default is 25. Use with [offset] used for paging
+     * results
      */
-    @Query("limit") limit: Int = 25,
+    @Query("limit") limit: Int? = null,
     /**
-     * Offset at where to start in the total list. With [limit] used for paging results
+     * Offset at where to start in the total list. Default is 0. Use With [limit] used for paging
+     * results
      */
-    @Query("offset") offset: Int = 0,
+    @Query("offset") offset: Int? = null,
     /** Specify how much data linked entities should contain */
     @Query("inc") include: String? = null,
     /**

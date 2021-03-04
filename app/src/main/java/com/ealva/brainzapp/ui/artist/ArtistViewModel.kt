@@ -41,10 +41,8 @@ import com.ealva.brainzsvc.common.toArtistName
 import com.ealva.brainzsvc.common.toLabelName
 import com.ealva.brainzsvc.common.toReleaseGroupName
 import com.ealva.brainzsvc.common.toReleaseName
-import com.ealva.brainzsvc.service.MusicBrainzResult.Success
-import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful
-import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful.Exceptional
 import com.ealva.brainzsvc.service.MusicBrainzService
+import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistCredit
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
@@ -61,10 +59,10 @@ import com.ealva.ealvabrainz.brainz.data.isNullObject
 import com.ealva.ealvabrainz.brainz.data.isValid
 import com.ealva.ealvabrainz.brainz.data.mbid
 import com.ealva.ealvabrainz.brainz.data.toArtistMbid
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -91,25 +89,29 @@ interface ArtistViewModel {
   val releaseGroups: LiveData<List<ReleaseGroupItem>>
   val releases: LiveData<List<ReleaseItem>>
   val isBusy: LiveData<Boolean>
-  val unsuccessful: LiveData<Unsuccessful>
+  val unsuccessful: LiveData<String>
 
   fun lookupArtist(mbid: ArtistMbid)
 }
 
-fun Fragment.getArtistViewModel(brainz: MusicBrainzService): ArtistViewModel {
+fun Fragment.getArtistViewModel(
+  brainz: MusicBrainzService,
+  resourceFetcher: ResourceFetcher
+): ArtistViewModel {
   return ViewModelProvider(
     this,
-    ArtistViewModelFactory(brainz)
+    ArtistViewModelFactory(brainz, resourceFetcher)
   )[ArtistViewModelImpl::class.java]
 }
 
 private class ArtistViewModelFactory(
-  private val brainz: MusicBrainzService
+  private val brainz: MusicBrainzService,
+  private val resourceFetcher: ResourceFetcher
 ) : ViewModelProvider.Factory {
   override fun <T : ViewModel?> create(modelClass: Class<T>): T {
     require(modelClass.isAssignableFrom(ArtistViewModelImpl::class.java))
     @Suppress("UNCHECKED_CAST")
-    return ArtistViewModelImpl(brainz) as T
+    return ArtistViewModelImpl(brainz, resourceFetcher) as T
   }
 }
 
@@ -166,28 +168,28 @@ inline fun <reified T> mutableDataEmptyList(): MutableLiveData<List<T>> {
 private const val RELEASE_HASHMAP_MAX_SIZE = 2048
 
 internal class ArtistViewModelImpl(
-  private val brainz: MusicBrainzService
+  private val brainz: MusicBrainzService,
+  private val resourceFetcher: ResourceFetcher
 ) : ViewModel(), ArtistViewModel {
   override val artist: MutableLiveData<DisplayArtist> = MutableLiveData()
   override val releaseGroups: MutableLiveData<List<ReleaseGroupItem>> = mutableDataEmptyList()
   override val releases: MutableLiveData<List<ReleaseItem>> = mutableDataEmptyList()
   override val isBusy: MutableLiveData<Boolean> = MutableLiveData(false)
-  override val unsuccessful: MutableLiveData<Unsuccessful> = MutableLiveData()
+  override val unsuccessful: MutableLiveData<String> = MutableLiveData("")
 
   @OptIn(ExperimentalCoroutinesApi::class)
   override fun lookupArtist(mbid: ArtistMbid) {
     val currentArtist = artist.value
     if (currentArtist == null || currentArtist.mbid != mbid) {
       viewModelScope.launch(Dispatchers.Default) {
-        unsuccessful.postValue(Unsuccessful.None)
         val groupToReleaseMap = mutableMapOf<ReleaseGroupMbid, MutableList<Release>>()
         val releaseMap = mutableMapOf<ReleaseMbid, ReleaseItem>()
         val displayMap = HashMap<ReleaseGroupMbid, ReleaseGroupItem>(RELEASE_HASHMAP_MAX_SIZE)
         busy(isBusy) {
           if (doArtistLookup(mbid)) {
-            brainz.artistReleases(
+            when (val result = brainz.browseReleases(
               mbid,
-              listOf(
+              include = listOf(
                 Release.Browse.ArtistCredits,
                 Release.Browse.ReleaseGroups,
                 Release.Browse.Ratings,
@@ -195,12 +197,12 @@ internal class ArtistViewModelImpl(
                 Release.Browse.Labels
               ),
               status = listOf(Release.Status.Official)
-            )
-              .catch { ex ->
-                Timber.e(ex)
-                unsuccessful.postValue(Exceptional.make("Artist release flow", ex))
+            )) {
+              is Ok -> {
+                handleReleases(result.value.releases, groupToReleaseMap, displayMap, releaseMap)
               }
-              .collect { handleReleases(it, groupToReleaseMap, displayMap, releaseMap) }
+              is Err -> unsuccessful.postValue(result.error.asString(resourceFetcher))
+            }
           }
         }
       }
@@ -283,12 +285,12 @@ internal class ArtistViewModelImpl(
 
   private suspend fun doArtistLookup(mbid: ArtistMbid): Boolean =
     when (val result = brainz.lookupArtist(mbid, Artist.Misc.all)) {
-      is Success -> {
+      is Ok -> {
         handleArtist(result.value, mbid)
         true
       }
-      is Unsuccessful -> {
-        unsuccessful.postValue(result)
+      is Err -> {
+        unsuccessful.postValue(result.error.asString(resourceFetcher))
         false
       }
     }

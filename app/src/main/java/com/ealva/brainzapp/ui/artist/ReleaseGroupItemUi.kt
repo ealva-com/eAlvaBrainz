@@ -31,13 +31,13 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.ealva.brainzapp.R
 import com.ealva.brainzapp.data.toDisplayString
 import com.ealva.brainzapp.ui.fragment.FragmentUiContext
 import com.ealva.brainzapp.ui.view.clickFlow
 import com.ealva.brainzapp.ui.view.setStarRatingDrawable
 import com.ealva.brainzsvc.net.isEmpty
 import com.ealva.brainzsvc.service.MusicBrainzService
-import com.ealva.brainzapp.R
 import com.google.android.material.card.MaterialCardView
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.library.materialdesigniconic.MaterialDesignIconic
@@ -199,13 +199,11 @@ class ReleaseGroupItemUi(
     when {
       artwork == null -> {
         image.setImageDrawable(placeholder)
-        executor.execute {
-          if (releaseGroup.artwork === null) {
-            releaseGroup.artwork = Uri.EMPTY
+        if (releaseGroup.artwork === null) {
+          releaseGroup.artwork = Uri.EMPTY
+          scope.launch {
             releaseGroup.artwork = brainz.getReleaseGroupArtwork(releaseGroup.mbid)
-            scope.launch {
-              onUpdated(releaseGroup)
-            }
+            onUpdated(releaseGroup)
           }
         }
       }

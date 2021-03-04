@@ -20,16 +20,70 @@ package com.ealva.brainzsvc.art
 import android.content.Intent
 import android.net.Uri
 import android.util.Size
+import com.ealva.brainzsvc.common.NullIntent
+import com.ealva.brainzsvc.net.toSecureUri
 
 /**
  * It's expected that [location] will be the sole determinant for equality. This interface
  * is provided as common facade over the source of images.
  */
-@Suppress("unused")
-public interface RemoteImage : Comparable<RemoteImage> {
-  public val location: Uri
-  public val sizeBucket: SizeBucket
-  public val sourceLogoDrawableRes: Int
-  public val sourceIntent: Intent
-  public val actualSize: Size?
+public sealed class RemoteImage : Comparable<RemoteImage> {
+  public abstract val location: Uri
+  public abstract val sizeBucket: SizeBucket
+  public abstract val sourceLogoDrawableRes: Int
+  public abstract val sourceIntent: Intent
+  public abstract val actualSize: Size?
+  public abstract val otherInfo: String
+}
+
+/**
+ * Equality/hashCode/compareTo is determined solely by [location]
+ */
+public class RemoteImageData(
+  override val location: Uri,
+  override val sizeBucket: SizeBucket,
+  override val sourceLogoDrawableRes: Int,
+  override val sourceIntent: Intent,
+  override val actualSize: Size? = null,
+  override val otherInfo: String = location.toString()
+) : RemoteImage() {
+  override fun compareTo(other: RemoteImage): Int {
+    return location.compareTo(other.location)
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as RemoteImageData
+
+    if (location != other.location) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    return location.hashCode()
+  }
+
+  public companion object {
+    public fun fromUrl(
+      url: String,
+      bucket: SizeBucket,
+      sourceLogoDrawableRes: Int,
+      source: Intent,
+      actualSize: Size? = null
+    ): RemoteImageData {
+      return RemoteImageData(url.toSecureUri(), bucket, sourceLogoDrawableRes, source, actualSize)
+    }
+  }
+}
+
+public class RemoteImageError(override val otherInfo: String) : RemoteImage() {
+  override val location: Uri = Uri.EMPTY
+  override val sizeBucket: SizeBucket = SizeBucket.UNKNOWN
+  override val sourceLogoDrawableRes: Int = -1
+  override val sourceIntent: Intent = NullIntent
+  override val actualSize: Size? = null
+  override fun compareTo(other: RemoteImage): Int = if (other === this) 0 else 1
 }

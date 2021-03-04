@@ -24,11 +24,11 @@ import com.ealva.brainzsvc.common.ArtistName
 import com.ealva.brainzsvc.common.toAlbumName
 import com.ealva.brainzsvc.common.toArtistName
 import com.ealva.brainzsvc.common.toRecordingName
-import com.ealva.brainzsvc.service.MusicBrainzResult.Success
-import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful.ErrorResult
-import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful.Exceptional
-import com.ealva.ealvabrainz.MainCoroutineRule
+import com.ealva.brainzsvc.service.BrainzMessage.BrainzExceptionMessage
+import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzErrorCodeMessage
+import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzNullReturn
 import com.ealva.ealvabrainz.brainz.MusicBrainz
+import com.ealva.ealvabrainz.brainz.data.BrainzError
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
 import com.ealva.ealvabrainz.brainz.data.RecordingList
 import com.ealva.ealvabrainz.brainz.data.Release
@@ -36,10 +36,16 @@ import com.ealva.ealvabrainz.brainz.data.Release.Companion.NullRelease
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.ReleaseList
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.brainz.data.join
 import com.ealva.ealvabrainz.brainz.data.toReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.toReleaseMbid
-import com.ealva.ealvabrainz.runBlockingTest
+import com.ealva.ealvabrainz.test.shared.MainCoroutineRule
+import com.ealva.ealvabrainz.test.shared.runBlockingTest
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.get
 import com.nhaarman.expect.expect
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.doThrow
@@ -77,14 +83,17 @@ public class MusicBrainzServiceTest {
     val mockBrainz = mock<MusicBrainz> {
       onBlocking {
         findRelease(query)
-      } doThrow MusicBrainzException("msg", dummyException)
+      } doThrow BrainzException("msg", dummyException)
     }
     val service = makeServiceForTest(mockBrainz)
-    expect(service.findRelease(artistName, albumName)).toBeInstanceOf<Exceptional> { result ->
-      expect(result.exception).toBeInstanceOf<MusicBrainzException> { ex ->
-        expect(ex.cause).toBeTheSameAs(dummyException)
+    expect(service.findRelease(artistName, albumName))
+      .toBeInstanceOf<Err<BrainzExceptionMessage>> { result ->
+        expect(result.error).toBeInstanceOf<BrainzExceptionMessage> { msg ->
+          expect(msg.ex).toBeInstanceOf<BrainzException> { ex ->
+            expect(ex.cause).toBeTheSameAs(dummyException)
+          }
+        }
       }
-    }
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
@@ -92,11 +101,11 @@ public class MusicBrainzServiceTest {
   public fun `test lookupRelease`(): Unit = coroutineRule.runBlockingTest {
     val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseMbid()
     val mockBrainz = mock<MusicBrainz> {
-      onBlocking { lookupRelease(mbid.value, null) } doReturn makeSuccess(NullRelease)
+      onBlocking { lookupRelease(mbid.value) } doReturn makeSuccess(NullRelease)
     }
     val service = makeServiceForTest(mockBrainz)
-    val release = service.lookupRelease(mbid)
-    expect(release).toNotBeNull()
+    val release: BrainzResult<Release> = service.lookupRelease(mbid)
+    expect(release).toBe(Ok(NullRelease))
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
@@ -108,11 +117,9 @@ public class MusicBrainzServiceTest {
       onBlocking { lookupRelease(mbid.value, null, null, null) } doReturn makeSuccess(dummy)
     }
     val service = makeServiceForTest(mockBrainz)
-    expect(
-      service.lookupRelease(mbid)
-    ).toBeInstanceOf<Success<Release>> { result ->
-      expect(result.value).toBeTheSameAs(dummy)
-    }
+    val result = service.lookupRelease(mbid)
+    expect(result).toBe(Ok(dummy))
+    expect(result.get()).toBeTheSameAs(dummy)
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
@@ -128,8 +135,10 @@ public class MusicBrainzServiceTest {
           mbid,
           status = Release.Status.values().toList()
         )
-      ).toBeInstanceOf<Exceptional> { result ->
-        expect(result.exception).toBeInstanceOf<MusicBrainzException>()
+      ).toBeInstanceOf<Err<BrainzExceptionMessage>> { result ->
+        expect(result.error).toBeInstanceOf<BrainzExceptionMessage>() { error ->
+          expect(error.ex).toBeInstanceOf<BrainzException>()
+        }
       }
     }
 
@@ -152,7 +161,7 @@ public class MusicBrainzServiceTest {
         listOf(ReleaseGroup.Subquery.Releases),
         status = allStatus
       )
-    ).toBeInstanceOf<Success<ReleaseGroup>> { result ->
+    ).toBeInstanceOf<Ok<ReleaseGroup>> { result ->
       expect(result.value).toBeTheSameAs(dummy)
     }
   }
@@ -177,7 +186,7 @@ public class MusicBrainzServiceTest {
         artistName,
         albumName
       )
-    ).toBeInstanceOf<Success<RecordingList>> { result ->
+    ).toBeInstanceOf<Ok<RecordingList>> { result ->
       expect(result.value).toBeTheSameAs(dummy)
     }
   }
@@ -191,10 +200,10 @@ public class MusicBrainzServiceTest {
       onBlocking { lookupRelease(mbid.value, null) } doReturn makeSuccess(dummy)
     }
     val service = makeServiceForTest(mockBrainz)
-    val response = service.brainz { brainz ->
-      brainz.lookupRelease(mbid.value, null)
+    val response = service.brainz {
+      lookupRelease(mbid.value, null)
     }
-    expect(response).toBeInstanceOf<Success<Release>> {
+    expect(response).toBeInstanceOf<Ok<Release>> {
       expect(it.value).toBe(dummy)
     }
   }
@@ -210,12 +219,13 @@ public class MusicBrainzServiceTest {
     }
     val service = makeServiceForTest(mockBrainz)
     expect(
-      service.brainz { brainz ->
-        brainz.lookupRelease(mbid.value, null)
+      service.brainz {
+        lookupRelease(mbid.value, null)
       }
-    ).toBeInstanceOf<ErrorResult> { result ->
-      expect(result.error.error).toBe("404")
-      expect(result.error.help).toBe("Not found")
+    ).toBeInstanceOf<Err<BrainzErrorMessage>> { result ->
+      val error: BrainzError = result.error.error
+      expect(error.error).toBe("404")
+      expect(error.help).toBe("Not found")
     }
   }
 
@@ -229,12 +239,12 @@ public class MusicBrainzServiceTest {
     }
     val service = makeServiceForTest(mockBrainz)
     expect(
-      service.brainz { brainz ->
-        brainz.lookupRelease(mbid.value, null)
+      service.brainz {
+        lookupRelease(mbid.value, null)
       }
-    ).toBeInstanceOf<Exceptional> { result ->
-      expect(result.exception).toBeInstanceOf<MusicBrainzException> { ex ->
-        expect(ex.cause).toBeTheSameAs(dummyEx)
+    ).toBeInstanceOf<Err<BrainzExceptionMessage>> { result ->
+      expect(result.error).toBeInstanceOf<BrainzExceptionMessage> { msg ->
+        expect(msg.ex).toBeTheSameAs(dummyEx)
       }
     }
   }
@@ -251,12 +261,10 @@ public class MusicBrainzServiceTest {
       }
       val service = makeServiceForTest(mockBrainz)
       expect(
-        service.brainz { brainz ->
-          brainz.lookupRelease(mbid.value, null)
-        }
-      ).toBeInstanceOf<Exceptional> { result ->
-        expect(result.exception).toBeInstanceOf<MusicBrainzUnknownError> { ex ->
-          expect(ex.rawResponse.httpStatusCode).toBe(404)
+        service.brainz { lookupRelease(mbid.value) }
+      ).toBeInstanceOf<Err<BrainzErrorCodeMessage>> { result ->
+        expect(result.error).toBeInstanceOf<BrainzErrorCodeMessage> { msg ->
+          expect(msg.statusCode).toBe(404)
         }
       }
     }
@@ -278,7 +286,7 @@ public class MusicBrainzServiceTest {
         limit,
         offset
       )
-    ).toBeInstanceOf<Success<ReleaseList>> { result ->
+    ).toBeInstanceOf<Ok<ReleaseList>> { result ->
 
       verify(mockBrainz, times(1)).findRelease(query, limit, offset)
       expect(result.value).toBe(dummy)
@@ -296,16 +304,21 @@ public class MusicBrainzServiceTest {
   private fun <T> makeSuccess(t: T) = Response.success(200, t)
 }
 
-public object NullCoverArtService : CoverArtService {
-  override suspend fun getCoverArtRelease(
-    entity: CoverArtService.Entity,
-    mbid: String
-  ): CoverArtRelease? {
-    return null
+private object NullCoverArtService : CoverArtService {
+  override suspend fun getReleaseArt(mbid: ReleaseMbid): Result<CoverArtRelease, BrainzMessage> {
+    return Err(BrainzNullReturn(0))
   }
 
-  override fun getReleaseGroupArtwork(mbid: ReleaseGroupMbid): CoverArtRelease? {
-    return null
+  override suspend fun getReleaseGroupArt(
+    mbid: ReleaseGroupMbid
+  ): Result<CoverArtRelease, BrainzMessage> {
+    return Err(BrainzNullReturn(0))
+  }
+
+  override val resourceFetcher: ResourceFetcher = object : ResourceFetcher {
+    override fun fetch(stringRes: Int, vararg formatArgs: Any): String {
+      return ""
+    }
   }
 }
 

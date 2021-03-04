@@ -31,8 +31,9 @@ import com.ealva.brainzapp.ui.view.addCircularProgress
 import com.ealva.brainzapp.ui.view.addOnTouchOvalRipple
 import com.ealva.brainzapp.ui.view.clickFlow
 import com.ealva.brainzapp.ui.view.hideKeyboard
-import com.ealva.brainzapp.ui.view.snackErrors
+// import com.ealva.brainzapp.ui.view.snackErrors
 import com.ealva.brainzapp.R
+import com.ealva.brainzapp.ui.view.snackErrors
 import com.google.android.material.textfield.TextInputLayout
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.iconics.typeface.library.materialdesigniconic.MaterialDesignIconic
@@ -63,7 +64,6 @@ import splitties.views.dsl.core.wrapContent
 import splitties.views.dsl.material.MaterialComponentsStyles
 import splitties.views.dsl.material.addInput
 import splitties.views.dsl.recyclerview.recyclerView
-import splitties.views.type
 import com.ealva.brainzapp.R.id.artist_search_circular_progress as ID_CIRCULAR_PROGRESS
 import com.ealva.brainzapp.R.id.artist_search_constraint as ID_CONSTRAINT
 import com.ealva.brainzapp.R.id.artist_search_coordinator as ID_COORDINATOR
@@ -109,7 +109,7 @@ private class ArtistSearchUiImpl(
       textInputLayout = add(materialStyles.textInputLayout.filledBox(ID_TEXT_INPUT_LAYOUT) {
         addInput(ID_SEARCH_TEXT) {
           setHint(R.string.artist_search_hint)
-          type = InputType.text
+          inputType = InputType.text.value
           scope.launch {
             lifecycleOwner.whenStarted {
               setOnEditorActionListener { _, _, _ ->

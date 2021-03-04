@@ -27,17 +27,16 @@ import com.ealva.brainzapp.data.Country
 import com.ealva.brainzapp.data.toCountry
 import com.ealva.brainzsvc.common.ArtistName
 import com.ealva.brainzsvc.common.toArtistName
-import com.ealva.brainzsvc.service.MusicBrainzResult.Success
-import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful
 import com.ealva.brainzsvc.service.MusicBrainzService
+import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.ArtistType
 import com.ealva.ealvabrainz.brainz.data.artistType
 import com.ealva.ealvabrainz.brainz.data.toArtistMbid
 import com.ealva.ealvabrainz.brainz.data.toArtistType
-import com.ealva.ealvabrainz.common.ensureExhaustive
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -64,7 +63,7 @@ interface ArtistSearchViewModel {
   val itemList: LiveData<List<ArtistSearchResult>>
   val lastQuery: LiveData<String>
   val isBusy: LiveData<Boolean>
-  val unsuccessful: LiveData<Unsuccessful>
+  val unsuccessful: LiveData<String>
 
   fun findArtist(query: String)
 
@@ -74,30 +73,35 @@ interface ArtistSearchViewModel {
 //  }
 }
 
-fun Fragment.getArtistSearchViewModel(brainz: MusicBrainzService): ArtistSearchViewModel {
+fun Fragment.getArtistSearchViewModel(
+  brainz: MusicBrainzService,
+  resourceFetcher: ResourceFetcher
+): ArtistSearchViewModel {
   return ViewModelProvider(
     this,
-    ArtistSearchViewModelFactory(brainz)
+    ArtistSearchViewModelFactory(brainz, resourceFetcher)
   )[ArtistSearchViewModelImpl::class.java]
 }
 
 private class ArtistSearchViewModelFactory(
-  private val brainz: MusicBrainzService
+  private val brainz: MusicBrainzService,
+  private val resourceFetcher: ResourceFetcher
 ) : ViewModelProvider.Factory {
   override fun <T : ViewModel?> create(modelClass: Class<T>): T {
     require(modelClass.isAssignableFrom(ArtistSearchViewModelImpl::class.java))
     @Suppress("UNCHECKED_CAST")
-    return ArtistSearchViewModelImpl(brainz) as T
+    return ArtistSearchViewModelImpl(brainz, resourceFetcher) as T
   }
 }
 
 internal class ArtistSearchViewModelImpl(
-  private val brainz: MusicBrainzService
+  private val brainz: MusicBrainzService,
+  private val resourceFetcher: ResourceFetcher
 ) : ViewModel(), ArtistSearchViewModel {
   override val itemList: MutableLiveData<List<ArtistSearchResult>> = MutableLiveData(emptyList())
   override val lastQuery: MutableLiveData<String> = MutableLiveData("")
   override val isBusy: MutableLiveData<Boolean> = MutableLiveData(false)
-  override val unsuccessful: MutableLiveData<Unsuccessful> = MutableLiveData()
+  override val unsuccessful: MutableLiveData<String> = MutableLiveData("")
 
   private data class QueryData(
     val query: String
@@ -114,14 +118,14 @@ internal class ArtistSearchViewModelImpl(
   }
 
   private suspend fun handleQuery(query: String) {
-    viewModelScope.launch(Dispatchers.Default) {
-      unsuccessful.postValue(Unsuccessful.None)
+    viewModelScope.launch {
+      unsuccessful.postValue("")
       lastQuery.postValue(query)
       val theJob = coroutineContext[Job] as Job
       loadJob = theJob
       busy(isBusy) {
-        when (val result = brainz.brainz { it.findArtist(query) }) {
-          is Success -> {
+        when (val result = brainz.findArtist(query.toArtistName())) {
+          is Ok -> {
             val list = result.value.artists.map { artist ->
               ArtistSearchResult(
                 artist.id.toArtistMbid(),
@@ -134,8 +138,8 @@ internal class ArtistSearchViewModelImpl(
             }
             itemList.postValue(list)
           }
-          is Unsuccessful -> unsuccessful.postValue(result)
-        }.ensureExhaustive
+          is Err -> unsuccessful.postValue(result.error.asString(resourceFetcher))
+        }
       }
       loadJob = null
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  Eric A. Snell
+ * Copyright (c) 2021  Eric A. Snell
  *
  * This file is part of eAlvaBrainz
  *
@@ -15,19 +15,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.brainz.data
+package com.ealva.brainzsvc.common
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import android.content.Intent
 
-@JsonClass(generateAdapter = true)
-public class BrowseReleaseList(
-  @Json(name = "release-count")
-  public var releaseCount: Int = 0,
-  @Json(name = "release-offset")
-  public var releaseOffset: Int = 0,
-  @Json(name = "releases")
-  public var releases: List<Release> = emptyList()
-) {
-  override fun toString(): String = toJson()
-}
+public object NullIntent : Intent()

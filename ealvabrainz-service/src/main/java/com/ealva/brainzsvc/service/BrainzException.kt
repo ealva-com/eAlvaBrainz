@@ -19,8 +19,16 @@ package com.ealva.brainzsvc.service
 
 import com.ealva.brainzsvc.net.RawResponse
 
-public open class MusicBrainzException(message: String, cause: Throwable? = null) :
+public open class BrainzException(message: String, cause: Throwable? = null) :
   RuntimeException(message, cause)
 
-public class MusicBrainzUnknownError(public val rawResponse: RawResponse) :
-  MusicBrainzException("Error body could not be deserialized", null)
+public class BrainzTypeInvalidException : BrainzException(
+  "Type is not a valid parameter unless 'include' contains releases or release-groups"
+)
+
+public class BrainzStatusInvalidException : BrainzException(
+  "Status is not a valid parameter unless 'include' contains releases"
+)
+
+public class BrainzUnknownErrorException(public val rawResponse: RawResponse) :
+  BrainzException("Error body could not be deserialized", null)

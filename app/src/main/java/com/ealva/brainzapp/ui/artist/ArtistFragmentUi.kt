@@ -43,11 +43,12 @@ import com.ealva.brainzapp.ui.view.TabSelection
 import com.ealva.brainzapp.ui.view.addCircularProgress
 import com.ealva.brainzapp.ui.view.clickFlow
 import com.ealva.brainzapp.ui.view.setStarRatingDrawable
-import com.ealva.brainzapp.ui.view.snackErrors
+// import com.ealva.brainzapp.ui.view.snackErrors
 import com.ealva.brainzapp.ui.view.tabSelectionFlow
 import com.ealva.brainzapp.ui.view.viewPager2
 import com.ealva.brainzsvc.common.ArtistName
 import com.ealva.brainzapp.R
+import com.ealva.brainzapp.ui.view.snackErrors
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.ensureExhaustive
 import com.google.android.material.appbar.AppBarLayout

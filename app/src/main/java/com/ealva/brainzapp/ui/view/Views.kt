@@ -25,9 +25,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
-import com.ealva.brainzsvc.service.MusicBrainzResult.Unsuccessful
 import com.ealva.brainzapp.R
-import com.ealva.ealvabrainz.common.ensureExhaustive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
@@ -52,27 +50,17 @@ fun View.clickFlow(): Flow<View> = callbackFlow {
   awaitClose { setOnClickListener(null) }
 }.conflate().flowOn(Dispatchers.Main)
 
-fun LiveData<Unsuccessful>.snackErrors(
+fun LiveData<String>.snackErrors(
   lifecycleOwner: LifecycleOwner,
   root: CoordinatorLayout
 ) {
   observe(
     lifecycleOwner,
     { result ->
-      when (result) {
-        is Unsuccessful.ErrorResult -> root.longSnack(result.message)
-        is Unsuccessful.Exceptional -> root.longSnack(result.message)
-        is Unsuccessful.None -> Any()
-      }.ensureExhaustive
+      if (result.isNotEmpty()) root.longSnack(result)
     }
   )
 }
-
-val Unsuccessful.ErrorResult.message: String
-  get() = error.error
-
-val Unsuccessful.Exceptional.message: String
-  get() = exception.typeAndMessage
 
 val Throwable.typeAndMessage: String
   get() = "${causeOrSelf.javaClass.simpleName} $messageOrEmpty"

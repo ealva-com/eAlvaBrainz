@@ -17,8 +17,10 @@
 
 package com.ealva.brainzapp.services
 
+import com.ealva.brainzsvc.service.ContextResourceFetcher
 import com.ealva.brainzsvc.service.CoverArtService
 import com.ealva.brainzsvc.service.MusicBrainzService
+import com.ealva.brainzsvc.service.ResourceFetcher
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -28,6 +30,15 @@ private const val APP_VERSION = "0.1"
 private const val CONTACT_EMAIL = "YourName@YourAddress.com"
 
 val brainzModule: Module = module {
-  single { CoverArtService.make(androidContext(), APP_NAME, APP_VERSION, CONTACT_EMAIL) }
-  single { MusicBrainzService.make(androidContext(), APP_NAME, APP_VERSION, CONTACT_EMAIL, get()) }
+  single<ResourceFetcher> { ContextResourceFetcher(androidContext()) }
+  single { CoverArtService(androidContext(), APP_NAME, APP_VERSION, CONTACT_EMAIL, get()) }
+  single {
+    MusicBrainzService(
+      ctx = androidContext(),
+      appName = APP_NAME,
+      appVersion = APP_VERSION,
+      contact = CONTACT_EMAIL,
+      coverArt = get()
+    )
+  }
 }
