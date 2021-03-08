@@ -55,7 +55,7 @@ This repository consists of 3 parts:
 As of now things are very preliminary, a small portion of the MusicBrainz API is supported,
 and only SNAPSHOT libraries are being published. **Pull requests welcome.** 
 
-For the latest SNAPSHOT check [here][ealvabrainz-snapshot] and [here][ealvabrainz-snapshot-service]
+For the latest SNAPSHOT check [here][ealvabrainz-snapshot] and [here][ealvabrainz-service-snapshot]
   
 # Libraries
 ## ealvabrainz
