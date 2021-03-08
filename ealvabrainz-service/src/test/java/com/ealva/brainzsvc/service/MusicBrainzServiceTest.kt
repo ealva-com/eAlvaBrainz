@@ -131,13 +131,12 @@ public class MusicBrainzServiceTest {
       val service = makeServiceForTest(mockBrainz)
       // expect lookupReleaseGroup to throw
       expect(
-        service.lookupReleaseGroup(
-          mbid,
-          status = Release.Status.values().toList()
-        )
+        service.lookupReleaseGroup(mbid) {
+          status(*Release.Status.values())
+        }
       ).toBeInstanceOf<Err<BrainzExceptionMessage>> { result ->
         expect(result.error).toBeInstanceOf<BrainzExceptionMessage>() { error ->
-          expect(error.ex).toBeInstanceOf<BrainzException>()
+          expect(error.ex).toBeInstanceOf<BrainzInvalidStatusException>()
         }
       }
     }
@@ -156,11 +155,10 @@ public class MusicBrainzServiceTest {
     }
     val service = makeServiceForTest(mockBrainz)
     expect(
-      service.lookupReleaseGroup(
-        mbid,
-        listOf(ReleaseGroup.Subquery.Releases),
-        status = allStatus
-      )
+      service.lookupReleaseGroup(mbid) {
+        subquery(ReleaseGroup.Subquery.Releases)
+        status(*Release.Status.values())
+      }
     ).toBeInstanceOf<Ok<ReleaseGroup>> { result ->
       expect(result.value).toBeTheSameAs(dummy)
     }

@@ -78,6 +78,7 @@ public class Place(
    * a number of things including alternate names, nicknames or even misspellings.
    */
   public var aliases: List<Alias> = emptyList(),
+  public var relations: List<Relation> = emptyList(),
   /**
    * See the
    * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
@@ -106,6 +107,7 @@ public class Place(
    * * [Place-Place](https://musicbrainz.org/relationships/place-place)
    * * [Place-Recording](https://musicbrainz.org/relationships/place-recording)
    * * [Place-Release](https://musicbrainz.org/relationships/place-release)
+   * * [Place-Series](https://musicbrainz.org/relationships/place-series)
    * * [Place-URL](https://musicbrainz.org/relationships/place-url)
    * * [Place-Work](https://musicbrainz.org/relationships/place-work)
    */
@@ -114,6 +116,7 @@ public class Place(
     Place("place-rels"),
     Recording("recording-rels"),
     Release("release-rels"),
+    Series("series-rels"),
     Url("url-rels"),
     Work("work-rels")
   }

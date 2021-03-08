@@ -64,6 +64,7 @@ public class Instrument(
   public var annotation: String = "",
   public var aliases: List<Alias> = emptyList(),
   public var tags: List<Tag> = emptyList(),
+  public var relations: List<Relation> = emptyList(),
   /** Used in query, see [InstrumentList] */
   public var score: Int = 0
 ) {

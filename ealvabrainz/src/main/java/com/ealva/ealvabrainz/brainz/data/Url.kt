@@ -37,7 +37,8 @@ public data class Url(
   /** UUID of the Url instance */
   public var id: String = "",
   /** The url */
-  public var resource: String = ""
+  public var resource: String = "",
+  public var relations: List<Relation> = emptyList()
 ) {
 
   public interface Lookup : Include

@@ -88,6 +88,8 @@ public class Area(
    */
   @Json(name = "life-span")
   public var lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
+  public var relations: List<Relation> = emptyList(),
+
   public var score: Int = 0
 ) {
 
@@ -115,6 +117,27 @@ public class Area(
     Tags("tags"),
     Ratings("ratings"),
     Genres("genres")
+  }
+  /**
+   * Area relationships
+   *
+   * * [Area-Area](https://musicbrainz.org/relationships/area-area)
+   * * [Area-Event](https://musicbrainz.org/relationships/area-event)
+   * * [Area-Instrument](https://musicbrainz.org/relationships/area-instrument)
+   * * [Area-Recording](https://musicbrainz.org/relationships/area-recording)
+   * * [Area-Release](https://musicbrainz.org/relationships/area-release)
+   * * [Area-URL](https://musicbrainz.org/relationships/area-url)
+   * * [Area-Work](https://musicbrainz.org/relationships/area-work)
+   */
+  @Suppress("unused")
+  public enum class Relations(override val value: String) : Lookup {
+    Area("area-rels"),
+    Event("event-rels"),
+    Instrument("instrument-rels"),
+    Recording("recording-rels"),
+    Release("release-rels"),
+    Url("url-rels"),
+    Work("work-rels")
   }
 
   @Suppress("unused")
@@ -147,28 +170,6 @@ public class Area(
     Type("type"),
   }
 
-  /**
-   * Area relationships
-   *
-   * * [Area-Area](https://musicbrainz.org/relationships/area-area)
-   * * [Area-Event](https://musicbrainz.org/relationships/area-event)
-   * * [Area-Instrument](https://musicbrainz.org/relationships/area-instrument)
-   * * [Area-Recording](https://musicbrainz.org/relationships/area-recording)
-   * * [Area-Release](https://musicbrainz.org/relationships/area-release)
-   * * [Area-URL](https://musicbrainz.org/relationships/area-url)
-   * * [Area-Work](https://musicbrainz.org/relationships/area-work)
-   */
-  @Suppress("unused")
-  public enum class Relations(override val value: String) : Lookup {
-    Area("area-rels"),
-    Event("event-rels"),
-    Instrument("instrument-rels"),
-    Recording("recording-rels"),
-    Release("release-rels"),
-    Url("url-rels"),
-    Work("work-rels")
-  }
-
   public companion object {
     public val NullArea: Area = Area()
     public val fallbackMapping: Pair<String, Any> = Area::class.java.name to NullArea
@@ -188,3 +189,36 @@ public inline fun String.toAreaMbid(): AreaMbid {
   if (logInvalidMbid && isInvalidMbid()) Timber.w("Invalid AreaMbid")
   return AreaMbid(this)
 }
+
+/*
+Lookup Area
+https://musicbrainz.org/ws/2/area/45f07934-675a-46d6-a577-6f8637a411b1?inc=aliases&fmt=json
+
+"discids is not a valid option for the inc parameter for the area unless inc includes: releases"
+"media is not a valid option for the inc parameter for the area unless inc includes: releases"
+"isrcs is not a valid option for the inc parameter for the area unless inc includes: recordings"
+"artist-credits is not a valid option for the inc parameter for the area unless inc includes one of: releases, works, release-groups, recordings"
+"various-artists it not a valid option for area"
+
+aliases, annotation, tags, ratings, and genres are OK
+
+All relationships work:
+ - area-rels
+ - artist-rels
+ - event-rels
+ - instrument-rels
+ - label-rels
+ - place-rels
+ - recording-rels
+ - release-rels
+ - release-group-rels
+ - series-rels
+ - url-rels
+ - work-rels
+
+ Browse:
+
+  /ws/2/area              collection
+
+  aliases, annotation, tags, ratings, and genres are OK
+ */

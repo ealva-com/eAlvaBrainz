@@ -85,6 +85,7 @@ public fun <V : Response<U>, U> Result<V, BrainzMessage>.mapResponse(): Result<U
 
 private fun <U, V : Response<U>> Ok<V>.handleResponse(): Result<U, BrainzMessage> = try {
   when {
+//    value == null -> Err(BrainzExceptionMessage(BrainzException("Null Response returned")))
     value.isSuccessful -> value.body()?.let { Ok(it) } ?: Err(BrainzNullReturn(value.code()))
     else -> value.toErrResult()
   }

@@ -17,8 +17,10 @@
 
 package com.ealva.ealvabrainz.brainz
 
+import com.ealva.ealvabrainz.brainz.data.Area
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistList
+import com.ealva.ealvabrainz.brainz.data.BrowseArtistList
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseList
 import com.ealva.ealvabrainz.brainz.data.Label
@@ -54,24 +56,109 @@ import retrofit2.http.Query
  */
 public interface MusicBrainz {
   /**
-   * Returns a [ReleaseList] given [query] which is the fully formed MusicBrainz query (in the
-   * example this is: release:"Houses of the Holy" AND artist:"Led Zeppelin" . Optional [limit] is
-   * the max number of releases returned and must be 1-100 inclusive, defaults to 25 if not
-   * specified. Optional [offset] is used to page results. The count and offset are both
-   * returned in the resulting ReleaseList
+   * Lookup Area by mbid, example is the ciy "Pärnu"
+   * https://musicbrainz.org/ws/2/area/45f07934-675a-46d6-a577-6f8637a411b1?inc=aliases&fmt=json
    *
-   * Example: [http://musicbrainz.org/ws/2/release/?query=release:Houses%20of%20the%20Holy%20AND%20artist:Led%20Zeppelin&fmt=json](http://musicbrainz.org/ws/2/release/?query=release:Houses%20of%20the%20Holy%20AND%20artist:Led%20Zeppelin&fmt=json)
-   *
-   * @param query full MusicBrainz lucene query
-   * @param limit 1..100 inclusive are valid. If skipped, defaults to 25
-   * @param offset specifies starting offset into list, used to page results. Defaults to 0
+   * @param mbid the Area mbid, 45f07934-675a-46d6-a577-6f8637a411b1 in above example
+   * @param include the list of relationships, or other misc includes, to specify how
+   * much of the data about the linked entities should be included
    */
-  @GET("release")
-  public suspend fun findRelease(
-    @Query("query") query: String,
-    @Query("limit") limit: Int? = null,
-    @Query("offset") offset: Int? = null
-  ): Response<ReleaseList>
+  @GET("area/{mbid}")
+  public suspend fun lookupArea(
+    /** Must be a valid Area MBID */
+    @Path("mbid") mbid: String,
+    /** A combination of [Area.Misc] and/or [Area.Relations] */
+    @Query("inc") include: String? = null
+  ): Response<Area>
+
+  /**
+   * An example for looking up Nirvana by mbid would be:
+   * [http://musicbrainz.org/ws/2/artist/5b11f4ce-a62d-471e-81fc-a69a8278c7da?fmt=json]
+   *
+   * @param mbid        the artist mbid. In the example this would be:
+   * 5b11f4ce-a62d-471e-81fc-a69a8278c7da
+   */
+  @GET("artist/{mbid}")
+  public suspend fun lookupArtist(
+    @Path("mbid") mbid: String,
+    @Query("inc") include: String? = null,
+    /**
+     * Limit linked entities to this Release type. Not valid unless "releases" or "release-groups"
+     * are [include]d in the lookup
+     *
+     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
+     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
+     */
+    @Query("type") type: String? = null,
+    /**
+     * Limit linked entities to this Release status. Not valid unless "releases" are [include]d in
+     * the lookup
+     *
+     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
+     */
+    @Query("status") status: String? = null
+  ): Response<Artist>
+
+  /**
+   * An example for looking up a Label (Warner Bros. Records in this example) by mbid is:
+   * http://musicbrainz.org/ws/2/label/c595c289-47ce-4fba-b999-b87503e8cb71?inc=ratings+annotation&fmt=json
+   *
+   * @param mbid the Label mbid, c595c289-47ce-4fba-b999-b87503e8cb71 in above example
+   * @param include the list of subqueries, relationships, or other misc includes, to specify how
+   * much of the data about the linked entities should be included
+   */
+  @GET("label/{mbid}")
+  public suspend fun lookupLabel(
+    @Path("mbid") mbid: String,
+    @Query("inc") include: String? = null,
+    /**
+     * Limit linked entities to this Release type. Not valid unless "releases" or "release-groups"
+     * are [include]d in the lookup
+     *
+     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
+     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
+     */
+    @Query("type") type: String? = null,
+    /**
+     * Limit linked entities to this Release status. Not valid unless "releases" are [include]d in
+     * the lookup
+     *
+     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
+     */
+    @Query("status") status: String? = null
+  ): Response<Label>
+
+  /**
+   * An example for lookup by mbid would be:
+   * http://musicbrainz.org/ws/2/recording/fcbcdc39-8851-4efc-a02a-ab0e13be224f?fmt=json
+   *
+   * @param mbid  the recording mbid. In the example this would be:
+   * fcbcdc39-8851-4efc-a02a-ab0e13be224f
+   * @param include the list of subqueries, relationships, or other misc includes, to specify how
+   * much of the data about the linked entities should be included
+   * @param type limit linked entities to this Release type
+   * @param status limit linked entities to this Release status
+   */
+  @GET("recording/{mbid}")
+  public suspend fun lookupRecording(
+    @Path("mbid") mbid: String,
+    @Query("inc") include: String? = null,
+    /**
+     * Limit linked entities to this Release type. Not valid unless "releases" or "release-groups"
+     * are [include]d in the lookup
+     *
+     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
+     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
+     */
+    @Query("type") type: String? = null,
+    /**
+     * Limit linked entities to this Release status. Not valid unless "releases" are [include]d in
+     * the lookup
+     *
+     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
+     */
+    @Query("status") status: String? = null
+  ): Response<Recording>
 
   /**
    * Lookup by mbid for Release. Example is Led Zeppelin's "Houses of the Holy"
@@ -104,26 +191,6 @@ public interface MusicBrainz {
   ): Response<Release>
 
   /**
-   * Returns a [ReleaseGroupList] given [query] which is the fully formed MusicBrainz query (in the
-   * example this is: release:"Houses of the Holy" AND artist:"Led Zeppelin" . Optional [limit] is
-   * the max number of releases returned and must be 1-100 inclusive, defaults to 25 if not
-   * specified. Optional [offset] is used to page results. The count and offset are both
-   * returned in the resulting ReleaseList
-   *
-   * [Example: http://musicbrainz.org/ws/2/release-group/?query=release:%22Houses%20of%20the%20Holy%22%20AND%20artist:%22Led%20Zeppelin%22&fmt=json](http://musicbrainz.org/ws/2/release-group/?query=release:%22Houses%20of%20the%20Holy%22%20AND%20artist:%22Led%20Zeppelin%22&fmt=json)
-   *
-   * @param query full MusicBrainz lucene query
-   * @param limit 1..100 inclusive are valid. If skipped, defaults to 25
-   * @param offset specifies starting offset into list, used to page results. Defaults to 0
-   */
-  @GET("release-group")
-  public suspend fun findReleaseGroup(
-    @Query("query") query: String,
-    @Query("limit") limit: Int? = null,
-    @Query("offset") offset: Int? = null
-  ): Response<ReleaseGroupList>
-
-  /**
    * An example for looking up release group The Essential Alice in Chains by mbid would be:
    * https://musicbrainz.org/ws/2/release-group/e1b7e76e-09ff-36fd-b1fd-0c6cb199b817?fmt=json
    *
@@ -154,13 +221,53 @@ public interface MusicBrainz {
   ): Response<ReleaseGroup>
 
   /**
+   * Returns a [ReleaseList] given [query] which is the fully formed MusicBrainz query (in the
+   * example this is: release:"Houses of the Holy" AND artist:"Led Zeppelin" . Optional [limit] is
+   * the max number of releases returned and must be 1-100 inclusive, defaults to 25 if not
+   * specified. Optional [offset] is used to page results. The count and offset are both
+   * returned in the resulting ReleaseList
+   *
+   * Example: [http://musicbrainz.org/ws/2/release/?query=release:Houses%20of%20the%20Holy%20AND%20artist:Led%20Zeppelin&fmt=json](http://musicbrainz.org/ws/2/release/?query=release:Houses%20of%20the%20Holy%20AND%20artist:Led%20Zeppelin&fmt=json)
+   *
+   * @param query full MusicBrainz lucene query
+   * @param limit 1..100 inclusive are valid. If skipped, defaults to 25
+   * @param offset specifies starting offset into list, used to page results. Defaults to 0
+   */
+  @GET("release")
+  public suspend fun findRelease(
+    @Query("query") query: String,
+    @Query("limit") limit: Int? = null,
+    @Query("offset") offset: Int? = null
+  ): Response<ReleaseList>
+
+  /**
+   * Returns a [ReleaseGroupList] given [query] which is the fully formed MusicBrainz query (in the
+   * example this is: release:"Houses of the Holy" AND artist:"Led Zeppelin" . Optional [limit] is
+   * the max number of releases returned and must be 1-100 inclusive, defaults to 25 if not
+   * specified. Optional [offset] is used to page results. The count and offset are both
+   * returned in the resulting ReleaseList
+   *
+   * [Example: http://musicbrainz.org/ws/2/release-group/?query=release:%22Houses%20of%20the%20Holy%22%20AND%20artist:%22Led%20Zeppelin%22&fmt=json](http://musicbrainz.org/ws/2/release-group/?query=release:%22Houses%20of%20the%20Holy%22%20AND%20artist:%22Led%20Zeppelin%22&fmt=json)
+   *
+   * @param query full MusicBrainz lucene query
+   * @param limit 1..100 inclusive are valid. If skipped, defaults to 25
+   * @param offset specifies starting offset into list, used to page results. Defaults to 0
+   */
+  @GET("release-group")
+  public suspend fun findReleaseGroup(
+    @Query("query") query: String,
+    @Query("limit") limit: Int? = null,
+    @Query("offset") offset: Int? = null
+  ): Response<ReleaseGroupList>
+
+  /**
    * Returns an [ArtistList] given [query] which is the fully formed MusicBrainz query (in the
-   * example this is: release:"artist:"Led Zeppelin". Optional [limit] is
+   * example this is: artist:"Led Zeppelin". Optional [limit] is
    * the max number of artists returned and must be 1-100 inclusive, defaults to 25 if not
    * specified. Optional [offset] is used to page results. The count and offset are both
    * returned in the resulting ReleaseList
    *
-   * [Example: http://musicbrainz.org/ws/2/release/?query=release:Houses%20of%20the%20Holy%20AND%20artist:Led%20Zeppelin&fmt=json](http://musicbrainz.org/ws/2/release/?query=release:Houses%20of%20the%20Holy%20AND%20artist:Led%20Zeppelin&fmt=json)
+   * [Example: http://musicbrainz.org/ws/2/artist/?query=artist:%22Led%20Zeppelin%22&fmt=json](http://musicbrainz.org/ws/2/artist/?query=artist:%22Led%20Zeppelin%22&fmt=json)
    *
    * @param query full MusicBrainz lucene query
    * @param limit 1..100 inclusive are valid. If skipped, defaults to 25
@@ -172,34 +279,6 @@ public interface MusicBrainz {
     @Query("limit") limit: Int? = null,
     @Query("offset") offset: Int? = null
   ): Response<ArtistList>
-
-  /**
-   * An example for looking up Nirvana by mbid would be:
-   * [http://musicbrainz.org/ws/2/artist/5b11f4ce-a62d-471e-81fc-a69a8278c7da?fmt=json]
-   *
-   * @param mbid        the artist mbid. In the example this would be:
-   * 5b11f4ce-a62d-471e-81fc-a69a8278c7da
-   */
-  @GET("artist/{mbid}")
-  public suspend fun lookupArtist(
-    @Path("mbid") mbid: String,
-    @Query("inc") include: String? = null,
-    /**
-     * Limit linked entities to this Release type. Not valid unless "releases" or "release-groups"
-     * are [include]d in the lookup
-     *
-     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
-     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
-     */
-    @Query("type") type: String? = null,
-    /**
-     * Limit linked entities to this Release status. Not valid unless "releases" are [include]d in
-     * the lookup
-     *
-     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
-     */
-    @Query("status") status: String? = null
-  ): Response<Artist>
 
   /**
    * Browse albums (Release Groups) for a given artist with [artistId], starting at [offset] with
@@ -248,12 +327,9 @@ public interface MusicBrainz {
   ): Response<BrowseReleaseGroupList>
 
   /**
-   * Browse Releases for a given entity (one or more of [artistId], [labelId], [releaseGroupId])
-   * starting at [offset] with a [limit] to page results.
+   * Browse Releases for a given [artistId] starting at [offset] with a [limit] to page results.
    *
    * @param artistId the artist mbid, optional
-   * @param labelId the label mbid, optional
-   * @param releaseGroupId the release group mbid, optional
    * @param limit max entries returned, required, maximum 100
    * @param offset offset into total list, required
    * @param include include linked entity data
@@ -261,19 +337,54 @@ public interface MusicBrainz {
    * @param status limit the results to a particular release status, optional
    */
   @GET("release")
-  public suspend fun browseReleases(
+  public suspend fun browseArtistReleases(
     /**
      * Browse releases for the given artist MBID
      */
-    @Query("artist") artistId: String? = null,
+    @Query("artist") artistId: String,
+    /**
+     * Maximum number of release groups to return. Default is 25. Use with [offset] used for paging
+     * results
+     */
+    @Query("limit") limit: Int? = null,
+    /**
+     * Offset at where to start in the total list. Default is 0. Use With [limit] used for paging
+     * results
+     */
+    @Query("offset") offset: Int? = null,
+    /** Specify how much data linked entities should contain */
+    @Query("inc") include: String? = null,
+    /**
+     * Limit linked entities to this Release type.
+     *
+     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
+     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
+     */
+    @Query("type") type: String? = null,
+    /**
+     * Limit linked entities to this Release status.
+     *
+     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
+     */
+    @Query("status") status: String? = null
+  ): Response<BrowseReleaseList>
+
+  /**
+   * Browse Releases for a given [labelId] starting at [offset] with a [limit] to page results.
+   *
+   * @param labelId the label mbid, optional
+   * @param limit max entries returned, required, maximum 100
+   * @param offset offset into total list, required
+   * @param include include linked entity data
+   * @param type limit the results to a particular release type(s), optional
+   * @param status limit the results to a particular release status, optional
+   */
+  @GET("release")
+  public suspend fun browseLabelReleases(
     /**
      * Browse releases for the given label MBID
      */
-    @Query("label") labelId: String? = null,
-    /**
-     * Browse releases for the given release group MBID
-     */
-    @Query("release-group") releaseGroupId: String? = null,
+    @Query("label") labelId: String,
     /**
      * Maximum number of release groups to return. Default is 25. Use with [offset] used for paging
      * results
@@ -320,49 +431,36 @@ public interface MusicBrainz {
     @Query("offset") offset: Int? = null
   ): Response<RecordingList>
 
-  /**
-   * An example for lookup by mbid would be:
-   * http://musicbrainz.org/ws/2/recording/fcbcdc39-8851-4efc-a02a-ab0e13be224f?fmt=json
-   *
-   * @param mbid  the recording mbid. In the example this would be:
-   * fcbcdc39-8851-4efc-a02a-ab0e13be224f
-   * @param include the list of subqueries, relationships, or other misc includes, to specify how
-   * much of the data about the linked entities should be included
-   * @param type limit linked entities to this Release type
-   * @param status limit linked entities to this Release status
-   */
-  @GET("recording/{mbid}")
-  public suspend fun lookupRecording(
-    @Path("mbid") mbid: String,
+  @GET("artist")
+  public suspend fun browseReleaseGroupArtists(
+    /**
+     * Browse artists for the given release group MBID
+     */
+    @Query("release-group") releaseGroupId: String,
+    /**
+     * Maximum number of artists to return. Default is 25. Use with [offset] for paging
+     * results
+     */
+    @Query("limit") limit: Int? = null,
+    /**
+     * Offset at where to start in the total list. Default is 0. Use With [limit] for paging
+     * results
+     */
+    @Query("offset") offset: Int? = null,
+    /** Specify how much data linked entities should contain */
     @Query("inc") include: String? = null,
     /**
-     * Limit linked entities to this Release type. Not valid unless "releases" or "release-groups"
-     * are [include]d in the lookup
+     * Limit linked entities to this Release type.
      *
      * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
      * "interview", "audiobook", "live", "remix", "other" or the default none (null)
      */
     @Query("type") type: String? = null,
     /**
-     * Limit linked entities to this Release status. Not valid unless "releases" are [include]d in
-     * the lookup
+     * Limit linked entities to this Release status.
      *
      * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
      */
     @Query("status") status: String? = null
-  ): Response<Recording>
-
-  /**
-   * An example for looking up a Label (Warner Bros. Records in this example) by mbid is:
-   * http://musicbrainz.org/ws/2/label/c595c289-47ce-4fba-b999-b87503e8cb71?inc=ratings+annotation&fmt=json
-   *
-   * @param mbid the Label mbid, c595c289-47ce-4fba-b999-b87503e8cb71 in above example
-   * @param include the list of subqueries, relationships, or other misc includes, to specify how
-   * much of the data about the linked entities should be included
-   */
-  @GET("label/{mbid}")
-  public suspend fun lookupLabel(
-    @Path("mbid") mbid: String,
-    @Query("inc") include: String? = null
-  ): Response<Label>
+  ): Response<BrowseArtistList>
 }

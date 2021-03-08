@@ -119,6 +119,7 @@ public class Label(
   @Json(name = "life-span") public var lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
   public var rating: Rating = Rating.NullRating,
   public var releases: List<Release> = emptyList(),
+  public var relations: List<Relation> = emptyList(),
   public var tags: List<Tag> = emptyList(),
   /**
    * The [type](https://musicbrainz.org/doc/Label/Type) describes the main activity of the label.
@@ -168,6 +169,7 @@ public class Label(
    * Label relationships
    *
    * * [Label-Label](https://musicbrainz.org/relationships/label-label)
+   * * [Label-Place](https://musicbrainz.org/relationships/label-place)
    * * [Label-Recording](https://musicbrainz.org/relationships/label-recording)
    * * [Label-Release](https://musicbrainz.org/relationships/label-release)
    * * [Label-ReleaseGroup](https://musicbrainz.org/relationships/label-release_group)
@@ -177,6 +179,7 @@ public class Label(
    */
   public enum class Relations(override val value: String) : Lookup {
     Label("label-rels"),
+    Place("place-rels"),
     Recording("recording-rels"),
     Release("release-rels"),
     ReleaseGroup("release-group-rels"),

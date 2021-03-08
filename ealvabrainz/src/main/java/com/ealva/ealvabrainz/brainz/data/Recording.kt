@@ -51,6 +51,7 @@ public class Recording(
    * of track lengths, the smaller median candidate is used.
    */
   public var length: Int = 0,
+  @field:Json(name = "first-release-date") public var firstReleaseDate: String = "",
   public var aliases: List<Alias> = emptyList(),
   /**
    * See the

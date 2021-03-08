@@ -21,9 +21,8 @@ import com.ealva.ealvabrainz.brainz.data.CoverArtArchive.Companion.NullCoverArtA
 import com.ealva.ealvabrainz.brainz.data.Release.Companion.NullRelease
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import timber.log.Timber
-
-// import com.squareup.moshi.JsonClass
 
 /**
  * A MusicBrainz release represents the unique release (i.e. issuing) of a product on a specific
@@ -45,14 +44,9 @@ import timber.log.Timber
  * can appear on more than one release. For example, a boxset compilation that contains previously
  * released CDs would share the same tracklists as the separate releases.
  *
- * WARNING: TODO Currently if this class is changed we have to regenerate the adapter and move the
- * results to our custom [ReleaseAdapter][com.ealva.ealvabrainz.moshi.ReleaseAdapter]. Need to
- * change this (maybe use the/a Polymorphic adapter or an Annotation that provides for multiple
- * names)
- *
  * [MusicBrainz Release](https://musicbrainz.org/doc/Release)
  */
-// @JsonClass(generateAdapter = true)  Only generate when changed - we use custom for "packaging"
+@JsonClass(generateAdapter = true)
 public class Release(
   /** The MusicBrainz ID (MBID) */
   public var id: String = "",
@@ -164,6 +158,7 @@ public class Release(
    */
   @field:Json(name = "primary-type") public var primaryType: String = "",
   public var releases: List<Release> = emptyList(),
+  public var relations: List<Relation> = emptyList(),
   /** Only relevant if returned from query */
   public var score: Int = 0
 ) {
@@ -185,7 +180,6 @@ public class Release(
 
   public interface Lookup : Include
 
-  @Suppress("unused")
   public enum class Subquery(override val value: String) : Lookup {
     Artists("artists"),
     Collections("collections"),
@@ -205,13 +199,17 @@ public class Release(
     ArtistCredits("artist-credits"); // include artists credits for all releases and recordings
   }
 
-  @Suppress("unused")
   public enum class Misc(override val value: String) : Lookup {
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
     Ratings("ratings"),
-    Genres("genres")
+    Genres("genres");
+
+    public companion object {
+      /** Doesn't create a values() array and/or list every time */
+      public val all: List<Misc> by lazy { values().asList() }
+    }
   }
 
   /**

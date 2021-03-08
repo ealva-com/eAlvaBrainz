@@ -2,19 +2,60 @@ eAlvaBrainz
 ===========
 Kotlin [MusicBrainz][brainz]/[CoverArtArchive][coverart] [Retrofit][retrofit] libraries for Android
 
-**Currently in very preliminary state**. Pushing unfinished to Github in case someone can use the 
-preliminary work
+**Currently in very preliminary state**. The interfaces are rapidly evolving in an attempt to
+combine ease of use and designing to avoid runtime errors. The current direction is to provide
+configuring lambdas in various calls and soon to build a query builder interface as the underlying
+MusicBrainz calls can be somewhat complex (very large Lucene query interface). There is an escape
+hatch of sorts in that the client can indirectly call the Retrofit interfaces via the
+MusicBrainzService interface and have correct dispatching and error handling behavior. This is the
+same method used internally. See these MusicBrainzService functions and interface:
+```kotlin
+suspend fun lookupArtist(
+  artistMbid: ArtistMbid,
+  lookup: ArtistLookup.() -> Unit = {}
+): BrainzResult<Artist>
+
+suspend fun <T : Any> brainz(block: BrainzCall<T>): BrainzResult<T>
+
+interface ArtistLookup {
+  /** Specify if any other entities and data related to the entities should be included */
+  fun subquery(vararg subquery: Artist.Subquery)
+  /** Specify other miscellaneous data to be included */
+  fun misc(vararg misc: Artist.Misc)
+  /** Included all miscellaneous data */
+  fun allMisc()
+  /** Include relationships based on subquery */
+  fun relationships(vararg rels: Artist.Relations)
+  /**
+   * If [subquery] includes Artist.Subquery.Releases or Artist.Subquery.Releases the
+   * Release.Type can be specified to further narrow results
+   */
+  fun types(vararg types: Release.Type)
+
+  /**
+   * If [subquery] includes Artist.Subquery.Releases a Release.Status can be specified to
+   * further narrow results
+   */
+  fun status(vararg status: Release.Status)
+}
+```
+This style provides type safety and attempts to constrain choices to a valid set of options. The
+bare MusicBrainz retrofit client requires an enormous amount of string building in many situations.
+The current interface is very inconsistent in this regard as refactoring is underway.
 
 This repository consists of 3 parts:
   * **ealvabrainz** - A library which consists of 2 Retrofit interfaces, MusicBrainz and CoverArt, 
   and supporting data classes to generate a MusicBrainz REST client.
   * **ealvabrainz-service** - Higher-level abstractions that wrap the Retrofit clients with a 
-  richer interface, configures necessary Retrofit/OkHttp clients, and provides support for cache 
-  control/throttling/user agent/etc.
+  richer interface, configures necessary Retrofit/OkHttp clients, provides support for cache 
+  control/throttling/user agent/etc, and dispatches calls on background threads using main-safe
+  suspend functions.
   * **app** - Demonstrates search and lookup
   
-As of now things are very preliminary, a very small portion of the MusicBrainz API is supported,
-and no libraries are being published. **Pull requests welcome.** 
+As of now things are very preliminary, a small portion of the MusicBrainz API is supported,
+and only SNAPSHOT libraries are being published. **Pull requests welcome.** 
+
+For the latest SNAPSHOT check [here][ealvabrainz-snapshot] and [here][ealvabrainz-snapshot-service]
   
 # Libraries
 ## ealvabrainz
@@ -73,7 +114,10 @@ interface CoverArt {
    * @return the CoverArtRelease associated with the mbid, wrapped in a Response
    */
   @GET("{entity}/{mbid}")
-  suspend fun getArtwork(@Path("entity") entity: String, @Path("mbid") mbid: String): Response<CoverArtRelease>
+  suspend fun getArtwork(
+    @Path("entity") entity: String,
+    @Path("mbid") mbid: String
+  ): Response<CoverArtRelease>
 }
 ```
 Note that ```getArtwork()``` is suspending and may only be called from a coroutine. The higher level 
@@ -89,19 +133,26 @@ implementation builds and contains the necessary OkHttp client and Retrofit impl
 CoverArt class.
 ```kotlin
 interface CoverArtService {
-  enum class Entity(val value: String) {
-    ReleaseEntity("release"),
-    ReleaseGroupEntity("release-group")
-  }
 
-  suspend fun getCoverArtRelease(entity: Entity, mbid: String): CoverArtRelease?
+  suspend fun getReleaseArt(mbid: ReleaseMbid): CoverArtResult
+
+  suspend fun getReleaseGroupArt(mbid: ReleaseGroupMbid): CoverArtResult
+
+  val resourceFetcher: ResourceFetcher
 
   companion object {
-    fun make(
-      context: Context,
+    /**
+     * Instantiate a CoverArtService implementation which handles MusicBrainz server requirements
+     * such as a required User-Agent format, throttling requests, and factories/adapters to support
+     * the returned data classes.
+     */
+    operator fun invoke(
+      ctx: Context,
       appName: String,
       appVersion: String,
-      contactEmail: String
+      contactEmail: String,
+      resourceFetcher: ResourceFetcher,
+      dispatcher: CoroutineDispatcher = Dispatchers.IO
     ): CoverArtService
   }
 }
@@ -118,19 +169,28 @@ Retrofit client. There is also a generic ```brainz()``` function accepting a lam
 MusicBrainz client while providing correct coroutine dispatch and simplifying error handling.
 ```kotlin
 interface MusicBrainzService {
+  /**
+   * Find a ReleaseList based on [artist] and [album] (album = release), limiting
+   * the results to [limit], starting at [offset]. The [limit] and [offset] facilitate paging
+   * through results
+   */
   suspend fun findRelease(
     artist: ArtistName,
     album: AlbumName,
     limit: Int? = null,
     offset: Int? = null
-  ): MusicBrainzResult<ReleaseList>
+  ): BrainzResult<ReleaseList>
 
+  /**
+   * Find the Release identified by [mbid]. Use [include], [type], and/or [status] to specify
+   * information to be included in the Release.
+   */
   suspend fun lookupRelease(
     mbid: ReleaseMbid,
-    include: List<Release.Lookup> = emptyList(),
-    type: Release.Type = Release.Type.Any,
-    status: Release.Status = Release.Status.Any
-  ): MusicBrainzResult<Release>
+    include: List<Release.Lookup>? = null,
+    type: List<Release.Type>? = null,
+    status: List<Release.Status>? = null
+  ): BrainzResult<Release>
 
   fun getReleaseArt(
     artist: ArtistName,
@@ -138,9 +198,23 @@ interface MusicBrainzService {
     maxReleases: Int = DEFAULT_MAX_RELEASE_COUNT
   ): Flow<RemoteImage>
 
-  suspend fun <T : Any> brainz(
-    block: suspend (brainz: MusicBrainz) -> Response<T>
-  ): MusicBrainzResult<T>
+  /**
+   * A main-safe function that calls the [block] function, with MusicBrainz as a receiver,
+   * dispatched by the contained CoroutineDispatcher (typically Dispatchers.IO when not under
+   * test)
+   *
+   * Usually [block] is a lambda which makes a direct call to the MusicBrainz Retrofit client. The
+   * [block] is responsible for building the necessary String parameters, "query" in case of a
+   * find call and "inc" include if doing a lookup. Use the Subquery and Misc defined
+   * in the various entity objects for doing a lookup and use SearchField to build queries
+   *
+   * @return an Ok with value of type [T] or, if response is not successful, an Err. An Err
+   * will be a BrainzMessage of type:
+   * * BrainzExceptionMessage if an underlying exception is thrown
+   * * BrainzNullReturn subclass of BrainzStatusMessage, if the response is OK but null
+   * * BrainzErrorCodeMessage subclass of BrainzStatusMessage, if the response is not successful
+   */
+  suspend fun <T : Any> brainz(block: BrainzCall<T>): BrainzResult<T>
 
   companion object {
     fun make(
@@ -160,63 +234,17 @@ fun getReleaseArt(artistName: ArtistName, albumName: AlbumName): Flow<RemoteImag
 ```
 which coordinates a search of releases and returns a flow of images. 
 
-Most MusicBrainzService functions return a MusicBrainzResult sealed class based on the return type.
-The implementation of the returned MusicBrainzResult indicates success, error, or an exception.
-```kotlin
-sealed class MusicBrainzResult<out T : Any> {
-  
-  data class Success<T : Any>(val value: T) : MusicBrainzResult<T>()
-
-  sealed class Unsuccessful : MusicBrainzResult<Nothing>() {
-
-    data class ErrorResult(val error: BrainzError) : Unsuccessful()
-
-    data class Exceptional(val exception: MusicBrainzException) : Unsuccessful()
-
-  }
-}
-```
+MusicBrainzService functions return a Result<T, BrainzMessage>. Result<V, E> is a monad for 
+modelling success (Ok) or failure (Err) operations. When Result is of type Ok, the 
+value of type T is the result of the call to MusicBrainz. If an Err is returned, the error is a
+subtype of BrainzMessage which indicates the type of error. Result is from the 
+kotlin-result[kotlin-result] library and provides a nice implementation for 
+[Railway Oriented Programming][railway].
 ## app
 The application demonstrates searching, browsing, and display of various MusicBrainz entities.
 Currently the user needs to know how to build a MusicBrainz 
 [query](https://musicbrainz.org/doc/Development/XML_Web_Service/Version_2/Search).
 
-There are examples of callback flows, such as:
-```kotlin
-sealed class TabSelection(val tab: TabLayout.Tab) {
-  class Selected(tab: TabLayout.Tab) : TabSelection(tab)
-  class Reselected(tab: TabLayout.Tab) : TabSelection(tab)
-  class Unselected(tab: TabLayout.Tab) : TabSelection(tab)
-}
-
-@OptIn(ExperimentalCoroutinesApi::class)
-fun TabLayout.tabSelectionFlow(): Flow<TabSelection> = callbackFlow<TabSelection> {
-  val listener = object : TabLayout.OnTabSelectedListener {
-    override fun onTabReselected(tab: TabLayout.Tab) {
-      offer(TabSelection.Reselected(tab))
-    }
-
-    override fun onTabUnselected(tab: TabLayout.Tab) {
-      offer(TabSelection.Unselected(tab))
-    }
-
-    override fun onTabSelected(tab: TabLayout.Tab) {
-      offer(TabSelection.Selected(tab))
-    }
-  }
-  addOnTabSelectedListener(listener)
-  awaitClose { removeOnTabSelectedListener(listener) }
-}.flowOn(Dispatchers.Main)
-
-// Example usage
-tabLayout.tabSelectionFlow().onEach { selection ->
-  when (selection) {
-    is TabSelection.Reselected -> appBarLayout.setExpanded(true)
-    is TabSelection.Unselected, is TabSelection.Selected -> {}
-  }.ensureExhaustive
-}.launchIn(scope)
-
-``` 
 Given Kotlin coroutines, flows, and lifecycle scope, it is easy to define flows that properly
 set and remove listeners based on component lifecycle, to conflate events, and to possibly emit
 richer objects than provided by underlying Views. Consumers only need to collect from a flow and 
@@ -228,158 +256,14 @@ Activities, Fragments, ViewHolders, etc. are very small. Using this DSL keeps th
 and implementation together in a single file/class, is inherently type safe/null safe, eliminates 
 the need for findViewById or view binding, eliminates reflection used during inflation, and greatly 
 reduces development friction (1 language/1 class vs 2 languages/multiple files). 
+
+It's expected the app will be ported to Compose some time in the future.
   
-An example of the UI for a fragment that is used by the new ViewPager2 is:
-```kotlin
-class ArtistReleaseGroupsUi(
-  private val uiContext: FragmentUiContext,
-  private val viewModel: ArtistViewModel
-) : Ui {
-  private val lifecycleOwner = uiContext.lifecycleOwner
-  override val ctx: Context = uiContext.context
-
-  private val itemAdapter: ReleaseGroupItemAdapter
-
-  override val root: RecyclerView = recyclerView(ID_RECYCLER) {
-    setHasFixedSize(true)
-    layoutManager = LinearLayoutManager(context)
-    adapter = ReleaseGroupItemAdapter(uiContext) { displayGroup ->
-      ctx.toast("Selected: ${displayGroup.name}")
-    }.also {
-      itemAdapter = it
-      lifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
-        override fun onResume(owner: LifecycleOwner) {
-          viewModel.releaseGroups.observe(lifecycleOwner, Observer { list ->
-            itemAdapter.setItems(list ?: emptyList())
-          })
-        }
-
-        override fun onPause(owner: LifecycleOwner) {
-          viewModel.releaseGroups.removeObservers(lifecycleOwner)
-        }
-      })
-    }
-  }
-}
-```
-This example simply presents a recycler that displays a list from a specific adapter and observes a 
-view model to populate the adapter. The lifecycle owner is observed to add and remove listeners at
-the appropriate time (resume and pause in this example given its use in a ViewPager2).
-
-The UI created by the adapter is a larger example and appears similar to the equivalent XML, but
-is a little less verbose, already has all view object references (no need for view binding), and
-contains the binding logic with the view description.
-```kotlin
-class ReleaseGroupItemUi(
-  uiContext: FragmentUiContext,
-  onClick: (v: View) -> Unit
-) : Ui {
-  private val groupName: TextView
-  private val type: TextView
-  private val releaseCount: TextView
-  private val firstDate: TextView
-  private val ratingBar: RatingBar
-
-  private val scope = uiContext.scope
-  override val ctx = uiContext.context
-
-  @OptIn(ExperimentalCoroutinesApi::class)
-  override val root = materialCardView(ID_CARD) {
-    radius = dp(10)
-    cardElevation = dp(4)
-    val totalHeight = dip(88)
-
-    add(constraintLayout(ID_CONSTRAINT) {
-
-      groupName = add(textView(ID_GROUP_NAME) {
-        ellipsize = END
-        maxLines = 1
-        textAppearance = R.style.TextAppearance_MaterialComponents_Subtitle1
-      }, lParams(height = wrapContent) {
-        startToStart = PARENT_ID
-        endToEnd = PARENT_ID
-        bottomToTop = ID_TYPE
-      })
-
-      type = add(textView(ID_TYPE) {
-        ellipsize = END
-        maxLines = 1
-        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
-        gravity = gravityStartCenter
-      }, lParams(height = wrapContent) {
-        startToStart = PARENT_ID
-        topToTop = PARENT_ID
-        endToStart = ID_RELEASE_COUNT
-        bottomToBottom = PARENT_ID
-      })
-
-      releaseCount = add(textView(ID_RELEASE_COUNT) {
-        maxLines = 1
-        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
-      }, lParams(wrapContent, wrapContent) {
-        startToEnd = ID_TYPE
-        topToTop = PARENT_ID
-        endToEnd = PARENT_ID
-        bottomToBottom = PARENT_ID
-      })
-
-      firstDate = add(textView(ID_RELEASE_DATE) {
-        ellipsize = END
-        maxLines = 1
-        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
-      }, lParams(height = wrapContent) {
-        startToStart = PARENT_ID
-        topToBottom = ID_TYPE
-        endToStart = ID_RATING_BAR
-      })
-
-      ratingBar = add(ratingBar(ID_RATING_BAR) {
-          setIsIndicator(true)
-          numStars = 5
-          stepSize = 0.5f
-          rating = 0f
-          minimumHeight = dip(16)
-          setStarRatingDrawable(Color.BLUE, Color.BLUE, dip(16), dip(1), 0)
-        }, lParams(width = dip(80), height = dip(16)) {
-          startToEnd = ID_RELEASE_DATE
-          topToBottom = ID_TYPE
-          endToEnd = PARENT_ID
-        })
-
-
-    }, lParams(matchParent, totalHeight, gravityCenter) {
-      horizontalMargin = dip(8)
-    })
-
-    layoutParams = ViewGroup.MarginLayoutParams(matchParent, totalHeight).apply {
-      verticalMargin = dip(4)
-      horizontalMargin = dip(8)
-    }
-  }.also { card ->
-    card.clickFlow()
-      .onEach { onClick(card) }
-      .launchIn(scope)
-  }
-
-  fun bind(releaseGroup: ReleaseGroupItem) {
-    groupName.text = releaseGroup.name.value
-    type.text = releaseGroup.type.toDisplayString(releaseGroup.secondaryTypes) { ctx.getString(it)}
-    firstDate.text = releaseGroup.date
-    ratingBar.rating = releaseGroup.rating.value
-    releaseCount.text = ctx.getString(R.string.ReleaseCount, releaseGroup.releaseCount)
-  }
-}
-```
-In this example the layout and view creation attributes are located together, as would be found in
-equivalent XML, but it is easy to separate view definition from layout, to customize portrait vs
-landscape for example, as in done in other areas of the app.
-
 Of Note
 =======
 This library contains classes others may find useful in a different context. While not necessarily canonical, these
 may be used as examples or a starting point:
 * Moshi annotated data classes for codegen and json adapter generation
-* Moshi custom json adapter copied form codegen and modified to support a name possibly being of 2 types
 * Moshi combination of data class style, annotations, and adapters to support the Null Object Pattern 
 * Moshi annotation and adapter to support a fallback strategy for items missing from json (part of Null Object pattern)
 * Moshi adapter that peeks names to determine which subtype to instantiate
@@ -408,3 +292,7 @@ Related
 [coroutines]: https://kotlinlang.org/docs/reference/coroutines-overview.html
 [flow]: https://kotlinlang.org/docs/reference/coroutines/flow.html  
 [splitties]: https://github.com/LouisCAD/Splitties
+[kotlin-result]: https://github.com/michaelbull/kotlin-result
+[railway]: https://fsharpforfunandprofit.com/rop/
+[ealvabrainz-snapshot]: https://oss.sonatype.org/content/repositories/snapshots/com/ealva/ealvabrainz-service/
+[ealvabrainz-service-snapshot]: https://oss.sonatype.org/content/repositories/snapshots/com/ealva/ealvabrainz-service/

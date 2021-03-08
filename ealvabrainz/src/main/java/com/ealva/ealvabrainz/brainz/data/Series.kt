@@ -33,7 +33,8 @@ import timber.log.Timber
 public class Series(
   public var id: String = "",
   public var name: String = "",
-  public var disambiguation: String = ""
+  public var disambiguation: String = "",
+  public var relations: List<Relation> = emptyList()
 ) {
 
   override fun equals(other: Any?): Boolean {

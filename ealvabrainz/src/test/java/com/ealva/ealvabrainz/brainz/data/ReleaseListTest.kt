@@ -156,10 +156,8 @@ private const val blackCrowesLions =
       "count": 1,
       "title": "Lions",
       "status": "Official",
-      "packaging": {
-        "id": "ec27701a-4a22-37f4-bfac-6616e0f9750a",
-        "name": "Jewel Case"
-      },
+      "packaging": "Jewel Case",
+      "packaging-id": "ec27701a-4a22-37f4-bfac-6616e0f9750a",
       "text-representation": {
         "language": "eng",
         "script": "Latn"
@@ -291,10 +289,8 @@ private const val blackCrowesLions =
       "count": 1,
       "title": "Lions",
       "status": "Official",
-      "packaging": {
-        "id": "ec27701a-4a22-37f4-bfac-6616e0f9750a",
-        "name": "Jewel Case"
-      },
+      "packaging": "Jewel Case",
+      "packaging-id": "ec27701a-4a22-37f4-bfac-6616e0f9750a",
       "text-representation": {
         "language": "eng",
         "script": "Latn"
@@ -356,10 +352,8 @@ private const val blackCrowesLions =
       "count": 1,
       "title": "Lions",
       "status": "Official",
-      "packaging": {
-        "id": "ec27701a-4a22-37f4-bfac-6616e0f9750a",
-        "name": "Jewel Case"
-      },
+      "packaging": "Jewel Case",
+      "packaging-id": "ec27701a-4a22-37f4-bfac-6616e0f9750a",
       "text-representation": {
         "language": "eng",
         "script": "Latn"
@@ -455,10 +449,8 @@ private const val blackCrowesLions =
       "count": 1,
       "title": "Lions",
       "status": "Official",
-      "packaging": {
-        "id": "ec27701a-4a22-37f4-bfac-6616e0f9750a",
-        "name": "Jewel Case"
-      },
+      "packaging": "Jewel Case",
+      "packaging-id": "ec27701a-4a22-37f4-bfac-6616e0f9750a",
       "text-representation": {
         "language": "eng",
         "script": "Latn"

@@ -132,7 +132,12 @@ public class ReleaseGroup(
     Annotation("annotation"),
     Tags("tags"),
     Ratings("ratings"),
-    Genres("genres")
+    Genres("genres");
+
+    public companion object {
+      /** Doesn't create a values() array and/or list every time */
+      public val all: List<Misc> by lazy { values().asList() }
+    }
   }
 
   @Suppress("MaxLineLength")

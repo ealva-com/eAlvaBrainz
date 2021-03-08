@@ -187,7 +187,7 @@ internal class ArtistViewModelImpl(
         val displayMap = HashMap<ReleaseGroupMbid, ReleaseGroupItem>(RELEASE_HASHMAP_MAX_SIZE)
         busy(isBusy) {
           if (doArtistLookup(mbid)) {
-            when (val result = brainz.browseReleases(
+            when (val result = brainz.browseArtistReleases(
               mbid,
               include = listOf(
                 Release.Browse.ArtistCredits,
@@ -283,8 +283,12 @@ internal class ArtistViewModelImpl(
     )
   }
 
-  private suspend fun doArtistLookup(mbid: ArtistMbid): Boolean =
-    when (val result = brainz.lookupArtist(mbid, Artist.Misc.all)) {
+  private suspend fun doArtistLookup(mbid: ArtistMbid): Boolean {
+    return when (
+      val result = brainz.lookupArtist(mbid) {
+        misc(*Artist.Misc.values())
+      }
+    ) {
       is Ok -> {
         handleArtist(result.value, mbid)
         true
@@ -294,6 +298,7 @@ internal class ArtistViewModelImpl(
         false
       }
     }
+  }
 
   private fun handleArtist(
     brainzArtist: Artist,

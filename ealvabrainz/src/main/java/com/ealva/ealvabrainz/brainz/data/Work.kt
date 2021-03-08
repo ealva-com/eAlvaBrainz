@@ -81,6 +81,7 @@ public class Work(
    * are specified in the work’s aliases.
    */
   public var aliases: List<Alias> = emptyList(),
+  public var relations: List<Relation> = emptyList(),
   public var tags: List<Tag> = emptyList()
 ) {
   override fun equals(other: Any?): Boolean {

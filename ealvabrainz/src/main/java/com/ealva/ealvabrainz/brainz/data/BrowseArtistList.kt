@@ -15,20 +15,19 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainzsvc.service
+package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.brainzsvc.net.RawResponse
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-public open class BrainzException(message: String, cause: Throwable? = null) :
-  RuntimeException(message, cause)
-
-public class BrainzInvalidTypeException : BrainzException(
-  "Type is not a valid parameter unless 'include' contains releases or release-groups"
-)
-
-public class BrainzInvalidStatusException : BrainzException(
-  "Status is not a valid parameter unless 'include' contains releases"
-)
-
-public class BrainzUnknownErrorException(public val rawResponse: RawResponse) :
-  BrainzException("Error body could not be deserialized", null)
+@JsonClass(generateAdapter = true)
+public class BrowseArtistList(
+  @Json(name = "artist-count")
+  public var artistCount: Int = 0,
+  @Json(name = "artist-offset")
+  public var artistOffset: Int = 0,
+  @Json(name = "artists")
+  public var artists: List<Artist> = emptyList()
+) {
+  override fun toString(): String = toJson()
+}

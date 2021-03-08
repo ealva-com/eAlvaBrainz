@@ -27,10 +27,25 @@ import com.ealva.brainzsvc.net.toSecureUri
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzExceptionMessage
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzErrorCodeMessage
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzNullReturn
+import com.ealva.brainzsvc.service.lookup.AreaLookup
+import com.ealva.brainzsvc.service.lookup.AreaLookupOp
+import com.ealva.brainzsvc.service.lookup.ArtistLookup
+import com.ealva.brainzsvc.service.lookup.ArtistLookupOp
+import com.ealva.brainzsvc.service.lookup.LabelLookup
+import com.ealva.brainzsvc.service.lookup.LabelLookupOp
+import com.ealva.brainzsvc.service.lookup.RecordingLookup
+import com.ealva.brainzsvc.service.lookup.RecordingLookupOp
+import com.ealva.brainzsvc.service.lookup.ReleaseGroupLookup
+import com.ealva.brainzsvc.service.lookup.ReleaseGroupLookupOp
+import com.ealva.brainzsvc.service.lookup.ReleaseLookup
+import com.ealva.brainzsvc.service.lookup.ReleaseLookupOp
 import com.ealva.ealvabrainz.brainz.MusicBrainz
+import com.ealva.ealvabrainz.brainz.data.Area
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistList
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.BrowseArtistList
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseList
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
@@ -95,6 +110,60 @@ public typealias BrainzResult<T> = Result<T, BrainzMessage>
  */
 public interface MusicBrainzService {
   /**
+   * Lookup an [Area] with [areaMbid] and specify other information to be included via the
+   * optional [lookup] lambda with receiver [AreaLookup]
+   */
+  public suspend fun lookupArea(
+    areaMbid: AreaMbid,
+    lookup: AreaLookup.() -> Unit = {}
+  ): BrainzResult<Area>
+
+  /**
+   * Find the [Artist] with the [artistMbid] ID. Provide an optional lambda with an [ArtistLookup]
+   * receiver to specify if any other information should be included.
+   */
+  public suspend fun lookupArtist(
+    artistMbid: ArtistMbid,
+    lookup: ArtistLookup.() -> Unit = {}
+  ): BrainzResult<Artist>
+
+  /**
+   * Find the [Label] with the [labelMbid] ID. Provide an optional lambda with a
+   * [LabelLookup] receiver to specify if any other information should be included.
+   */
+  public suspend fun lookupLabel(
+    labelMbid: LabelMbid,
+    lookup: LabelLookup.() -> Unit
+  ): BrainzResult<Label>
+
+  /**
+   * Find the [Recording] with the [recordingMbid] ID. Provide an optional lambda with a
+   * [RecordingLookup] receiver to specify if any other information should be included.
+   */
+  public suspend fun lookupRecording(
+    recordingMbid: RecordingMbid,
+    lookup: RecordingLookup.() -> Unit
+  ): BrainzResult<Recording>
+
+  /**
+   * Find the [Release] with the [releaseMbid] ID. Provide an optional lambda with a
+   * [ReleaseLookup] receiver to specify if any other information should be included.
+   */
+  public suspend fun lookupRelease(
+    releaseMbid: ReleaseMbid,
+    lookup: ReleaseLookup.() -> Unit = {}
+  ): BrainzResult<Release>
+
+  /**
+   * Find the [ReleaseGroup] with the [releaseGroupMbid] ID. Provide an optional lambda with a
+   * [ReleaseGroupLookup] receiver to specify if any other information should be included.
+   */
+  public suspend fun lookupReleaseGroup(
+    releaseGroupMbid: ReleaseGroupMbid,
+    lookup: ReleaseGroupLookup.() -> Unit = {}
+  ): BrainzResult<ReleaseGroup>
+
+  /**
    * Find a [ReleaseList] based on [artist] and [album] (album = release), limiting
    * the results to [limit], starting at [offset]. The [limit] and [offset] facilitate paging
    * through results
@@ -105,17 +174,6 @@ public interface MusicBrainzService {
     limit: Int? = null,
     offset: Int? = null
   ): BrainzResult<ReleaseList>
-
-  /**
-   * Find the [Release] identified by [mbid]. Use [include], [type], and/or [status] to specify
-   * information to be included in the Release.
-   */
-  public suspend fun lookupRelease(
-    mbid: ReleaseMbid,
-    include: List<Release.Lookup>? = null,
-    type: List<Release.Type>? = null,
-    status: List<Release.Status>? = null
-  ): BrainzResult<Release>
 
   /**
    * Find [Release]s based on [artist] and [album] and convert the results to a flow
@@ -139,23 +197,7 @@ public interface MusicBrainzService {
     offset: Int? = null
   ): BrainzResult<ReleaseGroupList>
 
-  /**
-   * Find the [ReleaseGroup] identified by [mbid]. Use [include], [type], and/or [status] to specify
-   * information to be included in the ReleaseGroup.
-   * @param mbid the MusicBrainzID to lookup
-   * @param include list of [ReleaseGroup.Lookup] indicating what info linked to the entity is
-   * returned
-   * @param type limit linked entities to this [Release.Type]
-   * @param status limit linked entities to this [Release.Status]
-   */
-  public suspend fun lookupReleaseGroup(
-    mbid: ReleaseGroupMbid,
-    include: List<ReleaseGroup.Lookup>? = null,
-    type: List<Release.Type>? = null,
-    status: List<Release.Status>? = null
-  ): BrainzResult<ReleaseGroup>
-
-  public suspend fun browseReleaseGroups(
+  public suspend fun browseArtistReleaseGroups(
     artistMbid: ArtistMbid,
     limit: Int? = null,
     offset: Int? = null,
@@ -163,7 +205,7 @@ public interface MusicBrainzService {
     type: List<Release.Type>? = null
   ): BrainzResult<BrowseReleaseGroupList>
 
-  public suspend fun browseReleases(
+  public suspend fun browseArtistReleases(
     artistMbid: ArtistMbid,
     limit: Int? = null,
     offset: Int? = null,
@@ -193,21 +235,6 @@ public interface MusicBrainzService {
   ): BrainzResult<ArtistList>
 
   /**
-   * Find the [Artist] identified by [ArtistMbid]. Use [include] to specify information to be
-   * included in the Release.
-   * @param mbid the MusicBrainzID to lookup
-   * @param include list of [Artist.Lookup] indicating what info linked to the entity is returned
-   * @param type limit linked entities to this [Release.Type]
-   * @param status limit linked entities to this [Release.Status]
-   */
-  public suspend fun lookupArtist(
-    mbid: ArtistMbid,
-    include: List<Artist.Lookup>? = null,
-    type: List<Release.Type>? = null,
-    status: List<Release.Status>? = null
-  ): BrainzResult<Artist>
-
-  /**
    * Find an [RecordingList] based on [recording], [artist], and [album], limiting the results
    * to [limit], starting at [offset]. The [limit] and [offset] facilitate paging through results
    *
@@ -225,45 +252,25 @@ public interface MusicBrainzService {
     offset: Int? = null
   ): BrainzResult<RecordingList>
 
-  /**
-   * Find the [Recording] identified by [RecordingMbid]. Use [include] to specify information to be
-   * included in the result.
-   * @param mbid the MusicBrainzID to lookup
-   * @param include list of [Recording.Lookup] indicating what info linked to the entity is returned
-   * @param type limit linked entities to this [Release.Type]
-   * @param status limit linked entities to this [Release.Status]
-   * @return the [Recording] associated with [mbid] or null
-   * @throws BrainzException if Retrofit throws or parameters are invalid
-   */
-  public suspend fun lookupRecording(
-    mbid: RecordingMbid,
-    include: List<Recording.Lookup>? = null,
-    type: List<Release.Type>? = null,
-    status: List<Release.Status>? = null
-  ): BrainzResult<Recording>
-
-  /**
-   * Lookup Label identified by the [LabelMbid] and use [include] to specify information to be
-   * included in the result.
-   *
-   * @param mbid the MusicBrainID (MBID) to lookup
-   * @param include list of [Label.Lookup] specifying how much info from linked entities to include
-   */
-  public suspend fun lookupLabel(
-    mbid: LabelMbid,
-    include: List<Label.Lookup>? = null
-  ): BrainzResult<Label>
-
   public suspend fun getReleaseGroupArtwork(mbid: ReleaseGroupMbid): Uri
 
   public suspend fun browseLabelReleases(
-    mbid: LabelMbid,
-    limit: Int,
-    offset: Int,
+    labelMbid: LabelMbid,
+    limit: Int? = null,
+    offset: Int? = null,
     include: List<Release.Lookup>? = null,
     type: List<Release.Type>? = null,
     status: List<Release.Status>? = null
   ): BrainzResult<BrowseReleaseList>
+
+  public suspend fun browseReleaseGroupArtists(
+    releaseGroupMbid: ReleaseGroupMbid,
+    limit: Int? = null,
+    offset: Int? = null,
+    include: List<ReleaseGroup.Browse>? = null,
+    type: List<Release.Type>? = null,
+    status: List<Release.Status>? = null
+  ): BrainzResult<BrowseArtistList>
 
   /**
    * A main-safe function that calls the [block] function, with [MusicBrainz] as a receiver,
@@ -331,6 +338,48 @@ internal class MusicBrainzServiceImpl(
   private val resourceFetcher: ResourceFetcher
     get() = coverArtService.resourceFetcher
 
+  override suspend fun lookupArea(
+    areaMbid: AreaMbid,
+    lookup: AreaLookup.() -> Unit
+  ): BrainzResult<Area> = brainz {
+    AreaLookupOp().apply(lookup).execute(areaMbid, this)
+  }
+
+  override suspend fun lookupArtist(
+    artistMbid: ArtistMbid,
+    lookup: ArtistLookup.() -> Unit
+  ): BrainzResult<Artist> = brainz {
+    ArtistLookupOp().apply(lookup).execute(artistMbid, this)
+  }
+
+  override suspend fun lookupLabel(
+    labelMbid: LabelMbid,
+    lookup: LabelLookup.() -> Unit
+  ): BrainzResult<Label> = brainz {
+    LabelLookupOp().apply(lookup).execute(labelMbid, this)
+  }
+
+  override suspend fun lookupRecording(
+    recordingMbid: RecordingMbid,
+    lookup: RecordingLookup.() -> Unit
+  ): BrainzResult<Recording> = brainz {
+    RecordingLookupOp().apply(lookup).execute(recordingMbid, this)
+  }
+
+  override suspend fun lookupRelease(
+    releaseMbid: ReleaseMbid,
+    lookup: ReleaseLookup.() -> Unit
+  ): BrainzResult<Release> = brainz {
+    ReleaseLookupOp().apply(lookup).execute(releaseMbid, this)
+  }
+
+  override suspend fun lookupReleaseGroup(
+    releaseGroupMbid: ReleaseGroupMbid,
+    lookup: ReleaseGroupLookup.() -> Unit
+  ): BrainzResult<ReleaseGroup> = brainz {
+    ReleaseGroupLookupOp().apply(lookup).execute(releaseGroupMbid, this)
+  }
+
   override suspend fun findRelease(
     artist: ArtistName,
     album: AlbumName,
@@ -338,20 +387,6 @@ internal class MusicBrainzServiceImpl(
     offset: Int?
   ): BrainzResult<ReleaseList> = brainz {
     findRelease("""artist:"${artist.value}" AND release:"${album.value}"""", limit, offset)
-  }
-
-  override suspend fun lookupRelease(
-    mbid: ReleaseMbid,
-    include: List<Release.Lookup>?,
-    type: List<Release.Type>?,
-    status: List<Release.Status>?
-  ): BrainzResult<Release> = brainz {
-    lookupRelease(
-      mbid.value,
-      include?.join(),
-      type?.ensureValidType(include)?.join(),
-      status?.ensureValidStatus(include)?.join()
-    )
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
@@ -370,21 +405,7 @@ internal class MusicBrainzServiceImpl(
     findReleaseGroup("""artist:"${artist.value}" AND release:"${album.value}"""", limit, offset)
   }
 
-  override suspend fun lookupReleaseGroup(
-    mbid: ReleaseGroupMbid,
-    include: List<ReleaseGroup.Lookup>?,
-    type: List<Release.Type>?,
-    status: List<Release.Status>?
-  ): BrainzResult<ReleaseGroup> = brainz {
-    lookupReleaseGroup(
-      mbid.value,
-      include?.join(),
-      type?.ensureValidType(include)?.join(),
-      status?.ensureValidStatus(include)?.join()
-    )
-  }
-
-  override suspend fun browseReleaseGroups(
+  override suspend fun browseArtistReleaseGroups(
     artistMbid: ArtistMbid,
     limit: Int?,
     offset: Int?,
@@ -396,11 +417,11 @@ internal class MusicBrainzServiceImpl(
       limit,
       offset,
       include?.join(),
-      type?.ensureValidType(include)?.join()
+      type?.join()
     )
   }
 
-  override suspend fun browseReleases(
+  override suspend fun browseArtistReleases(
     artistMbid: ArtistMbid,
     limit: Int?,
     offset: Int?,
@@ -408,12 +429,12 @@ internal class MusicBrainzServiceImpl(
     type: List<Release.Type>?,
     status: List<Release.Status>?
   ): BrainzResult<BrowseReleaseList> = brainz {
-    browseReleases(
+    browseArtistReleases(
       artistId = artistMbid.value,
       limit = limit,
       offset = offset,
       include = include?.join(),
-      type = type?.ensureValidType(include)?.join(),
+      type = type?.join(),
       status = status?.join()
     )
   }
@@ -455,20 +476,6 @@ internal class MusicBrainzServiceImpl(
     musicBrainz.findArtist("""artist:"${artist.value}"""", limit, offset)
   }
 
-  override suspend fun lookupArtist(
-    mbid: ArtistMbid,
-    include: List<Artist.Lookup>?,
-    type: List<Release.Type>?,
-    status: List<Release.Status>?
-  ): BrainzResult<Artist> = brainz {
-    lookupArtist(
-      mbid.value,
-      include?.join(),
-      type?.ensureValidType(include)?.join(),
-      status?.ensureValidStatus(include)?.join()
-    )
-  }
-
   override suspend fun findRecording(
     recording: RecordingName,
     artist: ArtistName?,
@@ -492,27 +499,6 @@ internal class MusicBrainzServiceImpl(
       }
     }
     findRecording(query, limit, offset)
-  }
-
-  override suspend fun lookupRecording(
-    mbid: RecordingMbid,
-    include: List<Recording.Lookup>?,
-    type: List<Release.Type>?,
-    status: List<Release.Status>?
-  ): BrainzResult<Recording> = brainz {
-    lookupRecording(
-      mbid.value,
-      include?.join(),
-      type?.ensureValidType(include)?.join(),
-      status?.ensureValidStatus(include)?.join()
-    )
-  }
-
-  override suspend fun lookupLabel(
-    mbid: LabelMbid,
-    include: List<Label.Lookup>?
-  ): BrainzResult<Label> = brainz {
-    lookupLabel(mbid.value, include?.join())
   }
 
   override suspend fun <T : Any> brainz(
@@ -539,23 +525,39 @@ internal class MusicBrainzServiceImpl(
     }
 
   override suspend fun browseLabelReleases(
-    mbid: LabelMbid,
-    limit: Int,
-    offset: Int,
+    labelMbid: LabelMbid,
+    limit: Int?,
+    offset: Int?,
     include: List<Release.Lookup>?,
     type: List<Release.Type>?,
     status: List<Release.Status>?
-  ): BrainzResult<BrowseReleaseList> {
-    return brainz {
-      browseReleases(
-        labelId = mbid.value,
-        limit = limit,
-        offset = offset,
-        include = include?.join(),
-        type = type?.ensureValidType(include)?.join(),
-        status = status?.ensureValidStatus(include)?.join()
-      )
-    }
+  ): BrainzResult<BrowseReleaseList> = brainz {
+    browseLabelReleases(
+      labelId = labelMbid.value,
+      limit = limit,
+      offset = offset,
+      include = include?.join(),
+      type = type?.ensureValidType(include)?.join(),
+      status = status?.ensureValidStatus(include)?.join()
+    )
+  }
+
+  override suspend fun browseReleaseGroupArtists(
+    releaseGroupMbid: ReleaseGroupMbid,
+    limit: Int?,
+    offset: Int?,
+    include: List<ReleaseGroup.Browse>?,
+    type: List<Release.Type>?,
+    status: List<Release.Status>?
+  ): BrainzResult<BrowseArtistList> = brainz {
+    browseReleaseGroupArtists(
+      releaseGroupMbid.value,
+      limit = limit,
+      offset = offset,
+      include = include?.join(),
+      type = type?.ensureValidType(include)?.join(),
+      status = status?.ensureValidStatus(include)?.join()
+    )
   }
 
   private fun CoverArtRelease?.releaseImageSequence(): Sequence<String> {
@@ -622,12 +624,14 @@ private fun Response<ReleaseGroupList>.list(): List<ReleaseGroup> {
   }
 }
 
-private fun List<Release.Status>.ensureValidStatus(incList: List<Include>?) = apply {
-  if (isNotEmpty() && incList.doesNotContainReleases()) throw BrainzStatusInvalidException()
+public fun List<Release.Type>.ensureValidType(incList: List<Include>?): List<Release.Type> = apply {
+  if (isNotEmpty() && incList.doesNotContainReleasesOrGroups()) throw BrainzInvalidTypeException()
 }
 
-private fun List<Release.Type>.ensureValidType(incList: List<Include>?) = apply {
-  if (isNotEmpty() && incList.doesNotContainReleasesOrGroups()) throw BrainzTypeInvalidException()
+public fun List<Release.Status>.ensureValidStatus(
+  incList: List<Include>?
+): List<Release.Status> = apply {
+  if (isNotEmpty() && incList.doesNotContainReleases()) throw BrainzInvalidStatusException()
 }
 
 @Suppress("NOTHING_TO_INLINE") // only used once

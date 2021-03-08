@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  Eric A. Snell
+ * Copyright (c) 2021  Eric A. Snell
  *
  * This file is part of eAlvaBrainz
  *
@@ -15,20 +15,16 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainzsvc.service
+package com.ealva.ealvabrainz.lucene
 
-import com.ealva.brainzsvc.net.RawResponse
+@Suppress("NOTHING_TO_INLINE")
+public inline fun StringBuilder.appendExpression(expression: Expression): StringBuilder =
+  expression.appendTo(this)
 
-public open class BrainzException(message: String, cause: Throwable? = null) :
-  RuntimeException(message, cause)
+public interface Expression {
+  public fun appendTo(builder: StringBuilder): StringBuilder
+}
 
-public class BrainzInvalidTypeException : BrainzException(
-  "Type is not a valid parameter unless 'include' contains releases or release-groups"
-)
-
-public class BrainzInvalidStatusException : BrainzException(
-  "Status is not a valid parameter unless 'include' contains releases"
-)
-
-public class BrainzUnknownErrorException(public val rawResponse: RawResponse) :
-  BrainzException("Error body could not be deserialized", null)
+public abstract class BaseExpression : Expression {
+  public override fun toString(): String = buildString { appendExpression(this@BaseExpression) }
+}
