@@ -292,7 +292,7 @@ class ReleaseItemUi(uiContext: FragmentUiContext, onClick: (v: View) -> Unit) : 
   fun bind(release: ReleaseItem) {
     val none = ctx.getString(R.string.NoneInBrackets)
 
-    releaseName.text = release.name.value
+    releaseName.text = release.title.value
 
     artist.setText(
       release.artistCredits.toSpannable { credit -> toast("clicked ${credit.artistName}") },

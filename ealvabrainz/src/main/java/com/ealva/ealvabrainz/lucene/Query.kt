@@ -17,26 +17,63 @@
 
 package com.ealva.ealvabrainz.lucene
 
-public class Query(private val fields: List<SearchField>) : BaseExpression() {
+import it.unimi.dsi.fastutil.objects.ReferenceArraySet
+import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet
+import it.unimi.dsi.fastutil.objects.ReferenceSet
+
+private const val INITIAL_CAPACITY = 8
+
+public fun <T> refSetOf(capacity: Int = INITIAL_CAPACITY): ReferenceSet<T> =
+  ReferenceArraySet(capacity)
+
+public fun refSetOf(field: Field): ReferenceSet<Field> =
+  refSetOf<Field>().apply { add(field) }
+
+private fun Pair<String, String>.toField(): Field = Field(first, second)
+
+public interface Query : Expression {
+  public fun add(field: Field): Boolean
+
+  public fun remove(field: Field): Boolean
+
+  public fun replace(original: Field, replacement: Field)
+
+  public companion object {
+    public operator fun invoke(): Query = QueryImpl()
+    public operator fun invoke(field: Field): Query = QueryImpl(refSetOf(field))
+    public operator fun invoke(fieldPair: Pair<String, String>): Query =
+      QueryImpl(refSetOf(fieldPair.toField()))
+
+    public operator fun invoke(
+      fieldPair: Pair<String, String>,
+      vararg trailing: Pair<String, String>
+    ): Query = QueryImpl(
+      refSetOf(fieldPair.toField()).apply { trailing.forEach { add(it.toField()) } }
+    )
+  }
+}
+
+private class QueryImpl(
+  private var fields: ReferenceSet<Field> = refSetOf()
+) : BaseExpression(), Query {
+
+  override fun add(field: Field): Boolean = fields.add(field)
+
+  override fun remove(field: Field): Boolean = fields.remove(field)
+
+  override fun replace(original: Field, replacement: Field) {
+    val currentFields = fields
+    fields = ReferenceLinkedOpenHashSet<Field>(currentFields.size).also { newTerms ->
+      currentFields.forEach { field ->
+        newTerms.add(if (field === original) replacement else field)
+      }
+    }
+  }
+
   override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {
     fields.forEachIndexed { index, searchField ->
       if (index > 0) append(' ')
       appendExpression(searchField)
     }
-  }
-
-  public companion object {
-    public operator fun invoke(field: Field): Query = Query(listOf(field))
-    public operator fun invoke(fieldPair: Pair<String, String>): Query =
-      Query(listOf(fieldPair.toField()))
-
-    public operator fun invoke(
-      fieldPair: Pair<String, String>,
-      vararg trailing: Pair<String, String>
-    ): Query = Query(
-      mutableListOf(fieldPair.toField()).apply {
-        trailing.forEach { add(it.toField()) }
-      }
-    )
   }
 }

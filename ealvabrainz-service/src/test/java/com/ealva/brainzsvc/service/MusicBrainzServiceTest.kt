@@ -19,9 +19,9 @@
 
 package com.ealva.brainzsvc.service
 
-import com.ealva.brainzsvc.common.AlbumName
+import com.ealva.brainzsvc.common.AlbumTitle
 import com.ealva.brainzsvc.common.ArtistName
-import com.ealva.brainzsvc.common.toAlbumName
+import com.ealva.brainzsvc.common.toAlbumTitle
 import com.ealva.brainzsvc.common.toArtistName
 import com.ealva.brainzsvc.common.toRecordingName
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzExceptionMessage
@@ -77,16 +77,16 @@ public class MusicBrainzServiceTest {
   @Test
   public fun `test findRelease on thrown exception`(): Unit = coroutineRule.runBlockingTest {
     val artistName = ArtistName("David Bowie")
-    val albumName = AlbumName("The Man Who Sold the World")
+    val albumName = AlbumTitle("The Man Who Sold the World")
     val query =
-      """artist:"${artistName.value}" AND release:"${albumName.value}""""
+      """(artist:"${artistName.value}" AND release:"${albumName.value}")"""
     val mockBrainz = mock<MusicBrainz> {
       onBlocking {
         findRelease(query)
       } doThrow BrainzException("msg", dummyException)
     }
     val service = makeServiceForTest(mockBrainz)
-    expect(service.findRelease(artistName, albumName))
+    expect(service.findRelease { artist { artistName } and release { albumName } })
       .toBeInstanceOf<Err<BrainzExceptionMessage>> { result ->
         expect(result.error).toBeInstanceOf<BrainzExceptionMessage> { msg ->
           expect(msg.ex).toBeInstanceOf<BrainzException> { ex ->
@@ -135,7 +135,7 @@ public class MusicBrainzServiceTest {
           status(*Release.Status.values())
         }
       ).toBeInstanceOf<Err<BrainzExceptionMessage>> { result ->
-        expect(result.error).toBeInstanceOf<BrainzExceptionMessage>() { error ->
+        expect(result.error).toBeInstanceOf<BrainzExceptionMessage> { error ->
           expect(error.ex).toBeInstanceOf<BrainzInvalidStatusException>()
         }
       }
@@ -169,7 +169,7 @@ public class MusicBrainzServiceTest {
   public fun `test find recording query string`(): Unit = coroutineRule.runBlockingTest {
     val dummy = RecordingList()
     val recordingName = "Her Majesty".toRecordingName()
-    val albumName = "Abbey Road".toAlbumName()
+    val albumName = "Abbey Road".toAlbumTitle()
     val artistName = "The Beatles".toArtistName()
     val query =
       """recording:"${recordingName.value}" AND artist:"${artistName.value}" """ +
@@ -270,22 +270,18 @@ public class MusicBrainzServiceTest {
   private suspend fun doTestFindRelease(limit: Int?, offset: Int?) {
     val dummy = ReleaseList()
     val artistName = ArtistName("David Bowie")
-    val albumName = AlbumName("The Man Who Sold the World")
+    val albumName = AlbumTitle("The Man Who Sold the World")
     val query =
-      """artist:"${artistName.value}" AND release:"${albumName.value}""""
+      """(artist:"${artistName.value}" AND release:"${albumName.value}")"""
     val mockBrainz = mock<MusicBrainz> {
       onBlocking { findRelease(query, limit, offset) } doReturn makeSuccess(dummy)
     }
     val service = makeServiceForTest(mockBrainz)
     expect(
-      service.findRelease(
-        artistName,
-        albumName,
-        limit,
-        offset
-      )
+      service.findRelease(limit = limit, offset = offset) {
+        artist { artistName } and release { albumName }
+      }
     ).toBeInstanceOf<Ok<ReleaseList>> { result ->
-
       verify(mockBrainz, times(1)).findRelease(query, limit, offset)
       expect(result.value).toBe(dummy)
     }

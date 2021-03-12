@@ -37,12 +37,12 @@ import com.ealva.brainzapp.data.toPrimaryReleaseGroupType
 import com.ealva.brainzapp.data.toSecondaryReleaseGroupList
 import com.ealva.brainzapp.data.toStarRating
 import com.ealva.brainzsvc.common.ArtistName
+import com.ealva.brainzsvc.common.toAlbumTitle
 import com.ealva.brainzsvc.common.toArtistName
 import com.ealva.brainzsvc.common.toLabelName
-import com.ealva.brainzsvc.common.toReleaseGroupName
-import com.ealva.brainzsvc.common.toReleaseName
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.ResourceFetcher
+import com.ealva.brainzsvc.service.browse.ReleaseBrowse.BrowseOn
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistCredit
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
@@ -187,17 +187,18 @@ internal class ArtistViewModelImpl(
         val displayMap = HashMap<ReleaseGroupMbid, ReleaseGroupItem>(RELEASE_HASHMAP_MAX_SIZE)
         busy(isBusy) {
           if (doArtistLookup(mbid)) {
-            when (val result = brainz.browseArtistReleases(
-              mbid,
-              include = listOf(
-                Release.Browse.ArtistCredits,
-                Release.Browse.ReleaseGroups,
-                Release.Browse.Ratings,
-                Release.Browse.Media,
-                Release.Browse.Labels
-              ),
-              status = listOf(Release.Status.Official)
-            )) {
+            when (
+              val result = brainz.browseReleases(BrowseOn.Artist(mbid)) {
+                include(
+                  Release.Browse.ArtistCredits,
+                  Release.Browse.ReleaseGroups,
+                  Release.Browse.Ratings,
+                  Release.Browse.Media,
+                  Release.Browse.Labels
+                )
+                status(Release.Status.Official)
+              }
+            ) {
               is Ok -> {
                 handleReleases(result.value.releases, groupToReleaseMap, displayMap, releaseMap)
               }
@@ -222,7 +223,7 @@ internal class ArtistViewModelImpl(
       if (!releaseMap.containsKey(releaseMbid)) {
         releaseMap[releaseMbid] = ReleaseItem.make(
           releaseMbid,
-          release.title.toReleaseName(),
+          release.title.toAlbumTitle(),
           format,
           tracks,
           release.country,
@@ -248,7 +249,7 @@ internal class ArtistViewModelImpl(
         entry.value.run {
           displayMap[entry.key] = ReleaseGroupItem.make(
             mbid,
-            title.toReleaseGroupName(),
+            title.toAlbumTitle(),
             primaryType.toPrimaryReleaseGroupType(),
             secondaryTypes.toSecondaryReleaseGroupList(),
             rating.value.toStarRating(),
@@ -265,7 +266,7 @@ internal class ArtistViewModelImpl(
       .sortedBy {
         val date = it.date
         if (date.isBlank()) {
-          "${SORTER_FOR_EMPTY}${it.name.value}"
+          "${SORTER_FOR_EMPTY}${it.title.value}"
         } else date
       }
       .toList()
@@ -276,7 +277,7 @@ internal class ArtistViewModelImpl(
         .sortedBy {
           val date = it.date
           if (date.isBlank()) {
-            "${SORTER_FOR_EMPTY}${it.name.value}"
+            "${SORTER_FOR_EMPTY}${it.title.value}"
           } else date
         }
         .toList()

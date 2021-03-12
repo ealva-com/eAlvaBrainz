@@ -99,17 +99,6 @@ public class Instrument(
     Genres("genres")
   }
 
-  /**
-   * * [Instrument-Instrument](https://musicbrainz.org/relationships/instrument-instrument)
-   * * [Instrument-Label](https://musicbrainz.org/relationships/instrument-label)
-   * * [Instrument-URL](https://musicbrainz.org/relationships/instrument-url)
-   */
-  public enum class Relations(override val value: String) : Lookup {
-    Instrument("instrument-rels"),
-    Label("label-rels"),
-    Url("url-rels")
-  }
-
   @Suppress("unused")
   public enum class SearchField(public val value: String) {
     /** an alias attached to the instrument */

@@ -43,7 +43,7 @@ class ArtistReleaseGroupsUi(
     setHasFixedSize(true)
     layoutManager = LinearLayoutManager(context)
     adapter = ReleaseGroupItemAdapter(uiContext, brainz) { displayGroup ->
-      ctx.toast("Selected: ${displayGroup.name}")
+      ctx.toast("Selected: ${displayGroup.title}")
     }.also {
       itemAdapter = it
       lifecycleOwner.lifecycle.addObserver(

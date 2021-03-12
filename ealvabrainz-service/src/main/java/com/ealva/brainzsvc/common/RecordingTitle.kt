@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021  Eric A. Snell
+ * Copyright (c) 2020  Eric A. Snell
  *
  * This file is part of eAlvaBrainz
  *
@@ -15,22 +15,22 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainzsvc.service.lookup
+package com.ealva.brainzsvc.common
 
-import com.ealva.ealvabrainz.brainz.MusicBrainz
-import com.ealva.ealvabrainz.brainz.data.Area
-import com.ealva.ealvabrainz.brainz.data.AreaMbid
-import com.ealva.ealvabrainz.brainz.data.join
-import retrofit2.Response
+/**
+ * Convert this String to an [RecordingTitle] or [RecordingTitle.UNKNOWN] if this is null.
+ */
+@Suppress("NOTHING_TO_INLINE")
+public inline fun String?.toRecordingTitle(): RecordingTitle {
+  return this?.let { RecordingTitle.make(this) } ?: RecordingTitle.UNKNOWN
+}
 
-public interface AreaLookup : EntityLookup<Area.Misc>
+public inline class RecordingTitle(public val value: String) {
+  public companion object {
+    public val UNKNOWN: RecordingTitle = RecordingTitle("Unknown")
 
-internal class AreaLookupOp : BaseEntityLookup< Area.Misc>(), AreaLookup {
-  suspend fun execute(
-    mbid: AreaMbid,
-    brainz: MusicBrainz
-  ): Response<Area> = brainz.lookupArea(
-    mbid.value,
-    if (includeSet.isNotEmpty()) includeSet.join() else null
-  )
+    @Suppress("NOTHING_TO_INLINE")
+    public inline fun make(value: String): RecordingTitle =
+      RecordingTitle(value.trim())
+  }
 }

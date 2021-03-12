@@ -23,11 +23,10 @@ import com.ealva.ealvabrainz.brainz.data.RecordingMbid
 import com.ealva.ealvabrainz.brainz.data.join
 import retrofit2.Response
 
-public interface RecordingLookup :
-  EntitySubqueryLookup<Recording.Subquery, Recording.Misc, Recording.Relations>
+public interface RecordingLookup : EntitySubqueryLookup<Recording.Subquery, Recording.Misc>
 
 internal class RecordingLookupOp :
-  BaseSubqueryLookup<Recording.Subquery, Recording.Misc, Recording.Relations>(), RecordingLookup {
+  BaseSubqueryLookup<Recording.Subquery, Recording.Misc>(), RecordingLookup {
 
   suspend fun execute(
     mbid: RecordingMbid,

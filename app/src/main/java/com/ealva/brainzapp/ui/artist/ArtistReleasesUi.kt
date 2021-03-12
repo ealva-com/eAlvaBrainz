@@ -40,7 +40,7 @@ class ArtistReleasesUi(
   override val root: RecyclerView = recyclerView(ID_RECYCLER) {
     layoutManager = LinearLayoutManager(context)
     adapter = ReleaseItemAdapter(uiContext) { displayRelease ->
-      ctx.toast("Selected: ${displayRelease.name}")
+      ctx.toast("Selected: ${displayRelease.title}")
     }.also { itemAdapter = it }
   }.also {
     lifecycleOwner.lifecycle.addObserver(

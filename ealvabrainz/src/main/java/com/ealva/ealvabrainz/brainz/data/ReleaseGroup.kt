@@ -140,20 +140,6 @@ public class ReleaseGroup(
     }
   }
 
-  @Suppress("MaxLineLength")
-  /**
-   * Release Group relationships
-   *
-   * * [ReleaseGroup-ReleaseGroup](https://musicbrainz.org/relationships/release_group-release_group)
-   * * [ReleaseGroup-Series](https://musicbrainz.org/relationships/release_group-series)
-   * * [ReleaseGroup-URL](https://musicbrainz.org/relationships/release_group-url)
-   */
-  public enum class Relations(override val value: String) : Lookup {
-    ReleaseGroup("release-group-rels"),
-    Series("series-rels"),
-    Url("url-rels")
-  }
-
   @Suppress("unused")
   public enum class Browse(override val value: String) : Lookup {
     ArtistCredits("artist-credits"),
@@ -165,10 +151,16 @@ public class ReleaseGroup(
 
   @Suppress("unused")
   public enum class SearchField(public val value: String) {
+    /** (part of) any alias attached to the release group (diacritics are ignored) */
+    Alias("alias"),
+
     /** MBID of the release group’s artist */
     ArtistId("arid"),
 
-    /** release group artist as it appears on the cover (Artist Credit)  */
+    /**
+     * (part of) the combined credited artist name for the release group, including join phrases
+     * (e.g. "Artist X feat.")
+     */
     Artist("artist"),
 
     /** “real name” of any artist that is included in the release group’s artist credit  */
@@ -180,11 +172,17 @@ public class ReleaseGroup(
     /** name of any artist in multi-artist credits, as it appears on the cover */
     CreditName("creditname"),
 
+    /** the release date of the earliest release in this release group (e.g. "1980-01-22") */
+    FirstReleaseDate("firstreleasedate"),
+
     /** primary type of the release group (album, single, ep, other) */
     PrimaryType("primarytype"),
 
-    /** MBID of the release group */
-    ReleaseGroupId("rgid"),
+    /** MBID of a release that appears in the release group  */
+    ReleaseId("reid"),
+
+    /** name of a release that appears in the release group */
+    Release("release"),
 
     /** release group name */
     ReleaseGroup("releasegroup"),
@@ -195,11 +193,8 @@ public class ReleaseGroup(
     /** number of releases in this release group  */
     Releases("releases"),
 
-    /** name of a release that appears in the release group */
-    Release("release"),
-
-    /** MBID of a release that appears in the release group  */
-    ReleaseId("reid"),
+    /** MBID of the release group */
+    ReleaseGroupId("rgid"),
 
     /**
      * secondary type of the release group (audiobook, compilation, interview, live, remix,
@@ -211,13 +206,7 @@ public class ReleaseGroup(
     Status("status"),
 
     /** a tag that appears on the release group */
-    Tag("tag"),
-
-    /**
-     * type of the release group, old type mapping for when we did not have separate primary
-     * and secondary types
-     */
-    Type("type"),
+    Tag("tag")
   }
 
   public companion object {

@@ -186,39 +186,12 @@ public class Artist(
     }
   }
 
-  /**
-   * Artist relationships
-   *
-   * * [Artist-Artist](https://musicbrainz.org/relationships/artist-artist)
-   * * [Artist-Event](https://musicbrainz.org/relationships/artist-event)
-   * * [Artist-Instrument](https://musicbrainz.org/relationships/artist-instrument)
-   * * [Artist-Label](https://musicbrainz.org/relationships/artist-label)
-   * * [Artist-Place](https://musicbrainz.org/relationships/artist-place)
-   * * [Artist-Recording](https://musicbrainz.org/relationships/artist-recording)
-   * * [Artist-Release](https://musicbrainz.org/relationships/artist-release)
-   * * [Artist-ReleaseGroup](https://musicbrainz.org/relationships/artist-release_group)
-   * * [Artist-Series](https://musicbrainz.org/relationships/artist-series)
-   * * [Artist-URL](https://musicbrainz.org/relationships/artist-url)
-   * * [Artist-Work](https://musicbrainz.org/relationships/artist-work)
-   */
-  public enum class Relations(override val value: String) : Lookup {
-    Artist("artist-rels"),
-    Event("event-rels"),
-    Instrument("instrument-rels"),
-    Label("label-rels"),
-    Place("place-rels"),
-    Recording("recording-rels"),
-    Release("release-rels"),
-    ReleaseGroup("release-group-rels"),
-    Series("series-rels"),
-    Url("url-rels"),
-    Work("work-rels")
-  }
-
   public enum class SearchField(public val value: String) {
-    /** an alias attached to the artist */
+    /** (part of) any alias attached to the artist (diacritics are ignored) */
     Alias("alias"),
-    /** the artist's main associated area */
+    /** (part of) any primary alias attached to the artist (diacritics are ignored) */
+    PrimaryAlias("primary_alias"),
+    /** (part of) the name of the artist's main associated area */
     Area("area"),
     /** the artist's MBID */
     ArtistId("arid"),
@@ -248,6 +221,10 @@ public class Artist(
      * A number identifying persons connected to ISWC registered works (authors, composers, etc.).
      */
     Ipi("ipi"),
+    /**
+     * an ISNI code associated with the artist
+     */
+    Isni("isni"),
     /** the artist's sort name */
     SortName("sortname"),
     /** a tag attached to the artist */

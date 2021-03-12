@@ -17,8 +17,9 @@
 
 package com.ealva.ealvabrainz.lucene
 
+@Suppress("RegExpRedundantEscape")
 private const val SPECIAL_CHARS: String =
-  """(\\)|(\+)|(-)|(&&)|(\|\|)|(!)|(\()|(\))|(\{)|(})|(\[)|(])|(\^)|(")|(~)|(\*)|(\?)|(:)|(/)"""
+  """(\\)|(\+)|(-)|(&&)|(\|\|)|(!)|(\()|(\))|(\{)|(\})|(\[)|(])|(\^)|(")|(~)|(\*)|(\?)|(:)|(/)"""
 
 private val reg = Regex(SPECIAL_CHARS)
 

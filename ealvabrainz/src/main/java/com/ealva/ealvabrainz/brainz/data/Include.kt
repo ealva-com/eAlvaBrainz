@@ -38,6 +38,3 @@ public fun List<Include>.join(): String? {
 public fun Set<Include>.join(): String? {
   return if (isEmpty()) null else joinToString("+") { it.value }
 }
-
-// All possible includes, some do not apply to all entities
-// discids+media+isrcs+artist-credits+various-artists+aliases+annotation+tags+ratings+genres

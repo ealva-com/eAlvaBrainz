@@ -24,10 +24,10 @@ import com.ealva.ealvabrainz.brainz.data.join
 import retrofit2.Response
 
 public interface ArtistLookup :
-  EntitySubqueryLookup<Artist.Subquery, Artist.Misc, Artist.Relations>
+  EntitySubqueryLookup<Artist.Subquery, Artist.Misc>
 
 internal class ArtistLookupOp :
-  BaseSubqueryLookup<Artist.Subquery, Artist.Misc, Artist.Relations>(), ArtistLookup {
+  BaseSubqueryLookup<Artist.Subquery, Artist.Misc>(), ArtistLookup {
 
   suspend fun execute(
     mbid: ArtistMbid,

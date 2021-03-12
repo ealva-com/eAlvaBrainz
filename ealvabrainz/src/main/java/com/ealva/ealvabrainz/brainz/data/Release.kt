@@ -212,19 +212,6 @@ public class Release(
     }
   }
 
-  /**
-   * Release relationships
-   *
-   * * [Release-Release](https://musicbrainz.org/relationships/release-release)
-   * * [Release-Series](https://musicbrainz.org/relationships/release-series)
-   * * [Release-URL](https://musicbrainz.org/relationships/release-url)
-   */
-  public enum class Relations(override val value: String) : Lookup {
-    Release("release-rels"),
-    Series("series-rels"),
-    Url("url-rels"),
-  }
-
   @Suppress("unused")
   public enum class Browse(override val value: String) : Lookup {
     ArtistCredits("artist-credits"),
@@ -242,6 +229,9 @@ public class Release(
 
   @Suppress("unused")
   public enum class SearchField(public val value: String) {
+    /** 	(part of) any alias attached to the release (diacritics are ignored) */
+    Alias("alias"),
+
     /** artist MusicBrainz id (MBID) */
     ArtistId("arid"),
 
@@ -251,7 +241,10 @@ public class Release(
     /** an artist on the release, each artist added as a separate field */
     ArtistName("artistname"),
 
-    /** the Amazon ASIN for this release */
+    /**
+     * the Amazon ASIN for this release. Amazon Standard Identification Numbers (ASINs) are unique
+     * blocks of 10 letters and/or numbers that identify items.
+     */
     Asin("asin"),
 
     /**
@@ -281,7 +274,7 @@ public class Release(
     /** number of cd ids for the release on a medium in the release */
     MediumDiscCount("discidsmedium"),
 
-    /** release format */
+    /** the format of any medium in the release (insensitive to case, spaces, and separators)  */
     Format("format"),
 
     /**
@@ -302,33 +295,31 @@ public class Release(
     /** number of mediums in the release */
     MediumCount("mediums"),
 
+    /** number of tracks on a medium in the release */
+    MediumTrackCount("tracksmedium"),
+
+    /** the format of the release (insensitive to case, spaces, and separators) */
+    Packaging("packaging"),
+
     /** primary type of the release group (album, single, ep, other) */
     PrimaryType("primarytype"),
-
-    /**
-     * The release contains recordings with these puids
-     *
-     *  PUIDS are the IDs used in the proprietary MusicDNS audio fingerprinting system operated by
-     *  MusicIP (used by MusicBrainz 2006–2013)
-     */
-    Puid("puid"),
 
     /** The quality of the release (low, normal, high) */
     Quality("quality"),
 
-    /** release MusicBrainz id (MBID) */
+    /** release MBID  */
     ReleaseId("reid"),
 
-    /** release name */
+    /** 	(part of) the release's title (diacritics are ignored)  */
     Release("release"),
 
-    /** name of the release with any accent characters retained */
+    /** 	(part of) the release's title (with the specified diacritics) */
     ReleaseAccentedName("releaseaccent"),
 
     /** release group MusicBrainz id (MBID) */
     ReleaseGroupId("rgid"),
 
-    /** The 4 character script code (e.g. latn) used for this release */
+    /** The 4 character the ISO 15924 script script code (e.g. latn) used for this release */
     Script("script"),
 
     /**
@@ -345,14 +336,6 @@ public class Release(
 
     /** total number of tracks over all mediums on the release */
     TrackCount("tracks"),
-
-    /** number of tracks on a medium in the release */
-    MediumTrackCount("tracksmedium"),
-
-    /** type of the release group, old type mapping for when we did not have separate primary
-     * and secondary types
-     */
-    Type("type"),
   }
 
   /**

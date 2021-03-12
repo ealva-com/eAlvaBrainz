@@ -15,26 +15,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainzsvc.service.lookup
+package com.ealva.ealvabrainz.lucene
 
-import com.ealva.ealvabrainz.brainz.MusicBrainz
-import com.ealva.ealvabrainz.brainz.data.Label
-import com.ealva.ealvabrainz.brainz.data.LabelMbid
-import com.ealva.ealvabrainz.brainz.data.join
-import retrofit2.Response
-
-public interface LabelLookup : EntitySubqueryLookup<Label.Subquery, Label.Misc>
-
-internal class LabelLookupOp :
-  BaseSubqueryLookup<Label.Subquery, Label.Misc>(), LabelLookup {
-
-  suspend fun execute(
-    mbid: LabelMbid,
-    brainz: MusicBrainz
-  ): Response<Label> = brainz.lookupLabel(
-    mbid.value,
-    if (includeSet.isNotEmpty()) includeSet.join() else null,
-    typeSet?.ensureValidType(includeSet)?.join(),
-    statusSet?.ensureValidStatus(includeSet)?.join()
-  )
-}
+@DslMarker
+public annotation class BrainzMarker

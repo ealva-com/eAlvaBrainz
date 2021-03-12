@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  Eric A. Snell
+ * Copyright (c) 2021  Eric A. Snell
  *
  * This file is part of eAlvaBrainz
  *
@@ -17,20 +17,19 @@
 
 package com.ealva.brainzsvc.common
 
-/**
- * Convert this String to an [ReleaseName] or [ReleaseName.UNKNOWN] if this is null.
- */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toReleaseName(): ReleaseName {
-  return this?.let { ReleaseName.make(this) } ?: ReleaseName.UNKNOWN
-}
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Date
 
-public inline class ReleaseName(public val value: String) {
-  public companion object {
-    public val UNKNOWN: ReleaseName = ReleaseName("Unknown")
+public fun LocalDate.brainzFormat(): String = Formatting.date.format(this)
 
-    @Suppress("NOTHING_TO_INLINE")
-    public inline fun make(value: String): ReleaseName =
-      ReleaseName(value.trim())
-  }
+public fun Date.brainzFormat(): String = Formatting.date.format(
+  toInstant()
+    .atZone(ZoneId.systemDefault())
+    .toLocalDate()
+)
+
+public object Formatting {
+  public val date: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE
 }

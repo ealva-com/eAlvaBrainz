@@ -16,13 +16,13 @@
 
 object Sdk {
   const val MIN_SDK_VERSION = 21
-  const val TARGET_SDK_VERSION = 29
-  const val COMPILE_SDK_VERSION = 29
+  const val TARGET_SDK_VERSION = 30
+  const val COMPILE_SDK_VERSION = 30
 }
 
 object Versions {
-  const val ANDROIDX_TEST = "1.3.0"
-  const val ANDROIDX_TEST_EXT = "1.1.2"
+  const val ANDROIDX_TEST = "1.4.0-alpha04"
+  const val ANDROIDX_TEST_EXT = "1.1.3-alpha04"
   const val APPCOMPAT = "1.2.0"
   const val CONSTRAINT_LAYOUT = "2.0.1"
   const val CORE_KTX = "1.3.2"

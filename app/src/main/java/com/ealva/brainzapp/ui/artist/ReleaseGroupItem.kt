@@ -21,15 +21,15 @@ import android.net.Uri
 import com.ealva.brainzapp.data.ReleaseGroupType
 import com.ealva.brainzapp.data.StarRating
 import com.ealva.brainzapp.data.toStarRating
-import com.ealva.brainzsvc.common.ReleaseGroupName
-import com.ealva.brainzsvc.common.toReleaseGroupName
+import com.ealva.brainzsvc.common.AlbumTitle
+import com.ealva.brainzsvc.common.toAlbumTitle
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.toReleaseGroupMbid
 
 class ReleaseGroupItem private constructor(
   val id: Long,
   val mbid: ReleaseGroupMbid,
-  val name: ReleaseGroupName,
+  val title: AlbumTitle,
   val type: ReleaseGroupType.Primary,
   val secondaryTypes: List<ReleaseGroupType.Secondary>,
   val rating: StarRating,
@@ -61,7 +61,7 @@ class ReleaseGroupItem private constructor(
     private var latestId = 0L
     fun make(
       mbid: ReleaseGroupMbid,
-      name: ReleaseGroupName,
+      title: AlbumTitle,
       type: ReleaseGroupType.Primary,
       secondaryTypes: List<ReleaseGroupType.Secondary>,
       rating: StarRating,
@@ -73,7 +73,7 @@ class ReleaseGroupItem private constructor(
       return ReleaseGroupItem(
         latestId,
         mbid,
-        name,
+        title,
         type,
         secondaryTypes,
         rating,
@@ -88,7 +88,7 @@ class ReleaseGroupItem private constructor(
       ReleaseGroupItem(
         -1L,
         "".toReleaseGroupMbid(),
-        "".toReleaseGroupName(),
+        "".toAlbumTitle(),
         ReleaseGroupType.Primary.Unknown,
         emptyList(),
         0.0F.toStarRating(),

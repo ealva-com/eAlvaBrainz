@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  Eric A. Snell
+ * Copyright (c) 2021  Eric A. Snell
  *
  * This file is part of eAlvaBrainz
  *
@@ -15,22 +15,20 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainzsvc.common
+@file:Suppress(
+  "NO_EXPLICIT_VISIBILITY_IN_API_MODE_WARNING",
+  "NO_EXPLICIT_RETURN_TYPE_IN_API_MODE_WARNING"
+)
+package com.ealva.brainzsvc.android.service
 
-/**
- * Convert this String to an [ReleaseGroupName] or [ReleaseGroupName.UNKNOWN] if this is null.
- */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toReleaseGroupName(): ReleaseGroupName {
-  return this?.let { ReleaseGroupName.make(this) } ?: ReleaseGroupName.UNKNOWN
-}
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.runner.RunWith
+import org.junit.runners.Suite
 
-public inline class ReleaseGroupName(public val value: String) {
-  public companion object {
-    public val UNKNOWN: ReleaseGroupName = ReleaseGroupName("Unknown")
-
-    @Suppress("NOTHING_TO_INLINE")
-    public inline fun make(value: String): ReleaseGroupName =
-      ReleaseGroupName(value.trim())
-  }
-}
+@ExperimentalUnsignedTypes
+@ExperimentalCoroutinesApi
+@RunWith(Suite::class)
+@Suite.SuiteClasses(
+  MusicBrainzSmokeTest::class
+)
+class AndroidTestSuite

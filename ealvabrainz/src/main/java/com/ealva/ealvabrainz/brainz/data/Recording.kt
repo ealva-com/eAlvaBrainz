@@ -115,50 +115,42 @@ public class Recording(
     Genres("genres")
   }
 
-  /**
-   * Recording relationships
-   *
-   * * [Recording-Recording](https://musicbrainz.org/relationships/recording-recording)
-   * * [Recording-Release](https://musicbrainz.org/relationships/recording-release)
-   * * [Recording-Series](https://musicbrainz.org/relationships/recording-series)
-   * * [Recording-URL](https://musicbrainz.org/relationships/recording-url)
-   * * [Recording-Work](https://musicbrainz.org/relationships/recording-work)
-   */
-  public enum class Relations(override val value: String) : Lookup {
-    Recording("recording-rels"),
-    Release("release-rels"),
-    Series("series-rels"),
-    Url("url-rels"),
-    Work("work-rels")
-  }
-
   @Suppress("unused")
   public enum class SearchField(public val value: String) {
-    /** the artist's MBID */
+    /** 	(part of) any alias attached to the recording (diacritics are ignored) */
+    Alias("alias"),
+
+    /** the MBID of any of the recording artists  */
     ArtistId("arid"),
 
-    /** artist name is name(s) as it appears on the recording */
+    /** (part of) the combined credited artist name for the recording, including join phrases
+     * (e.g. "Artist X feat.")
+     */
     Artist("artist"),
 
-    /** an artist on the recording, each artist added as a separate field */
+    /** (part of) the name of any of the recording artists */
     ArtistName("artistname"),
 
-    /** the artist's disambiguation comment */
+    /** (part of) the recording's disambiguation comment  */
     Comment("comment"),
 
-    /** name credit on the recording, each artist added as a separate field */
-    CreditName("creditname"),
-
     /**
-     * the 2-letter code (ISO 3166-1 alpha-2) for the artist's main associated country, or “unknown”
+     * the 2-letter code (ISO 3166-1 alpha-2) for the country any release of this recording was
+     * released in
      */
     Country("country"),
 
-    /** recording release date */
+    /** (part of) the credited name of any of the recording artists on this particular recording */
+    CreditName("creditname"),
+
+    /** the release date of any release including this recording (e.g. "1980-01-22") */
     Date("date"),
 
     /** duration of track in milliseconds */
     Duration("dur"),
+
+    /** the release date of the earliest release including this recording (e.g. "1980-01-22") */
+    FirstReleaseDate("firstrelasedate"),
 
     /** recording release format */
     Format("format"),
@@ -169,31 +161,37 @@ public class Recording(
      */
     Isrc("isrc"),
 
-    /** free text track number */
+    /** 	the free-text number of the track on any medium including this recording (e.g. "A4")  */
     Number("number"),
 
-    /** the medium that the recording should be found on, first medium is position 1 */
+    /** the position inside its release of any medium including this recording (starts at 1)  */
     Position("position"),
 
     /** primary type of the release group (album, single, ep, other) */
     PrimaryType("primarytype"),
 
-    /** quantized duration (duration / 2000) */
+    /** the recording duration, quantized (duration in milliseconds / 2000)  */
     QuantizedDuration("qdur"),
 
-    /** name of recording or a track associated with the recording */
+    /**
+     * (part of) the recording's name, or the name of a track connected to this recording
+     * (diacritics are ignored)
+     */
     Recording("recording"),
 
-    /** name of the recording with any accent characters retained */
+    /**
+     * (part of) the recordings's name, or the name of a track connected to this recording (with the
+     * specified diacritics)
+     */
     RecordingAccent("recordingaccent"),
 
-    /** release id */
+    /** (part of) the name of any release including this recording */
+    Release("release"),
+
+    /** the MBID of any release group including this recording */
     ReleaseId("reid"),
 
-    /** release name */
-    ReleaseName("release"),
-
-    /** release group id */
+    /** the MBID of any release group including this recording */
     ReleaseGroupId("rgid"),
 
     /** recording id */
@@ -208,29 +206,25 @@ public class Recording(
     /** Release status (official, promotion, Bootleg, Pseudo-Release) */
     Status("status"),
 
-    /** folksonomy tag */
+    /** (part of) a tag attached to the recording  */
     Tag("tag"),
 
-    /** track id */
+    /** the MBID of a track connected to this recording  */
     TrackId("tid"),
 
-    /** track number on medium */
+    /**
+     * the position of the track on any medium including this recording (starts at 1, pre-gaps at 0)
+     */
     TrackNumber("tnum"),
 
-    /** number of tracks in the medium on release */
+    /** the number of tracks on any medium including this recording */
     Tracks("tracks"),
 
-    /** number of tracks on release as a whole */
+    /** the number of tracks on any release (as a whole) including this recording */
     TracksRelease("tracksrelease"),
 
-    /**
-     * type of the release group, old type mapping for when we did not have separate primary and
-     * secondary types or use standalone for standalone recordings
-     */
-    Type("type"),
-
-    /** true to only show video tracks */
-    Video("video"),
+    /** a boolean flag (true/false) indicating whether or not the recording is a video recording */
+    Video("video")
   }
 
   public companion object {

@@ -46,9 +46,9 @@ plugins {
 
 allprojects {
   repositories {
+    jcenter()
     google()
     mavenCentral()
-    jcenter()
     maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
   }
 }

@@ -18,19 +18,19 @@
 package com.ealva.brainzsvc.common
 
 /**
- * Convert this String to an [AlbumName] or [AlbumName.UNKNOWN] if this is null.
+ * Convert this String to an [EventName] or [EventName.UNKNOWN] if this is null.
  */
 @Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toAlbumName(): AlbumName {
-  return this?.let { AlbumName.make(this) } ?: AlbumName.UNKNOWN
+public inline fun String?.toEventName(): EventName {
+  return this?.let { EventName.make(this) } ?: EventName.UNKNOWN
 }
 
-public inline class AlbumName(public val value: String) {
+public inline class EventName(public val value: String) {
   public companion object {
-    public val UNKNOWN: AlbumName = AlbumName("Unknown")
+    public val UNKNOWN: EventName = EventName("Unknown")
 
     @Suppress("NOTHING_TO_INLINE")
-    public inline fun make(value: String): AlbumName =
-      AlbumName(value.trim())
+    public inline fun make(value: String): EventName =
+      EventName(value.trim())
   }
 }

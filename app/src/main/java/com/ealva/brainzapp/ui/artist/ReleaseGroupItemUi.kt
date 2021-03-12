@@ -218,7 +218,7 @@ class ReleaseGroupItemUi(
           .into(image)
       }
     }
-    groupName.text = releaseGroup.name.value
+    groupName.text = releaseGroup.title.value
     type.text = releaseGroup.type.toDisplayString(releaseGroup.secondaryTypes) { ctx.getString(it) }
     firstDate.text = releaseGroup.date
     ratingBar.rating = releaseGroup.rating.value

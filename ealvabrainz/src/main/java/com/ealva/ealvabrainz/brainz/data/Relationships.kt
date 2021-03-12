@@ -15,26 +15,22 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainzsvc.service.lookup
+package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.MusicBrainz
-import com.ealva.ealvabrainz.brainz.data.Label
-import com.ealva.ealvabrainz.brainz.data.LabelMbid
-import com.ealva.ealvabrainz.brainz.data.join
-import retrofit2.Response
-
-public interface LabelLookup : EntitySubqueryLookup<Label.Subquery, Label.Misc>
-
-internal class LabelLookupOp :
-  BaseSubqueryLookup<Label.Subquery, Label.Misc>(), LabelLookup {
-
-  suspend fun execute(
-    mbid: LabelMbid,
-    brainz: MusicBrainz
-  ): Response<Label> = brainz.lookupLabel(
-    mbid.value,
-    if (includeSet.isNotEmpty()) includeSet.join() else null,
-    typeSet?.ensureValidType(includeSet)?.join(),
-    statusSet?.ensureValidStatus(includeSet)?.join()
-  )
+@Suppress("unused")
+public enum class Relationships(override val value: String) : Include {
+  Area("area-rels"),
+  Artist("artist-rels"),
+  Event("event-rels"),
+  Instrument("instrument-rels"),
+  Label("label-rels"),
+  Place("place-rels"),
+  Recording("recording-rels"),
+  Release("release-rels"),
+  ReleaseGroup("release-group-rels"),
+  Series("series-rels"),
+  Url("url-rels"),
+  Work("work-rels"),
+  RecordingLevel("recording-level-rels"),
+  WorkLevel("work-level-rels")
 }

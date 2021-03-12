@@ -99,15 +99,6 @@ public class Work(
 
   override fun toString(): String = toJson()
 
-  public interface Lookup : Include
-
-  /**
-   * * [Work-Work](https://musicbrainz.org/relationships/work-work)
-   */
-  public enum class Relations(override val value: String) : Lookup {
-    Work("work-rels")
-  }
-
   @Suppress("unused", "UNUSED_PARAMETER")
   public enum class SearchField(value: String) {
     /** the aliases/misspellings for this work */

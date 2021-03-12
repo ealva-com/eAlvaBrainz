@@ -23,11 +23,10 @@ import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.join
 import retrofit2.Response
 
-public interface ReleaseGroupLookup :
-  EntitySubqueryLookup<ReleaseGroup.Subquery, ReleaseGroup.Misc, ReleaseGroup.Relations>
+public interface ReleaseGroupLookup : EntitySubqueryLookup<ReleaseGroup.Subquery, ReleaseGroup.Misc>
 
 internal class ReleaseGroupLookupOp :
-  BaseSubqueryLookup<ReleaseGroup.Subquery, ReleaseGroup.Misc, ReleaseGroup.Relations>(),
+  BaseSubqueryLookup<ReleaseGroup.Subquery, ReleaseGroup.Misc>(),
   ReleaseGroupLookup {
 
   suspend fun execute(

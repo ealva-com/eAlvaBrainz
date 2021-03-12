@@ -39,6 +39,7 @@ android {
   }
 
   compileOptions {
+    isCoreLibraryDesugaringEnabled = true
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
   }
@@ -59,7 +60,7 @@ android {
     getByName("androidTest").java.srcDir(sharedTestDir)
   }
 
-  lintOptions {
+  lint {
     isWarningsAsErrors = false
     isAbortOnError = false
   }
@@ -82,6 +83,7 @@ android {
 }
 
 dependencies {
+  coreLibraryDesugaring(ToolsLib.DESUGARING)
   implementation(kotlin("stdlib-jdk8"))
   implementation(SupportLibs.ANDROIDX_APPCOMPAT)
   implementation(SupportLibs.ANDROIDX_CORE_KTX)

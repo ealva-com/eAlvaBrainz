@@ -30,10 +30,10 @@ pluginManagement {
     }
   }
   repositories {
+    jcenter()
     gradlePluginPortal()
     google()
     mavenCentral()
-    jcenter()
   }
 }
 

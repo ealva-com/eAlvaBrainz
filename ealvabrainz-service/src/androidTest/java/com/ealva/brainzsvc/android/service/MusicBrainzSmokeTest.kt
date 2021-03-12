@@ -20,7 +20,8 @@ package com.ealva.brainzsvc.android.service
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.ealva.brainzsvc.common.toAlbumName
+import androidx.test.filters.LargeTest
+import com.ealva.brainzsvc.common.toAlbumTitle
 import com.ealva.brainzsvc.common.toArtistName
 import com.ealva.brainzsvc.service.BrainzInvalidStatusException
 import com.ealva.brainzsvc.service.BrainzInvalidTypeException
@@ -32,7 +33,6 @@ import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.brainzsvc.service.getErrorString
 import com.ealva.ealvabrainz.brainz.data.Area
 import com.ealva.ealvabrainz.brainz.data.Artist
-import com.ealva.ealvabrainz.brainz.data.BrowseReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.Label
 import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.Release
@@ -65,6 +65,7 @@ private const val contactEmail = "musicbrainz@ealva.com"
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
+@LargeTest
 public class MusicBrainzSmokeTest {
 
   @get:Rule
@@ -125,7 +126,11 @@ public class MusicBrainzSmokeTest {
   @Test
   public fun findReleaseJethroTullAqualung(): Unit = coroutineRule.runBlockingTest {
     withBrainz {
-      when (val result = findRelease(JETHRO_TULL, AQUALUNG, 4)) {
+      when (
+        val result = findRelease(limit = 4) {
+          artist { JETHRO_TULL } and release { AQUALUNG }
+        }
+      ) {
         is Ok -> {
           result.value.let { releaseList ->
             expect(releaseList.releases).toHaveSize(4)
@@ -139,7 +144,11 @@ public class MusicBrainzSmokeTest {
   @Test
   public fun findReleaseJethroTullNotFound(): Unit = coroutineRule.runBlockingTest {
     withBrainz {
-      when (val result = findRelease(JETHRO_TULL, "not found".toAlbumName(), 4)) {
+      when (
+        val result = findRelease(limit = 4) {
+          artist { JETHRO_TULL } and release { "not found".toAlbumTitle() }
+        }
+      ) {
         is Ok -> {
           result.value.let { releaseList ->
             expect(releaseList.count).toBe(0) // expect nothing found
@@ -211,7 +220,11 @@ public class MusicBrainzSmokeTest {
   @Test
   public fun findReleaseGroupZeppelinHousesOfTheHoly(): Unit = coroutineRule.runBlockingTest {
     withBrainz {
-      when (val result = findReleaseGroup(LED_ZEPPELIN, HOUSES_OF_THE_HOLY)) {
+      when (
+        val result = findReleaseGroup {
+          artist { LED_ZEPPELIN } and releaseGroup { HOUSES_OF_THE_HOLY }
+        }
+      ) {
         is Ok -> {
           result.value.let { groupList ->
             expect(groupList.count).toBe(2)
@@ -277,113 +290,117 @@ public class MusicBrainzSmokeTest {
     }
   }
 
-  @Test
-  public fun browseJethroTullReleaseGroups(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val limit = 5
-      when (val result = browseArtistReleaseGroups(JETHRO_TULL_MBID, limit = limit)) {
-        is Ok -> {
-          result.value.let { browseList: BrowseReleaseGroupList ->
-            expect(browseList.releaseGroups).toHaveSize(limit)
-            expect(browseList.releaseGroups[0].title).toBe("Aqualung")
-          }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
-  }
+//  @Test
+//  public fun browseJethroTullReleaseGroups(): Unit = coroutineRule.runBlockingTest {
+//    withBrainz {
+//      val limit = 5
+//      when (val result = browseArtistReleaseGroups(JETHRO_TULL_MBID, limit = limit)) {
+//        is Ok -> {
+//          result.value.let { browseList: BrowseReleaseGroupList ->
+//            expect(browseList.releaseGroups).toHaveSize(limit)
+//            expect(browseList.releaseGroups[0].title).toBe("Aqualung")
+//          }
+//        }
+//        is Err -> fail("Brainz call failed") { failReason(result) }
+//      }
+//    }
+//  }
+//
+//  @Test
+//  public fun browseJethroTullReleaseGroupsWithType(): Unit = coroutineRule.runBlockingTest {
+//    withBrainz {
+//      val limit = 5
+//      when (
+//        val result =
+//          browseArtistReleaseGroups(
+//            JETHRO_TULL_MBID,
+//            limit = limit,
+//            type = listOf(Release.Type.Album)
+//          )
+//      ) {
+//        is Ok -> {
+//          result.value.let { browseList: BrowseReleaseGroupList ->
+//            expect(browseList.releaseGroups).toHaveSize(limit)
+//          }
+//        }
+//        is Err -> fail("Brainz call failed") { failReason(result) }
+//      }
+//    }
+//  }
+//
+//  @Test
+//  public fun browseBeatlesReleases(): Unit = coroutineRule.runBlockingTest {
+//    withBrainz {
+//      val limit = 5
+//      val offset = 100
+//      when (val result = browseArtistReleases(THE_BEATLES_MBID, limit = limit, offset = offset)) {
+//        is Ok -> {
+//          result.value.let { browseList ->
+//            expect(browseList.releaseOffset).toBe(offset)
+//            expect(browseList.releases).toHaveSize(5)
+//          }
+//        }
+//        is Err -> fail("Brainz call failed") { failReason(result) }
+//      }
+//    }
+//  }
+//
+//  @Test
+//  public fun browseBeatlesReleasesWithType(): Unit = coroutineRule.runBlockingTest {
+//    withBrainz {
+//      val limit = 5
+//      val offset = 10
+//      when (
+//        val result = browseArtistReleases(
+//          THE_BEATLES_MBID,
+//          limit,
+//          offset,
+//          type = listOf(Release.Type.Album)
+//        )
+//      ) {
+//        is Ok -> {
+//          result.value.let { browseList ->
+//            expect(browseList.releaseOffset).toBe(offset)
+//            expect(browseList.releases).toHaveSize(5)
+//          }
+//        }
+//        is Err -> fail("Brainz call failed") { failReason(result) }
+//      }
+//    }
+//  }
+//
+//  @Test
+//  public fun browseBeatlesReleasesWithStatus(): Unit = coroutineRule.runBlockingTest {
+//    withBrainz {
+//      val limit = 5
+//      val offset = 10
+//      when (
+//        val result = browseArtistReleases(
+//          THE_BEATLES_MBID,
+//          limit,
+//          offset,
+//          status = listOf(Release.Status.Official)
+//        )
+//      ) {
+//        is Ok -> {
+//          result.value.let { browseList ->
+//            expect(browseList.releaseOffset).toBe(offset)
+//            expect(browseList.releases).toHaveSize(5)
+//          }
+//        }
+//        is Err -> fail("Brainz call failed") { failReason(result) }
+//      }
+//    }
+//  }
 
   @Test
-  public fun browseJethroTullReleaseGroupsWithType(): Unit = coroutineRule.runBlockingTest {
+  public fun findArtistJethroTullSearch(): Unit = coroutineRule.runBlockingTest {
     withBrainz {
-      val limit = 5
       when (
-        val result =
-          browseArtistReleaseGroups(
-            JETHRO_TULL_MBID,
-            limit = limit,
-            type = listOf(Release.Type.Album)
-          )
+        val result = findArtist(limit = 4) {
+          artist { JETHRO_TULL }
+        }
       ) {
-        is Ok -> {
-          result.value.let { browseList: BrowseReleaseGroupList ->
-            expect(browseList.releaseGroups).toHaveSize(limit)
-          }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
-  }
-
-  @Test
-  public fun browseBeatlesReleases(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val limit = 5
-      val offset = 100
-      when (val result = browseArtistReleases(THE_BEATLES_MBID, limit = limit, offset = offset)) {
-        is Ok -> {
-          result.value.let { browseList ->
-            expect(browseList.releaseOffset).toBe(offset)
-            expect(browseList.releases).toHaveSize(5)
-          }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
-  }
-
-  @Test
-  public fun browseBeatlesReleasesWithType(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val limit = 5
-      val offset = 10
-      when (
-        val result = browseArtistReleases(
-          THE_BEATLES_MBID,
-          limit,
-          offset,
-          type = listOf(Release.Type.Album)
-        )
-      ) {
-        is Ok -> {
-          result.value.let { browseList ->
-            expect(browseList.releaseOffset).toBe(offset)
-            expect(browseList.releases).toHaveSize(5)
-          }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
-  }
-
-  @Test
-  public fun browseBeatlesReleasesWithStatus(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val limit = 5
-      val offset = 10
-      when (
-        val result = browseArtistReleases(
-          THE_BEATLES_MBID,
-          limit,
-          offset,
-          status = listOf(Release.Status.Official)
-        )
-      ) {
-        is Ok -> {
-          result.value.let { browseList ->
-            expect(browseList.releaseOffset).toBe(offset)
-            expect(browseList.releases).toHaveSize(5)
-          }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
-  }
-
-  @Test
-  public fun findArtistJethroTull(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      when (val result = findArtist(JETHRO_TULL, 4)) {
         is Ok -> {
           result.value.let { artistList ->
             expect(artistList.count).toBeGreaterThan(0)
@@ -580,14 +597,15 @@ private fun <T> ListMatcher<T>.toNotBeEmpty(message: (() -> Any?)? = null) {
 
 private val JETHRO_TULL = "Jethro Tull".toArtistName()
 private val JETHRO_TULL_MBID = "ece57992-dc2e-4f67-a269-fa43626c1a3d".toArtistMbid()
-private val AQUALUNG = "Aqualung".toAlbumName()
+private val AQUALUNG = "Aqualung".toAlbumTitle()
 private val THE_HAFLER_TRIO_RELEASE = "59211ea4-ffd2-4ad9-9a4e-941d3148024a".toReleaseMbid()
 private val LED_ZEPPELIN = "Led Zeppelin".toArtistName()
-private val HOUSES_OF_THE_HOLY = "Houses of the Holy".toAlbumName()
+private val HOUSES_OF_THE_HOLY = "Houses of the Holy".toAlbumTitle()
 private val FITY_CENT_LOST_TAPE_GROUP_MBID: ReleaseGroupMbid =
   "c9fdb94c-4975-4ed6-a96f-ef6d80bb7738".toReleaseGroupMbid()
 private val THE_BEATLES_MBID = "b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d".toArtistMbid()
 private val NIRVANA_MBID = "5b11f4ce-a62d-471e-81fc-a69a8278c7da".toArtistMbid()
+
 // private val THE_BEATLES_REVOLVER = "72d15666-99a7-321e-b1f3-a3f8c09dff9f".toReleaseGroupMbid()
 private val WARP_LABEL = "46f0f4cd-8aab-4b33-b698-f459faf64190".toLabelMbid()
 private val LAST_ANGEL_RECORDING = "b9ad642e-b012-41c7-b72a-42cf4911f9ff".toRecordingMbid()

@@ -2,13 +2,11 @@ eAlvaBrainz
 ===========
 Kotlin [MusicBrainz][brainz]/[CoverArtArchive][coverart] [Retrofit][retrofit] libraries for Android
 
-**Currently in very preliminary state**. The interfaces are rapidly evolving in an attempt to
-combine ease of use and designing to avoid runtime errors. The current direction is to provide
-configuring lambdas in various calls and soon to build a query builder interface as the underlying
-MusicBrainz calls can be somewhat complex (very large Lucene query interface). There is an escape
-hatch of sorts in that the client can indirectly call the Retrofit interfaces via the
-MusicBrainzService interface and have correct dispatching and error handling behavior. This is the
-same method used internally. See these MusicBrainzService functions and interface:
+**Currently in an alpha state**. The current API direction is to provide configuring lambdas in
+lookup/browse functions and to provide a query DSL for find functions. There is an escape hatch of
+sorts in that the client can indirectly call the Retrofit interfaces via the MusicBrainzService
+interface and have correct dispatching and error handling behavior. This is the same method used
+internally. An example lookup function and builder are:
 ```kotlin
 suspend fun lookupArtist(
   artistMbid: ArtistMbid,
@@ -22,12 +20,10 @@ interface ArtistLookup {
   fun subquery(vararg subquery: Artist.Subquery)
   /** Specify other miscellaneous data to be included */
   fun misc(vararg misc: Artist.Misc)
-  /** Included all miscellaneous data */
-  fun allMisc()
   /** Include relationships based on subquery */
   fun relationships(vararg rels: Artist.Relations)
   /**
-   * If [subquery] includes Artist.Subquery.Releases or Artist.Subquery.Releases the
+   * If [subquery] includes Artist.Subquery.Releases or Artist.Subquery.ReleaseGroups the
    * Release.Type can be specified to further narrow results
    */
   fun types(vararg types: Release.Type)
@@ -40,8 +36,20 @@ interface ArtistLookup {
 }
 ```
 This style provides type safety and attempts to constrain choices to a valid set of options. The
-bare MusicBrainz retrofit client requires an enormous amount of string building in many situations.
-The current interface is very inconsistent in this regard as refactoring is underway.
+bare MusicBrainz retrofit client often requires a lot of string building which can be error-prone
+and lacks type support.
+
+Examples of lookupArtist are:
+```kotlin
+// Get the artist represented by the ArtistMbid and include all Misc info
+when (val result = brainz.lookupArtist(mbid) { misc(*Artist.Misc.values()) }) {
+  is Ok -> handleArtist(result.value, mbid)
+  is Err -> unsuccessful.postValue(result.error.asString(resourceFetcher))
+}
+
+// Get the artist Nirvana's info and include aliases
+val result = lookupArtist(NIRVANA_MBID) { misc(Artist.Misc.Aliases) }
+```
 
 This repository consists of 3 parts:
   * **ealvabrainz** - A library which consists of 2 Retrofit interfaces, MusicBrainz and CoverArt, 
@@ -170,33 +178,26 @@ MusicBrainz client while providing correct coroutine dispatch and simplifying er
 ```kotlin
 interface MusicBrainzService {
   /**
-   * Find a ReleaseList based on [artist] and [album] (album = release), limiting
-   * the results to [limit], starting at [offset]. The [limit] and [offset] facilitate paging
-   * through results
+   * Find the [Artist] with the [artistMbid] ID. Provide an optional lambda with an [ArtistLookup]
+   * receiver to specify if any other information should be included.
    */
-  suspend fun findRelease(
-    artist: ArtistName,
-    album: AlbumName,
+  suspend fun lookupArtist(
+    artistMbid: ArtistMbid,
+    lookup: ArtistLookup.() -> Unit = {}
+  ): BrainzResult<Artist>
+
+  suspend fun findReleaseGroup(
     limit: Int? = null,
-    offset: Int? = null
-  ): BrainzResult<ReleaseList>
+    offset: Int? = null,
+    search: ReleaseGroupSearch.() -> Unit
+  ): BrainzResult<ReleaseGroupList>
 
-  /**
-   * Find the Release identified by [mbid]. Use [include], [type], and/or [status] to specify
-   * information to be included in the Release.
-   */
-  suspend fun lookupRelease(
-    mbid: ReleaseMbid,
-    include: List<Release.Lookup>? = null,
-    type: List<Release.Type>? = null,
-    status: List<Release.Status>? = null
-  ): BrainzResult<Release>
-
-  fun getReleaseArt(
-    artist: ArtistName,
-    album: AlbumName,
-    maxReleases: Int = DEFAULT_MAX_RELEASE_COUNT
-  ): Flow<RemoteImage>
+  suspend fun browseReleases(
+    browseOn: ReleaseBrowse.BrowseOn,
+    limit: Int? = null,
+    offset: Int? = null,
+    browse: ReleaseBrowse.() -> Unit
+  ): BrainzResult<BrowseReleaseList>
 
   /**
    * A main-safe function that calls the [block] function, with MusicBrainz as a receiver,
@@ -215,30 +216,37 @@ interface MusicBrainzService {
    * * BrainzErrorCodeMessage subclass of BrainzStatusMessage, if the response is not successful
    */
   suspend fun <T : Any> brainz(block: BrainzCall<T>): BrainzResult<T>
-
-  companion object {
-    fun make(
-      context: Context,
-      userAgentAppName: String,
-      userAgentAppVersion: String,
-      userAgentEmailContact: String,
-      coverArtService: CoverArtService
-    ): MusicBrainzService
-  }
 }
 ```
 The MusicBrainzService is constructed with a CoverArtService instance. This allows 
 MusicBrainzService to provide functionality such as:
 ``` kotlin
-fun getReleaseArt(artistName: ArtistName, albumName: AlbumName): Flow<RemoteImage>
+suspend fun getReleaseGroupArtwork(mbid: ReleaseGroupMbid): Uri
 ```
 which coordinates a search of releases and returns a flow of images. 
 
-MusicBrainzService functions return a Result<T, BrainzMessage>. Result<V, E> is a monad for 
+A small find release group example showing the query DSL:
+```kotlin
+val result = findReleaseGroup {
+  artist { LED_ZEPPELIN } and releaseGroup { HOUSES_OF_THE_HOLY }
+}
+```
+The ReleaseGroupSearch supports all 17 possible query fields and the term DSL support required,
+prohibited, regular expressions, ranges, fuzzy search, proximity, and boosting. See the MusicBrainz
+docs for details.
+```kotlin
+val revolver = Field("album", Term("Revolver"))
+val rubberSoul = Field("album", Term("Rubber Soul"))
+val beatles = Field("artist", +Term("The Beatles"))  // + operator indicated required term
+val exp = beatles and (revolver or rubberSoul)
+val exp2 = beatles and revolver or rubberSoul
+```
+
+Most MusicBrainzService functions return a Result<T, BrainzMessage>. Result<V, E> is a monad for 
 modelling success (Ok) or failure (Err) operations. When Result is of type Ok, the 
 value of type T is the result of the call to MusicBrainz. If an Err is returned, the error is a
 subtype of BrainzMessage which indicates the type of error. Result is from the 
-kotlin-result[kotlin-result] library and provides a nice implementation for 
+[kotlin-result] library and provides a nice implementation for
 [Railway Oriented Programming][railway].
 ## app
 The application demonstrates searching, browsing, and display of various MusicBrainz entities.

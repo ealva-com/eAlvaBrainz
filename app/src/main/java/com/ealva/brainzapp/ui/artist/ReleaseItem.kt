@@ -23,10 +23,10 @@ import android.content.Context
 import android.graphics.Color
 import android.text.SpannableStringBuilder
 import com.ealva.brainzapp.ui.view.sp
+import com.ealva.brainzsvc.common.AlbumTitle
 import com.ealva.brainzsvc.common.ArtistName
 import com.ealva.brainzsvc.common.LabelName
-import com.ealva.brainzsvc.common.ReleaseName
-import com.ealva.brainzsvc.common.toReleaseName
+import com.ealva.brainzsvc.common.toAlbumTitle
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.LabelMbid
 import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
@@ -95,7 +95,7 @@ fun List<LabelItem>.toSpannable(
 class ReleaseItem private constructor(
   val id: Long,
   val mbid: ReleaseMbid,
-  val name: ReleaseName,
+  val title: AlbumTitle,
   val format: String,
   val tracks: String,
   val country: String,
@@ -129,7 +129,7 @@ class ReleaseItem private constructor(
     private var latestId = 0L
     fun make(
       mbid: ReleaseMbid,
-      name: ReleaseName,
+      title: AlbumTitle,
       format: String,
       tracks: String,
       country: String,
@@ -143,7 +143,7 @@ class ReleaseItem private constructor(
       return ReleaseItem(
         latestId,
         mbid,
-        name,
+        title,
         format,
         tracks,
         country,
@@ -159,7 +159,7 @@ class ReleaseItem private constructor(
       ReleaseItem(
         -1L,
         "".toReleaseMbid(),
-        "".toReleaseName(),
+        "".toAlbumTitle(),
         format = "",
         tracks = "",
         country = "",

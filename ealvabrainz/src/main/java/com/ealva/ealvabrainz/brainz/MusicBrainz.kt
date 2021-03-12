@@ -67,7 +67,10 @@ public interface MusicBrainz {
   public suspend fun lookupArea(
     /** Must be a valid Area MBID */
     @Path("mbid") mbid: String,
-    /** A combination of [Area.Misc] and/or [Area.Relations] */
+    /**
+     * A combination of [Area.Misc] and/or
+     * [Relationships][com.ealva.ealvabrainz.brainz.data.Relationships]
+     */
     @Query("inc") include: String? = null
   ): Response<Area>
 
@@ -221,6 +224,45 @@ public interface MusicBrainz {
   ): Response<ReleaseGroup>
 
   /**
+   * Returns an [ArtistList] given [query] which is the fully formed MusicBrainz query (in the
+   * example this is: artist:"Led Zeppelin". Optional [limit] is
+   * the max number of artists returned and must be 1-100 inclusive, defaults to 25 if not
+   * specified. Optional [offset] is used to page results. The count and offset are both
+   * returned in the resulting ReleaseList
+   *
+   * [Example: http://musicbrainz.org/ws/2/artist/?query=artist:%22Led%20Zeppelin%22&fmt=json](http://musicbrainz.org/ws/2/artist/?query=artist:%22Led%20Zeppelin%22&fmt=json)
+   *
+   * @param query full MusicBrainz lucene query
+   * @param limit 1..100 inclusive are valid. If skipped, defaults to 25
+   * @param offset specifies starting offset into list, used to page results. Defaults to 0
+   */
+  @GET("artist")
+  public suspend fun findArtist(
+    @Query("query") query: String,
+    @Query("limit") limit: Int? = null,
+    @Query("offset") offset: Int? = null
+  ): Response<ArtistList>
+
+  /**
+   * Example is a query for Recording with MBID of "0fc4f7e7-8dcc-4dd3-8d35-d6f4c1f6b0f2", which is
+   * a recording of the song "How Many Times" by the artist Wolfmother from their "New Crown"
+   * release.
+   *
+   * Example [http://musicbrainz.org/ws/2/recording/?query=rid:%220fc4f7e7-8dcc-4dd3-8d35-d6f4c1f6b0f2%22&fmt=json]
+   *
+   * @param query full MusicBrainz lucene query
+   * @param limit 1..100 inclusive are valid. If null, defaults to 25
+   * @param offset specifies starting offset into list, used to page results. Defaults to 0
+   * @return [Response] containing the query result [RecordingList]
+   */
+  @GET("recording")
+  public suspend fun findRecording(
+    @Query("query") query: String,
+    @Query("limit") limit: Int? = null,
+    @Query("offset") offset: Int? = null
+  ): Response<RecordingList>
+
+  /**
    * Returns a [ReleaseList] given [query] which is the fully formed MusicBrainz query (in the
    * example this is: release:"Houses of the Holy" AND artist:"Led Zeppelin" . Optional [limit] is
    * the max number of releases returned and must be 1-100 inclusive, defaults to 25 if not
@@ -259,26 +301,6 @@ public interface MusicBrainz {
     @Query("limit") limit: Int? = null,
     @Query("offset") offset: Int? = null
   ): Response<ReleaseGroupList>
-
-  /**
-   * Returns an [ArtistList] given [query] which is the fully formed MusicBrainz query (in the
-   * example this is: artist:"Led Zeppelin". Optional [limit] is
-   * the max number of artists returned and must be 1-100 inclusive, defaults to 25 if not
-   * specified. Optional [offset] is used to page results. The count and offset are both
-   * returned in the resulting ReleaseList
-   *
-   * [Example: http://musicbrainz.org/ws/2/artist/?query=artist:%22Led%20Zeppelin%22&fmt=json](http://musicbrainz.org/ws/2/artist/?query=artist:%22Led%20Zeppelin%22&fmt=json)
-   *
-   * @param query full MusicBrainz lucene query
-   * @param limit 1..100 inclusive are valid. If skipped, defaults to 25
-   * @param offset specifies starting offset into list, used to page results. Defaults to 0
-   */
-  @GET("artist")
-  public suspend fun findArtist(
-    @Query("query") query: String,
-    @Query("limit") limit: Int? = null,
-    @Query("offset") offset: Int? = null
-  ): Response<ArtistList>
 
   /**
    * Browse albums (Release Groups) for a given artist with [artistId], starting at [offset] with
@@ -412,25 +434,6 @@ public interface MusicBrainz {
     @Query("status") status: String? = null
   ): Response<BrowseReleaseList>
 
-  /**
-   * Example is a query for Recording with MBID of "0fc4f7e7-8dcc-4dd3-8d35-d6f4c1f6b0f2", which is
-   * a recording of the song "How Many Times" by the artist Wolfmother from their "New Crown"
-   * release.
-   *
-   * Example [http://musicbrainz.org/ws/2/recording/?query=rid:%220fc4f7e7-8dcc-4dd3-8d35-d6f4c1f6b0f2%22&fmt=json]
-   *
-   * @param query full MusicBrainz lucene query
-   * @param limit 1..100 inclusive are valid. If null, defaults to 25
-   * @param offset specifies starting offset into list, used to page results. Defaults to 0
-   * @return [Response] containing the query result [RecordingList]
-   */
-  @GET("recording")
-  public suspend fun findRecording(
-    @Query("query") query: String,
-    @Query("limit") limit: Int? = null,
-    @Query("offset") offset: Int? = null
-  ): Response<RecordingList>
-
   @GET("artist")
   public suspend fun browseReleaseGroupArtists(
     /**
@@ -463,4 +466,54 @@ public interface MusicBrainz {
      */
     @Query("status") status: String? = null
   ): Response<BrowseArtistList>
+
+  /**
+   * Only one of:
+   * * [areaId]
+   * * [artistId]
+   * * [collectionId]
+   * * [labelId]
+   * * [trackId]
+   * * [trackArtistId]
+   * * [recordingId]
+   * * [releaseGroupId]
+   * *
+   * are allowed in an invocation.
+   */
+  @GET("release")
+  public suspend fun browseReleases(
+    @Query("area") areaId: String? = null,
+    @Query("artist") artistId: String? = null,
+    @Query("collection") collectionId: String? = null,
+    @Query("label") labelId: String? = null,
+    @Query("track") trackId: String? = null,
+    @Query("track_artist") trackArtistId: String? = null,
+    @Query("recording") recordingId: String? = null,
+    @Query("release-group") releaseGroupId: String? = null,
+    /**
+     * Maximum number of release groups to return. Default is 25. Use with [offset] used for paging
+     * results
+     */
+    @Query("limit") limit: Int? = null,
+    /**
+     * Offset at where to start in the total list. Default is 0. Use With [limit] used for paging
+     * results
+     */
+    @Query("offset") offset: Int? = null,
+    /** Specify how much data linked entities should contain */
+    @Query("inc") include: String? = null,
+    /**
+     * Limit linked entities to this Release type.
+     *
+     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
+     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
+     */
+    @Query("type") type: String? = null,
+    /**
+     * Limit linked entities to this Release status.
+     *
+     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
+     */
+    @Query("status") status: String? = null
+  ): Response<BrowseReleaseList>
 }

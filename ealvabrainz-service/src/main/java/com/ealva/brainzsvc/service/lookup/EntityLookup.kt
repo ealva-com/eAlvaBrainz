@@ -21,27 +21,28 @@ import com.ealva.brainzsvc.service.BrainzInvalidStatusException
 import com.ealva.brainzsvc.service.BrainzInvalidTypeException
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.Include
+import com.ealva.ealvabrainz.brainz.data.Relationships
 import com.ealva.ealvabrainz.brainz.data.Release
 
 /**
  * All entity lookups have these basic parameters
  */
-public interface EntityLookup<M : Include, R : Include> {
+public interface EntityLookup<M : Include> {
   /** Add the entity miscellaneous types to includes param */
   public fun misc(vararg misc: M)
 
   /** Add entity relationships to includes param */
-  public fun relationships(vararg rels: R)
+  public fun relationships(vararg rels: Relationships)
 }
 
 /**
  * Several entity lookups have an additional subquery list of related entities
  */
-public interface EntitySubqueryLookup<S : Include, M : Include, R : Include> : EntityLookup<M, R> {
+public interface EntitySubqueryLookup<S : Include, M : Include> : EntityLookup<M> {
   public fun subquery(vararg subquery: S)
 
   /**
-   * If entities include [Artist.Subquery.Releases] or [Artist.Subquery.Releases] the
+   * If entities include [Artist.Subquery.Releases] or [Artist.Subquery.ReleaseGroups] the
    * [Release.Type] can be specified to further narrow results
    */
   public fun types(vararg types: Release.Type)
@@ -56,14 +57,14 @@ public interface EntitySubqueryLookup<S : Include, M : Include, R : Include> : E
 /**
  * Base class just implements the collection of various includes
  */
-internal abstract class BaseEntityLookup<M : Include, R : Include> : EntityLookup<M, R> {
+internal abstract class BaseEntityLookup<M : Include> : EntityLookup<M> {
   protected val includeSet: MutableSet<Include> = mutableSetOf()
 
   override fun misc(vararg misc: M) {
     includeSet.addAll(misc)
   }
 
-  override fun relationships(vararg rels: R) {
+  override fun relationships(vararg rels: Relationships) {
     includeSet.addAll(rels)
   }
 }
@@ -71,8 +72,8 @@ internal abstract class BaseEntityLookup<M : Include, R : Include> : EntityLooku
 /**
  * Adds subquery to base entity lookups
  */
-internal abstract class BaseSubqueryLookup<S : Include, M : Include, R : Include> :
-  BaseEntityLookup<M, R>(), EntitySubqueryLookup<S, M, R> {
+internal abstract class BaseSubqueryLookup<S : Include, M : Include> :
+  BaseEntityLookup<M>(), EntitySubqueryLookup<S, M> {
 
   protected var typeSet: Set<Release.Type>? = null
   protected var statusSet: Set<Release.Status>? = null

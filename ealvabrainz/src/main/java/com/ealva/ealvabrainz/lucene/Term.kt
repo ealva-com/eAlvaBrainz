@@ -36,6 +36,7 @@ public inline fun String.toTerm(): Term = Term(this)
  * [query parser](https://lucene.apache.org/core/7_7_2/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#Terms)
  * docs for details on the query string format.
  */
+@BrainzMarker
 public sealed class Term : BaseExpression() {
   public companion object {
     /**
@@ -49,7 +50,7 @@ public sealed class Term : BaseExpression() {
   }
 }
 
-public class SingleTerm internal constructor(private val value: String) : Term() {
+public open class SingleTerm(private val value: String) : Term() {
   override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {
     append(value.luceneEscape())
   }
@@ -60,6 +61,12 @@ public class Phrase internal constructor(private val value: String) : Term() {
     append('"').append(value.luceneEscape()).append('"')
   }
 }
+
+public class BooleanTerm(value: Boolean) : SingleTerm(value.toString())
+
+public class IntTerm(value: Int) : SingleTerm(value.toString())
+
+public class LongTerm(value: Long) : SingleTerm(value.toString())
 
 @Suppress("NOTHING_TO_INLINE")
 public inline fun String.toRegExTerm(): Term = RegExTerm(this)

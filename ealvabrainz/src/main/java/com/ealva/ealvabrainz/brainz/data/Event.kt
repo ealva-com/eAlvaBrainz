@@ -123,33 +123,6 @@ public class Event(
   public var score: Int = 0
 ) {
 
-  public interface Lookup : Include
-  // No Misc or Subquery includes for an Event
-
-  /**
-   * Event relationships
-   *
-   * * [Event-Event](https://musicbrainz.org/relationships/event-event)
-   * * [Event-Place](https://musicbrainz.org/relationships/event-place)
-   * * [Event-Recording](https://musicbrainz.org/relationships/event-recording)
-   * * [Event-Release](https://musicbrainz.org/relationships/event-release)
-   * * [Event-ReleaseGroup](https://musicbrainz.org/relationships/event-release_group)
-   * * [Event-Series](https://musicbrainz.org/relationships/event-series)
-   * * [Event-URL](https://musicbrainz.org/relationships/event-url)
-   * * [Event-Work](https://musicbrainz.org/relationships/event-work)
-   */
-  @Suppress("unused")
-  public enum class Relations(override val value: String) : Lookup {
-    Event("event-rels"),
-    Place("place-rels"),
-    Recording("recording-rels"),
-    Release("release-rels"),
-    ReleaseGroup("release-group-rels"),
-    Series("series-rels"),
-    Url("url-rels"),
-    Work("work-rels")
-  }
-
   @Suppress("unused")
   public enum class SearchField(public val value: String) {
     /** an alias attached to the event */

@@ -134,17 +134,12 @@ private class CoverArtServiceImpl(
   override val resourceFetcher: ResourceFetcher,
   private val dispatcher: CoroutineDispatcher
 ) : CoverArtService {
-  private enum class Entity(val value: String) {
-    ReleaseEntity("release"),
-    ReleaseGroupEntity("release-group")
-  }
-
   override suspend fun getReleaseArt(mbid: ReleaseMbid): CoverArtResult = coverArt {
-    getArtwork(Entity.ReleaseEntity.value, mbid.value)
+    getArtwork("release", mbid.value)
   }
 
   override suspend fun getReleaseGroupArt(mbid: ReleaseGroupMbid): CoverArtResult = coverArt {
-    getArtwork(Entity.ReleaseGroupEntity.value, mbid.value)
+    getArtwork("release-group", mbid.value)
   }
 
   suspend fun <T : Any> coverArt(
