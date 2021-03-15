@@ -17,9 +17,11 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
+import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.brainz.data.Url.Companion.NullUrl
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.w
 import com.squareup.moshi.JsonClass
-import timber.log.Timber
 
 /**
  * A MusicBrainz URL consists of its ID and the actual Url
@@ -66,6 +68,7 @@ public inline val Url.mbid: UrlMbid
 
 @Suppress("NOTHING_TO_INLINE")
 public inline fun String.toUrlMbid(): UrlMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid UrlMbid")
+  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid UrlMbid") }
+
   return UrlMbid(this)
 }

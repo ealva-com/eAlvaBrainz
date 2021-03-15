@@ -19,15 +19,18 @@ package com.ealva.brainzsvc.service
 
 import android.content.Context
 import android.net.Uri
-import com.ealva.brainzsvc.common.AlbumTitle
-import com.ealva.brainzsvc.common.ArtistName
-import com.ealva.brainzsvc.common.RecordingName
 import com.ealva.brainzsvc.net.toSecureUri
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzExceptionMessage
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzErrorCodeMessage
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzNullReturn
+import com.ealva.brainzsvc.service.browse.ArtistBrowse
+import com.ealva.brainzsvc.service.browse.ArtistBrowseOp
+import com.ealva.brainzsvc.service.browse.RecordingBrowse
+import com.ealva.brainzsvc.service.browse.RecordingBrowseOp
 import com.ealva.brainzsvc.service.browse.ReleaseBrowse
 import com.ealva.brainzsvc.service.browse.ReleaseBrowseOp
+import com.ealva.brainzsvc.service.browse.ReleaseGroupBrowse
+import com.ealva.brainzsvc.service.browse.ReleaseGroupBrowseOp
 import com.ealva.brainzsvc.service.lookup.AreaLookup
 import com.ealva.brainzsvc.service.lookup.AreaLookupOp
 import com.ealva.brainzsvc.service.lookup.ArtistLookup
@@ -41,6 +44,7 @@ import com.ealva.brainzsvc.service.lookup.ReleaseGroupLookupOp
 import com.ealva.brainzsvc.service.lookup.ReleaseLookup
 import com.ealva.brainzsvc.service.lookup.ReleaseLookupOp
 import com.ealva.brainzsvc.service.search.ArtistSearch
+import com.ealva.brainzsvc.service.search.RecordingSearch
 import com.ealva.brainzsvc.service.search.ReleaseGroupSearch
 import com.ealva.brainzsvc.service.search.ReleaseSearch
 import com.ealva.ealvabrainz.brainz.MusicBrainz
@@ -49,6 +53,9 @@ import com.ealva.ealvabrainz.brainz.data.AreaMbid
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistList
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.BrowseArtistList
+import com.ealva.ealvabrainz.brainz.data.BrowseRecordingList
+import com.ealva.ealvabrainz.brainz.data.BrowseReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseList
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
 import com.ealva.ealvabrainz.brainz.data.Label
@@ -101,6 +108,8 @@ public typealias BrainzResult<T> = Result<T, BrainzMessage>
  *
  * An [Err] will be a [BrainzMessage] of type:
  * * [BrainzExceptionMessage] if an underlying exception is thrown
+ * * [BrainzErrorMessage] is MusicBrainz returns an error decoded to a
+ * [BrainzError][com.ealva.ealvabrainz.brainz.data.BrainzError]
  * * [BrainzNullReturn] subclass of BrainzStatusMessage, if the response is OK but null
  * * [BrainzErrorCodeMessage] subclass of BrainzStatusMessage, if the response is not successful
  */
@@ -160,23 +169,19 @@ public interface MusicBrainzService {
     lookup: ReleaseGroupLookup.() -> Unit = {}
   ): BrainzResult<ReleaseGroup>
 
-  public suspend fun findArtist(
+  public suspend fun browseArtists(
+    browseOn: ArtistBrowse.BrowseOn,
     limit: Int? = null,
     offset: Int? = null,
-    search: ArtistSearch.() -> Unit
-  ): BrainzResult<ArtistList>
+    browse: ArtistBrowse.() -> Unit
+  ): BrainzResult<BrowseArtistList>
 
-  public suspend fun findReleaseGroup(
+  public suspend fun browseRecordings(
+    browseOn: RecordingBrowse.BrowseOn,
     limit: Int? = null,
     offset: Int? = null,
-    search: ReleaseGroupSearch.() -> Unit
-  ): BrainzResult<ReleaseGroupList>
-
-  public suspend fun findRelease(
-    limit: Int? = null,
-    offset: Int? = null,
-    search: ReleaseSearch.() -> Unit
-  ): BrainzResult<ReleaseList>
+    browse: RecordingBrowse.() -> Unit
+  ): BrainzResult<BrowseRecordingList>
 
   public suspend fun browseReleases(
     browseOn: ReleaseBrowse.BrowseOn,
@@ -185,23 +190,36 @@ public interface MusicBrainzService {
     browse: ReleaseBrowse.() -> Unit
   ): BrainzResult<BrowseReleaseList>
 
-  /**
-   * Find an [RecordingList] based on [recording], [artist], and [album], limiting the results
-   * to [limit], starting at [offset]. The [limit] and [offset] facilitate paging through results
-   *
-   * @param recording the name of the recording or track
-   * @param artist the artist name (optional)
-   * @param album the album name (optional)
-   * @param limit how many entries should be returned
-   * @param offset offset into the returned list, used for paging results
-   */
-  public suspend fun findRecording(
-    recording: RecordingName,
-    artist: ArtistName? = null,
-    album: AlbumTitle? = null,
+  public suspend fun browseReleaseGroups(
+    browseOn: ReleaseGroupBrowse.BrowseOn,
     limit: Int? = null,
-    offset: Int? = null
+    offset: Int? = null,
+    browse: ReleaseGroupBrowse.() -> Unit
+  ): BrainzResult<BrowseReleaseGroupList>
+
+  public suspend fun findArtist(
+    limit: Int? = null,
+    offset: Int? = null,
+    search: ArtistSearch.() -> Unit
+  ): BrainzResult<ArtistList>
+
+  public suspend fun findRecording(
+    limit: Int? = null,
+    offset: Int? = null,
+    search: RecordingSearch.() -> Unit
   ): BrainzResult<RecordingList>
+
+  public suspend fun findRelease(
+    limit: Int? = null,
+    offset: Int? = null,
+    search: ReleaseSearch.() -> Unit
+  ): BrainzResult<ReleaseList>
+
+  public suspend fun findReleaseGroup(
+    limit: Int? = null,
+    offset: Int? = null,
+    search: ReleaseGroupSearch.() -> Unit
+  ): BrainzResult<ReleaseGroupList>
 
   public suspend fun getReleaseGroupArtwork(mbid: ReleaseGroupMbid): Uri
 
@@ -311,6 +329,24 @@ internal class MusicBrainzServiceImpl(
     ReleaseGroupLookupOp().apply(lookup).execute(releaseGroupMbid, this)
   }
 
+  override suspend fun browseArtists(
+    browseOn: ArtistBrowse.BrowseOn,
+    limit: Int?,
+    offset: Int?,
+    browse: ArtistBrowse.() -> Unit
+  ): BrainzResult<BrowseArtistList> = brainz {
+    ArtistBrowseOp(browseOn).apply(browse).execute(this, limit, offset)
+  }
+
+  override suspend fun browseRecordings(
+    browseOn: RecordingBrowse.BrowseOn,
+    limit: Int?,
+    offset: Int?,
+    browse: RecordingBrowse.() -> Unit
+  ): BrainzResult<BrowseRecordingList> = brainz {
+    RecordingBrowseOp(browseOn).apply(browse).execute(this, limit, offset)
+  }
+
   override suspend fun browseReleases(
     browseOn: ReleaseBrowse.BrowseOn,
     limit: Int?,
@@ -318,6 +354,15 @@ internal class MusicBrainzServiceImpl(
     browse: ReleaseBrowse.() -> Unit
   ): BrainzResult<BrowseReleaseList> = brainz {
     ReleaseBrowseOp(browseOn).apply(browse).execute(this, limit, offset)
+  }
+
+  override suspend fun browseReleaseGroups(
+    browseOn: ReleaseGroupBrowse.BrowseOn,
+    limit: Int?,
+    offset: Int?,
+    browse: ReleaseGroupBrowse.() -> Unit
+  ): BrainzResult<BrowseReleaseGroupList> = brainz {
+    ReleaseGroupBrowseOp(browseOn).apply(browse).execute(this, limit, offset)
   }
 
   override suspend fun findArtist(
@@ -328,12 +373,12 @@ internal class MusicBrainzServiceImpl(
     musicBrainz.findArtist(ArtistSearch().apply(search).toString(), limit, offset)
   }
 
-  override suspend fun findReleaseGroup(
+  override suspend fun findRecording(
     limit: Int?,
     offset: Int?,
-    search: ReleaseGroupSearch.() -> Unit
-  ): BrainzResult<ReleaseGroupList> = brainz {
-    musicBrainz.findReleaseGroup(ReleaseGroupSearch().apply(search).toString(), limit, offset)
+    search: RecordingSearch.() -> Unit
+  ): BrainzResult<RecordingList> = brainz {
+    musicBrainz.findRecording(RecordingSearch().apply(search).toString(), limit, offset)
   }
 
   override suspend fun findRelease(
@@ -344,29 +389,12 @@ internal class MusicBrainzServiceImpl(
     musicBrainz.findRelease(ReleaseSearch().apply(search).toString(), limit, offset)
   }
 
-  override suspend fun findRecording(
-    recording: RecordingName,
-    artist: ArtistName?,
-    album: AlbumTitle?,
+  override suspend fun findReleaseGroup(
     limit: Int?,
-    offset: Int?
-  ): BrainzResult<RecordingList> = brainz {
-    val query = buildString {
-      append("recording:\"")
-      append(recording.value)
-      append("\"")
-      if (artist != null) {
-        append(" AND artist:\"")
-        append(artist.value)
-        append("\"")
-      }
-      if (album != null) {
-        append(" AND release:\"")
-        append(album.value)
-        append("\"")
-      }
-    }
-    findRecording(query, limit, offset)
+    offset: Int?,
+    search: ReleaseGroupSearch.() -> Unit
+  ): BrainzResult<ReleaseGroupList> = brainz {
+    musicBrainz.findReleaseGroup(ReleaseGroupSearch().apply(search).toString(), limit, offset)
   }
 
   override suspend fun <T : Any> brainz(

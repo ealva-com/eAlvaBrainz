@@ -17,6 +17,10 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
+import com.ealva.ealvabrainz.log.BrainzLog
+import com.ealva.ealvalog.Logger
+import com.ealva.ealvalog.lazyLogger
+
 /**
  * One of MusicBrainz' aims is to be the universal lingua franca for music by providing a reliable
  * and unambiguous form of music identification; this music identification is performed through the
@@ -54,6 +58,7 @@ public interface Mbid {
 
   public companion object {
     public var logInvalidMbid: Boolean = false
+    public val MBID_LOG: Logger by lazyLogger(Mbid::class, BrainzLog.marker)
   }
 }
 

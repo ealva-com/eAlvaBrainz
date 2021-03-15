@@ -23,14 +23,14 @@ import android.content.Context
 import android.graphics.Color
 import android.text.SpannableStringBuilder
 import com.ealva.brainzapp.ui.view.sp
-import com.ealva.brainzsvc.common.AlbumTitle
-import com.ealva.brainzsvc.common.ArtistName
-import com.ealva.brainzsvc.common.LabelName
-import com.ealva.brainzsvc.common.toAlbumTitle
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.LabelMbid
 import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.brainz.data.toReleaseMbid
+import com.ealva.ealvabrainz.common.AlbumTitle
+import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.LabelName
+import com.ealva.ealvabrainz.common.toAlbumTitle
 import me.gujun.android.span.span
 import splitties.resources.appStyledColor
 

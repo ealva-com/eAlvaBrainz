@@ -25,15 +25,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ealva.brainzapp.data.Country
 import com.ealva.brainzapp.data.toCountry
-import com.ealva.brainzsvc.common.ArtistName
-import com.ealva.brainzsvc.common.toArtistName
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.ArtistType
 import com.ealva.ealvabrainz.brainz.data.artistType
 import com.ealva.ealvabrainz.brainz.data.toArtistMbid
-import com.ealva.ealvabrainz.brainz.data.toArtistType
+import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.toArtistName
+import com.ealva.ealvalog.e
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.lazyLogger
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import kotlinx.coroutines.CancellationException
@@ -42,7 +44,8 @@ import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.launch
-import timber.log.Timber
+
+private val LOG by lazyLogger(ArtistSearchViewModel::class)
 
 data class ArtistSearchResult(
   val mbid: ArtistMbid,
@@ -54,7 +57,12 @@ data class ArtistSearchResult(
 ) {
   companion object {
     val NullArtistSearchResult = ArtistSearchResult(
-      "".toArtistMbid(), "".toArtistType(), "".toArtistName(), "".toCountry(), "", 0
+      mbid = ArtistMbid.NO_ARTIST,
+      type = ArtistType.Unknown,
+      name = ArtistName.UNKNOWN,
+      country = "JP".toCountry(),
+      disambiguation = "",
+      score = 0
     )
   }
 }
@@ -162,7 +170,7 @@ internal class ArtistSearchViewModelImpl(
       }
       actor.offer(queryData)
     } catch (e: Exception) {
-      if (e !is CancellationException) Timber.e(e)
+      if (e !is CancellationException) LOG.e(e) { it("offer load data exception") }
     }
   }
 }

@@ -19,14 +19,13 @@
 
 package com.ealva.brainzsvc.service.search
 
-import com.ealva.brainzsvc.common.AlbumTitle
-import com.ealva.brainzsvc.common.ArtistName
-import com.ealva.brainzsvc.common.brainzFormat
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup.SearchField
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.common.AlbumTitle
+import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.lucene.BrainzMarker
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Term
@@ -38,149 +37,128 @@ import kotlin.experimental.ExperimentalTypeInference
 public class ReleaseGroupSearch : BaseSearch() {
   @JvmName("aliasTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun alias(term: () -> Term): Field = make(SearchField.Alias, term())
+  public inline fun alias(term: () -> Term): Field = add(SearchField.Alias, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun alias(term: () -> String): Field = make(SearchField.Alias, term())
+  public inline fun alias(term: () -> String): Field = alias { Term(term()) }
 
   @JvmName("artistIdTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun artistId(term: () -> Term): Field = make(SearchField.ArtistId, term())
+  public inline fun artistId(term: () -> Term): Field = add(SearchField.ArtistId, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun artistId(term: () -> ArtistMbid): Field =
-    make(SearchField.ArtistId, term())
+  public inline fun artistId(term: () -> ArtistMbid): Field = artistId { Term(term()) }
 
   @JvmName("artistTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun artist(term: () -> Term): Field = make(SearchField.Artist, term())
+  public inline fun artist(term: () -> Term): Field = add(SearchField.Artist, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun artist(term: () -> ArtistName): Field =
-    make(SearchField.Artist, term().value)
+  public inline fun artist(term: () -> ArtistName): Field = artist { Term(term()) }
 
   @JvmName("artistNameTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun artistName(term: () -> Term): Field = make(SearchField.ArtistName, term())
+  public inline fun artistName(term: () -> Term): Field = add(SearchField.ArtistName, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun artistName(term: () -> ArtistName): Field =
-    make(SearchField.ArtistName, term().value)
+  public inline fun artistName(term: () -> ArtistName): Field = artistName { Term(term()) }
 
   @JvmName("commentTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun comment(term: () -> Term): Field = make(SearchField.Comment, term())
+  public inline fun comment(term: () -> Term): Field = add(SearchField.Comment, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun comment(term: () -> String): Field =
-    make(SearchField.Comment, term())
+  public inline fun comment(term: () -> String): Field = comment { Term(term()) }
 
   @JvmName("creditNameTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun creditName(term: () -> Term): Field = make(SearchField.CreditName, term())
+  public inline fun creditName(term: () -> Term): Field = add(SearchField.CreditName, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun creditName(term: () -> ArtistName): Field =
-    make(SearchField.CreditName, term().value)
+  public inline fun creditName(term: () -> ArtistName): Field = creditName { Term(term()) }
 
   @JvmName("dateTerm")
   @OverloadResolutionByLambdaReturnType
   public inline fun firstReleaseDate(term: () -> Term): Field =
-    make(SearchField.FirstReleaseDate, term())
+    add(SearchField.FirstReleaseDate, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun firstReleaseDate(term: () -> LocalDate): Field =
-    make(SearchField.FirstReleaseDate, term().brainzFormat())
+    firstReleaseDate { Term(term()) }
 
   @JvmName("primaryTypeTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun primaryType(term: () -> Term): Field = make(SearchField.PrimaryType, term())
+  public inline fun primaryType(term: () -> Term): Field = add(SearchField.PrimaryType, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun primaryType(term: () -> Release.Type): Field =
-    make(SearchField.PrimaryType, term().value)
-
-  @JvmName("primaryTypeString")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun primaryType(term: () -> String): Field = make(SearchField.PrimaryType, term())
+  public inline fun primaryType(term: () -> Release.Type): Field = primaryType { Term(term()) }
 
   @JvmName("releaseIdTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun releaseId(term: () -> Term): Field = make(SearchField.ReleaseId, term())
+  public inline fun releaseId(term: () -> Term): Field = add(SearchField.ReleaseId, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun releaseId(term: () -> ReleaseMbid): Field =
-    make(SearchField.Artist, term())
+  public inline fun releaseId(term: () -> ReleaseMbid): Field = releaseId { Term(term()) }
 
   @JvmName("releaseTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun release(term: () -> Term): Field = make(SearchField.Release, term())
+  public inline fun release(term: () -> Term): Field = add(SearchField.Release, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun release(term: () -> AlbumTitle): Field =
-    make(SearchField.Release, term().value)
+  public inline fun release(term: () -> AlbumTitle): Field = release { Term(term()) }
 
   @JvmName("releaseCountTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun releaseCount(term: () -> Term): Field = make(SearchField.Releases, term())
+  public inline fun releaseCount(term: () -> Term): Field = add(SearchField.Releases, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun releaseCount(term: () -> String): Field =
-    make(SearchField.Releases, term())
+  public inline fun releaseCount(term: () -> Int): Field = releaseCount { Term(term()) }
 
   @JvmName("releaseGroupTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun releaseGroup(term: () -> Term): Field = make(SearchField.ReleaseGroup, term())
+  public inline fun releaseGroup(term: () -> Term): Field = add(SearchField.ReleaseGroup, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun releaseGroup(term: () -> AlbumTitle): Field =
-    make(SearchField.ReleaseGroup, term().value)
+  public inline fun releaseGroup(term: () -> AlbumTitle): Field = releaseGroup { Term(term()) }
 
   @JvmName("releaseGroupIdTerm")
   @OverloadResolutionByLambdaReturnType
   public inline fun releaseGroupId(term: () -> Term): Field =
-    make(SearchField.ReleaseGroupId, term())
+    add(SearchField.ReleaseGroupId, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun releaseGroupId(term: () -> ReleaseGroupMbid): Field =
-    make(SearchField.ReleaseGroupId, term())
+    releaseGroupId { Term(term()) }
 
   @JvmName("releaseGroupAccentedNameTerm")
   @OverloadResolutionByLambdaReturnType
   public inline fun releaseGroupAccentedName(term: () -> Term): Field =
-    make(SearchField.ReleaseGroupAccentedName, term())
+    add(SearchField.ReleaseGroupAccentedName, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun releaseGroupAccentedName(term: () -> String): Field =
-    make(SearchField.ReleaseGroupAccentedName, term())
+    releaseGroupAccentedName { Term(term()) }
 
   @JvmName("secondaryTypeTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun secondaryType(term: () -> Term): Field = make(SearchField.SecondaryType, term())
+  public inline fun secondaryType(term: () -> Term): Field = add(SearchField.SecondaryType, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun secondaryType(term: () -> Release.Type): Field =
-    make(SearchField.SecondaryType, term().value)
-
-  @JvmName("secondaryTypeString")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun secondaryType(term: () -> String): Field =
-    make(SearchField.SecondaryType, term())
+  public inline fun secondaryType(term: () -> Release.Type): Field = secondaryType { Term(term()) }
 
   @JvmName("statusTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun status(term: () -> Term): Field = make(SearchField.Status, term())
+  public inline fun status(term: () -> Term): Field = add(SearchField.Status, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun status(term: () -> String): Field = make(SearchField.Status, term())
+  public inline fun status(term: () -> Release.Status): Field = status { Term(term()) }
 
   @JvmName("tagTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun tag(term: () -> Term): Field = make(SearchField.Tag, term())
+  public inline fun tag(term: () -> Term): Field = add(SearchField.Tag, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun tag(term: () -> String): Field = make(SearchField.Tag, term())
+  public inline fun tag(term: () -> String): Field = tag { Term(term()) }
 
-  public fun <T> make(field: SearchField, term: T): Field =
-    makeAndAdd(field.value, term)
+  public fun add(field: SearchField, term: Term): Field = makeAndAddField(field.value, term)
 }

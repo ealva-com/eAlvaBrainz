@@ -94,7 +94,6 @@ dependencies {
   implementation(ThirdParty.COROUTINE_ANDROID)
   implementation(ThirdParty.MOSHI)
   implementation(ThirdParty.MOSHI_RETROFIT)
-  implementation(ThirdParty.TIMBER)
 
   kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.2")
 

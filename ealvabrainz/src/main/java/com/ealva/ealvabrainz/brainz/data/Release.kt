@@ -18,11 +18,13 @@
 package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.CoverArtArchive.Companion.NullCoverArtArchive
+import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.brainz.data.Release.Companion.NullRelease
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.w
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import timber.log.Timber
 
 /**
  * A MusicBrainz release represents the unique release (i.e. issuing) of a product on a specific
@@ -180,6 +182,7 @@ public class Release(
 
   public interface Lookup : Include
 
+  @Suppress("unused")
   public enum class Subquery(override val value: String) : Lookup {
     Artists("artists"),
     Collections("collections"),
@@ -199,6 +202,7 @@ public class Release(
     ArtistCredits("artist-credits"); // include artists credits for all releases and recordings
   }
 
+  @Suppress("unused")
   public enum class Misc(override val value: String) : Lookup {
     Aliases("aliases"),
     Annotation("annotation"),
@@ -214,6 +218,13 @@ public class Release(
 
   @Suppress("unused")
   public enum class Browse(override val value: String) : Lookup {
+    Area("area"),
+    Artist("artist"),
+    Label("label"),
+    Track("track"),
+    TrackArtist("track_artist"),
+    Recording("recording"),
+    ReleaseGroup("release-group"),
     ArtistCredits("artist-credits"),
     Labels("labels"),
     Recordings("recordings"),
@@ -335,7 +346,9 @@ public class Release(
     Tag("tag"),
 
     /** total number of tracks over all mediums on the release */
-    TrackCount("tracks"),
+    TrackCount("tracks");
+
+    override fun toString(): String = value
   }
 
   /**
@@ -343,19 +356,37 @@ public class Release(
    * the that particular type of Release.
    */
   @Suppress("unused")
-  public enum class Type(override val value: String) : Piped {
-    Nat("nat"),
-    Album("album"),
-    Single("single"),
-    Ep("ep"),
-    Compilation("compilation"),
-    Soundtrack("soundtrack"),
-    SpokenWord("spokenword"),
-    Interview("interview"),
-    Audiobook("audiobook"),
-    Live("live"),
-    Remix("remix"),
-    Other("other")
+  public sealed class Type(override val value: String) : Piped {
+    public object Nat : Type("nat")
+    public object Album : Type("album")
+    public object Single : Type("single")
+    public object Ep : Type("ep")
+    public object Compilation : Type("compilation")
+    public object Soundtrack : Type("soundtrack")
+    public object SpokenWord : Type("spokenword")
+    public object Interview : Type("interview")
+    public object Audiobook : Type("audiobook")
+    public object Live : Type("live")
+    public object Remix : Type("remix")
+    public object Other : Type("other")
+    public class Unspecified(value: String) : Type(value)
+
+    public companion object {
+      public val values: Array<Type> = arrayOf(
+        Nat,
+        Album,
+        Single,
+        Ep,
+        Compilation,
+        Soundtrack,
+        SpokenWord,
+        Interview,
+        Audiobook,
+        Live,
+        Remix,
+        Other
+      )
+    }
   }
 
   /**
@@ -363,11 +394,16 @@ public class Release(
    * [status][Release.status]
    */
   @Suppress("unused")
-  public enum class Status(override val value: String) : Piped {
-    Official("official"),
-    Promotion("promotion"),
-    Bootleg("bootleg"),
-    PseudoRelease("pseudo-release")
+  public sealed class Status(override val value: String) : Piped {
+    public object Official : Status("official")
+    public object Promotion : Status("promotion")
+    public object Bootleg : Status("bootleg")
+    public object PseudoRelease : Status("pseudo-release")
+    public class Unspecified(value: String) : Status(value)
+
+    public companion object {
+      public val values: Array<Status> = arrayOf(Official, Promotion, Bootleg, PseudoRelease)
+    }
   }
 
   public companion object {
@@ -386,7 +422,7 @@ public inline val Release.mbid: ReleaseMbid
 
 @Suppress("NOTHING_TO_INLINE")
 public inline fun String.toReleaseMbid(): ReleaseMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid ReleaseMbid")
+  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid ReleaseMbid") }
   return ReleaseMbid(this)
 }
 

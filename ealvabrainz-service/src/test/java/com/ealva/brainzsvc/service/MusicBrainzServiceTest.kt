@@ -19,11 +19,6 @@
 
 package com.ealva.brainzsvc.service
 
-import com.ealva.brainzsvc.common.AlbumTitle
-import com.ealva.brainzsvc.common.ArtistName
-import com.ealva.brainzsvc.common.toAlbumTitle
-import com.ealva.brainzsvc.common.toArtistName
-import com.ealva.brainzsvc.common.toRecordingName
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzExceptionMessage
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzErrorCodeMessage
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzNullReturn
@@ -40,6 +35,11 @@ import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.brainz.data.join
 import com.ealva.ealvabrainz.brainz.data.toReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.toReleaseMbid
+import com.ealva.ealvabrainz.common.AlbumTitle
+import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.toAlbumTitle
+import com.ealva.ealvabrainz.common.toArtistName
+import com.ealva.ealvabrainz.common.toRecordingTitle
 import com.ealva.ealvabrainz.test.shared.MainCoroutineRule
 import com.ealva.ealvabrainz.test.shared.runBlockingTest
 import com.github.michaelbull.result.Err
@@ -132,7 +132,7 @@ public class MusicBrainzServiceTest {
       // expect lookupReleaseGroup to throw
       expect(
         service.lookupReleaseGroup(mbid) {
-          status(*Release.Status.values())
+          status(*Release.Status.values)
         }
       ).toBeInstanceOf<Err<BrainzExceptionMessage>> { result ->
         expect(result.error).toBeInstanceOf<BrainzExceptionMessage> { error ->
@@ -146,7 +146,7 @@ public class MusicBrainzServiceTest {
   public fun `test lookupReleaseGroup status used`(): Unit = coroutineRule.runBlockingTest {
     val dummy = ReleaseGroup(title = "dummy")
     val mbid = "938cef50-de9a-3ced-a1fe-bdfbd3bc4315".toReleaseGroupMbid()
-    val allStatus = Release.Status.values().toList()
+    val allStatus = Release.Status.values
     val status = allStatus.join()
     val mockBrainz = mock<MusicBrainz> {
       onBlocking {
@@ -157,7 +157,7 @@ public class MusicBrainzServiceTest {
     expect(
       service.lookupReleaseGroup(mbid) {
         subquery(ReleaseGroup.Subquery.Releases)
-        status(*Release.Status.values())
+        status(*Release.Status.values)
       }
     ).toBeInstanceOf<Ok<ReleaseGroup>> { result ->
       expect(result.value).toBeTheSameAs(dummy)
@@ -168,22 +168,20 @@ public class MusicBrainzServiceTest {
   @Test
   public fun `test find recording query string`(): Unit = coroutineRule.runBlockingTest {
     val dummy = RecordingList()
-    val recordingName = "Her Majesty".toRecordingName()
+    val recordingName = "Her Majesty".toRecordingTitle()
     val albumName = "Abbey Road".toAlbumTitle()
     val artistName = "The Beatles".toArtistName()
     val query =
-      """recording:"${recordingName.value}" AND artist:"${artistName.value}" """ +
-        """AND release:"${albumName.value}""""
+      """(recording:"${recordingName.value}" AND artist:"${artistName.value}" """ +
+        """AND release:"${albumName.value}")"""
     val mockBrainz = mock<MusicBrainz> {
       onBlocking { findRecording(query, null, null) } doReturn makeSuccess(dummy)
     }
     val service = makeServiceForTest(mockBrainz)
     expect(
-      service.findRecording(
-        recordingName,
-        artistName,
-        albumName
-      )
+      service.findRecording {
+        recording { recordingName } and artist { artistName } and release { albumName }
+      }
     ).toBeInstanceOf<Ok<RecordingList>> { result ->
       expect(result.value).toBeTheSameAs(dummy)
     }

@@ -15,7 +15,34 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("NOTHING_TO_INLINE")
+
 package com.ealva.ealvabrainz.lucene
+
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.EventMbid
+import com.ealva.ealvabrainz.brainz.data.GenreMbid
+import com.ealva.ealvabrainz.brainz.data.InstrumentMbid
+import com.ealva.ealvabrainz.brainz.data.LabelMbid
+import com.ealva.ealvabrainz.brainz.data.PackagingMbid
+import com.ealva.ealvabrainz.brainz.data.PlaceMbid
+import com.ealva.ealvabrainz.brainz.data.RecordingMbid
+import com.ealva.ealvabrainz.brainz.data.Release
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.brainz.data.SeriesMbid
+import com.ealva.ealvabrainz.brainz.data.TrackMbid
+import com.ealva.ealvabrainz.brainz.data.UrlMbid
+import com.ealva.ealvabrainz.brainz.data.WorkMbid
+import com.ealva.ealvabrainz.common.AlbumTitle
+import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.LabelName
+import com.ealva.ealvabrainz.common.RecordingTitle
+import com.ealva.ealvabrainz.common.TrackTitle
+import com.ealva.ealvabrainz.common.brainzFormat
+import java.time.LocalDate
+import java.util.Date
 
 @Suppress("NOTHING_TO_INLINE")
 public inline fun String.toTerm(): Term = Term(this)
@@ -32,6 +59,8 @@ public inline fun String.toTerm(): Term = Term(this)
  * phrase queries). To perform a single character wildcard search use the "?" symbol. To perform a
  * multiple character wildcard search use the "*" symbol.
  *
+ * Terms should be immutable. Operations should produce new terms.
+ *
  * See MusicBrainz [search](https://musicbrainz.org/doc/MusicBrainz_API/Search) page and the Lucene
  * [query parser](https://lucene.apache.org/core/7_7_2/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#Terms)
  * docs for details on the query string format.
@@ -47,6 +76,45 @@ public sealed class Term : BaseExpression() {
     public operator fun invoke(text: String): Term = text.trim().let { str ->
       if (str.any { it.isWhitespace() }) Phrase(str) else SingleTerm(str)
     }
+
+    /*
+     * NOTE: While this is a very long list of type to Term conversion functions, we'll provide
+     * these as a user convenience and let the compiler decide the function to be called instead of
+     * a large when() making a runtime decision. Since SingleTerm and Phrase are public this is
+     * still open to change as new Terms may be introduced (which should be a very rare occurrence
+     * once this library is version 1.0 complete)
+    */
+
+    // All MBID listed separately, instead of as Mbid, so they don't have to be boxed
+    public inline operator fun invoke(mbid: AreaMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: ArtistMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: EventMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: GenreMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: InstrumentMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: LabelMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: PlaceMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: RecordingMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: ReleaseMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: ReleaseGroupMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: SeriesMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: WorkMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: UrlMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: TrackMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: PackagingMbid): Term = SingleTerm(mbid.value)
+
+    public inline operator fun invoke(title: AlbumTitle): Term = Term(title.value)
+    public inline operator fun invoke(name: ArtistName): Term = Term(name.value)
+    public inline operator fun invoke(name: LabelName): Term = Term(name.value)
+    public inline operator fun invoke(title: RecordingTitle): Term = Term(title.value)
+    public inline operator fun invoke(title: TrackTitle): Term = Term(title.value)
+    public inline operator fun invoke(type: Release.Type): Term = SingleTerm(type.value)
+    public inline operator fun invoke(status: Release.Status): Term = SingleTerm(status.value)
+
+    public inline operator fun invoke(value: Int): Term = SingleTerm(value.toString())
+    public inline operator fun invoke(value: Long): Term = SingleTerm(value.toString())
+    public inline operator fun invoke(value: Boolean): Term = SingleTerm(value.toString())
+    public inline operator fun invoke(date: LocalDate): Term = SingleTerm(date.brainzFormat())
+    public inline operator fun invoke(date: Date): Term = SingleTerm(date.brainzFormat())
   }
 }
 
@@ -62,16 +130,10 @@ public class Phrase internal constructor(private val value: String) : Term() {
   }
 }
 
-public class BooleanTerm(value: Boolean) : SingleTerm(value.toString())
-
-public class IntTerm(value: Int) : SingleTerm(value.toString())
-
-public class LongTerm(value: Long) : SingleTerm(value.toString())
-
 @Suppress("NOTHING_TO_INLINE")
 public inline fun String.toRegExTerm(): Term = RegExTerm(this)
 
-@Suppress("KDocUnresolvedReference")
+@Suppress("KDocUnresolvedReference") // how to escape brackets? []
 /**
  * Creates a Regular Expression term which will be surrounded by '/' characters.  "abc" -> "\/abc\/"
  * (the '/' must be escaped with a '\'). The text will not be trimmed as with a normal term as
@@ -90,7 +152,7 @@ public class RegExTerm(private val value: String) : Term() {
 /**
  * A +term indicates the term is required to appear in the result of the query
  */
-public operator fun Term.unaryPlus(): RequireTerm = RequireTerm(this)
+public operator fun Term.unaryPlus(): RequireTerm = require()
 
 public fun Term.require(): RequireTerm = RequireTerm(this)
 
@@ -106,13 +168,13 @@ public class RequireTerm(private val term: Term) : Term() {
 /**
  * A -term indicates the term must not appear in the result of the query
  */
-public operator fun Term.unaryMinus(): ProhibitTerm = ProhibitTerm(this)
+public operator fun Term.unaryMinus(): ProhibitTerm = prohibit()
 
 /**
  * A !term indicates the term must not appear in the result of the query. The actual string will
- * be prefixed with a '-' character as that is proper for lucene
+ * be prefixed with a '-' character as that is canonical for lucene
  */
-public operator fun Term.not(): ProhibitTerm = ProhibitTerm(this)
+public operator fun Term.not(): ProhibitTerm = prohibit()
 
 public fun Term.prohibit(): ProhibitTerm = ProhibitTerm(this)
 
@@ -267,7 +329,7 @@ public fun Pair<Term, Term>.inclusive(): InclusiveRange = InclusiveRange(first, 
  * bound specified by the Range Query. Range Queries can be inclusive or exclusive of the upper and
  * lower bounds. Sorting is done lexicographically.
  *
- * mod_date:[20020101 TO 20030101]
+ * mod_date:[2002-01-01 TO 2003-01-01]
  *
  * This will find documents whose mod_date fields have values between 20020101 and 20030101,
  * inclusive. Note that Range Queries are not reserved for date fields. You could also use range

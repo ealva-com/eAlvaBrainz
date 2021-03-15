@@ -24,6 +24,10 @@ import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzError
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzNullReturn
 import com.ealva.ealvabrainz.brainz.data.BrainzError
 import com.ealva.ealvabrainz.brainz.data.theMoshi
+import com.ealva.ealvabrainz.log.BrainzLog
+import com.ealva.ealvalog.e
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.lazyLogger
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
@@ -33,6 +37,8 @@ import retrofit2.Response
 import java.io.PrintWriter
 import java.io.StringWriter
 
+private val LOG by lazyLogger(BrainzLog.BRAINZ_ERROR_TAG, BrainzLog.marker)
+
 public sealed class BrainzMessage {
   public abstract fun asString(fetcher: ResourceFetcher): String
 
@@ -40,12 +46,21 @@ public sealed class BrainzMessage {
     override fun asString(fetcher: ResourceFetcher): String =
       fetcher.fetch(R.string.ResultStatusCode, statusCode)
 
-    public class BrainzNullReturn(statusCode: Int) : BrainzMessage.BrainzStatusMessage(statusCode)
+    public class BrainzNullReturn(statusCode: Int) : BrainzMessage.BrainzStatusMessage(statusCode) {
+      init {
+        if (BrainzLog.logBrainzErrors) LOG.e { it("Null return status code=%d", statusCode) }
+      }
+    }
 
     public class BrainzErrorCodeMessage(
       statusCode: Int,
       private val response: Response<*>
     ) : BrainzMessage.BrainzStatusMessage(statusCode) {
+      init {
+        if (BrainzLog.logBrainzErrors)
+          LOG.e { it("Error code message. Status code=%d", statusCode) }
+      }
+
       @Suppress("unused")
       public val rawResponse: RawResponse
         get() = response.toRawResponse()
@@ -54,16 +69,21 @@ public sealed class BrainzMessage {
 
   @Suppress("MemberVisibilityCanBePrivate")
   public class BrainzExceptionMessage(public val ex: Throwable) : BrainzMessage() {
-    override fun asString(fetcher: ResourceFetcher): String = "$ex\n${ex.stackTraceToString()}"
-  }
-}
-
-private fun Throwable.stackTraceToString(): String {
-  return StringWriter().apply {
-    PrintWriter(this).also { pw ->
-      printStackTrace(pw)
+    init {
+      if (BrainzLog.logBrainzErrors) LOG.e { it("Brainz exception message. %s", ex) }
     }
-  }.toString()
+
+    override fun asString(fetcher: ResourceFetcher): String = ex.message ?: ex.toString()
+
+    @Suppress("unused")
+    public fun stackTraceToString(throwable: Throwable): String {
+      return StringWriter().apply {
+        PrintWriter(this).also { pw ->
+          throwable.printStackTrace(pw)
+        }
+      }.toString()
+    }
+  }
 }
 
 public fun <V> Result<V, BrainzMessage>.getErrorString(
@@ -74,6 +94,10 @@ public fun <V> Result<V, BrainzMessage>.getErrorString(
 }
 
 public class BrainzErrorMessage(public val error: BrainzError) : BrainzMessage() {
+  init {
+    if (BrainzLog.logBrainzErrors) LOG.e { it("BrainzError=%s", error) }
+  }
+
   override fun asString(fetcher: ResourceFetcher): String = error.toString()
 }
 

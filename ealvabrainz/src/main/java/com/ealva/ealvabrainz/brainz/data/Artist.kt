@@ -20,10 +20,16 @@
 package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.Artist.Companion.NullArtist
+import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
+import com.ealva.ealvabrainz.log.BrainzLog
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import timber.log.Timber
+import com.ealva.ealvalog.w
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.lazyLogger
+
+private val LOG by lazyLogger(Artist::class, BrainzLog.marker)
 
 /**
  * Result from artist mbid lookup
@@ -271,6 +277,6 @@ public inline val Artist.mbid: ArtistMbid
 
 @Suppress("NOTHING_TO_INLINE")
 public inline fun String.toArtistMbid(): ArtistMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid ArtistMbid")
+  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid ArtistMbid") }
   return ArtistMbid(this)
 }

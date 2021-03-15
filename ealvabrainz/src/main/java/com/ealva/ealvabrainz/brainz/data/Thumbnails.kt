@@ -56,8 +56,8 @@ public class Thumbnails(
 public inline val Thumbnails.isNullObject: Boolean
   get() = this === NullThumbnails
 
-public inline val Thumbnails.theLarge: String
+public inline val Thumbnails.the500: String
   get() = if (size500.isEmpty()) large else size500
 
-public inline val Thumbnails.theSmall: String
+public inline val Thumbnails.the250: String
   get() = if (size250.isEmpty()) large else size250

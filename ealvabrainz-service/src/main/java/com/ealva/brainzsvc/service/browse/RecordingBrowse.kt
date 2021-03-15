@@ -17,28 +17,25 @@
 
 package com.ealva.brainzsvc.service.browse
 
-import com.ealva.brainzsvc.service.browse.ReleaseBrowse.BrowseOn
+import com.ealva.brainzsvc.service.browse.RecordingBrowse.BrowseOn
 import com.ealva.ealvabrainz.brainz.MusicBrainz
-import com.ealva.ealvabrainz.brainz.data.AreaMbid
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
-import com.ealva.ealvabrainz.brainz.data.BrowseReleaseList
+import com.ealva.ealvabrainz.brainz.data.BrowseRecordingList
 import com.ealva.ealvabrainz.brainz.data.Include
-import com.ealva.ealvabrainz.brainz.data.LabelMbid
-import com.ealva.ealvabrainz.brainz.data.RecordingMbid
+import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.Relationships
 import com.ealva.ealvabrainz.brainz.data.Release
-import com.ealva.ealvabrainz.brainz.data.Release.Browse
-import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
-import com.ealva.ealvabrainz.brainz.data.TrackMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.brainz.data.WorkMbid
 import com.ealva.ealvabrainz.brainz.data.join
 import retrofit2.Response
 
 /**
- * Builds the release browsing call based on [BrowseOn] type, [include], [relationships], [type],
+ * Builds the recording browsing call based on [BrowseOn] type, [include], [relationships], [types],
  * and [status]
  */
-public interface ReleaseBrowse {
+public interface RecordingBrowse {
   /**
    * BrowseOn the entity related to a group of releases.
    */
@@ -51,27 +48,7 @@ public interface ReleaseBrowse {
       includeSet: String?,
       typeSet: String?,
       statusSet: String?
-    ): Response<BrowseReleaseList>
-
-    public class Area(private val areaMbid: AreaMbid) : BrowseOn() {
-      override suspend fun execute(
-        musicBrainz: MusicBrainz,
-        limit: Int?,
-        offset: Int?,
-        includeSet: String?,
-        typeSet: String?,
-        statusSet: String?
-      ): Response<BrowseReleaseList> {
-        return musicBrainz.browseReleases(
-          areaId = areaMbid.value,
-          limit = limit,
-          offset = offset,
-          include = includeSet,
-          type = typeSet,
-          status = statusSet
-        )
-      }
-    }
+    ): Response<BrowseRecordingList>
 
     public class Artist(private val artistMbid: ArtistMbid) : BrowseOn() {
       override suspend fun execute(
@@ -81,8 +58,8 @@ public interface ReleaseBrowse {
         includeSet: String?,
         typeSet: String?,
         statusSet: String?
-      ): Response<BrowseReleaseList> {
-        return musicBrainz.browseReleases(
+      ): Response<BrowseRecordingList> {
+        return musicBrainz.browseRecordings(
           artistId = artistMbid.value,
           limit = limit,
           offset = offset,
@@ -93,7 +70,7 @@ public interface ReleaseBrowse {
       }
     }
 
-    public class Label(private val labelMbid: LabelMbid) : BrowseOn() {
+    public class Release(private val releaseMbid: ReleaseMbid) : RecordingBrowse.BrowseOn() {
       override suspend fun execute(
         musicBrainz: MusicBrainz,
         limit: Int?,
@@ -101,9 +78,9 @@ public interface ReleaseBrowse {
         includeSet: String?,
         typeSet: String?,
         statusSet: String?
-      ): Response<BrowseReleaseList> {
-        return musicBrainz.browseReleases(
-          labelId = labelMbid.value,
+      ): Response<BrowseRecordingList> {
+        return musicBrainz.browseRecordings(
+          releaseId = releaseMbid.value,
           limit = limit,
           offset = offset,
           include = includeSet,
@@ -113,7 +90,7 @@ public interface ReleaseBrowse {
       }
     }
 
-    public class Track(private val trackMbid: TrackMbid) : BrowseOn() {
+    public class Work(private val workMbid: WorkMbid) : RecordingBrowse.BrowseOn() {
       override suspend fun execute(
         musicBrainz: MusicBrainz,
         limit: Int?,
@@ -121,69 +98,9 @@ public interface ReleaseBrowse {
         includeSet: String?,
         typeSet: String?,
         statusSet: String?
-      ): Response<BrowseReleaseList> {
-        return musicBrainz.browseReleases(
-          trackId = trackMbid.value,
-          limit = limit,
-          offset = offset,
-          include = includeSet,
-          type = typeSet,
-          status = statusSet
-        )
-      }
-    }
-
-    public class TrackArtist(private val artistMbid: ArtistMbid) : BrowseOn() {
-      override suspend fun execute(
-        musicBrainz: MusicBrainz,
-        limit: Int?,
-        offset: Int?,
-        includeSet: String?,
-        typeSet: String?,
-        statusSet: String?
-      ): Response<BrowseReleaseList> {
-        return musicBrainz.browseReleases(
-          trackArtistId = artistMbid.value,
-          limit = limit,
-          offset = offset,
-          include = includeSet,
-          type = typeSet,
-          status = statusSet
-        )
-      }
-    }
-
-    public class Recording(private val recordingMbid: RecordingMbid) : BrowseOn() {
-      override suspend fun execute(
-        musicBrainz: MusicBrainz,
-        limit: Int?,
-        offset: Int?,
-        includeSet: String?,
-        typeSet: String?,
-        statusSet: String?
-      ): Response<BrowseReleaseList> {
-        return musicBrainz.browseReleases(
-          recordingId = recordingMbid.value,
-          limit = limit,
-          offset = offset,
-          include = includeSet,
-          type = typeSet,
-          status = statusSet
-        )
-      }
-    }
-
-    public class ReleaseGroup(private val releaseGroupMbid: ReleaseGroupMbid) : BrowseOn() {
-      override suspend fun execute(
-        musicBrainz: MusicBrainz,
-        limit: Int?,
-        offset: Int?,
-        includeSet: String?,
-        typeSet: String?,
-        statusSet: String?
-      ): Response<BrowseReleaseList> {
-        return musicBrainz.browseReleases(
-          releaseGroupId = releaseGroupMbid.value,
+      ): Response<BrowseRecordingList> {
+        return musicBrainz.browseRecordings(
+          workId = workMbid.value,
           limit = limit,
           offset = offset,
           include = includeSet,
@@ -197,7 +114,7 @@ public interface ReleaseBrowse {
   /**
    * What information should be included with the returned entities
    */
-  public fun include(vararg browse: Browse)
+  public fun include(vararg browse: Recording.Browse)
 
   /**
    * What relationships should be included in the returned list of releases
@@ -208,7 +125,7 @@ public interface ReleaseBrowse {
    * If entities include [Artist.Subquery.Releases] or [Artist.Subquery.ReleaseGroups] the
    * [Release.Type] can be specified to further narrow results
    */
-  public fun type(vararg types: Release.Type)
+  public fun types(vararg types: Release.Type)
 
   /**
    * If entities includes [Artist.Subquery.Releases] a [Release.Status] can be specified to
@@ -217,24 +134,20 @@ public interface ReleaseBrowse {
   public fun status(vararg status: Release.Status)
 }
 
-internal class ReleaseBrowseOp(private val browseOn: BrowseOn) : ReleaseBrowse {
+internal class RecordingBrowseOp(private val browseOn: BrowseOn) : RecordingBrowse {
   private var includeSet: MutableSet<Include> = mutableSetOf()
   private var typeSet: Set<Release.Type>? = null
   private var statusSet: Set<Release.Status>? = null
 
-  override fun include(vararg browse: Browse) {
+  override fun include(vararg browse: Recording.Browse) {
     includeSet.addAll(browse)
-    if (includeSet.contains(Browse.Ratings))
-      require(includeSet.contains(Browse.ReleaseGroups)) {
-        "If includes contains ${Browse.Ratings} it must also contain ${Browse.ReleaseGroups}"
-      }
   }
 
   override fun relationships(vararg rels: Relationships) {
     includeSet.addAll(rels)
   }
 
-  override fun type(vararg types: Release.Type) {
+  override fun types(vararg types: Release.Type) {
     typeSet = types.toSet()
   }
 
@@ -246,7 +159,7 @@ internal class ReleaseBrowseOp(private val browseOn: BrowseOn) : ReleaseBrowse {
     musicBrainz: MusicBrainz,
     limit: Int? = null,
     offset: Int? = null,
-  ): Response<BrowseReleaseList> {
+  ): Response<BrowseRecordingList> {
     return browseOn.execute(
       musicBrainz,
       limit,

@@ -15,22 +15,19 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainzsvc.common
+package com.ealva.ealvabrainz.brainz.data
 
-/**
- * Convert this String to an [AlbumTitle] or [AlbumTitle.UNKNOWN] if this is null.
- */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toAlbumTitle(): AlbumTitle {
-  return this?.let { AlbumTitle.make(this) } ?: AlbumTitle.UNKNOWN
-}
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-public inline class AlbumTitle(public val value: String) {
-  public companion object {
-    public val UNKNOWN: AlbumTitle = AlbumTitle("Unknown")
-
-    @Suppress("NOTHING_TO_INLINE")
-    public inline fun make(value: String): AlbumTitle =
-      AlbumTitle(value.trim())
-  }
+@JsonClass(generateAdapter = true)
+public class BrowseRecordingList(
+  @Json(name = "recording-count")
+  public var recordingCount: Int = 0,
+  @Json(name = "recording-offset")
+  public var recordingOffset: Int = 0,
+  @Json(name = "recordings")
+  public var recordings: List<Recording> = emptyList()
+) {
+  override fun toString(): String = toJson()
 }

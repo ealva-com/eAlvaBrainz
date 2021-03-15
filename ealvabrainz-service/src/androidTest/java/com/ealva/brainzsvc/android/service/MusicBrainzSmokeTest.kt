@@ -21,8 +21,6 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import com.ealva.brainzsvc.common.toAlbumTitle
-import com.ealva.brainzsvc.common.toArtistName
 import com.ealva.brainzsvc.service.BrainzInvalidStatusException
 import com.ealva.brainzsvc.service.BrainzInvalidTypeException
 import com.ealva.brainzsvc.service.BrainzMessage
@@ -45,6 +43,8 @@ import com.ealva.ealvabrainz.brainz.data.toLabelMbid
 import com.ealva.ealvabrainz.brainz.data.toRecordingMbid
 import com.ealva.ealvabrainz.brainz.data.toReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.toReleaseMbid
+import com.ealva.ealvabrainz.common.toAlbumTitle
+import com.ealva.ealvabrainz.common.toArtistName
 import com.ealva.ealvabrainz.test.shared.MainCoroutineRule
 import com.ealva.ealvabrainz.test.shared.runBlockingTest
 import com.github.michaelbull.result.Err

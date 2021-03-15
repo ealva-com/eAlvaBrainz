@@ -17,8 +17,8 @@
 
 package com.ealva.brainzsvc.service.search
 
-import com.ealva.brainzsvc.common.toArtistName
 import com.ealva.ealvabrainz.brainz.data.toArtistMbid
+import com.ealva.ealvabrainz.common.toArtistName
 import com.ealva.ealvabrainz.lucene.luceneEscape
 import com.ealva.ealvabrainz.lucene.prohibit
 import com.ealva.ealvabrainz.lucene.require

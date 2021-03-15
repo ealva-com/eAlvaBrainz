@@ -23,6 +23,9 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.Spinner
 import android.widget.SpinnerAdapter
+import com.ealva.ealvalog.e
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.lazyLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
@@ -30,8 +33,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
-import timber.log.Timber
 import com.ealva.brainzapp.R.id.spinner_position_tag_id as KEY_SPINNER_POS
+
+private val LOG by lazyLogger(SpinnerWrapper::class)
 
 class SpinnerWrapper(val spinner: Spinner) {
   private var proxyListener: OnItemSelectedListener? = null
@@ -116,7 +120,7 @@ class SpinnerWrapper(val spinner: Spinner) {
       method.isAccessible = true
       method.invoke(spinner)
     } catch (e: Exception) {
-      Timber.e(e, "Exception hiding spinner drop down")
+      LOG.e(e) { it("Exception hiding spinner drop down") }
     }
   }
 }

@@ -19,11 +19,10 @@
 
 package com.ealva.brainzsvc.service.search
 
-import com.ealva.brainzsvc.common.ArtistName
-import com.ealva.brainzsvc.common.brainzFormat
 import com.ealva.ealvabrainz.brainz.data.Artist.SearchField
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.ArtistType
+import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.lucene.BrainzMarker
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Term
@@ -34,167 +33,160 @@ import kotlin.experimental.ExperimentalTypeInference
 @OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
 public class ArtistSearch : BaseSearch() {
-
+  /** (part of) any alias attached to the artist (diacritics are ignored) */
   @JvmName("aliasTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun alias(term: () -> Term): Field = make(SearchField.Alias, term())
+  public inline fun alias(term: () -> Term): Field = add(SearchField.Alias, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun alias(term: () -> String): Field = make(SearchField.Alias, term())
+  public inline fun alias(term: () -> String): Field = alias { Term(term()) }
 
+  /** (part of) any primary alias attached to the artist (diacritics are ignored) */
   @JvmName("primaryAliasTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun primaryAlias(term: () -> Term): Field = make(SearchField.PrimaryAlias, term())
+  public inline fun primaryAlias(term: () -> Term): Field = add(SearchField.PrimaryAlias, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun primaryAlias(term: () -> String): Field = make(SearchField.PrimaryAlias, term())
+  public inline fun primaryAlias(term: () -> String): Field = primaryAlias { Term(term()) }
 
+  /** (part of) the name of the artist's main associated area */
   @JvmName("areaTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun area(term: () -> Term): Field = make(SearchField.Area, term())
+  public inline fun area(term: () -> Term): Field = add(SearchField.Area, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun area(term: () -> String): Field = make(SearchField.Area, term())
+  public inline fun area(term: () -> String): Field = area { Term(term()) }
 
+  /** the artist's name (with accented characters) */
   @JvmName("artistAccentTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun artistAccent(term: () -> Term): Field = make(SearchField.ArtistAccent, term())
+  public inline fun artistAccent(term: () -> Term): Field = add(SearchField.ArtistAccent, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun artistAccent(term: () -> String): Field = make(SearchField.ArtistAccent, term())
+  public inline fun artistAccent(term: () -> String): Field = artistAccent { Term(term()) }
 
+  /** the artist's MBID */
   @JvmName("artistIdTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun artistId(term: () -> Term): Field = make(SearchField.ArtistId, term())
+  public inline fun artistId(term: () -> Term): Field = add(SearchField.ArtistId, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun artistId(mbid: () -> ArtistMbid): Field =
-    make(SearchField.ArtistId, mbid())
+  public inline fun artistId(mbid: () -> ArtistMbid): Field = artistId { Term(mbid()) }
 
+  /** the artist's name (diacritics are ignored) */
   @JvmName("artistTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun artist(term: () -> Term): Field = make(SearchField.Artist, term())
+  public inline fun artist(term: () -> Term): Field = add(SearchField.Artist, term())
 
   @JvmName("artistName")
   @OverloadResolutionByLambdaReturnType
-  public inline fun artist(name: () -> ArtistName): Field = make(SearchField.Artist, name().value)
+  public inline fun artist(name: () -> ArtistName): Field = artist { Term(name()) }
 
+  /** the artist's begin area */
   @JvmName("beginAreaTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun beginArea(term: () -> Term): Field = make(SearchField.BeginArea, term())
+  public inline fun beginArea(term: () -> Term): Field = add(SearchField.BeginArea, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun beginArea(term: () -> String): Field = make(SearchField.BeginArea, term())
+  public inline fun beginArea(term: () -> String): Field = beginArea { Term(term()) }
 
   @JvmName("beginDateTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun beginDate(term: () -> Term): Field = make(SearchField.Begin, term())
+  public inline fun beginDate(term: () -> Term): Field = add(SearchField.Begin, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun beginDate(term: () -> LocalDate): Field =
-    make(SearchField.Begin, term().brainzFormat())
+  public inline fun beginDate(term: () -> LocalDate): Field = beginDate { Term(term()) }
 
   @JvmName("beginDateOld")
   @OverloadResolutionByLambdaReturnType
-  public inline fun beginDate(term: () -> Date): Field =
-    make(SearchField.Begin, term().brainzFormat())
+  public inline fun beginDate(term: () -> Date): Field = beginDate { Term(term()) }
 
-  @JvmName("beginDateString")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun beginDate(term: () -> String): Field =
-    make(SearchField.Begin, term())
-
+  /** the artist's disambiguation comment */
   @JvmName("commentTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun comment(term: () -> Term): Field = make(SearchField.Comment, term())
+  public inline fun comment(term: () -> Term): Field = add(SearchField.Comment, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun comment(term: () -> String): Field =
-    make(SearchField.Comment, term())
+  public inline fun comment(term: () -> String): Field = comment { Term(term()) }
 
   @JvmName("countryTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun country(term: () -> Term): Field = make(SearchField.Country, term())
+  public inline fun country(term: () -> Term): Field = add(SearchField.Country, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun country(term: () -> String): Field =
-    make(SearchField.Country, term())
+  public inline fun country(term: () -> String): Field = country { Term(term()) }
 
   @JvmName("endAreaTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun endArea(term: () -> Term): Field = make(SearchField.EndArea, term())
+  public inline fun endArea(term: () -> Term): Field = add(SearchField.EndArea, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun endArea(term: () -> String): Field = make(SearchField.EndArea, term())
+  public inline fun endArea(term: () -> String): Field = endArea { Term(term()) }
 
   @JvmName("endDateTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun endDate(term: () -> Term): Field = make(SearchField.End, term())
+  public inline fun endDate(term: () -> Term): Field = add(SearchField.End, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun endDate(term: () -> LocalDate): Field =
-    make(SearchField.End, term().brainzFormat())
+  public inline fun endDate(term: () -> LocalDate): Field = endDate { Term(term()) }
 
   @JvmName("endDateOld")
   @OverloadResolutionByLambdaReturnType
-  public inline fun endDate(term: () -> Date): Field =
-    make(SearchField.End, term().brainzFormat())
+  public inline fun endDate(term: () -> Date): Field = endDate { Term(term()) }
 
-  @JvmName("endDateString")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun endDate(term: () -> String): Field =
-    make(SearchField.End, term())
-
+  /** a flag indicating whether or not the artist has ended */
   @JvmName("endedTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun ended(term: () -> Term): Field = make(SearchField.Ended, term())
+  public inline fun ended(term: () -> Term): Field = add(SearchField.Ended, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun ended(term: () -> Boolean): Field =
-    make(SearchField.Ended, term())
+  public inline fun ended(term: () -> Boolean): Field = ended { Term(term()) }
 
   @JvmName("genderTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun gender(term: () -> Term): Field = make(SearchField.Gender, term())
+  public inline fun gender(term: () -> Term): Field = add(SearchField.Gender, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun gender(term: () -> String): Field = make(SearchField.Gender, term())
+  public inline fun gender(term: () -> String): Field = gender { Term(term()) }
 
+  /** A number identifying persons connected to ISWC registered works (authors, composers, etc.) */
   @JvmName("ipiTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun ipi(term: () -> Term): Field = make(SearchField.Ipi, term())
+  public inline fun ipi(term: () -> Term): Field = add(SearchField.Ipi, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun ipi(term: () -> String): Field = make(SearchField.Ipi, term())
+  public inline fun ipi(term: () -> String): Field = ipi { Term(term()) }
 
   @JvmName("isniTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun isni(term: () -> Term): Field = make(SearchField.Isni, term())
+  public inline fun isni(term: () -> Term): Field = add(SearchField.Isni, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun isni(term: () -> String): Field = make(SearchField.Isni, term())
+  public inline fun isni(term: () -> String): Field = isni { Term(term()) }
 
+  /** Used to sort the artist */
   @JvmName("sortNameTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun sortName(term: () -> Term): Field = make(SearchField.SortName, term())
+  public inline fun sortName(term: () -> Term): Field = add(SearchField.SortName, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun sortName(term: () -> String): Field = make(SearchField.SortName, term())
+  public inline fun sortName(term: () -> String): Field = sortName { Term(term()) }
 
+  /** a tag attached to the artist */
   @JvmName("tagTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun tag(term: () -> Term): Field = make(SearchField.Tag, term())
+  public inline fun tag(term: () -> Term): Field = add(SearchField.Tag, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun tag(term: () -> String): Field = make(SearchField.Tag, term())
+  public inline fun tag(term: () -> String): Field = tag { Term(term()) }
 
+  /** The [artist type][ArtistType] */
   @JvmName("typeTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun type(term: () -> Term): Field = make(SearchField.Type, term())
+  public inline fun type(term: () -> Term): Field = add(SearchField.Type, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun type(type: () -> ArtistType): Field = make(SearchField.Type, type().value)
+  public inline fun type(type: () -> ArtistType): Field = add(SearchField.Type, Term(type().value))
 
-  public fun <T> make(field: SearchField, term: T): Field =
-    makeAndAdd(field.value, term)
+  public fun add(field: SearchField, term: Term): Field = makeAndAddField(field.value, term)
 }

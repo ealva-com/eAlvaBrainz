@@ -165,9 +165,9 @@ interface CoverArtService {
   }
 }
 
-fun Flow<ReleaseMbid>.transform(service: CoverArtService): Flow<RemoteImage>
+fun Flow<ReleaseMbid>.transform(service: CoverArtService): Flow<CoverArtImageInfo>
 
-fun Flow<ReleaseGroupMbid>.transform(service: CoverArtService): Flow<RemoteImage>
+fun Flow<ReleaseGropMbid>.transform(service: CoverArtService): Flow<CoverArtImageInfo>
 ```
 #### MusicBrainzService
 This service is similar to CoverArtService in that it provides a higher-level abstraction and builds
@@ -176,9 +176,12 @@ specific parameters and format these into parameters for the underlying calls to
 Retrofit client. There is also a generic ```brainz()``` function accepting a lambda which allows direct calls to the
 MusicBrainz client while providing correct coroutine dispatch and simplifying error handling.
 ```kotlin
+typealias BrainzCall<T> = suspend MusicBrainz.() -> Response<T>
+typealias BrainzResult<T> = Result<T, BrainzMessage>
+
 interface MusicBrainzService {
   /**
-   * Find the [Artist] with the [artistMbid] ID. Provide an optional lambda with an [ArtistLookup]
+   * Lookup the Artist with the [artistMbid] ID. Provide an optional lambda with an ArtistLookup
    * receiver to specify if any other information should be included.
    */
   suspend fun lookupArtist(
@@ -186,12 +189,17 @@ interface MusicBrainzService {
     lookup: ArtistLookup.() -> Unit = {}
   ): BrainzResult<Artist>
 
+  /** Find a ReleaseGroup using the query builder ReleaseGroupSearch */
   suspend fun findReleaseGroup(
     limit: Int? = null,
     offset: Int? = null,
     search: ReleaseGroupSearch.() -> Unit
   ): BrainzResult<ReleaseGroupList>
 
+  /**
+   * Browse Releases based on the type specified by [browse], using ReleaseBrowse to specify
+   * information to include and use [limit]/[offset] to page results.
+   */
   suspend fun browseReleases(
     browseOn: ReleaseBrowse.BrowseOn,
     limit: Int? = null,
@@ -212,6 +220,7 @@ interface MusicBrainzService {
    * @return an Ok with value of type [T] or, if response is not successful, an Err. An Err
    * will be a BrainzMessage of type:
    * * BrainzExceptionMessage if an underlying exception is thrown
+   * * BrainzErrorMessage if MusicBrainz returned an error response converted to a BrainzError
    * * BrainzNullReturn subclass of BrainzStatusMessage, if the response is OK but null
    * * BrainzErrorCodeMessage subclass of BrainzStatusMessage, if the response is not successful
    */
@@ -223,7 +232,6 @@ MusicBrainzService to provide functionality such as:
 ``` kotlin
 suspend fun getReleaseGroupArtwork(mbid: ReleaseGroupMbid): Uri
 ```
-which coordinates a search of releases and returns a flow of images. 
 
 A small find release group example showing the query DSL:
 ```kotlin
@@ -231,7 +239,7 @@ val result = findReleaseGroup {
   artist { LED_ZEPPELIN } and releaseGroup { HOUSES_OF_THE_HOLY }
 }
 ```
-The ReleaseGroupSearch supports all 17 possible query fields and the term DSL support required,
+The ReleaseGroupSearch supports all 17 possible query fields and the term DSL support: required,
 prohibited, regular expressions, ranges, fuzzy search, proximity, and boosting. See the MusicBrainz
 docs for details.
 ```kotlin
@@ -274,7 +282,7 @@ may be used as examples or a starting point:
 * Moshi annotated data classes for codegen and json adapter generation
 * Moshi combination of data class style, annotations, and adapters to support the Null Object Pattern 
 * Moshi annotation and adapter to support a fallback strategy for items missing from json (part of Null Object pattern)
-* Moshi adapter that peeks names to determine which subtype to instantiate
+* Moshi adapter that peeks names to determine which subtype to instantiate in relationships
 * Retrofit interfaces defined with suspend or returning a flow 
 * Retrofit, OkHttp, and Moshi builders to fully support the Rest client
 * Sealed class MusicBrainzResult from MusicBrainzService as opposed to exceptions

@@ -17,9 +17,11 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
+import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import timber.log.Timber
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.w
 
 /**
  * Labels are one of the most complicated and controversial parts of the music industry. The
@@ -229,6 +231,6 @@ public inline val Label.mbid: LabelMbid
 
 @Suppress("NOTHING_TO_INLINE")
 public inline fun String.toLabelMbid(): LabelMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid LabelMbid")
+  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid LabelMbid") }
   return LabelMbid(this)
 }

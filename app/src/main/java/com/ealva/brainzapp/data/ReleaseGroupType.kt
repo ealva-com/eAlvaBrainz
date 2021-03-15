@@ -21,7 +21,11 @@ package com.ealva.brainzapp.data
 
 import androidx.annotation.StringRes
 import com.ealva.brainzapp.R
-import timber.log.Timber
+import com.ealva.ealvalog.e
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.lazyLogger
+
+private val LOG by lazyLogger(ReleaseGroupType::class)
 
 /**
  * The type of a release group describes what kind of release group it is. It is divided in two:
@@ -181,7 +185,7 @@ private val primaryMap = mapOf(
 
 fun String.toPrimaryReleaseGroupType(): ReleaseGroupType.Primary {
   return primaryMap[this] ?: if (this.isBlank()) ReleaseGroupType.Primary.Unknown else {
-    Timber.e("Unrecognized primary ReleaseGroup type %s", this)
+    LOG.e { it("Unrecognized primary ReleaseGroup type %s", this) }
     ReleaseGroupType.Primary.Unrecognized(this)
   }
 }
@@ -202,7 +206,7 @@ private val secondaryMap = mapOf(
 
 fun String.toSecondaryReleaseGroupType(): ReleaseGroupType.Secondary {
   return secondaryMap[this] ?: if (isBlank()) ReleaseGroupType.Secondary.Unknown else {
-    Timber.e("Unrecognized secondary ReleaseGroup type '%s'", this)
+    LOG.e { it("Unrecognized secondary ReleaseGroup type '%s'", this) }
     ReleaseGroupType.Secondary.Unrecognized(this)
   }
 }

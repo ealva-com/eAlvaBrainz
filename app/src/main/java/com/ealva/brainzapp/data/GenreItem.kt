@@ -19,8 +19,12 @@ package com.ealva.brainzapp.data
 
 import com.ealva.brainzapp.R
 import com.ealva.ealvabrainz.brainz.data.Genre
-import timber.log.Timber
+import com.ealva.ealvalog.e
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.lazyLogger
 import kotlin.math.min
+
+private val LOG by lazyLogger(GenreItem::class)
 
 interface GenreItem {
   val name: String
@@ -64,14 +68,14 @@ private class DisplayGenreImpl(
     return try {
       if (nameRes != R.string.empty) fetch(nameRes) else name
     } catch (e: Exception) {
-      Timber.e("String resource not found for %s", name)
+      LOG.e { it("String resource not found for %s", name) }
       name
     }
   }
 }
 
 private fun nameNotInMap(name: String): Int {
-  Timber.e("Nothing in name map for %s", name)
+  LOG.e { it("Nothing in name map for %s", name) }
   return R.string.empty
 }
 
@@ -362,6 +366,7 @@ private val genreToNameMap = mapOf(
   "no wave" to R.string.genre_no_wave,
   "noise" to R.string.genre_noise,
   "noise pop" to R.string.genre_noise_pop,
+  "noise rock" to R.string.genre_noise_rock,
   "noisecore" to R.string.genre_noisecore,
   "non-music" to R.string.genre_non_music,
   "norteño" to R.string.genre_norteño,

@@ -36,10 +36,6 @@ import com.ealva.brainzapp.data.toIsni
 import com.ealva.brainzapp.data.toPrimaryReleaseGroupType
 import com.ealva.brainzapp.data.toSecondaryReleaseGroupList
 import com.ealva.brainzapp.data.toStarRating
-import com.ealva.brainzsvc.common.ArtistName
-import com.ealva.brainzsvc.common.toAlbumTitle
-import com.ealva.brainzsvc.common.toArtistName
-import com.ealva.brainzsvc.common.toLabelName
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.brainzsvc.service.browse.ReleaseBrowse.BrowseOn
@@ -59,12 +55,20 @@ import com.ealva.ealvabrainz.brainz.data.isNullObject
 import com.ealva.ealvabrainz.brainz.data.isValid
 import com.ealva.ealvabrainz.brainz.data.mbid
 import com.ealva.ealvabrainz.brainz.data.toArtistMbid
+import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.toAlbumTitle
+import com.ealva.ealvabrainz.common.toArtistName
+import com.ealva.ealvabrainz.common.toLabelName
+import com.ealva.ealvalog.e
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.lazyLogger
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
-import timber.log.Timber
+
+private val LOG by lazyLogger(ArtistViewModel::class)
 
 @Suppress("unused")
 class DisplayArtist(
@@ -306,7 +310,7 @@ internal class ArtistViewModelImpl(
     searchMbid: ArtistMbid
   ) = brainzArtist.run {
     val resultMbid = id.toArtistMbid()
-    if (resultMbid != searchMbid) Timber.e("Result %s != search %s", resultMbid, searchMbid)
+    if (resultMbid != searchMbid) LOG.e { it("Result %s != search %s", resultMbid, searchMbid) }
     artist.postValue(
       DisplayArtist(
         mbid = resultMbid,

@@ -19,7 +19,6 @@ package com.ealva.ealvabrainz.brainz.data
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import timber.log.Timber
 
 /**
  * Disc ID
@@ -81,13 +80,10 @@ public class Disc(
 public inline val Disc.isNullObject: Boolean
   get() = this === Disc.NullDisc
 
-public inline class DiscMbid(override val value: String) : Mbid
+public inline class DiscId(public val value: String)
 
-public inline val Disc.mbid: DiscMbid
-  get() = id.toDiscMbid()
+public inline val Disc.discId: DiscId
+  get() = id.toDiscId()
 
 @Suppress("NOTHING_TO_INLINE")
-public inline fun String.toDiscMbid(): DiscMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid DiscMbid")
-  return DiscMbid(this)
-}
+public inline fun String.toDiscId(): DiscId = DiscId(this)

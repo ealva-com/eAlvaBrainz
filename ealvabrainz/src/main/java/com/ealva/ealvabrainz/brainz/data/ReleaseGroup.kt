@@ -17,11 +17,13 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
+import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup.Companion.NullReleaseGroup
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.w
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import timber.log.Timber
 
 /**
  * A release group, just as the name suggests, is used to group several different [Release]s into a
@@ -142,6 +144,8 @@ public class ReleaseGroup(
 
   @Suppress("unused")
   public enum class Browse(override val value: String) : Lookup {
+    Artist("artist"),
+    Release("release"),
     ArtistCredits("artist-credits"),
     Annotation("annotation"),
     Tags("tags"),
@@ -227,7 +231,7 @@ public inline val ReleaseGroup.mbid: ReleaseGroupMbid
 
 @Suppress("NOTHING_TO_INLINE")
 public inline fun String.toReleaseGroupMbid(): ReleaseGroupMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid ReleaseGroupMbid")
+  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid ReleaseGroupMbid") }
   return ReleaseGroupMbid(this)
 }
 

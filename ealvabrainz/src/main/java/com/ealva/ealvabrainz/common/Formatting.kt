@@ -15,7 +15,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainzsvc.common
+package com.ealva.ealvabrainz.common
 
 import java.time.LocalDate
 import java.time.ZoneId

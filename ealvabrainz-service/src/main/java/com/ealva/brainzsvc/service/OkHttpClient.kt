@@ -22,10 +22,13 @@ package com.ealva.brainzsvc.service
 import com.ealva.brainzsvc.net.BrainzJsonFormatUserAgentInterceptor
 import com.ealva.brainzsvc.net.CacheControlInterceptor
 import com.ealva.brainzsvc.net.ThrottlingInterceptor
+import com.ealva.ealvabrainz.log.BrainzLog
+import com.ealva.ealvalog.i
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.lazyLogger
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import timber.log.Timber
 import java.io.File
 
 private const val DAYS_MAX_AGE = 14
@@ -34,6 +37,8 @@ private const val DAYS_MAX_STALE = 365
 private const val MUSICBRAINZ_MAX_CALLS_PER_SECOND = 1.0
 
 private const val TEN_MEG = 10 * 1024 * 1024
+
+private val LOG by lazyLogger("OkHttpClient.kt", BrainzLog.marker)
 
 internal fun makeOkHttpClient(
   serviceName: String,
@@ -59,7 +64,7 @@ internal inline fun OkHttpClient.Builder.interceptLoggingInDebug(
   if (addLoggingInterceptor) {
     addInterceptor(
       HttpLoggingInterceptor { message ->
-        Timber.i(message)
+        LOG.i { it(message) }
       }.apply {
         level = HttpLoggingInterceptor.Level.BASIC
       }

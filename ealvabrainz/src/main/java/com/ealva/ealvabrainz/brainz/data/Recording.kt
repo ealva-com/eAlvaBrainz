@@ -17,10 +17,13 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
+import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.brainz.data.Recording.Companion.NullRecording
+import com.ealva.ealvabrainz.brainz.data.Recording.Subquery.Releases
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.w
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import timber.log.Timber
 
 /**
  * A [recording](https://musicbrainz.org/doc/Recording) is an entity in MusicBrainz which can be
@@ -97,17 +100,16 @@ public class Recording(
   public enum class Subquery(override val value: String) : Lookup {
     Artists("artists"),
     Releases("releases"),
-    UrlRels("url-rels"),
-
-    /** DiscIds requires [Releases] also be specified and inc params can (currently) repeat */
-    DiscIds("releases+discids"),
-    Media("media"),
     Isrcs("isrcs"),
+    UrlRels("url-rels"),
     ArtistCredits("artist-credits")
   }
 
   @Suppress("unused")
   public enum class Misc(override val value: String) : Lookup {
+    /** DiscIds requires [Releases] also be specified and inc params can (currently) repeat */
+    DiscIds("releases+discids"),
+    Media("media"),
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
@@ -116,14 +118,28 @@ public class Recording(
   }
 
   @Suppress("unused")
+  public enum class Browse(override val value: String) : Lookup {
+    Artist("artist"),
+    Release("release"),
+    Work("work"),
+    ArtistCredits("artist-credits"),
+    Isrcs("isrcs"),
+    Annotation("annotation"),
+    Tags("tags"),
+    Genres("genres"),
+    Ratings("ratings")
+  }
+
+  @Suppress("unused")
   public enum class SearchField(public val value: String) {
-    /** 	(part of) any alias attached to the recording (diacritics are ignored) */
+    /** (part of) any alias attached to the recording (diacritics are ignored) */
     Alias("alias"),
 
-    /** the MBID of any of the recording artists  */
+    /** the MBID of any of the recording artists */
     ArtistId("arid"),
 
-    /** (part of) the combined credited artist name for the recording, including join phrases
+    /**
+     * (part of) the combined credited artist name for the recording, including join phrases
      * (e.g. "Artist X feat.")
      */
     Artist("artist"),
@@ -161,7 +177,7 @@ public class Recording(
      */
     Isrc("isrc"),
 
-    /** 	the free-text number of the track on any medium including this recording (e.g. "A4")  */
+    /** the free-text number of the track on any medium including this recording (e.g. "A4")  */
     Number("number"),
 
     /** the position inside its release of any medium including this recording (starts at 1)  */
@@ -170,17 +186,17 @@ public class Recording(
     /** primary type of the release group (album, single, ep, other) */
     PrimaryType("primarytype"),
 
-    /** the recording duration, quantized (duration in milliseconds / 2000)  */
+    /** the recording duration, quantized (duration in milliseconds / 2000) */
     QuantizedDuration("qdur"),
 
     /**
-     * (part of) the recording's name, or the name of a track connected to this recording
+     * (part of) the recording's title, or the name of a track connected to this recording
      * (diacritics are ignored)
      */
     Recording("recording"),
 
     /**
-     * (part of) the recordings's name, or the name of a track connected to this recording (with the
+     * (part of) the recording's name, or the name of a track connected to this recording (with the
      * specified diacritics)
      */
     RecordingAccent("recordingaccent"),
@@ -218,10 +234,10 @@ public class Recording(
     TrackNumber("tnum"),
 
     /** the number of tracks on any medium including this recording */
-    Tracks("tracks"),
+    TrackCount("tracks"),
 
     /** the number of tracks on any release (as a whole) including this recording */
-    TracksRelease("tracksrelease"),
+    ReleaseTrackCount("tracksrelease"),
 
     /** a boolean flag (true/false) indicating whether or not the recording is a video recording */
     Video("video")
@@ -243,6 +259,6 @@ public inline val Recording.mbid: RecordingMbid
 
 @Suppress("NOTHING_TO_INLINE")
 public inline fun String.toRecordingMbid(): RecordingMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid RecordingMbid")
+  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid RecordingMbid") }
   return RecordingMbid(this)
 }

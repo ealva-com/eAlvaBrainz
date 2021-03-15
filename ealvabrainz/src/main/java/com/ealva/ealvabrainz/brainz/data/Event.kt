@@ -17,10 +17,12 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
+import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import timber.log.Timber
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.w
 
 /**
  * An event refers to an organised event which people can attend, and is relevant to MusicBrainz.
@@ -193,6 +195,6 @@ public inline val Event.mbid: EventMbid
 
 @Suppress("NOTHING_TO_INLINE")
 public inline fun String.toEventMbid(): EventMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid EventMbid")
+  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid EventMbid") }
   return EventMbid(this)
 }

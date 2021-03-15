@@ -17,8 +17,10 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
+import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.squareup.moshi.JsonClass
-import timber.log.Timber
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.w
 
 @Suppress("MaxLineLength")
 /**
@@ -62,6 +64,6 @@ public inline val Packaging.mbid: PackagingMbid
 
 @Suppress("NOTHING_TO_INLINE")
 public inline fun String.toPackagingMbid(): PackagingMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid PackagingMbid")
+  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid PackagingMbid") }
   return PackagingMbid(this)
 }

@@ -26,17 +26,19 @@ private const val INITIAL_CAPACITY = 8
 public fun <T> refSetOf(capacity: Int = INITIAL_CAPACITY): ReferenceSet<T> =
   ReferenceArraySet(capacity)
 
-public fun refSetOf(field: Field): ReferenceSet<Field> =
-  refSetOf<Field>().apply { add(field) }
+public fun refSetOf(field: Field): ReferenceSet<Field> = refSetOf<Field>().apply { add(field) }
 
-private fun Pair<String, String>.toField(): Field = Field(first, second)
+private fun Pair<String, String>.toField(): Field = Field(first, Term(second))
 
 public interface Query : Expression {
   public fun add(field: Field): Boolean
 
   public fun remove(field: Field): Boolean
 
-  public fun replace(original: Field, replacement: Field)
+  /**
+   * Replace [original] with [replacement] and returns [replacement]
+   */
+  public fun replace(original: Field, replacement: Field): Field
 
   public companion object {
     public operator fun invoke(): Query = QueryImpl()
@@ -61,13 +63,14 @@ private class QueryImpl(
 
   override fun remove(field: Field): Boolean = fields.remove(field)
 
-  override fun replace(original: Field, replacement: Field) {
+  override fun replace(original: Field, replacement: Field): Field {
     val currentFields = fields
     fields = ReferenceLinkedOpenHashSet<Field>(currentFields.size).also { newTerms ->
       currentFields.forEach { field ->
         newTerms.add(if (field === original) replacement else field)
       }
     }
+    return replacement
   }
 
   override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {

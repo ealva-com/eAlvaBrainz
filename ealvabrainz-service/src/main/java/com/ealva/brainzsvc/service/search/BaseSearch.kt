@@ -17,37 +17,32 @@
 
 package com.ealva.brainzsvc.service.search
 
-import com.ealva.ealvabrainz.brainz.data.Mbid
 import com.ealva.ealvabrainz.lucene.BaseExpression
-import com.ealva.ealvabrainz.lucene.BooleanTerm
 import com.ealva.ealvabrainz.lucene.Field
-import com.ealva.ealvabrainz.lucene.IntTerm
-import com.ealva.ealvabrainz.lucene.LongTerm
 import com.ealva.ealvabrainz.lucene.Query
-import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.lucene.Term
 import com.ealva.ealvabrainz.lucene.andAnother
 import com.ealva.ealvabrainz.lucene.orAnother
 
-public abstract class BaseSearch(private val query: Query = Query()) :
-  BaseExpression(), Query by query {
+public interface Search {
+  public infix fun Field.and(field: Field): Field
+  public infix fun Field.or(field: Field): Field
+}
 
-  protected fun <T> makeAndAdd(field: String, term: T): Field = when (term) {
-    is Mbid -> Field(field, SingleTerm(term.value))
-    is Boolean -> Field(field, BooleanTerm(term)).also { query.add(it) }
-    is Int -> Field(field, IntTerm(term)).also { query.add(it) }
-    is Long -> Field(field, LongTerm(term)).also { query.add(it) }
-    is Term -> Field(field, term).also { query.add(it) }
-    else -> Field(field, term.toString()).also { query.add(it) }
-  }
+public abstract class BaseSearch(
+  private val query: Query = Query()
+) : BaseExpression(), Query by query, Search {
 
-  public infix fun Field.and(field: Field) {
+  protected fun makeAndAddField(field: String, term: Term): Field =
+    Field(field, term).also { query.add(it) }
+
+  override infix fun Field.and(field: Field): Field {
     query.remove(field) // field likely added when made, so remove it before "and"ing to another
-    query.replace(this, this.andAnother(field))
+    return query.replace(this, this.andAnother(field)) // 'and'ing creates new field
   }
 
-  public infix fun Field.or(field: Field) {
+  override infix fun Field.or(field: Field): Field {
     query.remove(field) // field likely added when made, so remove it before "or"ing to another
-    query.replace(this, this.orAnother(field))
+    return query.replace(this, this.orAnother(field)) // 'or'ing creates new field
   }
 }

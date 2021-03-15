@@ -21,6 +21,7 @@ import com.ealva.ealvabrainz.brainz.data.Area
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistList
 import com.ealva.ealvabrainz.brainz.data.BrowseArtistList
+import com.ealva.ealvabrainz.brainz.data.BrowseRecordingList
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseList
 import com.ealva.ealvabrainz.brainz.data.Label
@@ -303,157 +304,36 @@ public interface MusicBrainz {
   ): Response<ReleaseGroupList>
 
   /**
-   * Browse albums (Release Groups) for a given artist with [artistId], starting at [offset] with
-   * a [limit] to page results. As an example, Black Sabbath currently has 176 related
-   * Release Groups, which include albums, compilations, EPs, singles, etc.
+   * Only one of:
+   * * [areaId]
+   * * [recordingId]
+   * * [releaseId]
+   * * [releaseGroupId]
+   * * [workId]
    *
-   * Results are sorted by id, so any proper sorting requires paging though all items and then
-   * performing a sort.
-   *
-   * Example for browsing Black Sabbath albums starting at offset 100 and
-   * requesting the maximum limit of 100. In this case artist="Black Sabbath MBID", ie.
-   * "5182c1d9-c7d2-4dad-afa0-ccfeada921a"
-   *
-   * [http://musicbrainz.org/ws/2/release-group?artist=5182c1d9-c7d2-4dad-afa0-ccfeada921a8&limit=100&offset=100&fmt=json]
-   *
-   * @param artistId the artist mbid
-   * @param limit 1..100 inclusive are valid. If skipped, defaults to 25
-   * @param offset specifies starting offset into list, used to page results. Defaults to 0
-   * @param type limit the results to a particular release type(s), optional
+   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
    */
-  @GET("release-group")
-  public suspend fun browseArtistReleaseGroups(
-    /**
-     * The artist MBID to search for
-     */
-    @Query("artist") artistId: String,
-    /**
-     * Maximum number of release groups to return. Default is 25. Use with [offset] used for paging
-     * results
-     */
-    @Query("limit") limit: Int? = null,
-    /**
-     * Offset at where to start in the total list. Default is 0. Use With [limit] used for paging
-     * results
-     */
-    @Query("offset") offset: Int? = null,
-    /** Specify how much data linked entities should contain */
-    @Query("inc") include: String? = null,
-    /**
-     * Limit linked entities to this Release type.
-     *
-     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
-     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
-     */
-    @Query("type") type: String? = null
-  ): Response<BrowseReleaseGroupList>
-
-  /**
-   * Browse Releases for a given [artistId] starting at [offset] with a [limit] to page results.
-   *
-   * @param artistId the artist mbid, optional
-   * @param limit max entries returned, required, maximum 100
-   * @param offset offset into total list, required
-   * @param include include linked entity data
-   * @param type limit the results to a particular release type(s), optional
-   * @param status limit the results to a particular release status, optional
-   */
-  @GET("release")
-  public suspend fun browseArtistReleases(
-    /**
-     * Browse releases for the given artist MBID
-     */
-    @Query("artist") artistId: String,
-    /**
-     * Maximum number of release groups to return. Default is 25. Use with [offset] used for paging
-     * results
-     */
-    @Query("limit") limit: Int? = null,
-    /**
-     * Offset at where to start in the total list. Default is 0. Use With [limit] used for paging
-     * results
-     */
-    @Query("offset") offset: Int? = null,
-    /** Specify how much data linked entities should contain */
-    @Query("inc") include: String? = null,
-    /**
-     * Limit linked entities to this Release type.
-     *
-     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
-     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
-     */
-    @Query("type") type: String? = null,
-    /**
-     * Limit linked entities to this Release status.
-     *
-     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
-     */
-    @Query("status") status: String? = null
-  ): Response<BrowseReleaseList>
-
-  /**
-   * Browse Releases for a given [labelId] starting at [offset] with a [limit] to page results.
-   *
-   * @param labelId the label mbid, optional
-   * @param limit max entries returned, required, maximum 100
-   * @param offset offset into total list, required
-   * @param include include linked entity data
-   * @param type limit the results to a particular release type(s), optional
-   * @param status limit the results to a particular release status, optional
-   */
-  @GET("release")
-  public suspend fun browseLabelReleases(
-    /**
-     * Browse releases for the given label MBID
-     */
-    @Query("label") labelId: String,
-    /**
-     * Maximum number of release groups to return. Default is 25. Use with [offset] used for paging
-     * results
-     */
-    @Query("limit") limit: Int? = null,
-    /**
-     * Offset at where to start in the total list. Default is 0. Use With [limit] used for paging
-     * results
-     */
-    @Query("offset") offset: Int? = null,
-    /** Specify how much data linked entities should contain */
-    @Query("inc") include: String? = null,
-    /**
-     * Limit linked entities to this Release type.
-     *
-     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
-     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
-     */
-    @Query("type") type: String? = null,
-    /**
-     * Limit linked entities to this Release status.
-     *
-     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
-     */
-    @Query("status") status: String? = null
-  ): Response<BrowseReleaseList>
-
   @GET("artist")
-  public suspend fun browseReleaseGroupArtists(
+  public suspend fun browseArtists(
+    @Query("area") areaId: String? = null,
+    @Query("recording") recordingId: String? = null,
+    @Query("release") releaseId: String? = null,
+    @Query("release-group") releaseGroupId: String? = null,
+    @Query("work") workId: String? = null,
     /**
-     * Browse artists for the given release group MBID
-     */
-    @Query("release-group") releaseGroupId: String,
-    /**
-     * Maximum number of artists to return. Default is 25. Use with [offset] for paging
+     * Maximum number of artists to return. Default is 25. Use with [offset] used for paging
      * results
      */
     @Query("limit") limit: Int? = null,
     /**
-     * Offset at where to start in the total list. Default is 0. Use With [limit] for paging
+     * Offset at where to start in the total list. Default is 0. Use With [limit] used for paging
      * results
      */
     @Query("offset") offset: Int? = null,
     /** Specify how much data linked entities should contain */
     @Query("inc") include: String? = null,
     /**
-     * Limit linked entities to this Release type.
+     * Limit linked entities to an included Release or Release Group.
      *
      * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
      * "interview", "audiobook", "live", "remix", "other" or the default none (null)
@@ -477,8 +357,8 @@ public interface MusicBrainz {
    * * [trackArtistId]
    * * [recordingId]
    * * [releaseGroupId]
-   * *
-   * are allowed in an invocation.
+   *
+   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
    */
   @GET("release")
   public suspend fun browseReleases(
@@ -516,4 +396,82 @@ public interface MusicBrainz {
      */
     @Query("status") status: String? = null
   ): Response<BrowseReleaseList>
+
+  /**
+   * Only one of:
+   * * [artistId]
+   * * [releaseId]
+   *
+   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
+   */
+  @GET("release")
+  public suspend fun browseReleaseGroups(
+    @Query("artist") artistId: String? = null,
+    @Query("release") releaseId: String? = null,
+    /**
+     * Maximum number of releases to return. Default is 25. Use with [offset] used for paging
+     * results
+     */
+    @Query("limit") limit: Int? = null,
+    /**
+     * Offset at where to start in the total list. Default is 0. Use With [limit] used for paging
+     * results
+     */
+    @Query("offset") offset: Int? = null,
+    /** Specify how much data linked entities should contain */
+    @Query("inc") include: String? = null,
+    /**
+     * Limit linked entities to this Release type.
+     *
+     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
+     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
+     */
+    @Query("type") type: String? = null,
+    /**
+     * Limit linked entities to this Release status.
+     *
+     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
+     */
+    @Query("status") status: String? = null
+  ): Response<BrowseReleaseGroupList>
+
+  /**
+   * Only one of:
+   * * [artistId]
+   * * [releaseId]
+   * * [workId]
+   *
+   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
+   */
+  @GET("release")
+  public suspend fun browseRecordings(
+    @Query("artist") artistId: String? = null,
+    @Query("release") releaseId: String? = null,
+    @Query("work") workId: String? = null,
+    /**
+     * Maximum number of recordings to return. Default is 25. Use with [offset] used for paging
+     * results
+     */
+    @Query("limit") limit: Int? = null,
+    /**
+     * Offset at where to start in the total list. Default is 0. Use With [limit] used for paging
+     * results
+     */
+    @Query("offset") offset: Int? = null,
+    /** Specify how much data linked entities should contain */
+    @Query("inc") include: String? = null,
+    /**
+     * Limit linked entities to this Release type.
+     *
+     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
+     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
+     */
+    @Query("type") type: String? = null,
+    /**
+     * Limit linked entities to this Release status.
+     *
+     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
+     */
+    @Query("status") status: String? = null
+  ): Response<BrowseRecordingList>
 }

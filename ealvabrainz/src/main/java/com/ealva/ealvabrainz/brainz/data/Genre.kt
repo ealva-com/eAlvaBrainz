@@ -18,6 +18,8 @@
 package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.w
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -53,3 +55,11 @@ public class Genre(
 
 public val Genre.isNullObject: Boolean
   get() = this === NullGenre
+
+public inline class GenreMbid(override val value: String) : Mbid
+
+@Suppress("NOTHING_TO_INLINE")
+public inline fun String.toGenreMbid(): GenreMbid {
+  if (Mbid.logInvalidMbid && isInvalidMbid()) Mbid.MBID_LOG.w { it("Invalid GenreMbid") }
+  return GenreMbid(this)
+}

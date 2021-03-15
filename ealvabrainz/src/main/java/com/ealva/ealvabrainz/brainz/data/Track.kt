@@ -17,12 +17,14 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
+import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.brainz.data.Recording.Companion.NullRecording
 import com.ealva.ealvabrainz.brainz.data.Track.Companion.NullTrack
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.w
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import timber.log.Timber
 
 /**
  * In MusicBrainz, a track is the way a recording is represented on a particular release (or, more
@@ -71,7 +73,7 @@ public inline val Track.mbid: TrackMbid
 
 @Suppress("NOTHING_TO_INLINE")
 public inline fun String.toTrackMbid(): TrackMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid TrackMbid")
+  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid TrackMbid") }
   return TrackMbid(this)
 }
 

@@ -17,14 +17,30 @@
 
 package com.ealva.ealvabrainz.lucene
 
-@Suppress("NOTHING_TO_INLINE")
-public inline fun StringBuilder.appendExpression(expression: Expression): StringBuilder =
-  expression.appendTo(this)
-
 public interface Expression {
   public fun appendTo(builder: StringBuilder): StringBuilder
 }
 
+public fun StringBuilder.appendExpression(expression: Expression): StringBuilder =
+  expression.appendTo(this)
+
 public abstract class BaseExpression : Expression {
   public override fun toString(): String = buildString { appendExpression(this@BaseExpression) }
+
+  /*
+   * Identity equality seems OK for now. Current implementation fields are stored in a
+   * ReferenceSet
+   */
+
+//  override fun equals(other: Any?): Boolean {
+//    return when {
+//      this === other -> true
+//      javaClass != other?.javaClass -> false
+//      else -> toString() == other.toString()
+//    }
+//  }
+//
+//  override fun hashCode(): Int {
+//    return toString().hashCode()
+//  }
 }

@@ -46,11 +46,14 @@ import com.ealva.brainzapp.ui.view.setStarRatingDrawable
 // import com.ealva.brainzapp.ui.view.snackErrors
 import com.ealva.brainzapp.ui.view.tabSelectionFlow
 import com.ealva.brainzapp.ui.view.viewPager2
-import com.ealva.brainzsvc.common.ArtistName
 import com.ealva.brainzapp.R
 import com.ealva.brainzapp.ui.view.snackErrors
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.ensureExhaustive
+import com.ealva.ealvalog.e
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.lazyLogger
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.tabs.TabLayout
@@ -88,7 +91,6 @@ import splitties.views.gravityStart
 import splitties.views.textAppearance
 import splitties.views.textResource
 import splitties.views.topPadding
-import timber.log.Timber
 import com.ealva.brainzapp.R.id.artist_ui_app_bar as ID_APP_BAR
 import com.ealva.brainzapp.R.id.artist_ui_area as ID_AREA
 import com.ealva.brainzapp.R.id.artist_ui_area_label as ID_AREA_LABEL
@@ -116,6 +118,8 @@ import com.ealva.brainzapp.R.id.artist_ui_toolbar as ID_TOOLBAR
 import com.ealva.brainzapp.R.id.artist_ui_type as ID_ARTIST_TYPE
 import com.ealva.brainzapp.R.id.artist_ui_type_label as ID_TYPE_LABEL
 import com.ealva.brainzapp.R.id.artist_ui_view_pager as ID_PAGER
+
+private val LOG by lazyLogger(ArtistFragmentUi::class)
 
 class ArtistFragmentUi(
   uiContext: FragmentUiContext,
@@ -380,7 +384,7 @@ class ArtistFragmentUi(
 
   private fun updateArtistInfo(artist: DisplayArtist) {
     if (artistMbid.value != artist.mbid.value) {
-      Timber.e("Model mbid %s != requested mbid %s", artist.mbid, artistMbid)
+      LOG.e { it("Model mbid %s != requested mbid %s", artist.mbid, artistMbid) }
     }
     toolbar.title = artist.name.value
 

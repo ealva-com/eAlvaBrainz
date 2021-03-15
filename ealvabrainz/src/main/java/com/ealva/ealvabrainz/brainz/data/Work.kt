@@ -17,10 +17,12 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
+import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.brainz.data.Work.Companion.NullWork
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.w
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import timber.log.Timber
 
 /**
  * In MusicBrainz terminology, a work is a distinct intellectual or artistic creation, which can
@@ -99,8 +101,8 @@ public class Work(
 
   override fun toString(): String = toJson()
 
-  @Suppress("unused", "UNUSED_PARAMETER")
-  public enum class SearchField(value: String) {
+  @Suppress("unused")
+  public enum class SearchField(public val value: String) {
     /** the aliases/misspellings for this work */
     Alias("alias"),
 
@@ -154,6 +156,6 @@ public inline val Work.mbid: WorkMbid
 
 @Suppress("NOTHING_TO_INLINE")
 public inline fun String.toWorkMbid(): WorkMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid WorkMbid")
+  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid WorkMbid") }
   return WorkMbid(this)
 }

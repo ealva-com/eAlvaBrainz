@@ -31,13 +31,13 @@ import com.ealva.brainzapp.ui.fragment.Navigation
 import com.ealva.brainzapp.ui.fragment.makeUiContext
 import com.ealva.brainzapp.ui.main.MainPresenter
 import com.ealva.brainzapp.ui.main.instantiate
-import com.ealva.brainzsvc.common.ArtistName
-import com.ealva.brainzsvc.common.toArtistName
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.isValid
 import com.ealva.ealvabrainz.brainz.data.toArtistMbid
+import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.toArtistName
 
 private const val KEY_MBID = "ArtistMbid_ArtistFragment"
 private const val KEY_ARTIST_NAME = "ArtistName_ArtistFragment"

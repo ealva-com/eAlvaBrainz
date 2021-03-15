@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  Eric A. Snell
+ * Copyright (c) 2021  Eric A. Snell
  *
  * This file is part of eAlvaBrainz
  *
@@ -15,22 +15,22 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainzsvc.common
+package com.ealva.ealvabrainz.common
 
 /**
- * Convert this String to an [ArtistName] or [ArtistName.UNKNOWN] if this is null.
+ * Convert this String to an [LabelName] or [LabelName.UNKNOWN] if this is null.
  */
 @Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toArtistName(): ArtistName {
-  return this?.let { ArtistName.make(this) } ?: ArtistName.UNKNOWN
+public inline fun String?.toLabelName(): LabelName {
+  return this?.let { LabelName.make(this) } ?: LabelName.UNKNOWN
 }
 
-public inline class ArtistName(public val value: String) {
+public inline class LabelName(public val value: String) {
   public companion object {
-    public val UNKNOWN: ArtistName = ArtistName("Unknown")
+    public val UNKNOWN: LabelName = LabelName("Unknown")
 
     @Suppress("NOTHING_TO_INLINE")
-    public inline fun make(value: String): ArtistName =
-      ArtistName(value.trim())
+    public inline fun make(value: String): LabelName =
+      LabelName(value.trim())
   }
 }

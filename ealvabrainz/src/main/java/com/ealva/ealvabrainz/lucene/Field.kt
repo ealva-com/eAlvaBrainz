@@ -21,15 +21,16 @@ package com.ealva.ealvabrainz.lucene
 public sealed class Field : BaseExpression() {
   @Suppress("MaxLineLength")
   /**
-   * Lucene supports fielded data. When performing a search you can either specify a field, or use the
-   * default field. The field names and default field is implementation specific.
+   * Lucene supports fielded data. When performing a search you can either specify a field, or use
+   * the default field. The field names and default field is implementation specific. eAlvaBrainz
+   * does not currently support using the default field, ie. fields must be named.
    *
    * You can search any field by typing the field name followed by a colon ":" and then the term you
    * are looking for.
    *
    * As an example, let's assume a Lucene index contains two fields, title and text and text is the
-   * default field. If you want to find the document entitled "The Right Way" which contains the text
-   * "don't go this way", you can enter:
+   * default field. If you want to find the document entitled "The Right Way" which contains the
+   * text "don't go this way", you can enter:
    *
    * title:"The Right Way" AND text:go
    *
@@ -43,8 +44,8 @@ public sealed class Field : BaseExpression() {
    *
    * title:The Right Way
    *
-   * Will only find "The" in the title field. It will find "Right" and "Way" in the default field (in
-   * this case the text field).
+   * Will only find "The" in the title field. It will find "Right" and "Way" in the default field
+   * (in this case the text field).
    *
    * See MusicBrainz [search](https://musicbrainz.org/doc/MusicBrainz_API/Search) page and the Lucene
    * [query parser](https://lucene.apache.org/core/7_7_2/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#Terms)
@@ -70,16 +71,6 @@ public sealed class Field : BaseExpression() {
       BasicField(name, listOf(term))
     public operator fun invoke(name: String, term: Term, vararg trailing: Term): Field =
       BasicField(name, listOf(term, *trailing))
-    public operator fun invoke(name: String, term: String): Field =
-      BasicField(name, listOf(Term(term)))
-    public operator fun invoke(name: String, term: String, vararg trailing: String): Field =
-      BasicField(name, mutableListOf(term.toTerm()).apply { trailing.forEach { add(it.toTerm()) } })
-    public operator fun invoke(name: String, term: Boolean): Field =
-      BasicField(name, listOf(BooleanTerm(term)))
-    public operator fun invoke(name: String, term: Int): Field =
-      BasicField(name, listOf(IntTerm(term)))
-    public operator fun invoke(name: String, term: Long): Field =
-      BasicField(name, listOf(LongTerm(term)))
   }
 }
 

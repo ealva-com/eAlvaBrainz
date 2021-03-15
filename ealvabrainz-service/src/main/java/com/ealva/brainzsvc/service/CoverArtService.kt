@@ -20,63 +20,20 @@ package com.ealva.brainzsvc.service
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import com.ealva.brainzsvc.art.RemoteImage
-import com.ealva.brainzsvc.art.RemoteImageData
-import com.ealva.brainzsvc.art.RemoteImageError
-import com.ealva.brainzsvc.art.SizeBucket
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzExceptionMessage
 import com.ealva.ealvabrainz.brainz.CoverArt
-import com.ealva.ealvabrainz.brainz.data.CoverArtImage
-import com.ealva.ealvabrainz.brainz.data.CoverArtImageType
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
-import com.ealva.ealvabrainz.brainz.data.imageTypes
-import com.ealva.ealvabrainz.brainz.data.theLarge
-import com.ealva.ealvabrainz.brainz.data.theSmall
-import com.github.michaelbull.result.Err
-import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.mapError
 import com.github.michaelbull.result.runCatching
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 import retrofit2.Retrofit
 import java.io.File
-
-/**
- * Transform operator converts ReleaseMbid to a RemoteImage which points to the CoverArtImage
- * Uri and contains other information about the image
- */
-@JvmName("transformReleases")
-public fun Flow<ReleaseMbid>.transform(service: CoverArtService): Flow<RemoteImage> = flow {
-  collect { mbid ->
-    when (val result = service.getReleaseArt(mbid)) {
-      is Ok -> doTransform(result.value)
-      is Err -> emit(RemoteImageError(result.getErrorString(service.resourceFetcher)))
-    }
-  }
-}
-
-/**
- * Transform operator converts ReleaseGroupMbid to a RemoteImage which points to the CoverArtImage
- * Uri and contains other information about the image
- */
-@JvmName("transformGroups")
-public fun Flow<ReleaseGroupMbid>.transform(service: CoverArtService): Flow<RemoteImage> = flow {
-  collect { mbid ->
-    when (val result = service.getReleaseGroupArt(mbid)) {
-      is Ok -> doTransform(result.value)
-      is Err -> emit(RemoteImageError(result.getErrorString(service.resourceFetcher)))
-    }
-  }
-}
 
 public typealias CoverArtResult = Result<CoverArtRelease, BrainzMessage>
 
@@ -93,6 +50,13 @@ public interface CoverArtService {
   public val resourceFetcher: ResourceFetcher
 
   public companion object {
+    /**
+     * Intent to view the MusicBrainz website
+     */
+    @Suppress("unused")
+    public val BRAINZ_INTENT: Intent =
+      Intent(Intent.ACTION_VIEW, Uri.parse("https://musicbrainz.org/"))
+
     /**
      * Instantiate a CoverArtService implementation which handles MusicBrainz server requirements
      * such as a required User-Agent format, throttling requests, and factories/adapters to support
@@ -126,7 +90,6 @@ private const val COVER_ART_API_SECURE_URL = "https://coverartarchive.org/"
 
 private val SERVICE_NAME = CoverArtServiceImpl::class.java.simpleName
 private const val CACHE_DIR = "CoverArtArchive"
-private val INTENT_BRAINZ = Intent(Intent.ACTION_VIEW, Uri.parse("https://musicbrainz.org/"))
 private typealias CoverArtCall<T> = suspend CoverArt.() -> Response<T>
 
 private class CoverArtServiceImpl(
@@ -162,51 +125,3 @@ private fun buildCoverArt(
   .addMoshiConverterFactory()
   .build()
   .create(CoverArt::class.java)
-
-private suspend fun FlowCollector<RemoteImage>.doTransform(artRelease: CoverArtRelease) = try {
-  artRelease.firstImageOrNull()?.run {
-    val addedOriginal = maybeEmitImage(image, SizeBucket.ORIGINAL)
-    thumbnails.run {
-      if (!maybeEmitImage(theLarge, SizeBucket.ORIGINAL)) maybeEmitImage(
-        theSmall,
-        SizeBucket.MEDIUM
-      )
-      if (!addedOriginal) maybeEmitImage(size1200, SizeBucket.EXTRA_LARGE)
-    }
-  } ?: emit(RemoteImageError("No result"))
-} catch (e: Exception) {
-  emit(RemoteImageError(e.toString()))
-}
-
-@Suppress("MagicNumber")
-private fun CoverArtRelease.firstImageOrNull(): CoverArtImage? = images
-  .asSequence()
-  .map { image -> Pair(image, image.imageTypes.firstOrNull()) }
-  .filterNot { pair -> pair.second == null }
-  .sortedBy { pair ->
-    when (pair.second) {
-      CoverArtImageType.TYPE_FRONT -> 0
-      CoverArtImageType.TYPE_BACK -> 40
-      CoverArtImageType.TYPE_BOOKLET -> 10
-      CoverArtImageType.TYPE_MEDIUM -> 30
-      CoverArtImageType.TYPE_TRAY -> 60
-      CoverArtImageType.TYPE_OBI -> 80
-      CoverArtImageType.TYPE_SPINE -> 90
-      CoverArtImageType.TYPE_TRACK -> 70
-      CoverArtImageType.TYPE_LINER -> 10
-      CoverArtImageType.TYPE_STICKER -> 50
-      CoverArtImageType.TYPE_POSTER -> 20
-      CoverArtImageType.TYPE_WATERMARK -> 100
-      CoverArtImageType.TYPE_OTHER -> 60
-      else -> Int.MAX_VALUE
-    }
-  }
-  .firstOrNull()?.first
-
-private suspend fun FlowCollector<RemoteImageData>.maybeEmitImage(
-  image: String,
-  bucket: SizeBucket
-) = if (image.isNotEmpty()) {
-  emit(RemoteImageData.fromUrl(image, bucket, R.drawable.ic_musicbrainz_logo, INTENT_BRAINZ))
-  true
-} else false

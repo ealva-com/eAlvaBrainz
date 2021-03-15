@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  Eric A. Snell
+ * Copyright (c) 2021  Eric A. Snell
  *
  * This file is part of eAlvaBrainz
  *
@@ -15,22 +15,22 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainzsvc.common
+package com.ealva.ealvabrainz.common
 
 /**
- * Convert this String to an [RecordingTitle] or [RecordingTitle.UNKNOWN] if this is null.
+ * Convert this String to an [AreaName] or [AreaName.UNKNOWN] if this is null.
  */
 @Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toRecordingTitle(): RecordingTitle {
-  return this?.let { RecordingTitle.make(this) } ?: RecordingTitle.UNKNOWN
+public inline fun String?.toAreaName(): AreaName {
+  return this?.let { AreaName.make(this) } ?: AreaName.UNKNOWN
 }
 
-public inline class RecordingTitle(public val value: String) {
+public inline class AreaName(public val value: String) {
   public companion object {
-    public val UNKNOWN: RecordingTitle = RecordingTitle("Unknown")
+    public val UNKNOWN: AreaName = AreaName("Unknown")
 
     @Suppress("NOTHING_TO_INLINE")
-    public inline fun make(value: String): RecordingTitle =
-      RecordingTitle(value.trim())
+    public inline fun make(value: String): AreaName =
+      AreaName(value.trim())
   }
 }

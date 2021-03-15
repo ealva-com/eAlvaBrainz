@@ -102,7 +102,6 @@ dependencies {
   implementation(ThirdParty.COROUTINE_CORE)
   implementation(ThirdParty.COROUTINE_ANDROID)
 
-  implementation(ThirdParty.TIMBER)
   implementation(ThirdParty.RETROFIT)
   implementation(ThirdParty.MOSHI)
   implementation(ThirdParty.MOSHI_RETROFIT)

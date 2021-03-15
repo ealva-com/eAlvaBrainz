@@ -68,6 +68,14 @@ public class CoverArtImage(
   }
 }
 
+public enum class CoverArtImageSize {
+  Original,
+  Size250,
+  Size500,
+  Size1200,
+  Unknown
+}
+
 public inline val CoverArtImage.isNullObject: Boolean
   get() = this === NullCoverArtImage
 
@@ -77,25 +85,45 @@ public inline val CoverArtImage.isNullObject: Boolean
 public val CoverArtImage.imageTypes: Sequence<CoverArtImageType>
   get() = types.asSequence()
     .filterNotNull()
-    .map { rawType -> CoverArtImageType(rawType) }
+    .filterNot { it.isEmpty() }
+    .map { it.toImageType() }
 
-public inline class CoverArtImageType(public val value: String) {
-
-  @Suppress("unused")
-  public companion object {
-    // https://musicbrainz.org/doc/Cover_Art/Types
-    public val TYPE_FRONT: CoverArtImageType = CoverArtImageType("Front")
-    public val TYPE_BACK: CoverArtImageType = CoverArtImageType("Back")
-    public val TYPE_BOOKLET: CoverArtImageType = CoverArtImageType("Booklet")
-    public val TYPE_MEDIUM: CoverArtImageType = CoverArtImageType("Medium")
-    public val TYPE_TRAY: CoverArtImageType = CoverArtImageType("Tray")
-    public val TYPE_OBI: CoverArtImageType = CoverArtImageType("Obi")
-    public val TYPE_SPINE: CoverArtImageType = CoverArtImageType("Spine")
-    public val TYPE_TRACK: CoverArtImageType = CoverArtImageType("Track")
-    public val TYPE_LINER: CoverArtImageType = CoverArtImageType("Liner")
-    public val TYPE_STICKER: CoverArtImageType = CoverArtImageType("Sticker")
-    public val TYPE_POSTER: CoverArtImageType = CoverArtImageType("Poster")
-    public val TYPE_WATERMARK: CoverArtImageType = CoverArtImageType("Watermark")
-    public val TYPE_OTHER: CoverArtImageType = CoverArtImageType("Other")
+public fun String.toImageType(): CoverArtImageType =
+  nameToImageTypeMap.getOrPut(this) {
+    if (isNullOrEmpty()) CoverArtImageType.UNKNOWN else CoverArtImageType.Unrecognized(this)
   }
+
+private val nameToImageTypeMap: MutableMap<String, CoverArtImageType> = mutableMapOf(
+  Pair(CoverArtImageType.FRONT.name, CoverArtImageType.FRONT),
+  Pair(CoverArtImageType.BACK.name, CoverArtImageType.BACK),
+  Pair(CoverArtImageType.BOOKLET.name, CoverArtImageType.BOOKLET),
+  Pair(CoverArtImageType.MEDIUM.name, CoverArtImageType.MEDIUM),
+  Pair(CoverArtImageType.TRAY.name, CoverArtImageType.TRAY),
+  Pair(CoverArtImageType.OBI.name, CoverArtImageType.OBI),
+  Pair(CoverArtImageType.SPINE.name, CoverArtImageType.SPINE),
+  Pair(CoverArtImageType.TRACK.name, CoverArtImageType.TRACK),
+  Pair(CoverArtImageType.LINER.name, CoverArtImageType.LINER),
+  Pair(CoverArtImageType.STICKER.name, CoverArtImageType.STICKER),
+  Pair(CoverArtImageType.POSTER.name, CoverArtImageType.POSTER),
+  Pair(CoverArtImageType.WATERMARK.name, CoverArtImageType.WATERMARK),
+  Pair(CoverArtImageType.OTHER.name, CoverArtImageType.OTHER)
+)
+
+public sealed class CoverArtImageType(public val name: String) {
+  // https://musicbrainz.org/doc/Cover_Art/Types
+  public object FRONT : CoverArtImageType("Front")
+  public object BACK : CoverArtImageType("Back")
+  public object BOOKLET : CoverArtImageType("Booklet")
+  public object MEDIUM : CoverArtImageType("Medium")
+  public object TRAY : CoverArtImageType("Tray")
+  public object OBI : CoverArtImageType("Obi")
+  public object SPINE : CoverArtImageType("Spine")
+  public object TRACK : CoverArtImageType("Track")
+  public object LINER : CoverArtImageType("Liner")
+  public object STICKER : CoverArtImageType("Sticker")
+  public object POSTER : CoverArtImageType("Poster")
+  public object WATERMARK : CoverArtImageType("Watermark")
+  public object OTHER : CoverArtImageType("Other")
+  public object UNKNOWN : CoverArtImageType("UNKNOWN")
+  public class Unrecognized(name: String) : CoverArtImageType(name)
 }

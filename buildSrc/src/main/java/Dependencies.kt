@@ -78,7 +78,6 @@ object ThirdParty {
   const val RETROFIT = "com.squareup.retrofit2:retrofit:2.9.0"
   const val SPLITTIES_SYSTEM_SERVICES =
     "com.louiscad.splitties:splitties-systemservices:3.0.0-alpha06"
-  const val TIMBER = "com.jakewharton.timber:timber:4.7.1"
 }
 
 object TestingLib {

@@ -28,10 +28,14 @@ import com.ealva.brainzapp.ui.release.ReleaseSearchFragment
 import com.ealva.brainzapp.ui.rgroup.ReleaseGroupSearchFragment
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.ResourceFetcher
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.lazyLogger
+import com.ealva.ealvalog.w
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import timber.log.Timber
+
+private val LOG by lazyLogger(AppFragmentFactory::class)
 
 typealias FragmentFactoryFn = () -> Fragment
 
@@ -66,7 +70,7 @@ class AppFragmentFactory(
   }
 
   private fun makeViaReflection(classLoader: ClassLoader, className: String): Fragment {
-    Timber.w("No factory for %s", className)
+    LOG.w { it("No factory for %s", className) }
     return super.instantiate(classLoader, className)
   }
 }

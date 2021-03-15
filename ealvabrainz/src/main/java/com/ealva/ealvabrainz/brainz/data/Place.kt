@@ -17,11 +17,13 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
+import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.brainz.data.Place.Companion.NullPlace
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.w
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import timber.log.Timber
 
 /**
  * A place is a building or outdoor area used for performing or producing music.
@@ -174,6 +176,6 @@ public inline val Place.mbid: PlaceMbid
 
 @Suppress("NOTHING_TO_INLINE")
 public inline fun String.toPlaceMbid(): PlaceMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) Timber.w("Invalid PlaceMbid")
+  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid PlaceMbid") }
   return PlaceMbid(this)
 }

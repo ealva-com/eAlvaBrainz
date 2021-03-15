@@ -20,10 +20,16 @@
 package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.Area.Companion.NullArea
+import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.logInvalidMbid
+import com.ealva.ealvabrainz.log.BrainzLog
+import com.ealva.ealvalog.w
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.lazyLogger
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import timber.log.Timber
+
+private val LOG by lazyLogger(Area::class, BrainzLog.marker)
 
 /**
  * Areas are geographic regions or settlements. Areas are usually kept in sync with their
@@ -165,7 +171,7 @@ public inline val Area.mbid: AreaMbid
 
 @Suppress("NOTHING_TO_INLINE")
 public inline fun String.toAreaMbid(): AreaMbid {
-  if (logInvalidMbid && isInvalidMbid()) Timber.w("Invalid AreaMbid")
+  if (logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid AreaMbid") }
   return AreaMbid(this)
 }
 

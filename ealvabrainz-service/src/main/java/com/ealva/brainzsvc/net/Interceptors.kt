@@ -19,10 +19,15 @@
 
 package com.ealva.brainzsvc.net
 
+import com.ealva.brainzsvc.log._i
+import com.ealva.ealvabrainz.log.BrainzLog
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.lazyLogger
 import engineering.clientside.throttle.Throttle
 import okhttp3.Interceptor
 import okhttp3.Response
-import timber.log.Timber
+
+private val LOG by lazyLogger(ThrottlingInterceptor::class, BrainzLog.marker)
 
 /**
  * Interceptor that throttles requests to the server
@@ -41,7 +46,7 @@ internal class ThrottlingInterceptor(maxCallsPerSecond: Double, private val serv
     // Only throttle GETs
     if ("GET" == request.method) {
       val throttleSlept = throttle.acquire()
-      Timber.i("intercept throttle service=%s slept=%f", serviceName, throttleSlept)
+      LOG._i { it("intercept throttle service=%s slept=%f", serviceName, throttleSlept) }
     }
     return chain.proceed(request)
   }

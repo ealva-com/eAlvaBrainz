@@ -17,7 +17,12 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import timber.log.Timber
+import com.ealva.ealvabrainz.log.BrainzLog
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.lazyLogger
+import com.ealva.ealvalog.w
+
+private val LOG by lazyLogger(ArtistType::class, BrainzLog.marker)
 
 public enum class ArtistType(public val value: String) {
   Person("Person"),
@@ -56,6 +61,6 @@ public fun String.toArtistType(): ArtistType {
 
 @Suppress("NOTHING_TO_INLINE")
 private inline fun mapToUnknown(typeString: String): ArtistType {
-  Timber.w("%s is an Unknown ArtistType", typeString)
+  LOG.w { it("'%s' is an Unknown ArtistType", typeString) }
   return ArtistType.Unknown
 }

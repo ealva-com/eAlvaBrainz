@@ -30,8 +30,8 @@ public class FieldTest {
     val range = Field("date", "20200102".toTerm() inclusive "20200104".toTerm())
     expect(range.toString()).toBe("""date:\[20200102 TO 20200104\]""")
 
-    expect(Field("album", "Aqualung").toString()).toBe("album:Aqualung")
-    expect(Field("album", "Aqualung", "Thick as a Brick").toString())
+    expect(Field("album", Term("Aqualung")).toString()).toBe("album:Aqualung")
+    expect(Field("album", Term("Aqualung"), Term("Thick as a Brick")).toString())
       .toBe("""album:(Aqualung "Thick as a Brick")""")
   }
 
