@@ -17,12 +17,9 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.brainz.data.Recording.Companion.NullRecording
 import com.ealva.ealvabrainz.brainz.data.Track.Companion.NullTrack
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
-import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.w
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -65,28 +62,3 @@ public class Track(
 
 public val Track.isNullObject: Boolean
   get() = this === NullTrack
-
-public inline class TrackMbid(override val value: String) : Mbid
-
-public inline val Track.mbid: TrackMbid
-  get() = id.toTrackMbid()
-
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String.toTrackMbid(): TrackMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid TrackMbid") }
-  return TrackMbid(this)
-}
-
-/** First [ArtistCredit] [Artist.mbid] or "" if not found */
-@Suppress("unused")
-public val Track.theArtistMbid: String
-  get() = if (artistCredit.isNotEmpty()) artistCredit[0].artist.mbid.value else ""
-
-/** First [ArtistCredit] [Artist.name] or "" if not found */
-public inline val Track.theArtistName: String
-  get() = if (artistCredit.isNotEmpty()) artistCredit[0].artist.name else ""
-
-/** First [ArtistCredit] [Artist.sortName] or "" if not found */
-@Suppress("unused")
-public inline val Track.theArtistSortName: String
-  get() = if (artistCredit.isNotEmpty()) artistCredit[0].artist.sortName else theArtistName

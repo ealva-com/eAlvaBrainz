@@ -96,14 +96,15 @@ data class Area(
 inline val Area.isNullObject
   get() = this === NullArea
 
-inline class AreaMbid(override val value: String) : Mbid
+@JvmInline
+value class AreaMbid(override val value: String) : Mbid
 
 inline val Area.mbid
   get() = AreaMbid(id)
 ```
 A companion object is defined which contains the Null Object and a mapping between the class name 
 and the fallback NullArea object. An extension function defines a Boolean isNullObject val. Also 
-note the AreaMbid inline class. Since a MusicBrainz identifier (MBID) is just a string, these inline 
+note the AreaMbid value class. Since a MusicBrainz identifier (MBID) is just a string, these inline 
 classes are meant to differentiate types of MBID to facilitate compile time type checking.
 
 While this module is not directly dependent upon Kotlin [coroutine][coroutines] libraries, the 

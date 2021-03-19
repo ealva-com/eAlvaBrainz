@@ -18,22 +18,22 @@
 package com.ealva.ealvabrainz.lucene
 
 import com.ealva.ealvabrainz.brainz.data.Release
-import com.ealva.ealvabrainz.brainz.data.toAreaMbid
-import com.ealva.ealvabrainz.brainz.data.toArtistMbid
-import com.ealva.ealvabrainz.brainz.data.toEventMbid
-import com.ealva.ealvabrainz.brainz.data.toGenreMbid
-import com.ealva.ealvabrainz.brainz.data.toInstrumentMbid
-import com.ealva.ealvabrainz.brainz.data.toLabelMbid
-import com.ealva.ealvabrainz.brainz.data.toPackagingMbid
-import com.ealva.ealvabrainz.brainz.data.toPlaceMbid
-import com.ealva.ealvabrainz.brainz.data.toRecordingMbid
-import com.ealva.ealvabrainz.brainz.data.toReleaseGroupMbid
-import com.ealva.ealvabrainz.brainz.data.toReleaseMbid
-import com.ealva.ealvabrainz.brainz.data.toSeriesMbid
-import com.ealva.ealvabrainz.brainz.data.toTrackMbid
-import com.ealva.ealvabrainz.brainz.data.toUrlMbid
-import com.ealva.ealvabrainz.brainz.data.toWorkMbid
+import com.ealva.ealvabrainz.common.AreaMbid
+import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.common.EventMbid
 import com.ealva.ealvabrainz.common.Formatting
+import com.ealva.ealvabrainz.common.GenreMbid
+import com.ealva.ealvabrainz.common.InstrumentMbid
+import com.ealva.ealvabrainz.common.LabelMbid
+import com.ealva.ealvabrainz.common.PackagingMbid
+import com.ealva.ealvabrainz.common.PlaceMbid
+import com.ealva.ealvabrainz.common.RecordingMbid
+import com.ealva.ealvabrainz.common.ReleaseGroupMbid
+import com.ealva.ealvabrainz.common.ReleaseMbid
+import com.ealva.ealvabrainz.common.SeriesMbid
+import com.ealva.ealvabrainz.common.TrackMbid
+import com.ealva.ealvabrainz.common.UrlMbid
+import com.ealva.ealvabrainz.common.WorkMbid
 import com.ealva.ealvabrainz.common.toAlbumTitle
 import com.ealva.ealvabrainz.common.toArtistName
 import com.ealva.ealvabrainz.common.toLabelName
@@ -175,21 +175,21 @@ public class TermTest {
   public fun `test type to Term functions`() {
     val aMbid = "5b11f4ce-a62d-471e-81fc-a69a8278c7da"
     val escapedMbid = aMbid.luceneEscape()
-    expect(Term(aMbid.toAreaMbid()).toString()).toBe(escapedMbid)
-    expect(Term(aMbid.toArtistMbid()).toString()).toBe(escapedMbid)
-    expect(Term(aMbid.toEventMbid()).toString()).toBe(escapedMbid)
-    expect(Term(aMbid.toGenreMbid()).toString()).toBe(escapedMbid)
-    expect(Term(aMbid.toInstrumentMbid()).toString()).toBe(escapedMbid)
-    expect(Term(aMbid.toLabelMbid()).toString()).toBe(escapedMbid)
-    expect(Term(aMbid.toPlaceMbid()).toString()).toBe(escapedMbid)
-    expect(Term(aMbid.toRecordingMbid()).toString()).toBe(escapedMbid)
-    expect(Term(aMbid.toReleaseMbid()).toString()).toBe(escapedMbid)
-    expect(Term(aMbid.toReleaseGroupMbid()).toString()).toBe(escapedMbid)
-    expect(Term(aMbid.toSeriesMbid()).toString()).toBe(escapedMbid)
-    expect(Term(aMbid.toWorkMbid()).toString()).toBe(escapedMbid)
-    expect(Term(aMbid.toUrlMbid()).toString()).toBe(escapedMbid)
-    expect(Term(aMbid.toTrackMbid()).toString()).toBe(escapedMbid)
-    expect(Term(aMbid.toPackagingMbid()).toString()).toBe(escapedMbid)
+    expect(Term(AreaMbid(aMbid)).toString()).toBe(escapedMbid)
+    expect(Term(ArtistMbid(aMbid)).toString()).toBe(escapedMbid)
+    expect(Term(EventMbid(aMbid)).toString()).toBe(escapedMbid)
+    expect(Term(GenreMbid(aMbid)).toString()).toBe(escapedMbid)
+    expect(Term(InstrumentMbid(aMbid)).toString()).toBe(escapedMbid)
+    expect(Term(LabelMbid(aMbid)).toString()).toBe(escapedMbid)
+    expect(Term(PlaceMbid(aMbid)).toString()).toBe(escapedMbid)
+    expect(Term(RecordingMbid(aMbid)).toString()).toBe(escapedMbid)
+    expect(Term(ReleaseMbid(aMbid)).toString()).toBe(escapedMbid)
+    expect(Term(ReleaseGroupMbid(aMbid)).toString()).toBe(escapedMbid)
+    expect(Term(SeriesMbid(aMbid)).toString()).toBe(escapedMbid)
+    expect(Term(WorkMbid(aMbid)).toString()).toBe(escapedMbid)
+    expect(Term(UrlMbid(aMbid)).toString()).toBe(escapedMbid)
+    expect(Term(TrackMbid(aMbid)).toString()).toBe(escapedMbid)
+    expect(Term(PackagingMbid(aMbid)).toString()).toBe(escapedMbid)
 
     val aTitle = "Short (Subtitle)"
     val escapedTitle = """"${aTitle.luceneEscape()}""""

@@ -17,10 +17,13 @@
 
 package com.ealva.brainzsvc.service.lookup
 
+import com.ealva.brainzsvc.common.buildQueryMap
+import com.ealva.brainzsvc.common.include
+import com.ealva.brainzsvc.common.status
+import com.ealva.brainzsvc.common.types
 import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.Artist
-import com.ealva.ealvabrainz.brainz.data.ArtistMbid
-import com.ealva.ealvabrainz.brainz.data.join
+import com.ealva.ealvabrainz.common.ArtistMbid
 import retrofit2.Response
 
 public interface ArtistLookup :
@@ -34,8 +37,10 @@ internal class ArtistLookupOp :
     brainz: MusicBrainz
   ): Response<Artist> = brainz.lookupArtist(
     mbid.value,
-    if (includeSet.isNotEmpty()) includeSet.join() else null,
-    typeSet?.ensureValidType(includeSet)?.join(),
-    statusSet?.ensureValidStatus(includeSet)?.join()
+    buildQueryMap {
+      include(includeSet)
+      types(typeSet?.ensureValidType(includeSet))
+      status(statusSet?.ensureValidStatus(includeSet))
+    }
   )
 }

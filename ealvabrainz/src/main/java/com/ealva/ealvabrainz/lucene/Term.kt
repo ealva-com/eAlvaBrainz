@@ -19,22 +19,22 @@
 
 package com.ealva.ealvabrainz.lucene
 
-import com.ealva.ealvabrainz.brainz.data.AreaMbid
-import com.ealva.ealvabrainz.brainz.data.ArtistMbid
-import com.ealva.ealvabrainz.brainz.data.EventMbid
-import com.ealva.ealvabrainz.brainz.data.GenreMbid
-import com.ealva.ealvabrainz.brainz.data.InstrumentMbid
-import com.ealva.ealvabrainz.brainz.data.LabelMbid
-import com.ealva.ealvabrainz.brainz.data.PackagingMbid
-import com.ealva.ealvabrainz.brainz.data.PlaceMbid
-import com.ealva.ealvabrainz.brainz.data.RecordingMbid
+import com.ealva.ealvabrainz.common.AreaMbid
+import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.common.EventMbid
+import com.ealva.ealvabrainz.common.GenreMbid
+import com.ealva.ealvabrainz.common.InstrumentMbid
+import com.ealva.ealvabrainz.common.LabelMbid
+import com.ealva.ealvabrainz.common.PackagingMbid
+import com.ealva.ealvabrainz.common.PlaceMbid
+import com.ealva.ealvabrainz.common.RecordingMbid
 import com.ealva.ealvabrainz.brainz.data.Release
-import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
-import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
-import com.ealva.ealvabrainz.brainz.data.SeriesMbid
-import com.ealva.ealvabrainz.brainz.data.TrackMbid
-import com.ealva.ealvabrainz.brainz.data.UrlMbid
-import com.ealva.ealvabrainz.brainz.data.WorkMbid
+import com.ealva.ealvabrainz.common.ReleaseGroupMbid
+import com.ealva.ealvabrainz.common.ReleaseMbid
+import com.ealva.ealvabrainz.common.SeriesMbid
+import com.ealva.ealvabrainz.common.TrackMbid
+import com.ealva.ealvabrainz.common.UrlMbid
+import com.ealva.ealvabrainz.common.WorkMbid
 import com.ealva.ealvabrainz.common.AlbumTitle
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.LabelName

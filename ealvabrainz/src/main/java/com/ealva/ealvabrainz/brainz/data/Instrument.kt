@@ -17,11 +17,8 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.w
 
 @JsonClass(generateAdapter = true)
 public class Instrument(
@@ -133,14 +130,3 @@ public class Instrument(
 
 public inline val Instrument.isNullObject: Boolean
   get() = this === Instrument.NullInstrument
-
-public inline class InstrumentMbid(override val value: String) : Mbid
-
-public inline val Instrument.mbid: InstrumentMbid
-  get() = id.toInstrumentMbid()
-
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String.toInstrumentMbid(): InstrumentMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid InstrumentMbid") }
-  return InstrumentMbid(this)
-}

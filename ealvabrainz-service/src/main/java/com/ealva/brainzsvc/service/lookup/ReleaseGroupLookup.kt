@@ -17,10 +17,13 @@
 
 package com.ealva.brainzsvc.service.lookup
 
+import com.ealva.brainzsvc.common.buildQueryMap
+import com.ealva.brainzsvc.common.include
+import com.ealva.brainzsvc.common.status
+import com.ealva.brainzsvc.common.types
 import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
-import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
-import com.ealva.ealvabrainz.brainz.data.join
+import com.ealva.ealvabrainz.common.ReleaseGroupMbid
 import retrofit2.Response
 
 public interface ReleaseGroupLookup : EntitySubqueryLookup<ReleaseGroup.Subquery, ReleaseGroup.Misc>
@@ -34,8 +37,10 @@ internal class ReleaseGroupLookupOp :
     brainz: MusicBrainz
   ): Response<ReleaseGroup> = brainz.lookupReleaseGroup(
     mbid.value,
-    if (includeSet.isNotEmpty()) includeSet.join() else null,
-    typeSet?.join(),
-    statusSet?.ensureValidStatus(includeSet)?.join()
+    buildQueryMap {
+      include(includeSet)
+      types(typeSet)
+      status(statusSet?.ensureValidStatus(includeSet))
+    }
   )
 }

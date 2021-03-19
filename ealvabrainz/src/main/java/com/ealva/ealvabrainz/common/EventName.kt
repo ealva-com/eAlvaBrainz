@@ -22,10 +22,11 @@ package com.ealva.ealvabrainz.common
  */
 @Suppress("NOTHING_TO_INLINE")
 public inline fun String?.toEventName(): EventName {
-  return this?.let { EventName.make(this) } ?: EventName.UNKNOWN
+  return if (this != null) EventName.make(this) else EventName.UNKNOWN
 }
 
-public inline class EventName(public val value: String) {
+@JvmInline
+public value class EventName(public val value: String) {
   public companion object {
     public val UNKNOWN: EventName = EventName("Unknown")
 

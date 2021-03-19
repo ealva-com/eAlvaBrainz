@@ -24,8 +24,8 @@ import com.ealva.ealvabrainz.brainz.data.CoverArtImage
 import com.ealva.ealvabrainz.brainz.data.CoverArtImageSize
 import com.ealva.ealvabrainz.brainz.data.CoverArtImageType
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
-import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
-import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.common.ReleaseGroupMbid
+import com.ealva.ealvabrainz.common.ReleaseMbid
 import com.ealva.ealvabrainz.brainz.data.imageTypes
 import com.ealva.ealvabrainz.brainz.data.the250
 import com.ealva.ealvabrainz.brainz.data.the500

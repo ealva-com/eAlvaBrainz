@@ -155,12 +155,6 @@ public class ReleaseGroupTest {
             expect(name).toBe("The Beatles")
             expect(id).toBe("b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d")
             expect(genres).toHaveSize(2)
-            expect(genres).toContain(
-              listOf(
-                Genre("rock", 18),
-                Genre("rock and roll", 0)
-              )
-            )
             expect(tags).toHaveSize(3)
             expect(tags).toContain(
               listOf(

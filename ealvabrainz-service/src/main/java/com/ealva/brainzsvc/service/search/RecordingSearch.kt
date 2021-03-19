@@ -19,12 +19,12 @@
 
 package com.ealva.brainzsvc.service.search
 
-import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.Recording.SearchField
-import com.ealva.ealvabrainz.brainz.data.RecordingMbid
+import com.ealva.ealvabrainz.common.RecordingMbid
 import com.ealva.ealvabrainz.brainz.data.Release
-import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
-import com.ealva.ealvabrainz.brainz.data.TrackMbid
+import com.ealva.ealvabrainz.common.ReleaseGroupMbid
+import com.ealva.ealvabrainz.common.TrackMbid
 import com.ealva.ealvabrainz.common.AlbumTitle
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.RecordingTitle

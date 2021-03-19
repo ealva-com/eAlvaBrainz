@@ -17,10 +17,13 @@
 
 package com.ealva.brainzsvc.service.lookup
 
+import com.ealva.brainzsvc.common.buildQueryMap
+import com.ealva.brainzsvc.common.include
+import com.ealva.brainzsvc.common.types
+import com.ealva.brainzsvc.common.status
 import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.Recording
-import com.ealva.ealvabrainz.brainz.data.RecordingMbid
-import com.ealva.ealvabrainz.brainz.data.join
+import com.ealva.ealvabrainz.common.RecordingMbid
 import retrofit2.Response
 
 public interface RecordingLookup : EntitySubqueryLookup<Recording.Subquery, Recording.Misc>
@@ -33,8 +36,10 @@ internal class RecordingLookupOp :
     brainz: MusicBrainz
   ): Response<Recording> = brainz.lookupRecording(
     mbid.value,
-    if (includeSet.isNotEmpty()) includeSet.join() else null,
-    typeSet?.ensureValidType(includeSet)?.join(),
-    statusSet?.ensureValidStatus(includeSet)?.join()
+    buildQueryMap {
+      include(includeSet)
+      types(typeSet?.ensureValidType(includeSet))
+      status(statusSet?.ensureValidStatus(includeSet))
+    }
   )
 }

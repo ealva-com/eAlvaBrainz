@@ -29,7 +29,8 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 
-inline class Isni(val value: String) {
+@JvmInline
+value class Isni(val value: String) {
   companion object {
     val NullIsni: Isni = Isni("")
   }

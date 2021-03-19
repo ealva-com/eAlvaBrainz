@@ -17,11 +17,11 @@
 
 package com.ealva.brainzapp.data
 
-@Suppress("MagicNumber")
-inline class StarRating(val value: Float) {
+@JvmInline
+value class StarRating(val value: Float) {
   companion object {
     /** Prefer this for error correction instead of calling ctor directly */
-    @Suppress("NOTHING_TO_INLINE")
+    @Suppress("NOTHING_TO_INLINE", "MagicNumber")
     inline fun make(value: Float): StarRating = StarRating(value.coerceIn(0.0F..5.0F))
   }
 }

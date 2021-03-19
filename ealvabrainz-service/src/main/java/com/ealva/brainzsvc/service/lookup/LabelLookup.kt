@@ -17,10 +17,13 @@
 
 package com.ealva.brainzsvc.service.lookup
 
+import com.ealva.brainzsvc.common.buildQueryMap
+import com.ealva.brainzsvc.common.include
+import com.ealva.brainzsvc.common.status
+import com.ealva.brainzsvc.common.types
 import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.Label
-import com.ealva.ealvabrainz.brainz.data.LabelMbid
-import com.ealva.ealvabrainz.brainz.data.join
+import com.ealva.ealvabrainz.common.LabelMbid
 import retrofit2.Response
 
 public interface LabelLookup : EntitySubqueryLookup<Label.Subquery, Label.Misc>
@@ -33,8 +36,10 @@ internal class LabelLookupOp :
     brainz: MusicBrainz
   ): Response<Label> = brainz.lookupLabel(
     mbid.value,
-    if (includeSet.isNotEmpty()) includeSet.join() else null,
-    typeSet?.ensureValidType(includeSet)?.join(),
-    statusSet?.ensureValidStatus(includeSet)?.join()
+    buildQueryMap {
+      include(includeSet)
+      types(typeSet?.ensureValidType(includeSet))
+      status(statusSet?.ensureValidStatus(includeSet))
+    }
   )
 }

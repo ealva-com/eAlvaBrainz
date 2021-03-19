@@ -20,14 +20,11 @@
 package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.Artist.Companion.NullArtist
-import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.log.BrainzLog
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
+import com.ealva.ealvalog.lazyLogger
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import com.ealva.ealvalog.w
-import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.lazyLogger
 
 private val LOG by lazyLogger(Artist::class, BrainzLog.marker)
 
@@ -167,9 +164,11 @@ public class Artist(
     Releases("releases"),
     ReleaseGroups("release-groups"),
     Works("works"),
+
     /** An ID calculated from the TOC of a CD */
     DiscIds("discids"),
     Media("media"),
+
     /**
      * The International Standard Recording Code, an identification system for audio and music
      * video recordings. Includes isrcs for all recordings
@@ -186,55 +185,88 @@ public class Artist(
     Tags("tags"),
     Ratings("ratings"),
     Genres("genres");
+
     public companion object {
       /** Doesn't create a values() array and/or list every time */
       public val all: List<Misc> by lazy { values().asList() }
     }
   }
 
+  @Suppress("unused")
+  public enum class Browse(override val value: String) : Lookup {
+    Area("area"),
+    Recording("recording"),
+    Release("release"),
+    ReleaseGroup("release-group"),
+    Work("work"),
+    Aliases("aliases"),
+    Annotation("annotation"),
+    Tags("tags"),
+    Genres("genres"),
+    Ratings("ratings");
+  }
+
   public enum class SearchField(public val value: String) {
     /** (part of) any alias attached to the artist (diacritics are ignored) */
     Alias("alias"),
+
     /** (part of) any primary alias attached to the artist (diacritics are ignored) */
     PrimaryAlias("primary_alias"),
+
     /** (part of) the name of the artist's main associated area */
     Area("area"),
+
     /** the artist's MBID */
     ArtistId("arid"),
+
     /** the artist's name (without accented characters) */
     Artist("artist"),
+
     /** the artist's name (with accented characters) */
     ArtistAccent("artistaccent"),
+
     /** the artist's begin date */
     Begin("begin"),
+
     /** the artist's begin area */
     BeginArea("beginarea"),
+
     /** the artist's disambiguation comment */
     Comment("comment"),
+
     /**
      * the 2-letter code (ISO 3166-1 alpha-2) for the artist's main associated country, or “unknown”
      */
     Country("country"),
+
     /** the artist's end date */
     End("end"),
+
     /** the artist's end area */
     EndArea("endarea"),
+
     /** a flag indicating whether or not the artist has ended */
     Ended("ended"),
+
     /** the artist's gender (“male”, “female”, or “other”) */
     Gender("gender"),
+
     /**
      * A number identifying persons connected to ISWC registered works (authors, composers, etc.).
      */
     Ipi("ipi"),
+
     /**
      * an ISNI code associated with the artist
      */
     Isni("isni"),
+
     /** the artist's sort name */
     SortName("sortname"),
+
     /** a tag attached to the artist */
     Tag("tag"),
+
     /** the artist's type (“person”, “group”, ...) */
     Type("type")
   }
@@ -247,36 +279,3 @@ public class Artist(
 
 public inline val Artist.isNullObject: Boolean
   get() = this === NullArtist
-
-public inline class ArtistMbid(override val value: String) : Mbid {
-  public companion object {
-
-    // https://musicbrainz.org/doc/Style/Unknown_and_untitled/Special_purpose_artist
-    public val ANONYMOUS: ArtistMbid = ArtistMbid("f731ccc4-e22a-43af-a747-64213329e088")
-    public val DATA: ArtistMbid = ArtistMbid("33cf029c-63b0-41a0-9855-be2a3665fb3b")
-    public val DIALOGUE: ArtistMbid = ArtistMbid("314e1c25-dde7-4e4d-b2f4-0a7b9f7c56dc")
-    public val NO_ARTIST: ArtistMbid = ArtistMbid("eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61")
-    public val TRADITIONAL: ArtistMbid = ArtistMbid("9be7f096-97ec-4615-8957-8d40b5dcbc41")
-    public val UNKNOWN: ArtistMbid = ArtistMbid("125ec42a-7229-4250-afc5-e057484327fe")
-    public val VARIOUS_ARTISTS: ArtistMbid = ArtistMbid("89ad4ac3-39f7-470e-963a-56509c546377")
-    public val CHRISTMAS_MUSIC: ArtistMbid = ArtistMbid("0187fe48-c87d-4dd8-beca-9c07ef535603")
-    public val DISNEY: ArtistMbid = ArtistMbid("66ea0139-149f-4a0c-8fbf-5ea9ec4a6e49")
-    public val MUSICAL_THEATER: ArtistMbid = ArtistMbid("a0ef7e1d-44ff-4039-9435-7d5fefdeecc9")
-    public val CLASSICAL_MUSIC: ArtistMbid = ArtistMbid("9e44f539-f3fc-4120-bce2-94c8716437fa")
-    public val SOUNDTRACK: ArtistMbid = ArtistMbid("d6bd72bc-b1e2-4525-92aa-0f853cbb41bf")
-    public val RELIGIOUS_MUSIC: ArtistMbid = ArtistMbid("ae636985-40e8-4010-ae02-0f35930f8017")
-    public val CHURCH_CHIMES: ArtistMbid = ArtistMbid("90068d37-bae7-4292-be4a-704c145bd616")
-    public val LANGUAGE_INSTRUCTION: ArtistMbid = ArtistMbid("80a8851f-444c-4539-892b-ad2a49292aa9")
-    public val NATURE_SOUNDS: ArtistMbid = ArtistMbid("51118c9d-965d-4f9f-89a1-0091837ccf54")
-    public val NEWS_REPORT: ArtistMbid = ArtistMbid("49e713ce-c3be-4697-8983-ee7cd0a11ea1")
-  }
-}
-
-public inline val Artist.mbid: ArtistMbid
-  get() = id.toArtistMbid()
-
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String.toArtistMbid(): ArtistMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid ArtistMbid") }
-  return ArtistMbid(this)
-}

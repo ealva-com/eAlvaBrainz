@@ -50,6 +50,8 @@ android {
 
   kotlinOptions {
     jvmTarget = "1.8"
+    languageVersion = "1.5"
+    apiVersion = "1.5"
     suppressWarnings = false
     verbose = true
     freeCompilerArgs = listOf(
@@ -74,7 +76,7 @@ dependencies {
   implementation(ThirdParty.KOTLIN_RESULT)
 
   implementation("androidx.viewpager2:viewpager2:1.0.0")
-  implementation("androidx.activity:activity-ktx:1.2.0")
+  implementation("androidx.activity:activity-ktx:1.2.1")
   implementation("androidx.fragment:fragment-ktx:1.3.1")
   implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0")
   implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.0")

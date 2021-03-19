@@ -17,156 +17,41 @@
 
 package com.ealva.brainzsvc.service.browse
 
+import com.ealva.brainzsvc.common.ArtistQueryMapItem
+import com.ealva.brainzsvc.common.QueryMap
+import com.ealva.brainzsvc.common.QueryMapItem
+import com.ealva.brainzsvc.common.ReleaseQueryMapItem
+import com.ealva.brainzsvc.common.WorkQueryMapItem
 import com.ealva.brainzsvc.service.browse.RecordingBrowse.BrowseOn
 import com.ealva.ealvabrainz.brainz.MusicBrainz
-import com.ealva.ealvabrainz.brainz.data.Artist
-import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.BrowseRecordingList
-import com.ealva.ealvabrainz.brainz.data.Include
 import com.ealva.ealvabrainz.brainz.data.Recording
-import com.ealva.ealvabrainz.brainz.data.Relationships
-import com.ealva.ealvabrainz.brainz.data.Release
-import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
-import com.ealva.ealvabrainz.brainz.data.WorkMbid
-import com.ealva.ealvabrainz.brainz.data.join
+import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.common.ReleaseMbid
+import com.ealva.ealvabrainz.common.WorkMbid
 import retrofit2.Response
 
 /**
  * Builds the recording browsing call based on [BrowseOn] type, [include], [relationships], [types],
  * and [status]
  */
-public interface RecordingBrowse {
+public interface RecordingBrowse : EntityBrowse<Recording.Browse> {
   /**
    * BrowseOn the entity related to a group of releases.
    */
   @Suppress("unused")
-  public sealed class BrowseOn {
-    internal abstract suspend fun execute(
-      musicBrainz: MusicBrainz,
-      limit: Int?,
-      offset: Int?,
-      includeSet: String?,
-      typeSet: String?,
-      statusSet: String?
-    ): Response<BrowseRecordingList>
-
-    public class Artist(private val artistMbid: ArtistMbid) : BrowseOn() {
-      override suspend fun execute(
-        musicBrainz: MusicBrainz,
-        limit: Int?,
-        offset: Int?,
-        includeSet: String?,
-        typeSet: String?,
-        statusSet: String?
-      ): Response<BrowseRecordingList> {
-        return musicBrainz.browseRecordings(
-          artistId = artistMbid.value,
-          limit = limit,
-          offset = offset,
-          include = includeSet,
-          type = typeSet,
-          status = statusSet
-        )
-      }
-    }
-
-    public class Release(private val releaseMbid: ReleaseMbid) : RecordingBrowse.BrowseOn() {
-      override suspend fun execute(
-        musicBrainz: MusicBrainz,
-        limit: Int?,
-        offset: Int?,
-        includeSet: String?,
-        typeSet: String?,
-        statusSet: String?
-      ): Response<BrowseRecordingList> {
-        return musicBrainz.browseRecordings(
-          releaseId = releaseMbid.value,
-          limit = limit,
-          offset = offset,
-          include = includeSet,
-          type = typeSet,
-          status = statusSet
-        )
-      }
-    }
-
-    public class Work(private val workMbid: WorkMbid) : RecordingBrowse.BrowseOn() {
-      override suspend fun execute(
-        musicBrainz: MusicBrainz,
-        limit: Int?,
-        offset: Int?,
-        includeSet: String?,
-        typeSet: String?,
-        statusSet: String?
-      ): Response<BrowseRecordingList> {
-        return musicBrainz.browseRecordings(
-          workId = workMbid.value,
-          limit = limit,
-          offset = offset,
-          include = includeSet,
-          type = typeSet,
-          status = statusSet
-        )
-      }
-    }
+  public sealed interface BrowseOn : QueryMapItem {
+    public class Artist(mbid: ArtistMbid) : BrowseOn, ArtistQueryMapItem(mbid)
+    public class Release(mbid: ReleaseMbid) : BrowseOn, ReleaseQueryMapItem(mbid)
+    public class Work(mbid: WorkMbid) : BrowseOn, WorkQueryMapItem(mbid)
   }
-
-  /**
-   * What information should be included with the returned entities
-   */
-  public fun include(vararg browse: Recording.Browse)
-
-  /**
-   * What relationships should be included in the returned list of releases
-   */
-  public fun relationships(vararg rels: Relationships)
-
-  /**
-   * If entities include [Artist.Subquery.Releases] or [Artist.Subquery.ReleaseGroups] the
-   * [Release.Type] can be specified to further narrow results
-   */
-  public fun types(vararg types: Release.Type)
-
-  /**
-   * If entities includes [Artist.Subquery.Releases] a [Release.Status] can be specified to
-   * further narrow results
-   */
-  public fun status(vararg status: Release.Status)
 }
 
-internal class RecordingBrowseOp(private val browseOn: BrowseOn) : RecordingBrowse {
-  private var includeSet: MutableSet<Include> = mutableSetOf()
-  private var typeSet: Set<Release.Type>? = null
-  private var statusSet: Set<Release.Status>? = null
-
-  override fun include(vararg browse: Recording.Browse) {
-    includeSet.addAll(browse)
-  }
-
-  override fun relationships(vararg rels: Relationships) {
-    includeSet.addAll(rels)
-  }
-
-  override fun types(vararg types: Release.Type) {
-    typeSet = types.toSet()
-  }
-
-  override fun status(vararg status: Release.Status) {
-    statusSet = status.toSet()
-  }
-
-  suspend fun execute(
+internal class RecordingBrowseOp(
+  override val browseOn: BrowseOn
+) : RecordingBrowse, BaseEntityBrowse<Recording.Browse, BrowseRecordingList>() {
+  override suspend fun doExecute(
     musicBrainz: MusicBrainz,
-    limit: Int? = null,
-    offset: Int? = null,
-  ): Response<BrowseRecordingList> {
-    return browseOn.execute(
-      musicBrainz,
-      limit,
-      offset,
-      if (includeSet.isNotEmpty()) includeSet.join() else null,
-      typeSet?.join(),
-      statusSet?.join()
-    )
-  }
+    queryMap: QueryMap
+  ): Response<BrowseRecordingList> = musicBrainz.browseRecordings(queryMap)
 }

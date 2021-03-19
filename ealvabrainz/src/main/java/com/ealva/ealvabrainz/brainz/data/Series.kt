@@ -17,9 +17,7 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
-import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.w
+import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /**
@@ -36,8 +34,20 @@ public class Series(
   public var id: String = "",
   public var name: String = "",
   public var disambiguation: String = "",
+  public var type: String = "",
+  @field:Json(name = "type-id") public var typeId: String = "",
   public var relations: List<Relation> = emptyList()
 ) {
+
+  public interface Lookup : Include
+
+  @Suppress("unused")
+  public enum class Misc(override val value: String) : Lookup {
+    Aliases("aliases"),
+    Annotation("annotation"),
+    Tags("tags"),
+    Genres("genres")
+  }
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -83,14 +93,3 @@ public class Series(
 
 public inline val Series.isNullObject: Boolean
   get() = this === Series.NullSeries
-
-public inline class SeriesMbid(override val value: String) : Mbid
-
-public inline val Series.mbid: SeriesMbid
-  get() = id.toSeriesMbid()
-
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String.toSeriesMbid(): SeriesMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid SeriesMbid") }
-  return SeriesMbid(this)
-}

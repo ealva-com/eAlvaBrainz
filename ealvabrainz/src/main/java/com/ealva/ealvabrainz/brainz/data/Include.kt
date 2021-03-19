@@ -25,16 +25,16 @@ public interface Include {
   public val value: String
 }
 
+public fun Set<Include>.joinOrNull(): String? {
+  return if (isEmpty()) null else joinToString("+") { it.value }
+}
+
 /**
  * Join each [Include] instance into an inc= value for MusicBrainz lookup.
  *
  * @return list entries concatenated together separated by "+" as required by MusicBrainz Lucene
  * query, or null if the list isEmpty
  */
-public fun List<Include>.join(): String? {
-  return if (isEmpty()) null else joinToString("+") { it.value }
-}
-
-public fun Set<Include>.join(): String? {
-  return if (isEmpty()) null else joinToString("+") { it.value }
+public fun Set<Include>.joinToString(): String {
+  return joinToString("+") { it.value }
 }

@@ -17,15 +17,8 @@
 
 package com.ealva.ealvabrainz.common
 
-/**
- * Convert this String to an [AlbumTitle] or [AlbumTitle.UNKNOWN] if this is null.
- */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toAlbumTitle(): AlbumTitle {
-  return this?.let { AlbumTitle.make(this) } ?: AlbumTitle.UNKNOWN
-}
-
-public inline class AlbumTitle(public val value: String) {
+@JvmInline
+public value class AlbumTitle(public val value: String) {
   public companion object {
     public val UNKNOWN: AlbumTitle = AlbumTitle("Unknown")
 
@@ -33,4 +26,12 @@ public inline class AlbumTitle(public val value: String) {
     public inline fun make(value: String): AlbumTitle =
       AlbumTitle(value.trim())
   }
+}
+
+/**
+ * Convert this String to an [AlbumTitle] or [AlbumTitle.UNKNOWN] if this is null.
+ */
+@Suppress("NOTHING_TO_INLINE")
+public inline fun String?.toAlbumTitle(): AlbumTitle {
+  return this?.let { AlbumTitle.make(this) } ?: AlbumTitle.UNKNOWN
 }

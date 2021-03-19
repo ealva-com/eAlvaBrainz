@@ -24,17 +24,28 @@ import com.ealva.ealvabrainz.brainz.data.BrowseArtistList
 import com.ealva.ealvabrainz.brainz.data.BrowseRecordingList
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseList
+import com.ealva.ealvabrainz.brainz.data.BrowseWorkList
+import com.ealva.ealvabrainz.brainz.data.DiscLookupList
+import com.ealva.ealvabrainz.brainz.data.Event
+import com.ealva.ealvabrainz.brainz.data.Genre
+import com.ealva.ealvabrainz.brainz.data.Instrument
+import com.ealva.ealvabrainz.brainz.data.IsrcRecordingList
 import com.ealva.ealvabrainz.brainz.data.Label
+import com.ealva.ealvabrainz.brainz.data.Place
 import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.RecordingList
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.ReleaseList
+import com.ealva.ealvabrainz.brainz.data.Series
+import com.ealva.ealvabrainz.brainz.data.Url
+import com.ealva.ealvabrainz.brainz.data.Work
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.QueryMap
 
 @Suppress("MaxLineLength")
 /**
@@ -57,7 +68,7 @@ import retrofit2.http.Query
  */
 public interface MusicBrainz {
   /**
-   * Lookup Area by mbid, example is the ciy "Pärnu"
+   * Lookup Area by mbid, example is the city "Pärnu"
    * https://musicbrainz.org/ws/2/area/45f07934-675a-46d6-a577-6f8637a411b1?inc=aliases&fmt=json
    *
    * @param mbid the Area mbid, 45f07934-675a-46d6-a577-6f8637a411b1 in above example
@@ -79,89 +90,116 @@ public interface MusicBrainz {
    * An example for looking up Nirvana by mbid would be:
    * [http://musicbrainz.org/ws/2/artist/5b11f4ce-a62d-471e-81fc-a69a8278c7da?fmt=json]
    *
+   * Map may contain "inc", "type", and/or "status"
+   *
    * @param mbid        the artist mbid. In the example this would be:
    * 5b11f4ce-a62d-471e-81fc-a69a8278c7da
    */
   @GET("artist/{mbid}")
   public suspend fun lookupArtist(
     @Path("mbid") mbid: String,
-    @Query("inc") include: String? = null,
-    /**
-     * Limit linked entities to this Release type. Not valid unless "releases" or "release-groups"
-     * are [include]d in the lookup
-     *
-     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
-     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
-     */
-    @Query("type") type: String? = null,
-    /**
-     * Limit linked entities to this Release status. Not valid unless "releases" are [include]d in
-     * the lookup
-     *
-     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
-     */
-    @Query("status") status: String? = null
+    @QueryMap options: Map<String, String> = emptyMap()
   ): Response<Artist>
 
   /**
+   * Lookup Event by mbid, example is the event "Nine Inch Nails at Arena Riga"
+   * https://musicbrainz.org/ws/2/event/fe39727a-3d21-4066-9345-3970cbd6cca4?inc=aliases+artist-rels+place-rels&fmt=json
+   *
+   * @param mbid the Event mbid, fe39727a-3d21-4066-9345-3970cbd6cca4 in above example
+   * @param include the list of relationships, or other misc includes, to specify how
+   * much of the data about the linked entities should be included
+   */
+  @GET("event/{mbid}")
+  public suspend fun lookupEvent(
+    /** Must be a valid Event MBID */
+    @Path("mbid") mbid: String,
+    /**
+     * A combination of [Event.Misc] and/or
+     * [Relationships][com.ealva.ealvabrainz.brainz.data.Relationships]
+     */
+    @Query("inc") include: String? = null
+  ): Response<Event>
+
+  /**
+   * Lookup Genre by mbid, example is the genre "crust punk"
+   * http://musicbrainz.org/ws/2/genre/f66d7266-eb3d-4ef3-b4d8-b7cd992f918b&fmt=json
+   *
+   * @param mbid the Genre mbid, f66d7266-eb3d-4ef3-b4d8-b7cd992f918b in above example
+   * @param include the list of relationships, or other misc includes, to specify how
+   * much of the data about the linked entities should be included
+   */
+  @GET("genre/{mbid}")
+  public suspend fun lookupGenre(
+    /** Must be a valid Genre MBID */
+    @Path("mbid") mbid: String,
+    /**
+     * A combination of [Genre.Misc] and/or
+     * [Relationships][com.ealva.ealvabrainz.brainz.data.Relationships]
+     */
+    @Query("inc") include: String? = null
+  ): Response<Genre>
+
+  /**
+   * Lookup Instrument by mbid, example is the instrument "kemanak"
+   * https://musicbrainz.org/ws/2/instrument/dd430e7f-36ba-49a5-825b-80a525e69190?inc=aliases&fmt=json
+   *
+   * @param mbid the Instrument mbid, dd430e7f-36ba-49a5-825b-80a525e69190 in above example
+   * @param include the list of relationships, or other misc includes, to specify how
+   * much of the data about the linked entities should be included
+   */
+  @GET("instrument/{mbid}")
+  public suspend fun lookupInstrument(
+    /** Must be a valid Instrument MBID */
+    @Path("mbid") mbid: String,
+    /**
+     * A combination of [Instrument.Misc] and/or
+     * [Relationships][com.ealva.ealvabrainz.brainz.data.Relationships]
+     */
+    @Query("inc") include: String? = null
+  ): Response<Instrument>
+
+  /**
+   * [mbid] is a Label mbid, c595c289-47ce-4fba-b999-b87503e8cb71 in above example, and [options]
+   * may contain "inc", "type", and/or "status"\
+   *
    * An example for looking up a Label (Warner Bros. Records in this example) by mbid is:
    * http://musicbrainz.org/ws/2/label/c595c289-47ce-4fba-b999-b87503e8cb71?inc=ratings+annotation&fmt=json
-   *
-   * @param mbid the Label mbid, c595c289-47ce-4fba-b999-b87503e8cb71 in above example
-   * @param include the list of subqueries, relationships, or other misc includes, to specify how
-   * much of the data about the linked entities should be included
    */
   @GET("label/{mbid}")
   public suspend fun lookupLabel(
     @Path("mbid") mbid: String,
-    @Query("inc") include: String? = null,
-    /**
-     * Limit linked entities to this Release type. Not valid unless "releases" or "release-groups"
-     * are [include]d in the lookup
-     *
-     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
-     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
-     */
-    @Query("type") type: String? = null,
-    /**
-     * Limit linked entities to this Release status. Not valid unless "releases" are [include]d in
-     * the lookup
-     *
-     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
-     */
-    @Query("status") status: String? = null
+    @QueryMap options: Map<String, String> = emptyMap()
   ): Response<Label>
 
   /**
+   * Lookup Place by mbid, example is the place "Arēna Rīga"
+   * https://musicbrainz.org/ws/2/place/478558f9-a951-4067-ad91-e83f6ba63e74?inc=aliases&fmt=json
+   *
+   * @param mbid the Place mbid, 46d8f693-52e4-4d03-936f-7ca8459019a7 in above example
+   * @param include the list of relationships, or other misc includes, to specify how
+   * much of the data about the linked entities should be included
+   */
+  @GET("place/{mbid}")
+  public suspend fun lookupPlace(
+    /** Must be a valid Place MBID */
+    @Path("mbid") mbid: String,
+    /**
+     * A combination of [Place.Misc] and/or
+     * [Relationships][com.ealva.ealvabrainz.brainz.data.Relationships]
+     */
+    @Query("inc") include: String? = null
+  ): Response<Place>
+
+  /**
+   * [mbid] is the recording mbid and [options] may contain "inc", "type", and/or "status"
+   *
    * An example for lookup by mbid would be:
    * http://musicbrainz.org/ws/2/recording/fcbcdc39-8851-4efc-a02a-ab0e13be224f?fmt=json
-   *
-   * @param mbid  the recording mbid. In the example this would be:
-   * fcbcdc39-8851-4efc-a02a-ab0e13be224f
-   * @param include the list of subqueries, relationships, or other misc includes, to specify how
-   * much of the data about the linked entities should be included
-   * @param type limit linked entities to this Release type
-   * @param status limit linked entities to this Release status
    */
   @GET("recording/{mbid}")
   public suspend fun lookupRecording(
     @Path("mbid") mbid: String,
-    @Query("inc") include: String? = null,
-    /**
-     * Limit linked entities to this Release type. Not valid unless "releases" or "release-groups"
-     * are [include]d in the lookup
-     *
-     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
-     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
-     */
-    @Query("type") type: String? = null,
-    /**
-     * Limit linked entities to this Release status. Not valid unless "releases" are [include]d in
-     * the lookup
-     *
-     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
-     */
-    @Query("status") status: String? = null
+    @QueryMap options: Map<String, String> = emptyMap()
   ): Response<Recording>
 
   /**
@@ -169,60 +207,134 @@ public interface MusicBrainz {
    *
    * [https://musicbrainz.org/ws/2/release/938cef50-de9a-3ced-a1fe-bdfbd3bc4315?fmt=json](https://musicbrainz.org/ws/2/release/938cef50-de9a-3ced-a1fe-bdfbd3bc4315?fmt=json)
    *
-   * @param mbid the release mbid. In the example this would be: 938cef50-de9a-3ced-a1fe-bdfbd3bc4315
-   * @param include include parameters
-   * @param type restrict the result to this type of Release
-   * @param status restrict the result to Releases with this status
-   * @return the given Release if found
+   * [mbid] is the release mbid. In the example this would be: 938cef50-de9a-3ced-a1fe-bdfbd3bc4315
+   * and [options] may contain "inc", "type", and/or "status"
    */
   @GET("release/{mbid}")
   public suspend fun lookupRelease(
     @Path("mbid") mbid: String,
-    @Query("inc") include: String? = null,
-    /**
-     * Limit linked entities to this Release type
-     *
-     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
-     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
-     */
-    @Query("type") type: String? = null,
-    /**
-     * Limit linked entities to this Release status.
-     *
-     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
-     */
-    @Query("status") status: String? = null
+    @QueryMap options: Map<String, String> = emptyMap()
   ): Response<Release>
 
   /**
+   * [mbid] is a release group mbid and [options] may contain "inc", "type", and/or "status"
+   *
    * An example for looking up release group The Essential Alice in Chains by mbid would be:
    * https://musicbrainz.org/ws/2/release-group/e1b7e76e-09ff-36fd-b1fd-0c6cb199b817?fmt=json
-   *
-   * @param mbid        the release group mbid. In the example this would be:
-   * e1b7e76e-09ff-36fd-b1fd-0c6cb199b817
-   * @param type limit linked entities to this Release type
-   * @param status limit linked entities to the Release status, only valid if "releases" are
-   * included
    */
   @GET("release-group/{mbid}")
   public suspend fun lookupReleaseGroup(
     @Path("mbid") mbid: String,
-    @Query("inc") include: String? = null,
-    /**
-     * Limit linked entities to this Release type.
-     *
-     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
-     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
-     */
-    @Query("type") type: String? = null,
-    /**
-     * Limit linked entities to this Release status. Not valid unless "releases" are [include]d in
-     * the lookup
-     *
-     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
-     */
-    @Query("status") status: String? = null
+    @QueryMap options: Map<String, String> = emptyMap()
   ): Response<ReleaseGroup>
+
+  /**
+   * Lookup Series by mbid, example is the series "The MDNA Tour"
+   * https://musicbrainz.org/ws/2/series/300676c6-6e63-4d4d-9084-089efcd0113f?fmt=json
+   *
+   * @param mbid the Series mbid, 300676c6-6e63-4d4d-9084-089efcd0113f in above example
+   * @param include the list of relationships, or other misc includes, to specify how
+   * much of the data about the linked entities should be included
+   */
+  @GET("series/{mbid}")
+  public suspend fun lookupSeries(
+    /** Must be a valid Series MBID */
+    @Path("mbid") mbid: String,
+    /**
+     * A combination of [Series.Misc] and/or
+     * [Relationships][com.ealva.ealvabrainz.brainz.data.Relationships]
+     */
+    @Query("inc") include: String? = null
+  ): Response<Series>
+
+  /**
+   * Lookup Url by mbid, example is the url "https://www.arvopart.ee/"
+   * https://musicbrainz.org/ws/2/url/46d8f693-52e4-4d03-936f-7ca8459019a7?fmt=json
+   *
+   * @param mbid the Url mbid, 46d8f693-52e4-4d03-936f-7ca8459019a7 in above example
+   * @param include the list of relationships, or other misc includes, to specify how
+   * much of the data about the linked entities should be included
+   */
+  @GET("url/{mbid}")
+  public suspend fun lookupUrl(
+    /** Must be a valid Url MBID */
+    @Path("mbid") mbid: String,
+    /**
+     * A combination of [Url.Misc] and/or
+     * [Relationships][com.ealva.ealvabrainz.brainz.data.Relationships]
+     */
+    @Query("inc") include: String? = null
+  ): Response<Url>
+
+  /**
+   * Lookup Work by mbid, example is the work entitled "HELLO! また会おうね"
+   * http://musicbrainz.org/ws/2/work/b1df2cf3-69a9-3bc0-be44-f71e79b27a22?inc=artist-rels&fmt=json
+   *
+   * @param mbid the Work mbid, b1df2cf3-69a9-3bc0-be44-f71e79b27a22 in above example
+   * @param include the list of relationships, or other misc includes, to specify how
+   * much of the data about the linked entities should be included
+   */
+  @GET("work/{mbid}")
+  public suspend fun lookupWork(
+    /** Must be a valid Work MBID */
+    @Path("mbid") mbid: String,
+    /**
+     * A combination of [Work.Misc] and/or
+     * [Relationships][com.ealva.ealvabrainz.brainz.data.Relationships]
+     */
+    @Query("inc") include: String? = null
+  ): Response<Work>
+
+  /**
+   *
+   * QueryMap
+   * inc=""
+   * toc=""
+   * cdstubs=no
+   * media-format=all
+   */
+  @GET("discid/{discid}")
+  public suspend fun lookupDisc(
+    @Path("discid") discid: String,
+    @QueryMap options: Map<String, String> = emptyMap()
+  ): Response<DiscLookupList>
+
+  /**
+   *
+   * QueryMap
+   * inc=""
+   * toc=""
+   * cdstubs=no
+   * media-format=all
+   */
+  @GET("discid/-}")
+  public suspend fun fuzzyLookupTOC(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowseReleaseList>
+
+  /**
+   * An [isrc] lookup returns a list of recordings and [options] may contain "inc", "type", and/or
+   * "status", which are identical to a [lookupRecording].
+   *
+   * [ISRC](https://isrc.ifpi.org/)
+   *
+   * [MusicBrainz ISRC](https://musicbrainz.org/doc/ISRC#Determining_ISRCs_of_recordings)
+   */
+  @GET("isrc/{isrc}")
+  public suspend fun lookupIsrc(
+    @Path("isrc") isrc: String,
+    @QueryMap options: Map<String, String> = emptyMap()
+  ): Response<IsrcRecordingList>
+
+  /**
+   * An ISWC lookup returns a list of works, the 'inc=' arguments supported are identical to a
+   * lookup request for a work.
+   */
+  @GET("iswc/{iswc}")
+  public suspend fun lookupIswc(
+    @Path("iswc") iswc: String,
+    @Query("inc") include: String? = null
+  ): Response<BrowseWorkList>
 
   /**
    * Returns an [ArtistList] given [query] which is the fully formed MusicBrainz query (in the
@@ -305,173 +417,59 @@ public interface MusicBrainz {
 
   /**
    * Only one of:
-   * * [areaId]
-   * * [recordingId]
-   * * [releaseId]
-   * * [releaseGroupId]
-   * * [workId]
+   * * area
+   * * recording
+   * * release
+   * * release-group
+   * * work
    *
    * are allowed in an invocation. Using more than one ID will generate a malformed URI.
    */
   @GET("artist")
   public suspend fun browseArtists(
-    @Query("area") areaId: String? = null,
-    @Query("recording") recordingId: String? = null,
-    @Query("release") releaseId: String? = null,
-    @Query("release-group") releaseGroupId: String? = null,
-    @Query("work") workId: String? = null,
-    /**
-     * Maximum number of artists to return. Default is 25. Use with [offset] used for paging
-     * results
-     */
-    @Query("limit") limit: Int? = null,
-    /**
-     * Offset at where to start in the total list. Default is 0. Use With [limit] used for paging
-     * results
-     */
-    @Query("offset") offset: Int? = null,
-    /** Specify how much data linked entities should contain */
-    @Query("inc") include: String? = null,
-    /**
-     * Limit linked entities to an included Release or Release Group.
-     *
-     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
-     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
-     */
-    @Query("type") type: String? = null,
-    /**
-     * Limit linked entities to this Release status.
-     *
-     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
-     */
-    @Query("status") status: String? = null
+    @QueryMap options: Map<String, String>
   ): Response<BrowseArtistList>
 
   /**
    * Only one of:
-   * * [areaId]
-   * * [artistId]
-   * * [collectionId]
-   * * [labelId]
-   * * [trackId]
-   * * [trackArtistId]
-   * * [recordingId]
-   * * [releaseGroupId]
+   * * artist
+   * * release
+   * * work
+   *
+   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
+   */
+  @GET("recording")
+  public suspend fun browseRecordings(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowseRecordingList>
+
+  /**
+   * Only one of:
+   * * area
+   * * artist
+   * * collection
+   * * label
+   * * trac
+   * * track_artist
+   * * recording
+   * * release-group
    *
    * are allowed in an invocation. Using more than one ID will generate a malformed URI.
    */
   @GET("release")
   public suspend fun browseReleases(
-    @Query("area") areaId: String? = null,
-    @Query("artist") artistId: String? = null,
-    @Query("collection") collectionId: String? = null,
-    @Query("label") labelId: String? = null,
-    @Query("track") trackId: String? = null,
-    @Query("track_artist") trackArtistId: String? = null,
-    @Query("recording") recordingId: String? = null,
-    @Query("release-group") releaseGroupId: String? = null,
-    /**
-     * Maximum number of release groups to return. Default is 25. Use with [offset] used for paging
-     * results
-     */
-    @Query("limit") limit: Int? = null,
-    /**
-     * Offset at where to start in the total list. Default is 0. Use With [limit] used for paging
-     * results
-     */
-    @Query("offset") offset: Int? = null,
-    /** Specify how much data linked entities should contain */
-    @Query("inc") include: String? = null,
-    /**
-     * Limit linked entities to this Release type.
-     *
-     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
-     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
-     */
-    @Query("type") type: String? = null,
-    /**
-     * Limit linked entities to this Release status.
-     *
-     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
-     */
-    @Query("status") status: String? = null
+    @QueryMap options: Map<String, String>
   ): Response<BrowseReleaseList>
 
   /**
    * Only one of:
-   * * [artistId]
-   * * [releaseId]
+   * artist
+   * release
    *
    * are allowed in an invocation. Using more than one ID will generate a malformed URI.
    */
-  @GET("release")
+  @GET("release-group")
   public suspend fun browseReleaseGroups(
-    @Query("artist") artistId: String? = null,
-    @Query("release") releaseId: String? = null,
-    /**
-     * Maximum number of releases to return. Default is 25. Use with [offset] used for paging
-     * results
-     */
-    @Query("limit") limit: Int? = null,
-    /**
-     * Offset at where to start in the total list. Default is 0. Use With [limit] used for paging
-     * results
-     */
-    @Query("offset") offset: Int? = null,
-    /** Specify how much data linked entities should contain */
-    @Query("inc") include: String? = null,
-    /**
-     * Limit linked entities to this Release type.
-     *
-     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
-     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
-     */
-    @Query("type") type: String? = null,
-    /**
-     * Limit linked entities to this Release status.
-     *
-     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
-     */
-    @Query("status") status: String? = null
+    @QueryMap options: Map<String, String>
   ): Response<BrowseReleaseGroupList>
-
-  /**
-   * Only one of:
-   * * [artistId]
-   * * [releaseId]
-   * * [workId]
-   *
-   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
-   */
-  @GET("release")
-  public suspend fun browseRecordings(
-    @Query("artist") artistId: String? = null,
-    @Query("release") releaseId: String? = null,
-    @Query("work") workId: String? = null,
-    /**
-     * Maximum number of recordings to return. Default is 25. Use with [offset] used for paging
-     * results
-     */
-    @Query("limit") limit: Int? = null,
-    /**
-     * Offset at where to start in the total list. Default is 0. Use With [limit] used for paging
-     * results
-     */
-    @Query("offset") offset: Int? = null,
-    /** Specify how much data linked entities should contain */
-    @Query("inc") include: String? = null,
-    /**
-     * Limit linked entities to this Release type.
-     *
-     * May be "nat", "album", "single", "ep", "compilation", "soundtrack", "spokenword",
-     * "interview", "audiobook", "live", "remix", "other" or the default none (null)
-     */
-    @Query("type") type: String? = null,
-    /**
-     * Limit linked entities to this Release status.
-     *
-     * May be "official", "promotion", "bootleg", "pseudo-release" or the default none (null)
-     */
-    @Query("status") status: String? = null
-  ): Response<BrowseRecordingList>
 }

@@ -25,7 +25,8 @@ public inline fun String?.toRecordingTitle(): RecordingTitle {
   return this?.let { RecordingTitle.make(this) } ?: RecordingTitle.UNKNOWN
 }
 
-public inline class RecordingTitle(public val value: String) {
+@JvmInline
+public value class RecordingTitle(public val value: String) {
   public companion object {
     public val UNKNOWN: RecordingTitle = RecordingTitle("Unknown")
 

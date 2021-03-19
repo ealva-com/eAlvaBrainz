@@ -27,12 +27,10 @@ import com.ealva.brainzapp.data.Country
 import com.ealva.brainzapp.data.toCountry
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.ResourceFetcher
-import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.ArtistType
 import com.ealva.ealvabrainz.brainz.data.artistType
-import com.ealva.ealvabrainz.brainz.data.toArtistMbid
+import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
-import com.ealva.ealvabrainz.common.toArtistName
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke
 import com.ealva.ealvalog.lazyLogger
@@ -134,15 +132,15 @@ internal class ArtistSearchViewModelImpl(
       busy(isBusy) {
         when (
           val result = brainz.findArtist {
-            artist { query.toArtistName() }
+            artist { ArtistName(query) }
           }
         ) {
           is Ok -> {
             val list = result.value.artists.map { artist ->
               ArtistSearchResult(
-                artist.id.toArtistMbid(),
+                ArtistMbid(artist.id),
                 artist.artistType,
-                artist.name.toArtistName(),
+                ArtistName(artist.name),
                 artist.country.toCountry(),
                 artist.disambiguation,
                 artist.score

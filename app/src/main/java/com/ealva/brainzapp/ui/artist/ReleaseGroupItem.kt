@@ -21,9 +21,8 @@ import android.net.Uri
 import com.ealva.brainzapp.data.ReleaseGroupType
 import com.ealva.brainzapp.data.StarRating
 import com.ealva.brainzapp.data.toStarRating
-import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
-import com.ealva.ealvabrainz.brainz.data.toReleaseGroupMbid
 import com.ealva.ealvabrainz.common.AlbumTitle
+import com.ealva.ealvabrainz.common.ReleaseGroupMbid
 import com.ealva.ealvabrainz.common.toAlbumTitle
 
 class ReleaseGroupItem private constructor(
@@ -87,7 +86,7 @@ class ReleaseGroupItem private constructor(
     val NullDisplayReleaseGroup =
       ReleaseGroupItem(
         -1L,
-        "".toReleaseGroupMbid(),
+        ReleaseGroupMbid(""),
         "".toAlbumTitle(),
         ReleaseGroupType.Primary.Unknown,
         emptyList(),

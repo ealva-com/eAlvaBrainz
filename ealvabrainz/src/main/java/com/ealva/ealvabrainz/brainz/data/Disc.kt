@@ -79,11 +79,3 @@ public class Disc(
 
 public inline val Disc.isNullObject: Boolean
   get() = this === Disc.NullDisc
-
-public inline class DiscId(public val value: String)
-
-public inline val Disc.discId: DiscId
-  get() = id.toDiscId()
-
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String.toDiscId(): DiscId = DiscId(this)

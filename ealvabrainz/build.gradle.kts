@@ -71,13 +71,16 @@ android {
 
   kotlinOptions {
     jvmTarget = "1.8"
+    languageVersion = "1.5"
+    apiVersion = "1.5"
     suppressWarnings = false
     verbose = true
     freeCompilerArgs = listOf(
       "-XXLanguage:+InlineClasses",
       "-Xinline-classes",
       "-Xopt-in=kotlin.RequiresOptIn",
-      "-Xexplicit-api=warning"
+      "-Xexplicit-api=warning",
+      "-Xuse-14-inline-classes-mangling-scheme"
     )
   }
 }

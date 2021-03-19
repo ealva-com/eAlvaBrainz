@@ -17,7 +17,7 @@
 
 package com.ealva.brainzsvc.service.search
 
-import com.ealva.ealvabrainz.brainz.data.toArtistMbid
+import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.toArtistName
 import com.ealva.ealvabrainz.lucene.luceneEscape
 import com.ealva.ealvabrainz.lucene.prohibit
@@ -60,5 +60,5 @@ public class ReleaseSearchTest {
   }
 }
 
-private val NIRVANA_MBID = "5b11f4ce-a62d-471e-81fc-a69a8278c7da".toArtistMbid()
+private val NIRVANA_MBID = ArtistMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
 private val JETHRO_TULL = "Jethro Tull".toArtistName()

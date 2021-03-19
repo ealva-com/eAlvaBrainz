@@ -25,7 +25,8 @@ public inline fun String?.toArtistName(): ArtistName {
   return this?.let { ArtistName.make(this) } ?: ArtistName.UNKNOWN
 }
 
-public inline class ArtistName(public val value: String) {
+@JvmInline
+public value class ArtistName(public val value: String) {
   public companion object {
     public val UNKNOWN: ArtistName = ArtistName("Unknown")
 

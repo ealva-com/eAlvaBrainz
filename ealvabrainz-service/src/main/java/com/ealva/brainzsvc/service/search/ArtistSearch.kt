@@ -20,7 +20,7 @@
 package com.ealva.brainzsvc.service.search
 
 import com.ealva.ealvabrainz.brainz.data.Artist.SearchField
-import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.ArtistType
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.lucene.BrainzMarker

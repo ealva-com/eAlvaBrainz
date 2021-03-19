@@ -33,10 +33,9 @@ import com.ealva.brainzapp.ui.main.MainPresenter
 import com.ealva.brainzapp.ui.main.instantiate
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.ResourceFetcher
-import com.ealva.ealvabrainz.brainz.data.ArtistMbid
-import com.ealva.ealvabrainz.brainz.data.isValid
-import com.ealva.ealvabrainz.brainz.data.toArtistMbid
+import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.isValid
 import com.ealva.ealvabrainz.common.toArtistName
 
 private const val KEY_MBID = "ArtistMbid_ArtistFragment"
@@ -45,7 +44,7 @@ private const val KEY_ARTIST_NAME = "ArtistName_ArtistFragment"
 var Bundle?.artistMbid: ArtistMbid
   get() {
     check(this != null) { "Null argument bundle" }
-    val mbid = getString(KEY_MBID)?.toArtistMbid()
+    val mbid = getString(KEY_MBID)?.let { ArtistMbid(it) }
     check(mbid != null && mbid.isValid) { "Bad Artist Id $mbid" }
     return mbid
   }
@@ -57,7 +56,7 @@ var Bundle?.artistMbid: ArtistMbid
 var Bundle?.artistName: ArtistName
   get() {
     check(this != null) { "Null argumentBundle" }
-    return getString(KEY_ARTIST_NAME)?.toArtistName() ?: "Unknown".toArtistName()
+    return getString(KEY_ARTIST_NAME).toArtistName()
   }
   set(value) {
     check(this != null) { "Null argumentBundle" }
@@ -71,8 +70,8 @@ class ArtistFragment private constructor(
   private val resourceFetcher: ResourceFetcher
 ) : Fragment() {
 
-  private var artistMbid: ArtistMbid = "".toArtistMbid()
-  private var artistName: ArtistName = "".toArtistName()
+  private var artistMbid: ArtistMbid = ArtistMbid("")
+  private var artistName: ArtistName = ArtistName("")
   private lateinit var viewModel: ArtistViewModel
   private lateinit var uiContext: FragmentUiContext
   private lateinit var ui: ArtistFragmentUi

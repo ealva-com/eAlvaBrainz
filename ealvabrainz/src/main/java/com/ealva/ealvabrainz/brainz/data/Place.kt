@@ -17,11 +17,8 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.brainz.data.Place.Companion.NullPlace
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
-import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.w
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -168,14 +165,3 @@ public class Place(
 
 public inline val Place.isNullObject: Boolean
   get() = this === NullPlace
-
-public inline class PlaceMbid(override val value: String) : Mbid
-
-public inline val Place.mbid: PlaceMbid
-  get() = id.toPlaceMbid()
-
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String.toPlaceMbid(): PlaceMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid PlaceMbid") }
-  return PlaceMbid(this)
-}

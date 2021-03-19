@@ -19,18 +19,18 @@ package com.ealva.brainzsvc.service.lookup
 
 import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.Area
-import com.ealva.ealvabrainz.brainz.data.AreaMbid
-import com.ealva.ealvabrainz.brainz.data.join
+import com.ealva.ealvabrainz.brainz.data.joinOrNull
+import com.ealva.ealvabrainz.common.AreaMbid
 import retrofit2.Response
 
 public interface AreaLookup : EntityLookup<Area.Misc>
 
-internal class AreaLookupOp : BaseEntityLookup< Area.Misc>(), AreaLookup {
+internal class AreaLookupOp : BaseEntityLookup<Area.Misc>(), AreaLookup {
   suspend fun execute(
-    mbid: AreaMbid,
-    brainz: MusicBrainz
+    brainz: MusicBrainz,
+    mbid: AreaMbid
   ): Response<Area> = brainz.lookupArea(
     mbid.value,
-    if (includeSet.isNotEmpty()) includeSet.join() else null
+    includeSet.joinOrNull()
   )
 }

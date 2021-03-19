@@ -17,10 +17,7 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.brainz.data.Url.Companion.NullUrl
-import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.w
 import com.squareup.moshi.JsonClass
 
 /**
@@ -36,7 +33,7 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 public data class Url(
-  /** UUID of the Url instance */
+  /** MBID of the Url */
   public var id: String = "",
   /** The url */
   public var resource: String = "",
@@ -45,11 +42,11 @@ public data class Url(
 
   public interface Lookup : Include
 
-  /**
-   * * [Url-Work](https://musicbrainz.org/relationships/url-work)
-   */
-  public enum class Relation(override val value: String) : Lookup {
-    Work("work-rels")
+  @Suppress("unused")
+  public enum class Misc(override val value: String) : Lookup {
+    Aliases("aliases"),
+    Annotation("annotation"),
+    Tags("tags")
   }
 
   public companion object {
@@ -60,15 +57,3 @@ public data class Url(
 
 public inline val Url.isNullObject: Boolean
   get() = this === NullUrl
-
-public inline class UrlMbid(override val value: String) : Mbid
-
-public inline val Url.mbid: UrlMbid
-  get() = id.toUrlMbid()
-
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String.toUrlMbid(): UrlMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid UrlMbid") }
-
-  return UrlMbid(this)
-}

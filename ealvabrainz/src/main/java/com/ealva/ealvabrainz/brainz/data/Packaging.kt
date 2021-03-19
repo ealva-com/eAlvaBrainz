@@ -17,10 +17,7 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.squareup.moshi.JsonClass
-import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.w
 
 @Suppress("MaxLineLength")
 /**
@@ -56,14 +53,3 @@ public class Packaging(
 
 public inline val Packaging.isNullObject: Boolean
   get() = this === Packaging.NullPackaging
-
-public inline class PackagingMbid(override val value: String) : Mbid
-
-public inline val Packaging.mbid: PackagingMbid
-  get() = id.toPackagingMbid()
-
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String.toPackagingMbid(): PackagingMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid PackagingMbid") }
-  return PackagingMbid(this)
-}

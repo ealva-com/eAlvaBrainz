@@ -17,11 +17,8 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup.Companion.NullReleaseGroup
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
-import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.w
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -223,17 +220,6 @@ public class ReleaseGroup(
 
 public inline val ReleaseGroup.isNullObject: Boolean
   get() = this === NullReleaseGroup
-
-public inline class ReleaseGroupMbid(override val value: String) : Mbid
-
-public inline val ReleaseGroup.mbid: ReleaseGroupMbid
-  get() = id.toReleaseGroupMbid()
-
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String.toReleaseGroupMbid(): ReleaseGroupMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid ReleaseGroupMbid") }
-  return ReleaseGroupMbid(this)
-}
 
 /**
  * Appears as primary-type-id in some places and type-id in others. Handle like this for now. Moshi

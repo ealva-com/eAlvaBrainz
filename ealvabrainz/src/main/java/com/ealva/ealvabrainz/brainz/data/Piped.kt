@@ -21,14 +21,6 @@ public interface Piped {
   public val value: String
 }
 
-public fun Set<Piped>.join(): String? {
-  return if (isEmpty()) null else joinToString("|") { it.value }
-}
-
-public fun List<Piped>.join(): String? {
-  return if (isEmpty()) null else joinToString("|") { it.value }
-}
-
-public fun Array<out Piped>.join(): String? {
-  return if (isEmpty()) null else joinToString("|") { it.value }
+public fun Set<Piped>.joinToString(): String {
+  return joinToString("|") { it.value }
 }

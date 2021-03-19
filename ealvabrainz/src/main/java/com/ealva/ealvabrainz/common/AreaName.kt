@@ -17,15 +17,8 @@
 
 package com.ealva.ealvabrainz.common
 
-/**
- * Convert this String to an [AreaName] or [AreaName.UNKNOWN] if this is null.
- */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toAreaName(): AreaName {
-  return this?.let { AreaName.make(this) } ?: AreaName.UNKNOWN
-}
-
-public inline class AreaName(public val value: String) {
+@JvmInline
+public value class AreaName(public val value: String) {
   public companion object {
     public val UNKNOWN: AreaName = AreaName("Unknown")
 
@@ -33,4 +26,12 @@ public inline class AreaName(public val value: String) {
     public inline fun make(value: String): AreaName =
       AreaName(value.trim())
   }
+}
+
+/**
+ * Convert this String to an [AreaName] or [AreaName.UNKNOWN] if this is null.
+ */
+@Suppress("NOTHING_TO_INLINE")
+public inline fun String?.toAreaName(): AreaName {
+  return this?.let { AreaName.make(this) } ?: AreaName.UNKNOWN
 }

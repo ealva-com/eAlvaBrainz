@@ -17,10 +17,7 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.brainz.data.Work.Companion.NullWork
-import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.w
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -86,6 +83,16 @@ public class Work(
   public var relations: List<Relation> = emptyList(),
   public var tags: List<Tag> = emptyList()
 ) {
+  public interface Lookup : Include
+
+  @Suppress("unused")
+  public enum class Misc(override val value: String) : Lookup {
+    Aliases("aliases"),
+    Annotation("annotation"),
+    Tags("tags"),
+    Genres("genres")
+  }
+
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (javaClass != other?.javaClass) return false
@@ -148,14 +155,3 @@ public class Work(
 
 public inline val Work.isNullObject: Boolean
   get() = this === NullWork
-
-public inline class WorkMbid(override val value: String) : Mbid
-
-public inline val Work.mbid: WorkMbid
-  get() = id.toWorkMbid()
-
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String.toWorkMbid(): WorkMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid WorkMbid") }
-  return WorkMbid(this)
-}

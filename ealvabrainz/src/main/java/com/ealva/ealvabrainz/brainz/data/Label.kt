@@ -17,11 +17,8 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.w
 
 /**
  * Labels are one of the most complicated and controversial parts of the music industry. The
@@ -223,14 +220,3 @@ public class Label(
 
 public inline val Label.isNullObject: Boolean
   get() = this === Label.NullLabel
-
-public inline class LabelMbid(override val value: String) : Mbid
-
-public inline val Label.mbid: LabelMbid
-  get() = id.toLabelMbid()
-
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String.toLabelMbid(): LabelMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid LabelMbid") }
-  return LabelMbid(this)
-}

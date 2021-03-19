@@ -17,12 +17,9 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.w
 
 /**
  * An event refers to an organised event which people can attend, and is relevant to MusicBrainz.
@@ -125,6 +122,16 @@ public class Event(
   public var score: Int = 0
 ) {
 
+  public interface Lookup : Include
+
+  @Suppress("unused")
+  public enum class Misc(override val value: String) : Lookup {
+    Aliases("aliases"),
+    Annotation("annotation"),
+    Tags("tags"),
+    Genres("genres")
+  }
+
   @Suppress("unused")
   public enum class SearchField(public val value: String) {
     /** an alias attached to the event */
@@ -187,14 +194,3 @@ public class Event(
 
 public inline val Event.isNullObject: Boolean
   get() = this === Event.NullEvent
-
-public inline class EventMbid(override val value: String) : Mbid
-
-public inline val Event.mbid: EventMbid
-  get() = id.toEventMbid()
-
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String.toEventMbid(): EventMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid EventMbid") }
-  return EventMbid(this)
-}

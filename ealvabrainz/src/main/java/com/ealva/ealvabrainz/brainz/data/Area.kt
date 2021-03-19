@@ -20,11 +20,7 @@
 package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.Area.Companion.NullArea
-import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
-import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.logInvalidMbid
 import com.ealva.ealvabrainz.log.BrainzLog
-import com.ealva.ealvalog.w
-import com.ealva.ealvalog.invoke
 import com.ealva.ealvalog.lazyLogger
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -129,28 +125,40 @@ public class Area(
   public enum class SearchField(public val value: String) {
     /** the area's MBID */
     AreaId("aid"),
+
     /** an alias attached to the area */
     Alias("alias"),
+
     /** the area's name */
     AreaName("area"),
+
     /** the area's begin date */
     BeginDate("begin"),
+
     /** the area's disambiguation comment */
     Comment("comment"),
+
     /** the area's end date */
     EndDate("end"),
+
     /** a flag indicating whether or not the area has ended */
     Ended("ended"),
+
     /** an ISO 3166-1/2/3 code attached to the area */
     Iso("iso"),
+
     /** an ISO 3166-1 code attached to the area */
     Iso1("iso1"),
+
     /** an ISO 3166-2 code attached to the area */
     Iso2("iso2"),
+
     /** an ISO 3166-3 code attached to the area */
     Iso3("iso3"),
+
     /** the area's sort name */
     SortName("sortname"),
+
     /** the area's type  */
     Type("type"),
   }
@@ -163,47 +171,3 @@ public class Area(
 
 public inline val Area.isNullObject: Boolean
   get() = this === NullArea
-
-public inline class AreaMbid(override val value: String) : Mbid
-
-public inline val Area.mbid: AreaMbid
-  get() = id.toAreaMbid()
-
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String.toAreaMbid(): AreaMbid {
-  if (logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid AreaMbid") }
-  return AreaMbid(this)
-}
-
-/*
-Lookup Area
-https://musicbrainz.org/ws/2/area/45f07934-675a-46d6-a577-6f8637a411b1?inc=aliases&fmt=json
-
-"discids is not a valid option for the inc parameter for the area unless inc includes: releases"
-"media is not a valid option for the inc parameter for the area unless inc includes: releases"
-"isrcs is not a valid option for the inc parameter for the area unless inc includes: recordings"
-"artist-credits is not a valid option for the inc parameter for the area unless inc includes one of: releases, works, release-groups, recordings"
-"various-artists it not a valid option for area"
-
-aliases, annotation, tags, ratings, and genres are OK
-
-All relationships work:
- - area-rels
- - artist-rels
- - event-rels
- - instrument-rels
- - label-rels
- - place-rels
- - recording-rels
- - release-rels
- - release-group-rels
- - series-rels
- - url-rels
- - work-rels
-
- Browse:
-
-  /ws/2/area              collection
-
-  aliases, annotation, tags, ratings, and genres are OK
- */

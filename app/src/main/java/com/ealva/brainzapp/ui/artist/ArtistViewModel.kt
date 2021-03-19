@@ -41,21 +41,20 @@ import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.brainzsvc.service.browse.ReleaseBrowse.BrowseOn
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistCredit
-import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.ArtistType
 import com.ealva.ealvabrainz.brainz.data.LabelInfo
 import com.ealva.ealvabrainz.brainz.data.Medium
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.ReleaseEvent
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
-import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
-import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.brainz.data.artistType
 import com.ealva.ealvabrainz.brainz.data.isNullObject
-import com.ealva.ealvabrainz.brainz.data.isValid
-import com.ealva.ealvabrainz.brainz.data.mbid
-import com.ealva.ealvabrainz.brainz.data.toArtistMbid
+import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.ReleaseGroupMbid
+import com.ealva.ealvabrainz.common.ReleaseMbid
+import com.ealva.ealvabrainz.common.isValid
+import com.ealva.ealvabrainz.common.mbid
 import com.ealva.ealvabrainz.common.toAlbumTitle
 import com.ealva.ealvabrainz.common.toArtistName
 import com.ealva.ealvabrainz.common.toLabelName
@@ -309,7 +308,7 @@ internal class ArtistViewModelImpl(
     brainzArtist: Artist,
     searchMbid: ArtistMbid
   ) = brainzArtist.run {
-    val resultMbid = id.toArtistMbid()
+    val resultMbid = ArtistMbid(id)
     if (resultMbid != searchMbid) LOG.e { it("Result %s != search %s", resultMbid, searchMbid) }
     artist.postValue(
       DisplayArtist(

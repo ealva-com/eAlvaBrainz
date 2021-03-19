@@ -17,15 +17,9 @@
 
 package com.ealva.ealvabrainz.common
 
-/**
- * Convert this String to an [WorkName] or [WorkName.UNKNOWN] if this is null.
- */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toWorkName(): WorkName {
-  return this?.let { WorkName.make(this) } ?: WorkName.UNKNOWN
-}
-
-public inline class WorkName(public val value: String) {
+@Suppress("unused")
+@JvmInline
+public value class WorkName(public val value: String) {
   public companion object {
     public val UNKNOWN: WorkName = WorkName("Unknown")
 

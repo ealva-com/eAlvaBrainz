@@ -25,7 +25,8 @@ public inline fun String?.toTrackTitle(): TrackTitle {
   return this?.let { TrackTitle.make(this) } ?: TrackTitle.UNKNOWN
 }
 
-public inline class TrackTitle(public val value: String) {
+@JvmInline
+public value class TrackTitle(public val value: String) {
   public companion object {
     public val UNKNOWN: TrackTitle = TrackTitle("Unknown")
 

@@ -18,11 +18,8 @@
 package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.CoverArtArchive.Companion.NullCoverArtArchive
-import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.brainz.data.Release.Companion.NullRelease
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
-import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.w
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -372,7 +369,7 @@ public class Release(
     public class Unspecified(value: String) : Type(value)
 
     public companion object {
-      public val values: Array<Type> = arrayOf(
+      public fun values(): Array<Type> = arrayOf(
         Nat,
         Album,
         Single,
@@ -402,7 +399,8 @@ public class Release(
     public class Unspecified(value: String) : Status(value)
 
     public companion object {
-      public val values: Array<Status> = arrayOf(Official, Promotion, Bootleg, PseudoRelease)
+      public fun values(): Array<Status> = arrayOf(Official, Promotion, Bootleg, PseudoRelease)
+      public val values: Set<Status> = values().toSet()
     }
   }
 
@@ -414,68 +412,3 @@ public class Release(
 
 public inline val Release.isNullObject: Boolean
   get() = this === NullRelease
-
-public inline class ReleaseMbid(override val value: String) : Mbid
-
-public inline val Release.mbid: ReleaseMbid
-  get() = id.toReleaseMbid()
-
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String.toReleaseMbid(): ReleaseMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid ReleaseMbid") }
-  return ReleaseMbid(this)
-}
-
-/** Assumes artist credit not present is exceptional */
-@Suppress("unused")
-public inline val Release.theArtistMbid: String
-  get() {
-    return try {
-      artistCredit[0].artist.id
-    } catch (e: Exception) {
-      ""
-    }
-  }
-
-/** Assumes artist credit not present is exceptional */
-@Suppress("unused")
-public inline val Release.theArtistName: String
-  get() {
-    return try {
-      artistCredit[0].artist.name
-    } catch (e: Exception) {
-      ""
-    }
-  }
-
-/** Assumes artist credit not present is exceptional */
-@Suppress("unused")
-public inline val Release.theArtistSortName: String
-  get() {
-    return try {
-      artistCredit[0].artist.sortName
-    } catch (e: Exception) {
-      ""
-    }
-  }
-
-public class PackagingInfo(public val id: PackagingMbid, public val name: String) {
-  override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (javaClass != other?.javaClass) return false
-
-    other as PackagingInfo
-
-    if (id != other.id) return false
-
-    return true
-  }
-
-  override fun hashCode(): Int {
-    return id.hashCode()
-  }
-}
-
-@Suppress("unused")
-public val Release.packagingInfo: PackagingInfo
-  get() = PackagingInfo(packagingId.toPackagingMbid(), packaging)

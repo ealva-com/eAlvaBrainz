@@ -18,17 +18,32 @@
 package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
-import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.w
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 public class Genre(
+  /** This genre's MusicBrainz ID (MBID) */
+  public var id: String = "",
   /** Genre name in lowercase */
   public var name: String = "",
+  /**
+   * See the [page about disambiguation](https://musicbrainz.org/doc/Disambiguation_Comment)
+   * for more information
+   */
+  public var disambiguation: String = "",
   /** Number of votes for this genres applicability to the entity */
   public var count: Int = 0
 ) {
+
+  public interface Lookup : Include
+
+  @Suppress("unused")
+  public enum class Misc(override val value: String) : Lookup {
+    Aliases("aliases"),
+    Annotation("annotation"),
+    Tags("tags")
+  }
+
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (javaClass != other?.javaClass) return false
@@ -55,11 +70,3 @@ public class Genre(
 
 public val Genre.isNullObject: Boolean
   get() = this === NullGenre
-
-public inline class GenreMbid(override val value: String) : Mbid
-
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String.toGenreMbid(): GenreMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) Mbid.MBID_LOG.w { it("Invalid GenreMbid") }
-  return GenreMbid(this)
-}

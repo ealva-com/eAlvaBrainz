@@ -17,11 +17,8 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.Mbid.Companion.MBID_LOG
 import com.ealva.ealvabrainz.brainz.data.Recording.Companion.NullRecording
 import com.ealva.ealvabrainz.brainz.data.Recording.Subquery.Releases
-import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.w
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -101,7 +98,6 @@ public class Recording(
     Artists("artists"),
     Releases("releases"),
     Isrcs("isrcs"),
-    UrlRels("url-rels"),
     ArtistCredits("artist-credits")
   }
 
@@ -251,14 +247,3 @@ public class Recording(
 
 public val Recording.isNullObject: Boolean
   get() = this === NullRecording
-
-public inline class RecordingMbid(override val value: String) : Mbid
-
-public inline val Recording.mbid: RecordingMbid
-  get() = id.toRecordingMbid()
-
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String.toRecordingMbid(): RecordingMbid {
-  if (Mbid.logInvalidMbid && isInvalidMbid()) MBID_LOG.w { it("Invalid RecordingMbid") }
-  return RecordingMbid(this)
-}

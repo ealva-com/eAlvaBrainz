@@ -19,6 +19,7 @@
 
 package com.ealva.brainzapp.ui.artist
 
+// import com.ealva.brainzapp.ui.view.snackErrors
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -34,6 +35,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.whenStarted
 import androidx.viewpager2.widget.ViewPager2
+import com.ealva.brainzapp.R
 import com.ealva.brainzapp.data.appearsValid
 import com.ealva.brainzapp.data.setAsClickableLink
 import com.ealva.brainzapp.data.toDisplayString
@@ -43,12 +45,10 @@ import com.ealva.brainzapp.ui.view.TabSelection
 import com.ealva.brainzapp.ui.view.addCircularProgress
 import com.ealva.brainzapp.ui.view.clickFlow
 import com.ealva.brainzapp.ui.view.setStarRatingDrawable
-// import com.ealva.brainzapp.ui.view.snackErrors
+import com.ealva.brainzapp.ui.view.snackErrors
 import com.ealva.brainzapp.ui.view.tabSelectionFlow
 import com.ealva.brainzapp.ui.view.viewPager2
-import com.ealva.brainzapp.R
-import com.ealva.brainzapp.ui.view.snackErrors
-import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.ensureExhaustive
 import com.ealva.ealvalog.e

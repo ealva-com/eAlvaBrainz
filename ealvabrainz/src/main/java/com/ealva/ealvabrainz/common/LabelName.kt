@@ -25,7 +25,8 @@ public inline fun String?.toLabelName(): LabelName {
   return this?.let { LabelName.make(this) } ?: LabelName.UNKNOWN
 }
 
-public inline class LabelName(public val value: String) {
+@JvmInline
+public value class LabelName(public val value: String) {
   public companion object {
     public val UNKNOWN: LabelName = LabelName("Unknown")
 
