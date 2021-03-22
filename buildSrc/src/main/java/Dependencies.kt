@@ -45,7 +45,7 @@ object Versions {
 object BuildPluginsVersion {
   const val AGP = "7.0.0-alpha08"
   const val DETEKT = "1.14.1"
-  const val DOKKA = "1.4.10.2"
+  const val DOKKA = "1.4.30"
   const val KOTLIN = "1.4.30"
   const val VANNIKTECH_PUBLISH = "0.13.0"
   const val VERSIONS = "0.33.0"
