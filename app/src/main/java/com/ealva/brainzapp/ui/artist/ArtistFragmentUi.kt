@@ -164,159 +164,182 @@ class ArtistFragmentUi(
 
     val actionBarSize = styledDimenPxSize(android.R.attr.actionBarSize)
 
-    appBarLayout = add(appBarLayout(ID_APP_BAR, R.style.ThemeOverlay_MaterialComponents_ActionBar) {
+    appBarLayout = add(
+      appBarLayout(
+        ID_APP_BAR,
+        R.style.ThemeOverlay_MaterialComponents_ActionBar
+      ) {
 
-      collapsing = add(collapsingToolbarLayout(ID_COLLAPSING) {
-        isTitleEnabled = false
+        collapsing = add(
+          collapsingToolbarLayout(ID_COLLAPSING) {
+            isTitleEnabled = false
 
-        add(constraintLayout(ID_CONSTRAINT) {
-          topPadding = actionBarSize
-          backgroundColor = styledColor(android.R.attr.colorBackground)
-          fitsSystemWindows = true
+            add(
+              constraintLayout(ID_CONSTRAINT) {
+                topPadding = actionBarSize
+                backgroundColor = styledColor(android.R.attr.colorBackground)
+                fitsSystemWindows = true
 
-          addLabel(
-            viewId = ID_TYPE_LABEL,
-            textRes = R.string.TypeLabel,
-            belowView = NO_ID,
-            valueView = ID_ARTIST_TYPE,
-            aboveView = ID_LIFESPAN_BEGIN_LABEL
-          )
+                addLabel(
+                  viewId = ID_TYPE_LABEL,
+                  textRes = R.string.TypeLabel,
+                  belowView = NO_ID,
+                  valueView = ID_ARTIST_TYPE,
+                  aboveView = ID_LIFESPAN_BEGIN_LABEL
+                )
 
-          artistTypeView = addValueView(
-            viewId = ID_ARTIST_TYPE,
-            labelView = ID_TYPE_LABEL
-          )
+                artistTypeView = addValueView(
+                  viewId = ID_ARTIST_TYPE,
+                  labelView = ID_TYPE_LABEL
+                )
 
-          lifespanBeginLabel = addLabel(
-            viewId = ID_LIFESPAN_BEGIN_LABEL,
-            textRes = R.string.empty,
-            belowView = ID_TYPE_LABEL,
-            valueView = ID_LIFESPAN_BEGIN,
-            aboveView = ID_START_AREA_LABEL
-          )
+                lifespanBeginLabel = addLabel(
+                  viewId = ID_LIFESPAN_BEGIN_LABEL,
+                  textRes = R.string.empty,
+                  belowView = ID_TYPE_LABEL,
+                  valueView = ID_LIFESPAN_BEGIN,
+                  aboveView = ID_START_AREA_LABEL
+                )
 
-          lifespanBegin = addValueView(
-            viewId = ID_LIFESPAN_BEGIN,
-            labelView = ID_LIFESPAN_BEGIN_LABEL
-          )
+                lifespanBegin = addValueView(
+                  viewId = ID_LIFESPAN_BEGIN,
+                  labelView = ID_LIFESPAN_BEGIN_LABEL
+                )
 
-          startAreaLabel = addLabel(
-            viewId = ID_START_AREA_LABEL,
-            textRes = R.string.empty,
-            belowView = ID_LIFESPAN_BEGIN_LABEL,
-            valueView = ID_START_AREA,
-            aboveView = ID_LIFESPAN_END_LABEL
-          )
+                startAreaLabel = addLabel(
+                  viewId = ID_START_AREA_LABEL,
+                  textRes = R.string.empty,
+                  belowView = ID_LIFESPAN_BEGIN_LABEL,
+                  valueView = ID_START_AREA,
+                  aboveView = ID_LIFESPAN_END_LABEL
+                )
 
-          startArea = addValueView(
-            viewId = ID_START_AREA,
-            labelView = ID_START_AREA_LABEL
-          )
+                startArea = addValueView(
+                  viewId = ID_START_AREA,
+                  labelView = ID_START_AREA_LABEL
+                )
 
-          lifespanEndLabel = addLabel(
-            viewId = ID_LIFESPAN_END_LABEL,
-            textRes = R.string.empty,
-            belowView = ID_START_AREA_LABEL,
-            valueView = ID_LIFESPAN_END,
-            aboveView = ID_END_AREA_LABEL
-          )
+                lifespanEndLabel = addLabel(
+                  viewId = ID_LIFESPAN_END_LABEL,
+                  textRes = R.string.empty,
+                  belowView = ID_START_AREA_LABEL,
+                  valueView = ID_LIFESPAN_END,
+                  aboveView = ID_END_AREA_LABEL
+                )
 
-          lifespanEnd = addValueView(
-            viewId = ID_LIFESPAN_END,
-            labelView = ID_LIFESPAN_END_LABEL
-          )
+                lifespanEnd = addValueView(
+                  viewId = ID_LIFESPAN_END,
+                  labelView = ID_LIFESPAN_END_LABEL
+                )
 
-          endAreaLabel = addLabel(
-            viewId = ID_END_AREA_LABEL,
-            textRes = R.string.empty,
-            belowView = ID_LIFESPAN_END_LABEL,
-            valueView = ID_END_AREA,
-            aboveView = ID_AREA_LABEL
-          )
+                endAreaLabel = addLabel(
+                  viewId = ID_END_AREA_LABEL,
+                  textRes = R.string.empty,
+                  belowView = ID_LIFESPAN_END_LABEL,
+                  valueView = ID_END_AREA,
+                  aboveView = ID_AREA_LABEL
+                )
 
-          endArea = addValueView(
-            viewId = ID_END_AREA,
-            labelView = ID_END_AREA_LABEL
-          )
+                endArea = addValueView(
+                  viewId = ID_END_AREA,
+                  labelView = ID_END_AREA_LABEL
+                )
 
-          areaLabel = addLabel(
-            viewId = ID_AREA_LABEL,
-            textRes = R.string.AreaLabel,
-            belowView = ID_END_AREA_LABEL,
-            valueView = ID_AREA,
-            aboveView = ID_ISNI_LABEL
-          )
+                areaLabel = addLabel(
+                  viewId = ID_AREA_LABEL,
+                  textRes = R.string.AreaLabel,
+                  belowView = ID_END_AREA_LABEL,
+                  valueView = ID_AREA,
+                  aboveView = ID_ISNI_LABEL
+                )
 
-          area = addValueView(
-            viewId = ID_AREA,
-            labelView = ID_AREA_LABEL
-          )
+                area = addValueView(
+                  viewId = ID_AREA,
+                  labelView = ID_AREA_LABEL
+                )
 
-          isniLabel = addLabel(
-            viewId = ID_ISNI_LABEL,
-            textRes = R.string.IsniCodeLabel,
-            belowView = ID_AREA_LABEL,
-            valueView = ID_ISNI,
-            aboveView = ID_RATING_LABEL
-          )
+                isniLabel = addLabel(
+                  viewId = ID_ISNI_LABEL,
+                  textRes = R.string.IsniCodeLabel,
+                  belowView = ID_AREA_LABEL,
+                  valueView = ID_ISNI,
+                  aboveView = ID_RATING_LABEL
+                )
 
-          isni = addValueView(
-            viewId = ID_ISNI,
-            labelView = ID_ISNI_LABEL
-          )
+                isni = addValueView(
+                  viewId = ID_ISNI,
+                  labelView = ID_ISNI_LABEL
+                )
 
-          addLabel(
-            viewId = ID_RATING_LABEL,
-            textRes = R.string.RatingLabel,
-            belowView = ID_ISNI_LABEL,
-            valueView = ID_RATING,
-            aboveView = ID_GENRES_LABEL
-          )
+                addLabel(
+                  viewId = ID_RATING_LABEL,
+                  textRes = R.string.RatingLabel,
+                  belowView = ID_ISNI_LABEL,
+                  valueView = ID_RATING,
+                  aboveView = ID_GENRES_LABEL
+                )
 
-          ratingBar = add(
-            ratingBar(ID_RATING) {
-              setIsIndicator(true)
-              numStars = 5
-              stepSize = 0.5f
-              rating = 0f
-              minimumHeight = dip(16)
-              setStarRatingDrawable(Color.BLUE, Color.BLUE, dip(16), dip(1), 0)
-            }, lParams(width = dip(80), height = dip(16)) {
-              leftMargin = dip(8)
-              startToEnd = ID_RATING_LABEL
-              topToTop = ID_RATING_LABEL
-              bottomToBottom = ID_RATING_LABEL
-            })
+                ratingBar = add(
+                  ratingBar(ID_RATING) {
+                    setIsIndicator(true)
+                    numStars = 5
+                    stepSize = 0.5f
+                    rating = 0f
+                    minimumHeight = dip(16)
+                    setStarRatingDrawable(Color.BLUE, Color.BLUE, dip(16), dip(1), 0)
+                  },
+                  lParams(
+                    width = dip(80),
+                    height = dip(16)
+                  ) {
+                    leftMargin = dip(8)
+                    startToEnd = ID_RATING_LABEL
+                    topToTop = ID_RATING_LABEL
+                    bottomToBottom = ID_RATING_LABEL
+                  }
+                )
 
-          genresLabel = addLabel(
-            viewId = ID_GENRES_LABEL,
-            textRes = R.string.GenresLabel,
-            belowView = ID_RATING_LABEL,
-            valueView = ID_GENRES,
-            aboveView = NO_ID
-          )
+                genresLabel = addLabel(
+                  viewId = ID_GENRES_LABEL,
+                  textRes = R.string.GenresLabel,
+                  belowView = ID_RATING_LABEL,
+                  valueView = ID_GENRES,
+                  aboveView = NO_ID
+                )
 
-          genres = addValueView(
-            viewId = ID_GENRES,
-            labelView = ID_GENRES_LABEL
-          )
-        }, defaultLParams(collapseMode = PIN))
+                genres = addValueView(
+                  viewId = ID_GENRES,
+                  labelView = ID_GENRES_LABEL
+                )
+              },
+              defaultLParams(collapseMode = PIN)
+            )
 
-        toolbar = add(toolbar(ID_TOOLBAR, R.style.ThemeOverlay_AppCompat_Dark_ActionBar) {
-          title = artistName.value
-          backgroundColor = styledColor(R.attr.colorPrimary)
-          mainPresenter.setActionBar(this)
-        }, defaultLParams(height = actionBarSize, collapseMode = PIN))
-      }, defaultLParams(scrollFlags = SCROLL or EXIT_UNTIL_COLLAPSED))
+            toolbar = add(
+              toolbar(ID_TOOLBAR, R.style.ThemeOverlay_AppCompat_Dark_ActionBar) {
+                title = artistName.value
+                backgroundColor = styledColor(R.attr.colorPrimary)
+                mainPresenter.setActionBar(this)
+              },
+              defaultLParams(height = actionBarSize, collapseMode = PIN)
+            )
+          },
+          defaultLParams(scrollFlags = SCROLL or EXIT_UNTIL_COLLAPSED)
+        )
 
-      tabLayout = add(materialStyles.tabLayout.default(ID_TABBED_LAYOUT), defaultLParams())
-    }, appBarLParams())
+        tabLayout = add(materialStyles.tabLayout.default(ID_TABBED_LAYOUT), defaultLParams())
+      },
+      appBarLParams()
+    )
 
-    viewPager = add(viewPager2(ID_PAGER) {
-      adapter = ArtistFragmentPagerAdapter(uiContext)
-    }, defaultLParams(width = matchParent) {
-      behavior = AppBarLayout.ScrollingViewBehavior()
-    })
+    viewPager = add(
+      viewPager2(ID_PAGER) {
+        adapter = ArtistFragmentPagerAdapter(uiContext)
+      },
+      defaultLParams(width = matchParent) {
+        behavior = AppBarLayout.ScrollingViewBehavior()
+      }
+    )
 
     TabLayoutMediator(tabLayout, viewPager, true) { tab, position ->
       when (position) {
@@ -352,15 +375,18 @@ class ArtistFragmentUi(
   }
 
   private fun ConstraintLayout.addValueView(viewId: Int, labelView: Int): TextView {
-    return add(textView(viewId) {
-      textAppearance = R.style.TextAppearance_MaterialComponents_Body2
-      gravity = gravityStart
-    }, lParams(height = wrapContent) {
-      leftMargin = dip(8)
-      startToEnd = labelView
-      endToEnd = PARENT_ID
-      baselineToBaseline = labelView
-    })
+    return add(
+      textView(viewId) {
+        textAppearance = R.style.TextAppearance_MaterialComponents_Body2
+        gravity = gravityStart
+      },
+      lParams(height = wrapContent) {
+        leftMargin = dip(8)
+        startToEnd = labelView
+        endToEnd = PARENT_ID
+        baselineToBaseline = labelView
+      }
+    )
   }
 
   private fun ConstraintLayout.addLabel(
@@ -370,16 +396,19 @@ class ArtistFragmentUi(
     valueView: Int,
     aboveView: Int
   ): TextView {
-    return add(textView(viewId) {
-      textResource = textRes
-      textAppearance = R.style.EaLabelTextAppearance
-    }, lParams(width = wrapContent, height = wrapContent) {
-      leftMargin = dip(16)
-      startToStart = PARENT_ID
-      if (belowView > 0) topToBottom = belowView else topToTop = PARENT_ID
-      endToStart = valueView
-      if (aboveView > 0) bottomToTop = aboveView else bottomToBottom = PARENT_ID
-    })
+    return add(
+      textView(viewId) {
+        textResource = textRes
+        textAppearance = R.style.EaLabelTextAppearance
+      },
+      lParams(width = wrapContent, height = wrapContent) {
+        leftMargin = dip(16)
+        startToStart = PARENT_ID
+        if (belowView > 0) topToBottom = belowView else topToTop = PARENT_ID
+        endToStart = valueView
+        if (aboveView > 0) bottomToTop = aboveView else bottomToBottom = PARENT_ID
+      }
+    )
   }
 
   private fun updateArtistInfo(artist: DisplayArtist) {

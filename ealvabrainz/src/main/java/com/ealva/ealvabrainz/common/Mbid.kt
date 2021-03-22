@@ -71,6 +71,14 @@ public interface Mbid {
   public val value: String
 }
 
+/**
+ * MBID of an unknown type of MusicBrainz entity. As an example of when this might happen, when
+ * an annotation has a "type" and "entity" ID and the "type" is unrecognized. See the Annotation
+ * class in brainz.data
+ */
+@JvmInline
+public value class UnknownEntityMbid(override val value: String) : Mbid
+
 @Suppress("NOTHING_TO_INLINE")
 public inline val Mbid.isValid: Boolean
   get() = value.isValidMbid()
@@ -124,6 +132,9 @@ public value class ArtistMbid(override val value: String) : Mbid {
 
 public inline val Artist.mbid: ArtistMbid
   get() = ArtistMbid(id)
+
+@JvmInline
+public value class CollectionMbid(override val value: String) : Mbid
 
 @JvmInline
 public value class EventMbid(override val value: String) : Mbid

@@ -17,15 +17,11 @@
 
 package com.ealva.ealvabrainz.common
 
-/**
- * Convert this String to an [ArtistName] or [ArtistName.UNKNOWN] if this is null.
- */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toArtistName(): ArtistName {
-  return this?.let { ArtistName.make(this) } ?: ArtistName.UNKNOWN
-}
-
 @JvmInline
+/**
+ * The official name of an artist, be it a person or a band. The may be a partial name if used in a
+ * query
+ */
 public value class ArtistName(public val value: String) {
   public companion object {
     public val UNKNOWN: ArtistName = ArtistName("Unknown")
@@ -34,4 +30,11 @@ public value class ArtistName(public val value: String) {
     public inline fun make(value: String): ArtistName =
       ArtistName(value.trim())
   }
+}
+/**
+ * Convert this String to an [ArtistName] or [ArtistName.UNKNOWN] if this is null.
+ */
+@Suppress("NOTHING_TO_INLINE")
+public inline fun String?.toArtistName(): ArtistName {
+  return this?.let { ArtistName.make(this) } ?: ArtistName.UNKNOWN
 }

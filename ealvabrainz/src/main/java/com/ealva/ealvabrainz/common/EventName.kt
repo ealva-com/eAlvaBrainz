@@ -17,15 +17,11 @@
 
 package com.ealva.ealvabrainz.common
 
-/**
- * Convert this String to an [EventName] or [EventName.UNKNOWN] if this is null.
- */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toEventName(): EventName {
-  return if (this != null) EventName.make(this) else EventName.UNKNOWN
-}
-
 @JvmInline
+/**
+ * The name is the official name of the event if it has one, or a descriptive name (like "Main
+ * Artist at Place") if not. May be a parial name if used in a query.
+ */
 public value class EventName(public val value: String) {
   public companion object {
     public val UNKNOWN: EventName = EventName("Unknown")
@@ -34,4 +30,12 @@ public value class EventName(public val value: String) {
     public inline fun make(value: String): EventName =
       EventName(value.trim())
   }
+}
+
+/**
+ * Convert this String to an [EventName] or [EventName.UNKNOWN] if this is null.
+ */
+@Suppress("NOTHING_TO_INLINE")
+public inline fun String?.toEventName(): EventName {
+  return if (this != null) EventName.make(this) else EventName.UNKNOWN
 }

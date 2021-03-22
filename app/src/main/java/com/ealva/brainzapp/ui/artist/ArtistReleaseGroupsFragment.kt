@@ -36,7 +36,7 @@ class ArtistReleaseGroupsFragment private constructor(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
-  ): View? {
+  ): View {
     val uiContext = makeUiContext()
     val ui = ArtistReleaseGroupsUi(uiContext, brainz, viewModel)
     return ui.root
@@ -55,6 +55,5 @@ class ArtistReleaseGroupsFragment private constructor(
     fun make(fm: FragmentManager): ArtistReleaseGroupsFragment {
       return fm.instantiate()
     }
-
   }
 }

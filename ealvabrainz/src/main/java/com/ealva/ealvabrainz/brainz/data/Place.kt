@@ -90,16 +90,6 @@ public class Place(
   public var annotation: String = ""
 ) {
 
-  public interface Lookup : Include
-
-  @Suppress("unused")
-  public enum class Misc(override val value: String) : Lookup {
-    Aliases("aliases"),
-    Annotation("annotation"),
-    Tags("tags"),
-    Genres("genres")
-  }
-
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (javaClass != other?.javaClass) return false
@@ -114,6 +104,23 @@ public class Place(
   override fun hashCode(): Int = id.hashCode()
 
   override fun toString(): String = toJson()
+
+  public interface Lookup : Include
+
+  @Suppress("unused")
+  public enum class Misc(override val value: String) : Lookup {
+    Aliases("aliases"),
+    Annotation("annotation"),
+    Tags("tags"),
+    Genres("genres")
+  }
+
+  public enum class Browse(override val value: String) : Lookup {
+    Annotation("annotation"),
+    Tags("tags"),
+    Genres("genres"),
+    Ratings("ratings");
+  }
 
   @Suppress("unused")
   public enum class SearchField(public val value: String) {

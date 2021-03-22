@@ -19,14 +19,9 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.Artist.Companion.NullArtist
-import com.ealva.ealvabrainz.log.BrainzLog
 import com.ealva.ealvabrainz.moshi.FallbackOnNull
-import com.ealva.ealvalog.lazyLogger
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-
-private val LOG by lazyLogger(Artist::class, BrainzLog.marker)
 
 /**
  * Result from artist mbid lookup
@@ -138,7 +133,7 @@ public class Artist(
   public var recordings: List<Recording> = emptyList(),
   public var releases: List<Release> = emptyList(),
   public var relations: List<Relation> = emptyList(),
-  /** score only used in query results */
+  /** score ranking used in query results */
   public var score: Int = 0
 ) {
   override fun equals(other: Any?): Boolean {
@@ -278,4 +273,4 @@ public class Artist(
 }
 
 public inline val Artist.isNullObject: Boolean
-  get() = this === NullArtist
+  get() = this === Artist.NullArtist

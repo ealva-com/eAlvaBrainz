@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 /*
  * Copyright (c) 2020  Eric A. Snell
  *
@@ -23,6 +25,10 @@ plugins {
   id("com.vanniktech.maven.publish")
 }
 
+val localProperties = gradleLocalProperties(rootDir)
+val brainzUserName: String = localProperties.getProperty("BRAINZ_USERNAME", "\"\"")
+val brainzPassword: String = localProperties.getProperty("BRAINZ_PASSWORD", "\"\"")
+
 android {
   compileSdkVersion(Sdk.COMPILE_SDK_VERSION)
 
@@ -45,7 +51,8 @@ android {
 
   buildTypes {
     getByName("debug") {
-      isTestCoverageEnabled = false
+      buildConfigField("String", "BRAINZ_USERNAME", brainzUserName)
+      buildConfigField("String", "BRAINZ_PASSWORD", brainzPassword)
     }
 
     getByName("release") {
@@ -113,6 +120,7 @@ dependencies {
   implementation(ThirdParty.SPLITTIES_SYSTEM_SERVICES)
 
   implementation(ThirdParty.KOTLIN_RESULT)
+  implementation("io.github.rburgst:okhttp-digest:2.5")
 
   testImplementation(TestingLib.JUNIT)
   testImplementation(AndroidTestingLib.ANDROIDX_TEST_CORE) {

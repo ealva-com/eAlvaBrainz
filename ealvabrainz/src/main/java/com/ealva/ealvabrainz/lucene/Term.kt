@@ -19,27 +19,30 @@
 
 package com.ealva.ealvabrainz.lucene
 
+import com.ealva.ealvabrainz.brainz.data.ArtistType
+import com.ealva.ealvabrainz.brainz.data.Release
+import com.ealva.ealvabrainz.common.AlbumTitle
 import com.ealva.ealvabrainz.common.AreaMbid
 import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.DiscId
 import com.ealva.ealvabrainz.common.EventMbid
 import com.ealva.ealvabrainz.common.GenreMbid
 import com.ealva.ealvabrainz.common.InstrumentMbid
 import com.ealva.ealvabrainz.common.LabelMbid
+import com.ealva.ealvabrainz.common.LabelName
 import com.ealva.ealvabrainz.common.PackagingMbid
 import com.ealva.ealvabrainz.common.PlaceMbid
 import com.ealva.ealvabrainz.common.RecordingMbid
-import com.ealva.ealvabrainz.brainz.data.Release
+import com.ealva.ealvabrainz.common.RecordingTitle
 import com.ealva.ealvabrainz.common.ReleaseGroupMbid
 import com.ealva.ealvabrainz.common.ReleaseMbid
 import com.ealva.ealvabrainz.common.SeriesMbid
 import com.ealva.ealvabrainz.common.TrackMbid
+import com.ealva.ealvabrainz.common.TrackTitle
 import com.ealva.ealvabrainz.common.UrlMbid
 import com.ealva.ealvabrainz.common.WorkMbid
-import com.ealva.ealvabrainz.common.AlbumTitle
-import com.ealva.ealvabrainz.common.ArtistName
-import com.ealva.ealvabrainz.common.LabelName
-import com.ealva.ealvabrainz.common.RecordingTitle
-import com.ealva.ealvabrainz.common.TrackTitle
+import com.ealva.ealvabrainz.common.WorkName
 import com.ealva.ealvabrainz.common.brainzFormat
 import java.time.LocalDate
 import java.util.Date
@@ -103,10 +106,12 @@ public sealed class Term : BaseExpression() {
     public inline operator fun invoke(mbid: PackagingMbid): Term = SingleTerm(mbid.value)
 
     public inline operator fun invoke(title: AlbumTitle): Term = Term(title.value)
+    public inline operator fun invoke(type: ArtistType): Term = Term(type.value)
     public inline operator fun invoke(name: ArtistName): Term = Term(name.value)
+    public inline operator fun invoke(discId: DiscId): Term = Term(discId.value)
     public inline operator fun invoke(name: LabelName): Term = Term(name.value)
     public inline operator fun invoke(title: RecordingTitle): Term = Term(title.value)
-    public inline operator fun invoke(title: TrackTitle): Term = Term(title.value)
+    public inline operator fun invoke(name: WorkName): Term = Term(name.value)
     public inline operator fun invoke(type: Release.Type): Term = SingleTerm(type.value)
     public inline operator fun invoke(status: Release.Status): Term = SingleTerm(status.value)
 

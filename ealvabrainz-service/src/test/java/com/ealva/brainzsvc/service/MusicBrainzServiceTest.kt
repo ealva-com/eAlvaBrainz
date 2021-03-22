@@ -19,6 +19,8 @@
 
 package com.ealva.brainzsvc.service
 
+import com.ealva.brainzsvc.common.Limit
+import com.ealva.brainzsvc.common.Offset
 import com.ealva.brainzsvc.common.buildQueryMap
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzExceptionMessage
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzErrorCodeMessage
@@ -67,9 +69,9 @@ public class MusicBrainzServiceTest {
   @Test
   public fun `test findRelease`(): Unit = coroutineRule.runBlockingTest {
     doTestFindRelease(null, null)
-    doTestFindRelease(20, null)
-    doTestFindRelease(null, 10)
-    doTestFindRelease(100, 10)
+    doTestFindRelease(Limit(20), null)
+    doTestFindRelease(null, Offset(10))
+    doTestFindRelease(Limit(100), Offset(10))
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
@@ -270,22 +272,22 @@ public class MusicBrainzServiceTest {
       }
     }
 
-  private suspend fun doTestFindRelease(limit: Int?, offset: Int?) {
+  private suspend fun doTestFindRelease(limit: Limit?, offset: Offset?) {
     val dummy = ReleaseList()
     val artistName = ArtistName("David Bowie")
     val albumName = AlbumTitle("The Man Who Sold the World")
     val query =
       """(artist:"${artistName.value}" AND release:"${albumName.value}")"""
     val mockBrainz = mock<MusicBrainz> {
-      onBlocking { findRelease(query, limit, offset) } doReturn makeSuccess(dummy)
+      onBlocking { findRelease(query, limit?.value, offset?.value) } doReturn makeSuccess(dummy)
     }
     val service = makeServiceForTest(mockBrainz)
     expect(
-      service.findRelease(limit = limit, offset = offset) {
+      service.findRelease(limit, offset) {
         artist { artistName } and release { albumName }
       }
     ).toBeInstanceOf<Ok<ReleaseList>> { result ->
-      verify(mockBrainz, times(1)).findRelease(query, limit, offset)
+      verify(mockBrainz, times(1)).findRelease(query, limit?.value, offset?.value)
       expect(result.value).toBe(dummy)
     }
   }

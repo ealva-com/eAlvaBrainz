@@ -23,6 +23,7 @@ import com.ealva.ealvabrainz.brainz.data.joinToString
 import com.ealva.ealvabrainz.common.AreaMbid
 import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.LabelMbid
+import com.ealva.ealvabrainz.common.PlaceMbid
 import com.ealva.ealvabrainz.common.RecordingMbid
 import com.ealva.ealvabrainz.common.ReleaseGroupMbid
 import com.ealva.ealvabrainz.common.ReleaseMbid
@@ -85,6 +86,10 @@ public fun QueryMap.artist(artistId: ArtistMbid): QueryMap = apply {
 
 public fun QueryMap.label(labelId: LabelMbid): QueryMap = apply {
   this["label"] = labelId.value
+}
+
+public fun QueryMap.place(placeId: PlaceMbid): QueryMap = apply {
+  this["place"] = placeId.value
 }
 
 public fun QueryMap.recording(recordingId: RecordingMbid): QueryMap = apply {

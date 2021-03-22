@@ -35,8 +35,7 @@ import com.squareup.moshi.JsonClass
 
 /**
  * ### Relationship types
- * There are a huge number of different relationship types. The lists (organised per types of
- * entities they connect) can be checked at the
+ * The lists of relationships (organized per type of entities they connect) can be found at
  * [relationship type table](https://musicbrainz.org/relationships).
  * ```
  * ```

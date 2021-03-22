@@ -17,15 +17,14 @@
 
 package com.ealva.ealvabrainz.common
 
-/**
- * Convert this String to an [RecordingTitle] or [RecordingTitle.UNKNOWN] if this is null.
- */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toRecordingTitle(): RecordingTitle {
-  return this?.let { RecordingTitle.make(this) } ?: RecordingTitle.UNKNOWN
-}
-
 @JvmInline
+/**
+ * The title of a Recording. May be a partial title if used in a query.
+ *
+ * A recording is an entity in MusicBrainz which can be linked to tracks on releases. Each track
+ * must always be associated with a single recording, but a recording can be linked to any number of
+ * tracks.
+ */
 public value class RecordingTitle(public val value: String) {
   public companion object {
     public val UNKNOWN: RecordingTitle = RecordingTitle("Unknown")
@@ -34,4 +33,12 @@ public value class RecordingTitle(public val value: String) {
     public inline fun make(value: String): RecordingTitle =
       RecordingTitle(value.trim())
   }
+}
+
+/**
+ * Convert this String to an [RecordingTitle] or [RecordingTitle.UNKNOWN] if this is null.
+ */
+@Suppress("NOTHING_TO_INLINE")
+public inline fun String?.toRecordingTitle(): RecordingTitle {
+  return this?.let { RecordingTitle.make(this) } ?: RecordingTitle.UNKNOWN
 }

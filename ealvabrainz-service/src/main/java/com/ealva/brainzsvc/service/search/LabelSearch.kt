@@ -15,14 +15,11 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-@file:Suppress("unused")
-
 package com.ealva.brainzsvc.service.search
 
-import com.ealva.ealvabrainz.brainz.data.Artist.SearchField
-import com.ealva.ealvabrainz.common.ArtistMbid
-import com.ealva.ealvabrainz.brainz.data.ArtistType
-import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.brainz.data.Label.SearchField
+import com.ealva.ealvabrainz.common.LabelMbid
+import com.ealva.ealvabrainz.common.LabelName
 import com.ealva.ealvabrainz.lucene.BrainzMarker
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Term
@@ -32,62 +29,22 @@ import kotlin.experimental.ExperimentalTypeInference
 
 @OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
-public class ArtistSearch : BaseSearch() {
+public class LabelSearch : BaseSearch() {
+  /** (part of) any alias attached to the label (diacritics are ignored) */
   @JvmName("aliasTerm")
   @OverloadResolutionByLambdaReturnType
-  /** (part of) any alias attached to the artist (diacritics are ignored) */
   public inline fun alias(term: () -> Term): Field = add(SearchField.Alias, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun alias(term: () -> String): Field = alias { Term(term()) }
 
-  @JvmName("primaryAliasTerm")
-  @OverloadResolutionByLambdaReturnType
-  /** (part of) any primary alias attached to the artist (diacritics are ignored) */
-  public inline fun primaryAlias(term: () -> Term): Field = add(SearchField.PrimaryAlias, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun primaryAlias(term: () -> String): Field = primaryAlias { Term(term()) }
-
+  /** (part of) the name of the label's main associated area */
   @JvmName("areaTerm")
   @OverloadResolutionByLambdaReturnType
-  /** (part of) the name of the artist's main associated area */
   public inline fun area(term: () -> Term): Field = add(SearchField.Area, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun area(term: () -> String): Field = area { Term(term()) }
-
-  @JvmName("artistAccentTerm")
-  @OverloadResolutionByLambdaReturnType
-  /** the artist's name (with accented characters) */
-  public inline fun artistAccent(term: () -> Term): Field = add(SearchField.ArtistAccent, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun artistAccent(term: () -> String): Field = artistAccent { Term(term()) }
-
-  @JvmName("artistIdTerm")
-  @OverloadResolutionByLambdaReturnType
-  /** the artist's MBID */
-  public inline fun artistId(term: () -> Term): Field = add(SearchField.ArtistId, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun artistId(mbid: () -> ArtistMbid): Field = artistId { Term(mbid()) }
-
-  @JvmName("artistTerm")
-  @OverloadResolutionByLambdaReturnType
-  /** the artist's name (diacritics are ignored) */
-  public inline fun artist(term: () -> Term): Field = add(SearchField.Artist, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun artist(name: () -> ArtistName): Field = artist { Term(name()) }
-
-  @JvmName("beginAreaTerm")
-  @OverloadResolutionByLambdaReturnType
-  /** the artist's begin area */
-  public inline fun beginArea(term: () -> Term): Field = add(SearchField.BeginArea, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun beginArea(term: () -> String): Field = beginArea { Term(term()) }
 
   @JvmName("beginDateTerm")
   @OverloadResolutionByLambdaReturnType
@@ -100,9 +57,9 @@ public class ArtistSearch : BaseSearch() {
   @OverloadResolutionByLambdaReturnType
   public inline fun beginDate(term: () -> Date): Field = beginDate { Term(term()) }
 
+  /** the artist's disambiguation comment */
   @JvmName("commentTerm")
   @OverloadResolutionByLambdaReturnType
-  /** the artist's disambiguation comment */
   public inline fun comment(term: () -> Term): Field = add(SearchField.Comment, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -117,19 +74,11 @@ public class ArtistSearch : BaseSearch() {
 
   @JvmName("defaultTerm")
   @OverloadResolutionByLambdaReturnType
-  /** the artist's name (diacritics are ignored) */
+  /** (part of) the label's name (diacritics are ignored) */
   public fun default(term: () -> Term): Field = makeAndAddField("", term())
 
-  @JvmName("defaultName")
   @OverloadResolutionByLambdaReturnType
-  public fun default(name: () -> ArtistName): Field = default { Term(name()) }
-
-  @JvmName("endAreaTerm")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun endArea(term: () -> Term): Field = add(SearchField.EndArea, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun endArea(term: () -> String): Field = endArea { Term(term()) }
+  public inline fun default(crossinline term: () -> LabelName): Field = default { Term(term()) }
 
   @JvmName("endDateTerm")
   @OverloadResolutionByLambdaReturnType
@@ -142,47 +91,73 @@ public class ArtistSearch : BaseSearch() {
   @OverloadResolutionByLambdaReturnType
   public inline fun endDate(term: () -> Date): Field = endDate { Term(term()) }
 
+  /** a flag indicating whether or not the artist has ended */
   @JvmName("endedTerm")
   @OverloadResolutionByLambdaReturnType
-  /** a flag indicating whether or not the artist has ended */
   public inline fun ended(term: () -> Term): Field = add(SearchField.Ended, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun ended(term: () -> Boolean): Field = ended { Term(term()) }
 
-  @JvmName("genderTerm")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun gender(term: () -> Term): Field = add(SearchField.Gender, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun gender(term: () -> String): Field = gender { Term(term()) }
-
+  /** an IPI code associated with the label */
   @JvmName("ipiTerm")
   @OverloadResolutionByLambdaReturnType
-  /** A number identifying persons connected to ISWC registered works (authors, composers, etc.) */
   public inline fun ipi(term: () -> Term): Field = add(SearchField.Ipi, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun ipi(term: () -> String): Field = ipi { Term(term()) }
 
   @JvmName("isniTerm")
+  /** an ISNI code associated with the label */
   @OverloadResolutionByLambdaReturnType
   public inline fun isni(term: () -> Term): Field = add(SearchField.Isni, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun isni(term: () -> String): Field = isni { Term(term()) }
 
-  @JvmName("sortNameTerm")
+  @JvmName("labelTerm")
   @OverloadResolutionByLambdaReturnType
-  /** Used to sort the artist */
-  public inline fun sortName(term: () -> Term): Field = add(SearchField.SortName, term())
+  /** (part of) the label's name (diacritics are ignored) */
+  public inline fun label(term: () -> Term): Field = add(SearchField.Label, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun sortName(term: () -> String): Field = sortName { Term(term()) }
+  public inline fun label(term: () -> LabelName): Field = label { Term(term()) }
+
+  @JvmName("labelAccentTerm")
+  @OverloadResolutionByLambdaReturnType
+  /** (part of) the label's name (with the specified diacritics) */
+  public inline fun labelAccent(term: () -> Term): Field = add(SearchField.LabelAccent, term())
+
+  @OverloadResolutionByLambdaReturnType
+  public inline fun labelAccent(term: () -> LabelName): Field = labelAccent { Term(term()) }
+
+  @JvmName("labelCodeTerm")
+  @OverloadResolutionByLambdaReturnType
+  /** the label code for the label (only the numbers, without "LC") */
+  public inline fun labelCode(term: () -> Term): Field = add(SearchField.Code, term())
+
+  @OverloadResolutionByLambdaReturnType
+  public inline fun labelCode(term: () -> String): Field = labelCode { Term(term()) }
+
+  @JvmName("labelIdTerm")
+  @OverloadResolutionByLambdaReturnType
+  /** the label's MBID */
+  public inline fun labelId(term: () -> Term): Field = add(SearchField.LabelId, term())
+
+  @OverloadResolutionByLambdaReturnType
+  public inline fun labelId(term: () -> LabelMbid): Field = labelId { Term(term()) }
+
+  @JvmName("releaseCountTerm")
+  @OverloadResolutionByLambdaReturnType
+  /** the number of releases related to the label */
+  public inline fun releaseCount(term: () -> Term): Field = add(SearchField.ReleaseCount, term())
+
+  @OverloadResolutionByLambdaReturnType
+  public inline fun releaseCount(term: () -> Int): Field = releaseCount { Term(term()) }
 
   @JvmName("tagTerm")
   @OverloadResolutionByLambdaReturnType
-  /** a tag attached to the artist */
+  /** (part of) a tag attached to the label */
   public inline fun tag(term: () -> Term): Field = add(SearchField.Tag, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -190,11 +165,11 @@ public class ArtistSearch : BaseSearch() {
 
   @JvmName("typeTerm")
   @OverloadResolutionByLambdaReturnType
-  /** The [artist type][ArtistType] */
+  /** the label's type */
   public inline fun type(term: () -> Term): Field = add(SearchField.Type, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun type(type: () -> ArtistType): Field = add(SearchField.Type, Term(type()))
+  public inline fun type(type: () -> String): Field = type { Term(type()) }
 
   public fun add(field: SearchField, term: Term): Field = makeAndAddField(field.value, term)
 }

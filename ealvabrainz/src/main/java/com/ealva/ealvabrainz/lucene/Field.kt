@@ -55,7 +55,7 @@ public sealed class Field : BaseExpression() {
     override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {
       val termCount = terms.size
       if (termCount > 0) {
-        append(name).append(':')
+        if (name.isNotEmpty()) append(name).append(':')
         if (termCount > 1) append('(')
         terms.forEachIndexed { index, term ->
           if (index > 0) append(' ')

@@ -19,17 +19,20 @@
 
 package com.ealva.brainzsvc.service
 
+import com.burgstaller.okhttp.AuthenticationCacheInterceptor
+import com.burgstaller.okhttp.digest.CachingAuthenticator
+import com.burgstaller.okhttp.digest.Credentials
+import com.burgstaller.okhttp.digest.DigestAuthenticator
 import com.ealva.brainzsvc.net.BrainzJsonFormatUserAgentInterceptor
 import com.ealva.brainzsvc.net.CacheControlInterceptor
 import com.ealva.brainzsvc.net.ThrottlingInterceptor
 import com.ealva.ealvabrainz.log.BrainzLog
-import com.ealva.ealvalog.i
-import com.ealva.ealvalog.invoke
 import com.ealva.ealvalog.lazyLogger
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
 private const val DAYS_MAX_AGE = 14
 private const val DAYS_MIN_FRESH = 14
@@ -46,29 +49,33 @@ internal fun makeOkHttpClient(
   appVersion: String,
   contactEmail: String,
   cacheDirectory: File,
-  addLoggingInterceptor: Boolean = false
-): OkHttpClient {
-  return OkHttpClient.Builder()
-    .addInterceptor(CacheControlInterceptor(DAYS_MAX_AGE, DAYS_MIN_FRESH, DAYS_MAX_STALE))
-    .addInterceptor(ThrottlingInterceptor(MUSICBRAINZ_MAX_CALLS_PER_SECOND, serviceName))
-    .addInterceptor(BrainzJsonFormatUserAgentInterceptor(appName, appVersion, contactEmail))
-    .interceptLoggingInDebug(addLoggingInterceptor)
-    .cache(Cache(cacheDirectory, TEN_MEG.toLong()))
-    .build()
-}
-
-@Suppress("NOTHING_TO_INLINE")
-internal inline fun OkHttpClient.Builder.interceptLoggingInDebug(
-  addLoggingInterceptor: Boolean
-): OkHttpClient.Builder {
-  if (addLoggingInterceptor) {
-    addInterceptor(
-      HttpLoggingInterceptor { message ->
-        LOG.i { it(message) }
-      }.apply {
-        level = HttpLoggingInterceptor.Level.BASIC
-      }
-    )
+  credentialsProvider: CredentialsProvider? = null,
+  addLoggingInterceptor: Boolean = true
+): OkHttpClient = OkHttpClient.Builder().apply {
+  if (credentialsProvider != null) {
+    val authCache = ConcurrentHashMap<String, CachingAuthenticator>()
+    authenticator(DigestAuthenticator(RuntimeCredentials(credentialsProvider)))
+    addInterceptor(AuthenticationCacheInterceptor(authCache))
   }
-  return this
+  addInterceptor(CacheControlInterceptor(DAYS_MAX_AGE, DAYS_MIN_FRESH, DAYS_MAX_STALE))
+  addInterceptor(ThrottlingInterceptor(MUSICBRAINZ_MAX_CALLS_PER_SECOND, serviceName))
+  addInterceptor(BrainzJsonFormatUserAgentInterceptor(appName, appVersion, contactEmail))
+  if (addLoggingInterceptor) {
+    addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+  }
+  cache(Cache(cacheDirectory, TEN_MEG.toLong()))
+}.build()
+
+/**
+ * Implement okhttp-digest Credentials so we don't have to create with username/pwd at construction
+ * and instead get when needed. Client will decide how this info is obtained.
+ */
+private class RuntimeCredentials(private val provider: CredentialsProvider) : Credentials("", "") {
+  override fun getUserName(): String {
+    return provider.userName
+  }
+
+  override fun getPassword(): String {
+    return provider.password
+  }
 }

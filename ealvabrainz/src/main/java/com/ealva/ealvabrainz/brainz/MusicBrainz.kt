@@ -21,16 +21,21 @@ import com.ealva.ealvabrainz.brainz.data.Area
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistList
 import com.ealva.ealvabrainz.brainz.data.BrowseArtistList
+import com.ealva.ealvabrainz.brainz.data.BrowseEventList
+import com.ealva.ealvabrainz.brainz.data.BrowseLabelList
+import com.ealva.ealvabrainz.brainz.data.BrowsePlaceList
 import com.ealva.ealvabrainz.brainz.data.BrowseRecordingList
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseList
 import com.ealva.ealvabrainz.brainz.data.BrowseWorkList
+import com.ealva.ealvabrainz.brainz.data.CdStubList
 import com.ealva.ealvabrainz.brainz.data.DiscLookupList
 import com.ealva.ealvabrainz.brainz.data.Event
 import com.ealva.ealvabrainz.brainz.data.Genre
 import com.ealva.ealvabrainz.brainz.data.Instrument
 import com.ealva.ealvabrainz.brainz.data.IsrcRecordingList
 import com.ealva.ealvabrainz.brainz.data.Label
+import com.ealva.ealvabrainz.brainz.data.LabelList
 import com.ealva.ealvabrainz.brainz.data.Place
 import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.RecordingList
@@ -39,8 +44,10 @@ import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.ReleaseList
 import com.ealva.ealvabrainz.brainz.data.Series
+import com.ealva.ealvabrainz.brainz.data.TagList
 import com.ealva.ealvabrainz.brainz.data.Url
 import com.ealva.ealvabrainz.brainz.data.Work
+import com.ealva.ealvabrainz.brainz.data.WorkList
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -62,18 +69,21 @@ import retrofit2.http.QueryMap
  * Be sure to read [MusicBrainz requirements](https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings)
  * for querying their servers.
  *
- * [MusicBrainz query documentation](https://musicbrainz.org/doc/Development/XML_Web_Service/Version_2/Search)
+ * [MusicBrainz API](https://musicbrainz.org/doc/MusicBrainz_API
+ *
+ * [MusicBrainz query](https://musicbrainz.org/doc/Development/XML_Web_Service/Version_2/Search)
  *
  * [Lucene Query syntax](https://lucene.apache.org/core/7_7_2/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package.description)
  */
 public interface MusicBrainz {
   /**
-   * Lookup Area by mbid, example is the city "Pärnu"
-   * https://musicbrainz.org/ws/2/area/45f07934-675a-46d6-a577-6f8637a411b1?inc=aliases&fmt=json
+   * [mbid] is an Area MBID and [include] is the list of relationships, or other misc includes, to
+   * specify how much of the data about the linked entities should be included
    *
-   * @param mbid the Area mbid, 45f07934-675a-46d6-a577-6f8637a411b1 in above example
-   * @param include the list of relationships, or other misc includes, to specify how
-   * much of the data about the linked entities should be included
+   * [See](https://musicbrainz.org/doc/MusicBrainz_API/Examples#Area)
+   *
+   * Example lookup Area by mbid for the city
+   * ["Pärnu"](https://musicbrainz.org/ws/2/area/45f07934-675a-46d6-a577-6f8637a411b1?inc=aliases&fmt=json)
    */
   @GET("area/{mbid}")
   public suspend fun lookupArea(
@@ -87,13 +97,13 @@ public interface MusicBrainz {
   ): Response<Area>
 
   /**
-   * An example for looking up Nirvana by mbid would be:
-   * [http://musicbrainz.org/ws/2/artist/5b11f4ce-a62d-471e-81fc-a69a8278c7da?fmt=json]
+   * [mbid] is an Artist MBID and the [options] QueryMap may contain "inc", "type", and/or
+   * "status".
    *
-   * Map may contain "inc", "type", and/or "status"
+   * [See](https://musicbrainz.org/doc/MusicBrainz_API/Examples#Artist)
    *
-   * @param mbid        the artist mbid. In the example this would be:
-   * 5b11f4ce-a62d-471e-81fc-a69a8278c7da
+   * Example lookup for the Artist
+   * [Nirvana](http://musicbrainz.org/ws/2/artist/5b11f4ce-a62d-471e-81fc-a69a8278c7da?fmt=json)
    */
   @GET("artist/{mbid}")
   public suspend fun lookupArtist(
@@ -102,12 +112,13 @@ public interface MusicBrainz {
   ): Response<Artist>
 
   /**
-   * Lookup Event by mbid, example is the event "Nine Inch Nails at Arena Riga"
-   * https://musicbrainz.org/ws/2/event/fe39727a-3d21-4066-9345-3970cbd6cca4?inc=aliases+artist-rels+place-rels&fmt=json
+   * [mbid] is an Event MBID and [include] is the list of relationships, or other misc includes, to
+   * specify how much of the data about the linked entities should be included
    *
-   * @param mbid the Event mbid, fe39727a-3d21-4066-9345-3970cbd6cca4 in above example
-   * @param include the list of relationships, or other misc includes, to specify how
-   * much of the data about the linked entities should be included
+   * [See](https://musicbrainz.org/doc/MusicBrainz_API/Examples#Event)
+   *
+   * Example lookup for Event
+   * [Nine Inch Nails at Arena Riga]()https://musicbrainz.org/ws/2/event/fe39727a-3d21-4066-9345-3970cbd6cca4?inc=aliases+artist-rels+place-rels&fmt=json)
    */
   @GET("event/{mbid}")
   public suspend fun lookupEvent(
@@ -121,12 +132,13 @@ public interface MusicBrainz {
   ): Response<Event>
 
   /**
-   * Lookup Genre by mbid, example is the genre "crust punk"
-   * http://musicbrainz.org/ws/2/genre/f66d7266-eb3d-4ef3-b4d8-b7cd992f918b&fmt=json
+   * [mbid] is a Genre mbid and [include] is the list of relationships, or other misc includes, to
+   * specify how much of the data about the linked entities should be included
    *
-   * @param mbid the Genre mbid, f66d7266-eb3d-4ef3-b4d8-b7cd992f918b in above example
-   * @param include the list of relationships, or other misc includes, to specify how
-   * much of the data about the linked entities should be included
+   * [See](https://musicbrainz.org/doc/MusicBrainz_API/Examples#Genre)
+   *
+   * Example lookup for Genre
+   * [crust punk]()http://musicbrainz.org/ws/2/genre/f66d7266-eb3d-4ef3-b4d8-b7cd992f918b&fmt=json)
    */
   @GET("genre/{mbid}")
   public suspend fun lookupGenre(
@@ -140,12 +152,13 @@ public interface MusicBrainz {
   ): Response<Genre>
 
   /**
-   * Lookup Instrument by mbid, example is the instrument "kemanak"
-   * https://musicbrainz.org/ws/2/instrument/dd430e7f-36ba-49a5-825b-80a525e69190?inc=aliases&fmt=json
+   * [mbid] is an Instrument MBID and [include] is the list of relationships, or other misc
+   * includes, to specify how much of the data about the linked entities should be included
    *
-   * @param mbid the Instrument mbid, dd430e7f-36ba-49a5-825b-80a525e69190 in above example
-   * @param include the list of relationships, or other misc includes, to specify how
-   * much of the data about the linked entities should be included
+   * [See](https://musicbrainz.org/doc/MusicBrainz_API/Examples#Instrument)
+   *
+   * Example lookup for Instrument
+   * [kemanak](https://musicbrainz.org/ws/2/instrument/dd430e7f-36ba-49a5-825b-80a525e69190?inc=aliases&fmt=json)
    */
   @GET("instrument/{mbid}")
   public suspend fun lookupInstrument(
@@ -159,11 +172,13 @@ public interface MusicBrainz {
   ): Response<Instrument>
 
   /**
-   * [mbid] is a Label mbid, c595c289-47ce-4fba-b999-b87503e8cb71 in above example, and [options]
-   * may contain "inc", "type", and/or "status"\
+   * [mbid] is a Label MBID and the [options] QueryMap may contain "inc", "type", and/or
+   * "status".
    *
-   * An example for looking up a Label (Warner Bros. Records in this example) by mbid is:
-   * http://musicbrainz.org/ws/2/label/c595c289-47ce-4fba-b999-b87503e8cb71?inc=ratings+annotation&fmt=json
+   * [See](https://musicbrainz.org/doc/MusicBrainz_API/Examples#Label)
+   *
+   * Example lookup for Label
+   * [Warner Bros. Records](http://musicbrainz.org/ws/2/label/c595c289-47ce-4fba-b999-b87503e8cb71?inc=ratings+annotation&fmt=json)
    */
   @GET("label/{mbid}")
   public suspend fun lookupLabel(
@@ -172,12 +187,13 @@ public interface MusicBrainz {
   ): Response<Label>
 
   /**
-   * Lookup Place by mbid, example is the place "Arēna Rīga"
-   * https://musicbrainz.org/ws/2/place/478558f9-a951-4067-ad91-e83f6ba63e74?inc=aliases&fmt=json
+   * [mbid] is a Place MBID and [include] is the list of relationships, or other misc
+   * includes, to specify how much of the data about the linked entities should be included
    *
-   * @param mbid the Place mbid, 46d8f693-52e4-4d03-936f-7ca8459019a7 in above example
-   * @param include the list of relationships, or other misc includes, to specify how
-   * much of the data about the linked entities should be included
+   * [See](https://musicbrainz.org/doc/MusicBrainz_API/Examples#Place)
+   *
+   * Example lookup for Place
+   * [Arēna Rīga](https://musicbrainz.org/ws/2/place/478558f9-a951-4067-ad91-e83f6ba63e74?inc=aliases&fmt=json)
    */
   @GET("place/{mbid}")
   public suspend fun lookupPlace(
@@ -191,10 +207,10 @@ public interface MusicBrainz {
   ): Response<Place>
 
   /**
-   * [mbid] is the recording mbid and [options] may contain "inc", "type", and/or "status"
+   * [mbid] is a Recording MBID and [options] QueryMap may contain "inc", "type", and/or "status"
    *
-   * An example for lookup by mbid would be:
-   * http://musicbrainz.org/ws/2/recording/fcbcdc39-8851-4efc-a02a-ab0e13be224f?fmt=json
+   * Example lookup for Recording
+   * [LAST ANGEL](http://musicbrainz.org/ws/2/recording/fcbcdc39-8851-4efc-a02a-ab0e13be224f?fmt=json)
    */
   @GET("recording/{mbid}")
   public suspend fun lookupRecording(
@@ -203,12 +219,12 @@ public interface MusicBrainz {
   ): Response<Recording>
 
   /**
-   * Lookup by mbid for Release. Example is Led Zeppelin's "Houses of the Holy"
+   * [mbid] is a Release MBID and [options] QueryMap may contain "inc", "type", and/or "status"
    *
-   * [https://musicbrainz.org/ws/2/release/938cef50-de9a-3ced-a1fe-bdfbd3bc4315?fmt=json](https://musicbrainz.org/ws/2/release/938cef50-de9a-3ced-a1fe-bdfbd3bc4315?fmt=json)
+   * [See](https://musicbrainz.org/doc/MusicBrainz_API/Examples#Release)
    *
-   * [mbid] is the release mbid. In the example this would be: 938cef50-de9a-3ced-a1fe-bdfbd3bc4315
-   * and [options] may contain "inc", "type", and/or "status"
+   * Example lookup for Release
+   * [Houses of the Holy](https://musicbrainz.org/ws/2/release/938cef50-de9a-3ced-a1fe-bdfbd3bc4315?fmt=json)
    */
   @GET("release/{mbid}")
   public suspend fun lookupRelease(
@@ -217,10 +233,12 @@ public interface MusicBrainz {
   ): Response<Release>
 
   /**
-   * [mbid] is a release group mbid and [options] may contain "inc", "type", and/or "status"
+   * [mbid] is a Release Group MBID and [options] may contain "inc", "type", and/or "status"
    *
-   * An example for looking up release group The Essential Alice in Chains by mbid would be:
-   * https://musicbrainz.org/ws/2/release-group/e1b7e76e-09ff-36fd-b1fd-0c6cb199b817?fmt=json
+   * [See](https://musicbrainz.org/doc/MusicBrainz_API/Examples#Release_Group)
+   *
+   * Example lookup for Release Group
+   * [The Essential Alice in Chains](https://musicbrainz.org/ws/2/release-group/e1b7e76e-09ff-36fd-b1fd-0c6cb199b817?fmt=json)
    */
   @GET("release-group/{mbid}")
   public suspend fun lookupReleaseGroup(
@@ -229,12 +247,11 @@ public interface MusicBrainz {
   ): Response<ReleaseGroup>
 
   /**
-   * Lookup Series by mbid, example is the series "The MDNA Tour"
-   * https://musicbrainz.org/ws/2/series/300676c6-6e63-4d4d-9084-089efcd0113f?fmt=json
+   * [mbid] is a Series MBID and [include] is the list of relationships, or other misc
+   * includes, to specify how much of the data about the linked entities should be included
    *
-   * @param mbid the Series mbid, 300676c6-6e63-4d4d-9084-089efcd0113f in above example
-   * @param include the list of relationships, or other misc includes, to specify how
-   * much of the data about the linked entities should be included
+   * Example lookup for Series
+   * [The MDNA Tour](https://musicbrainz.org/ws/2/series/300676c6-6e63-4d4d-9084-089efcd0113f?fmt=json)
    */
   @GET("series/{mbid}")
   public suspend fun lookupSeries(
@@ -248,12 +265,13 @@ public interface MusicBrainz {
   ): Response<Series>
 
   /**
-   * Lookup Url by mbid, example is the url "https://www.arvopart.ee/"
-   * https://musicbrainz.org/ws/2/url/46d8f693-52e4-4d03-936f-7ca8459019a7?fmt=json
+   * [mbid] is an Url MBID and [include] is the list of relationships, or other misc
+   * includes, to specify how much of the data about the linked entities should be included
    *
-   * @param mbid the Url mbid, 46d8f693-52e4-4d03-936f-7ca8459019a7 in above example
-   * @param include the list of relationships, or other misc includes, to specify how
-   * much of the data about the linked entities should be included
+   * [See](https://musicbrainz.org/doc/MusicBrainz_API/Examples#URL)
+   *
+   * Example lookup for Url
+   * [https://www.arvopart.ee/](https://musicbrainz.org/ws/2/url/46d8f693-52e4-4d03-936f-7ca8459019a7?fmt=json)
    */
   @GET("url/{mbid}")
   public suspend fun lookupUrl(
@@ -267,12 +285,13 @@ public interface MusicBrainz {
   ): Response<Url>
 
   /**
-   * Lookup Work by mbid, example is the work entitled "HELLO! また会おうね"
-   * http://musicbrainz.org/ws/2/work/b1df2cf3-69a9-3bc0-be44-f71e79b27a22?inc=artist-rels&fmt=json
+   * [mbid] is an Work MBID and [include] is the list of relationships, or other misc
+   * includes, to specify how much of the data about the linked entities should be included
    *
-   * @param mbid the Work mbid, b1df2cf3-69a9-3bc0-be44-f71e79b27a22 in above example
-   * @param include the list of relationships, or other misc includes, to specify how
-   * much of the data about the linked entities should be included
+   * [See](https://musicbrainz.org/doc/MusicBrainz_API/Examples#Work)
+   *
+   * Example lookup for Work
+   * [HELLO! また会おうね](http://musicbrainz.org/ws/2/work/b1df2cf3-69a9-3bc0-be44-f71e79b27a22?inc=artist-rels&fmt=json)
    */
   @GET("work/{mbid}")
   public suspend fun lookupWork(
@@ -286,26 +305,27 @@ public interface MusicBrainz {
   ): Response<Work>
 
   /**
+   * [discId] is a Disc ID and [options] QueryMap may contain "inc", "toc", "cdstubs"="no", and/or
+   * "media-format"="all"
    *
-   * QueryMap
-   * inc=""
-   * toc=""
-   * cdstubs=no
-   * media-format=all
+   * [See](https://musicbrainz.org/doc/MusicBrainz_API#discid)
+   *
+   * Example [DiscID](https://musicbrainz.org/ws/2/discid/I5l9cCSFccLKFEKS.7wqSZAorPU-?toc=1+12+267257+150+22767+41887+58317+72102+91375+104652+115380+132165+143932+159870+174597&cdstubs=no&media-format=all&fmt=json)
    */
   @GET("discid/{discid}")
   public suspend fun lookupDisc(
-    @Path("discid") discid: String,
+    @Path("discid") discId: String,
     @QueryMap options: Map<String, String> = emptyMap()
   ): Response<DiscLookupList>
 
   /**
+   * A "fuzzy" TOC search is a Disc ID lookup that uses the Table of Contents to attempt to find a
+   * matching Disc. [options] QueryMap must contain a "toc" and may contain "inc", "cdstubs"="no",
+   * and/or "media-format"="all"
    *
-   * QueryMap
-   * inc=""
-   * toc=""
-   * cdstubs=no
-   * media-format=all
+   * [See](https://musicbrainz.org/doc/MusicBrainz_API#discid)
+   *
+   * Example [Fuzzy Toc Lookup](https://musicbrainz.org/ws/2/discid/-?toc=1+12+267257+150+22767+41887+58317+72102+91375+104652+115380+132165+143932+159870+174597&fmt=json)
    */
   @GET("discid/-}")
   public suspend fun fuzzyLookupTOC(
@@ -316,9 +336,11 @@ public interface MusicBrainz {
    * An [isrc] lookup returns a list of recordings and [options] may contain "inc", "type", and/or
    * "status", which are identical to a [lookupRecording].
    *
+   * [See](https://musicbrainz.org/doc/MusicBrainz_API#isrc)
    * [ISRC](https://isrc.ifpi.org/)
-   *
    * [MusicBrainz ISRC](https://musicbrainz.org/doc/ISRC#Determining_ISRCs_of_recordings)
+   *
+   * Example [ISRC](https://musicbrainz.org/ws/2/isrc/JPB600760301?inc=artist-credits&fmt=json)
    */
   @GET("isrc/{isrc}")
   public suspend fun lookupIsrc(
@@ -327,8 +349,13 @@ public interface MusicBrainz {
   ): Response<IsrcRecordingList>
 
   /**
-   * An ISWC lookup returns a list of works, the 'inc=' arguments supported are identical to a
-   * lookup request for a work.
+   * An [iswc] lookup returns a list of works, the 'inc=' arguments supported are identical to a
+   * lookup request for a Work.
+   *
+   * [See](https://musicbrainz.org/doc/MusicBrainz_API#iswc)
+   * [ISWC](https://iswcnet.cisac.org/)
+   *
+   * Example [ISWC](https://musicbrainz.org/ws/2/iswc/T-101.690.320-9?fmt=json)
    */
   @GET("iswc/{iswc}")
   public suspend fun lookupIswc(
@@ -343,7 +370,7 @@ public interface MusicBrainz {
    * specified. Optional [offset] is used to page results. The count and offset are both
    * returned in the resulting ReleaseList
    *
-   * [Example: http://musicbrainz.org/ws/2/artist/?query=artist:%22Led%20Zeppelin%22&fmt=json](http://musicbrainz.org/ws/2/artist/?query=artist:%22Led%20Zeppelin%22&fmt=json)
+   * [Example](http://musicbrainz.org/ws/2/artist/?query=artist:%22Led%20Zeppelin%22&fmt=json)
    *
    * @param query full MusicBrainz lucene query
    * @param limit 1..100 inclusive are valid. If skipped, defaults to 25
@@ -355,6 +382,24 @@ public interface MusicBrainz {
     @Query("limit") limit: Int? = null,
     @Query("offset") offset: Int? = null
   ): Response<ArtistList>
+
+  /**
+   *
+   * [Example](http://musicbrainz.org/ws/2/cdstub/?query=title:Doo)
+   */
+  @GET("cdstub")
+  public suspend fun findCDStub(
+    @Query("query") query: String,
+    @Query("limit") limit: Int? = null,
+    @Query("offset") offset: Int? = null
+  ): Response<CdStubList>
+
+  @GET("label")
+  public suspend fun findLabel(
+    @Query("query") query: String,
+    @Query("limit") limit: Int? = null,
+    @Query("offset") offset: Int? = null
+  ): Response<LabelList>
 
   /**
    * Example is a query for Recording with MBID of "0fc4f7e7-8dcc-4dd3-8d35-d6f4c1f6b0f2", which is
@@ -415,6 +460,23 @@ public interface MusicBrainz {
     @Query("offset") offset: Int? = null
   ): Response<ReleaseGroupList>
 
+  @GET("tag")
+  public suspend fun findTag(
+    @Query("query") query: String,
+    @Query("limit") limit: Int? = null,
+    @Query("offset") offset: Int? = null
+  ): Response<TagList>
+
+  /**
+   * https://musicbrainz.org/ws/2/work/?query=work:Frozen%20AND%20arid:4c006444-ccbf-425e-b3e7-03a98bab5997&fmt=json
+   */
+  @GET("work")
+  public suspend fun findWork(
+    @Query("query") query: String,
+    @Query("limit") limit: Int? = null,
+    @Query("offset") offset: Int? = null
+  ): Response<WorkList>
+
   /**
    * Only one of:
    * * area
@@ -429,6 +491,42 @@ public interface MusicBrainz {
   public suspend fun browseArtists(
     @QueryMap options: Map<String, String>
   ): Response<BrowseArtistList>
+
+  /**
+   * Only one of:
+   * * area
+   * * artist
+   * * place
+   *
+   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
+   */
+  @GET("event")
+  public suspend fun browseEvents(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowseEventList>
+
+  /**
+   * Only one of:
+   * * area
+   * * release
+   *
+   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
+   */
+  @GET("label")
+  public suspend fun browseLabels(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowseLabelList>
+
+  /**
+   * Only one of:
+   * * area
+   *
+   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
+   */
+  @GET("place")
+  public suspend fun browsePlaces(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowsePlaceList>
 
   /**
    * Only one of:
@@ -472,4 +570,15 @@ public interface MusicBrainz {
   public suspend fun browseReleaseGroups(
     @QueryMap options: Map<String, String>
   ): Response<BrowseReleaseGroupList>
+
+  /**
+   * Only one of:
+   * artist
+   *
+   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
+   */
+  @GET("work")
+  public suspend fun browseWorks(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowseWorkList>
 }

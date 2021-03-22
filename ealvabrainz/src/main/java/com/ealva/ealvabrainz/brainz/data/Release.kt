@@ -158,7 +158,7 @@ public class Release(
   @field:Json(name = "primary-type") public var primaryType: String = "",
   public var releases: List<Release> = emptyList(),
   public var relations: List<Relation> = emptyList(),
-  /** Only relevant if returned from query */
+  /** score ranking used in query results */
   public var score: Int = 0
 ) {
 
@@ -235,7 +235,6 @@ public class Release(
     Ratings("ratings")
   }
 
-  @Suppress("unused")
   public enum class SearchField(public val value: String) {
     /** 	(part of) any alias attached to the release (diacritics are ignored) */
     Alias("alias"),

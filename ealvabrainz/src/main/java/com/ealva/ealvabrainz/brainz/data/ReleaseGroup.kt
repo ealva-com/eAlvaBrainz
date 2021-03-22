@@ -94,7 +94,7 @@ public class ReleaseGroup(
   @field:Json(name = "first-release-date") public var firstReleaseDate: String = "",
   public var aliases: List<Alias> = emptyList(),
   public var relations: List<Relation> = emptyList(),
-  /** Only used in search results */
+  /** score ranking used in query results */
   public var score: Int = 0
 ) {
   override fun equals(other: Any?): Boolean {
@@ -139,10 +139,7 @@ public class ReleaseGroup(
     }
   }
 
-  @Suppress("unused")
   public enum class Browse(override val value: String) : Lookup {
-    Artist("artist"),
-    Release("release"),
     ArtistCredits("artist-credits"),
     Annotation("annotation"),
     Tags("tags"),

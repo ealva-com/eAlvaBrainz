@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  Eric A. Snell
+ * Copyright (c) 2021  Eric A. Snell
  *
  * This file is part of eAlvaBrainz
  *
@@ -17,25 +17,13 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.Tag.Companion.NullTag
+import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-public data class Tag(
-  public var name: String = "",
+public class CdStubList(
+  public var created: String = "",
   public var count: Int = 0,
-  /** score ranking used in query results */
-  public var score: Int = 0
-) {
-  public enum class SearchField(public val value: String) {
-    Tag("tag")
-  }
-
-  public companion object {
-    public val NullTag: Tag = Tag(name = NullObject.NAME)
-    public val fallbackMapping: Pair<String, Any> = Tag::class.java.name to NullTag
-  }
-}
-
-public val Tag.isNullObject: Boolean
-  get() = this === NullTag
+  public var offset: Int = 0,
+  @field:Json(name = "cdstubs") public var cdStubs: List<CdStub> = emptyList()
+)

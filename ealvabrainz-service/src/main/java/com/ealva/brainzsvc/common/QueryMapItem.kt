@@ -20,6 +20,7 @@ package com.ealva.brainzsvc.common
 import com.ealva.ealvabrainz.common.AreaMbid
 import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.LabelMbid
+import com.ealva.ealvabrainz.common.PlaceMbid
 import com.ealva.ealvabrainz.common.RecordingMbid
 import com.ealva.ealvabrainz.common.ReleaseGroupMbid
 import com.ealva.ealvabrainz.common.ReleaseMbid
@@ -40,6 +41,10 @@ public open class ArtistQueryMapItem(private val artistMbid: ArtistMbid) : Query
 
 public open class LabelQueryMapItem(private val labelMbid: LabelMbid) : QueryMapItem {
   override fun put(map: QueryMap): QueryMap = map.label(labelMbid)
+}
+
+public open class PlaceQueryMapItem(private val placeMbid: PlaceMbid) : QueryMapItem {
+  override fun put(map: QueryMap): QueryMap = map.place(placeMbid)
 }
 
 public open class RecordingQueryMapItem(private val recordingMbid: RecordingMbid) : QueryMapItem {

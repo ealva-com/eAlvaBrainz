@@ -4,14 +4,19 @@
       <w>audiobook</w>
       <w>brainz</w>
       <w>brainzsvc</w>
+      <w>cdstub</w>
+      <w>cdstubs</w>
+      <w>discid</w>
       <w>discids</w>
       <w>ealvabrainz</w>
       <w>isrc</w>
       <w>isrcs</w>
       <w>iswc</w>
       <w>leadout</w>
+      <w>misconfigured</w>
       <w>moshi</w>
       <w>okhttp</w>
+      <w>peeker</w>
       <w>rels</w>
       <w>subqueries</w>
       <w>subquery</w>

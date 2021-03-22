@@ -20,12 +20,14 @@ package com.ealva.ealvabrainz.brainz.data
 internal object FallbackMap {
   internal val map = mapOf(
     Alias.fallbackMapping,
+    Annotation.fallbackMapping,
     Area.fallbackMapping,
     AreaRelation.fallbackMapping,
     Artist.fallbackMapping,
     ArtistCredit.fallbackMapping,
     ArtistRelation.fallbackMapping,
     Attribute.fallbackMapping,
+    CdStub.fallbackMapping,
     Coordinates.fallbackMapping,
     CoverArtArchive.fallbackMapping,
     CoverArtImage.fallbackMapping,

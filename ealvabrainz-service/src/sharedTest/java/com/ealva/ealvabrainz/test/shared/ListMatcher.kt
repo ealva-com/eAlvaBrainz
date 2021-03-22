@@ -15,23 +15,30 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-@file:Suppress(
-  "NO_EXPLICIT_VISIBILITY_IN_API_MODE_WARNING",
-  "NO_EXPLICIT_RETURN_TYPE_IN_API_MODE_WARNING"
-)
+package com.ealva.ealvabrainz.test.shared
 
-package com.ealva.brainzsvc.android.service
+import com.nhaarman.expect.ListMatcher
+import com.nhaarman.expect.fail
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.runner.RunWith
-import org.junit.runners.Suite
+public fun <T> ListMatcher<T>.toNotBeEmpty(message: (() -> Any?)? = null) {
+  if (actual == null) {
+    fail("Expected value to be empty, but the actual value was null.", message)
+  }
 
-@ExperimentalUnsignedTypes
-@ExperimentalCoroutinesApi
-@RunWith(Suite::class)
-@Suite.SuiteClasses(
-  MusicBrainzFindSmokeTest::class,
-  MusicBrainzLookupSmokeTest::class,
-  MusicBrainzBrowseSmokeTest::class
-)
-class AndroidTestSuite
+  if (actual?.isEmpty() == true) {
+    fail("Expected $actual to not be empty.", message)
+  }
+}
+
+public fun <T> ListMatcher<T>.toHaveAny(
+  message: (() -> Any?)? = null,
+  predicate: (T) -> Boolean
+) {
+  if (actual == null) {
+    fail("Expected value to be empty, but the actual value was null.", message)
+  }
+
+  if (actual?.any(predicate) != true) {
+    fail("Expected $actual to not be empty.", message)
+  }
+}

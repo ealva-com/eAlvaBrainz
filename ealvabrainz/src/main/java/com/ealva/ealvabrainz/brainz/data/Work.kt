@@ -17,7 +17,6 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.Work.Companion.NullWork
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -49,6 +48,7 @@ import com.squareup.moshi.JsonClass
  * aggregate work unless it is evident that such an album was written with intent to have a
  * specifically ordered sequence of related songs (i.e. a “concept album”).
  */
+@Suppress("unused")
 @JsonClass(generateAdapter = true)
 public class Work(
   /** The MusicBrainz ID (MBID) for this work */
@@ -81,18 +81,10 @@ public class Work(
    */
   public var aliases: List<Alias> = emptyList(),
   public var relations: List<Relation> = emptyList(),
-  public var tags: List<Tag> = emptyList()
+  public var tags: List<Tag> = emptyList(),
+  /** score ranking used in query results */
+  public var score: Int = 0
 ) {
-  public interface Lookup : Include
-
-  @Suppress("unused")
-  public enum class Misc(override val value: String) : Lookup {
-    Aliases("aliases"),
-    Annotation("annotation"),
-    Tags("tags"),
-    Genres("genres")
-  }
-
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (javaClass != other?.javaClass) return false
@@ -108,7 +100,22 @@ public class Work(
 
   override fun toString(): String = toJson()
 
-  @Suppress("unused")
+  public interface Lookup : Include
+
+  public enum class Misc(override val value: String) : Lookup {
+    Aliases("aliases"),
+    Annotation("annotation"),
+    Tags("tags"),
+    Genres("genres")
+  }
+
+  public enum class Browse(override val value: String) : Lookup {
+    Annotation("annotation"),
+    Tags("tags"),
+    Genres("genres"),
+    Ratings("ratings");
+  }
+
   public enum class SearchField(public val value: String) {
     /** the aliases/misspellings for this work */
     Alias("alias"),
@@ -131,7 +138,14 @@ public class Work(
     /** Lyrics language of work */
     Language("lang"),
 
-    /** folksonomy tag */
+    /** (part of) the title of a recording related to the work  */
+    Recording("recording"),
+
+    RecordingId("rid"),
+
+    /** the number of recordings related to the work */
+    RecordingCount("recording_count"),
+
     Tag("tag"),
 
     /** work type */
@@ -154,4 +168,4 @@ public class Work(
 }
 
 public inline val Work.isNullObject: Boolean
-  get() = this === NullWork
+  get() = this === Work.NullWork

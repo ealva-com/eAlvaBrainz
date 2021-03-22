@@ -17,25 +17,16 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.Tag.Companion.NullTag
+import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-public data class Tag(
-  public var name: String = "",
-  public var count: Int = 0,
-  /** score ranking used in query results */
-  public var score: Int = 0
+public class BrowseEventList(
+  @Json(name = "event-count")
+  public var eventCount: Int = 0,
+  @Json(name = "event-offset")
+  public var eventOffset: Int = 0,
+  public var events: List<Event> = emptyList()
 ) {
-  public enum class SearchField(public val value: String) {
-    Tag("tag")
-  }
-
-  public companion object {
-    public val NullTag: Tag = Tag(name = NullObject.NAME)
-    public val fallbackMapping: Pair<String, Any> = Tag::class.java.name to NullTag
-  }
+  override fun toString(): String = toJson()
 }
-
-public val Tag.isNullObject: Boolean
-  get() = this === NullTag

@@ -38,7 +38,6 @@ import com.ealva.ealvabrainz.common.toAlbumTitle
 import com.ealva.ealvabrainz.common.toArtistName
 import com.ealva.ealvabrainz.common.toLabelName
 import com.ealva.ealvabrainz.common.toRecordingTitle
-import com.ealva.ealvabrainz.common.toTrackTitle
 import com.nhaarman.expect.expect
 import com.nhaarman.expect.fail
 import org.junit.Test
@@ -197,7 +196,6 @@ public class TermTest {
     expect(Term(aTitle.toArtistName()).toString()).toBe(escapedTitle)
     expect(Term(aTitle.toLabelName()).toString()).toBe(escapedTitle)
     expect(Term(aTitle.toRecordingTitle()).toString()).toBe(escapedTitle)
-    expect(Term(aTitle.toTrackTitle()).toString()).toBe(escapedTitle)
 
     expect(Term(Release.Type.Album).toString()).toBe(Release.Type.Album.value)
     expect(Term(Release.Status.Official).toString()).toBe(Release.Status.Official.value)

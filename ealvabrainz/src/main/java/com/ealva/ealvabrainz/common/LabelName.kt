@@ -17,15 +17,24 @@
 
 package com.ealva.ealvabrainz.common
 
-/**
- * Convert this String to an [LabelName] or [LabelName.UNKNOWN] if this is null.
- */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toLabelName(): LabelName {
-  return this?.let { LabelName.make(this) } ?: LabelName.UNKNOWN
-}
-
 @JvmInline
+/**
+ * The official name of the label. May be a partial name if used in a query.
+ *
+ * The label name should be represented as found on media sleeves, including use of characters from
+ * non latin charsets, stylized characters, etc.
+ *
+ * If a label is renamed a new label should be created and a label rename relationship created
+ * between the two.
+ *
+ * If there exists multiple slightly different names for the label (eg: The Verve Music Group, Verve
+ * Music Group, VMG), you should use the most commonly used name, or the one used on the label's
+ * official site.
+ *
+ * Labels are not always named uniquely, and different labels may share the same label name. To help
+ * differentiate between identically named labels, you should use a disambiguation comment and
+ * possibly an annotation as well.
+ */
 public value class LabelName(public val value: String) {
   public companion object {
     public val UNKNOWN: LabelName = LabelName("Unknown")
@@ -34,4 +43,12 @@ public value class LabelName(public val value: String) {
     public inline fun make(value: String): LabelName =
       LabelName(value.trim())
   }
+}
+
+/**
+ * Convert this String to an [LabelName] or [LabelName.UNKNOWN] if this is null.
+ */
+@Suppress("NOTHING_TO_INLINE")
+public inline fun String?.toLabelName(): LabelName {
+  return this?.let { LabelName.make(this) } ?: LabelName.UNKNOWN
 }

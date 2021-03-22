@@ -19,13 +19,8 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.Area.Companion.NullArea
-import com.ealva.ealvabrainz.log.BrainzLog
-import com.ealva.ealvalog.lazyLogger
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-
-private val LOG by lazyLogger(Area::class, BrainzLog.marker)
 
 /**
  * Areas are geographic regions or settlements. Areas are usually kept in sync with their
@@ -170,4 +165,4 @@ public class Area(
 }
 
 public inline val Area.isNullObject: Boolean
-  get() = this === NullArea
+  get() = this === Area.NullArea

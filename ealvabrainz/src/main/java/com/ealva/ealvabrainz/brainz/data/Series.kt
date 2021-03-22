@@ -21,21 +21,36 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /**
- * ```json
- * "series": {
- *     "name": "Rolling Stone: 500 Greatest Albums of All Time: 2012 edition",
- *     "id": "8668518f-4a1e-4802-8b0d-81703ced6418",
- *     "disambiguation": ""
- * },
- * ```
+ * A series is a sequence of separate release groups, releases, recordings, works or events with a
+ * common theme. The theme is usually prominent in the branding of the entities in the series and
+ * the individual entities will often have been given a number indicating the position in the
+ * series.
  */
 @JsonClass(generateAdapter = true)
 public class Series(
+  /** The Series MBID */
   public var id: String = "",
+  /** The official name of the series. */
   public var name: String = "",
   public var disambiguation: String = "",
+  /**
+   * The type primarily describes what type of entity the series contains. The possible values are:
+   * * Release group - A series of release groups.
+   * * Release -  A series of releases.
+   * * Recording - A series of recordings.
+   * * Work - A series of works.
+   *     * Catalogue - A series of works which form a catalogue of classical compositions.
+   * * Event - A series of events.
+   *     * Tour - A series of related concerts by an artist in different locations.
+   *     * Festival - A recurring festival, usually happening annually in the same location.
+   *     * Run - A series of performances of the same show at the same venue.
+   */
   public var type: String = "",
   @field:Json(name = "type-id") public var typeId: String = "",
+  /**
+   * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
+   */
+  public var annotation: String = "",
   public var relations: List<Relation> = emptyList()
 ) {
 

@@ -28,12 +28,20 @@ import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzError
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzNullReturn
 import com.ealva.brainzsvc.service.browse.ArtistBrowse
 import com.ealva.brainzsvc.service.browse.ArtistBrowseOp
+import com.ealva.brainzsvc.service.browse.EventBrowse
+import com.ealva.brainzsvc.service.browse.EventBrowseOp
+import com.ealva.brainzsvc.service.browse.LabelBrowse
+import com.ealva.brainzsvc.service.browse.LabelBrowseOp
+import com.ealva.brainzsvc.service.browse.PlaceBrowse
+import com.ealva.brainzsvc.service.browse.PlaceBrowseOp
 import com.ealva.brainzsvc.service.browse.RecordingBrowse
 import com.ealva.brainzsvc.service.browse.RecordingBrowseOp
 import com.ealva.brainzsvc.service.browse.ReleaseBrowse
 import com.ealva.brainzsvc.service.browse.ReleaseBrowseOp
 import com.ealva.brainzsvc.service.browse.ReleaseGroupBrowse
 import com.ealva.brainzsvc.service.browse.ReleaseGroupBrowseOp
+import com.ealva.brainzsvc.service.browse.WorkBrowse
+import com.ealva.brainzsvc.service.browse.WorkBrowseOp
 import com.ealva.brainzsvc.service.lookup.AreaLookup
 import com.ealva.brainzsvc.service.lookup.AreaLookupOp
 import com.ealva.brainzsvc.service.lookup.ArtistLookup
@@ -63,18 +71,26 @@ import com.ealva.brainzsvc.service.lookup.UrlLookupOp
 import com.ealva.brainzsvc.service.lookup.WorkLookup
 import com.ealva.brainzsvc.service.lookup.WorkLookupOp
 import com.ealva.brainzsvc.service.search.ArtistSearch
+import com.ealva.brainzsvc.service.search.CdStubSearch
+import com.ealva.brainzsvc.service.search.LabelSearch
 import com.ealva.brainzsvc.service.search.RecordingSearch
 import com.ealva.brainzsvc.service.search.ReleaseGroupSearch
 import com.ealva.brainzsvc.service.search.ReleaseSearch
+import com.ealva.brainzsvc.service.search.TagSearch
+import com.ealva.brainzsvc.service.search.WorkSearch
 import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.Area
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistList
 import com.ealva.ealvabrainz.brainz.data.BrowseArtistList
+import com.ealva.ealvabrainz.brainz.data.BrowseEventList
+import com.ealva.ealvabrainz.brainz.data.BrowseLabelList
+import com.ealva.ealvabrainz.brainz.data.BrowsePlaceList
 import com.ealva.ealvabrainz.brainz.data.BrowseRecordingList
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseList
 import com.ealva.ealvabrainz.brainz.data.BrowseWorkList
+import com.ealva.ealvabrainz.brainz.data.CdStubList
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
 import com.ealva.ealvabrainz.brainz.data.DiscLookupList
 import com.ealva.ealvabrainz.brainz.data.Event
@@ -82,6 +98,7 @@ import com.ealva.ealvabrainz.brainz.data.Genre
 import com.ealva.ealvabrainz.brainz.data.Instrument
 import com.ealva.ealvabrainz.brainz.data.IsrcRecordingList
 import com.ealva.ealvabrainz.brainz.data.Label
+import com.ealva.ealvabrainz.brainz.data.LabelList
 import com.ealva.ealvabrainz.brainz.data.Place
 import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.RecordingList
@@ -90,8 +107,10 @@ import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.ReleaseList
 import com.ealva.ealvabrainz.brainz.data.Series
+import com.ealva.ealvabrainz.brainz.data.TagList
 import com.ealva.ealvabrainz.brainz.data.Url
 import com.ealva.ealvabrainz.brainz.data.Work
+import com.ealva.ealvabrainz.brainz.data.WorkList
 import com.ealva.ealvabrainz.brainz.data.the250
 import com.ealva.ealvabrainz.brainz.data.the500
 import com.ealva.ealvabrainz.common.AreaMbid
@@ -125,6 +144,16 @@ import kotlinx.coroutines.withContext
 import retrofit2.Response
 import retrofit2.Retrofit
 import java.io.File
+
+/**
+ * If calls will be made which require authentication, clients should implement this interface and
+ * pass an instance when constructing the MusicBrainzService. If/when needed this will be used to
+ * provide the credentials.
+ */
+public interface CredentialsProvider {
+  public val userName: String
+  public val password: String
+}
 
 /**
  * A BrainzCall is a suspending function which has a [MusicBrainz] receiver and returns a Retrofit
@@ -338,6 +367,27 @@ public interface MusicBrainzService {
     browse: ArtistBrowse.() -> Unit = {}
   ): BrainzResult<BrowseArtistList>
 
+  public suspend fun browseEvents(
+    browseOn: EventBrowse.BrowseOn,
+    limit: Limit? = null,
+    offset: Offset? = null,
+    browse: EventBrowse.() -> Unit = {}
+  ): BrainzResult<BrowseEventList>
+
+  public suspend fun browseLabels(
+    browseOn: LabelBrowse.BrowseOn,
+    limit: Limit? = null,
+    offset: Offset? = null,
+    browse: LabelBrowse.() -> Unit = {}
+  ): BrainzResult<BrowseLabelList>
+
+  public suspend fun browsePlaces(
+    browseOn: PlaceBrowse.BrowseOn,
+    limit: Limit? = null,
+    offset: Offset? = null,
+    browse: PlaceBrowse.() -> Unit = {}
+  ): BrainzResult<BrowsePlaceList>
+
   public suspend fun browseRecordings(
     browseOn: RecordingBrowse.BrowseOn,
     limit: Limit? = null,
@@ -359,29 +409,65 @@ public interface MusicBrainzService {
     browse: ReleaseGroupBrowse.() -> Unit = {}
   ): BrainzResult<BrowseReleaseGroupList>
 
+  public suspend fun browseWorks(
+    browseOn: WorkBrowse.BrowseOn,
+    limit: Limit? = null,
+    offset: Offset? = null,
+    browse: WorkBrowse.() -> Unit = {}
+  ): BrainzResult<BrowseWorkList>
+
+  // findAnnotation
+
   public suspend fun findArtist(
     limit: Int? = null,
     offset: Int? = null,
     search: ArtistSearch.() -> Unit
   ): BrainzResult<ArtistList>
 
+  public suspend fun findCdStub(
+    limit: Limit? = null,
+    offset: Offset? = null,
+    search: CdStubSearch.() -> Unit
+  ): BrainzResult<CdStubList>
+
+  public suspend fun findLabel(
+    limit: Limit? = null,
+    offset: Offset? = null,
+    search: LabelSearch.() -> Unit
+  ): BrainzResult<LabelList>
+
   public suspend fun findRecording(
-    limit: Int? = null,
-    offset: Int? = null,
+    limit: Limit? = null,
+    offset: Offset? = null,
     search: RecordingSearch.() -> Unit
   ): BrainzResult<RecordingList>
 
   public suspend fun findRelease(
-    limit: Int? = null,
-    offset: Int? = null,
+    limit: Limit? = null,
+    offset: Offset? = null,
     search: ReleaseSearch.() -> Unit
   ): BrainzResult<ReleaseList>
 
   public suspend fun findReleaseGroup(
-    limit: Int? = null,
-    offset: Int? = null,
+    limit: Limit? = null,
+    offset: Offset? = null,
     search: ReleaseGroupSearch.() -> Unit
   ): BrainzResult<ReleaseGroupList>
+
+  /**
+   * Must be logged in which isn't currently supported via this library
+   */
+  public suspend fun findTag(
+    limit: Limit? = null,
+    offset: Offset? = null,
+    search: TagSearch.() -> Unit
+  ): BrainzResult<TagList>
+
+  public suspend fun findWork(
+    limit: Limit? = null,
+    offset: Offset? = null,
+    search: WorkSearch.() -> Unit
+  ): BrainzResult<WorkList>
 
   public suspend fun getReleaseGroupArtwork(mbid: ReleaseGroupMbid): Uri
 
@@ -418,10 +504,17 @@ public interface MusicBrainzService {
       appVersion: String,
       contact: String,
       coverArt: CoverArtService,
+      credentialsProvider: CredentialsProvider? = null,
       dispatcher: CoroutineDispatcher = Dispatchers.IO
     ): MusicBrainzService =
       make(
-        buildMusicBrainz(appName, appVersion, contact, File(ctx.cacheDir, CACHE_DIR)),
+        buildMusicBrainz(
+          appName,
+          appVersion,
+          contact,
+          credentialsProvider,
+          File(ctx.cacheDir, CACHE_DIR)
+        ),
         coverArt,
         dispatcher
       )
@@ -590,6 +683,33 @@ internal class MusicBrainzServiceImpl(
     ArtistBrowseOp(browseOn).apply(browse).execute(this, limit, offset)
   }
 
+  override suspend fun browseEvents(
+    browseOn: EventBrowse.BrowseOn,
+    limit: Limit?,
+    offset: Offset?,
+    browse: EventBrowse.() -> Unit
+  ): BrainzResult<BrowseEventList> = brainz {
+    EventBrowseOp(browseOn).apply(browse).execute(this, limit, offset)
+  }
+
+  override suspend fun browseLabels(
+    browseOn: LabelBrowse.BrowseOn,
+    limit: Limit?,
+    offset: Offset?,
+    browse: LabelBrowse.() -> Unit
+  ): BrainzResult<BrowseLabelList> = brainz {
+    LabelBrowseOp(browseOn).apply(browse).execute(this, limit, offset)
+  }
+
+  override suspend fun browsePlaces(
+    browseOn: PlaceBrowse.BrowseOn,
+    limit: Limit?,
+    offset: Offset?,
+    browse: PlaceBrowse.() -> Unit
+  ): BrainzResult<BrowsePlaceList> = brainz {
+    PlaceBrowseOp(browseOn).apply(browse).execute(this, limit, offset)
+  }
+
   override suspend fun browseRecordings(
     browseOn: RecordingBrowse.BrowseOn,
     limit: Limit?,
@@ -606,6 +726,15 @@ internal class MusicBrainzServiceImpl(
     browse: ReleaseBrowse.() -> Unit
   ): BrainzResult<BrowseReleaseList> = brainz {
     ReleaseBrowseOp(browseOn).apply(browse).execute(this, limit, offset)
+  }
+
+  override suspend fun browseWorks(
+    browseOn: WorkBrowse.BrowseOn,
+    limit: Limit?,
+    offset: Offset?,
+    browse: WorkBrowse.() -> Unit
+  ): BrainzResult<BrowseWorkList> = brainz {
+    WorkBrowseOp(browseOn).apply(browse).execute(this, limit, offset)
   }
 
   override suspend fun browseReleaseGroups(
@@ -625,28 +754,68 @@ internal class MusicBrainzServiceImpl(
     musicBrainz.findArtist(ArtistSearch().apply(search).toString(), limit, offset)
   }
 
+  override suspend fun findCdStub(
+    limit: Limit?,
+    offset: Offset?,
+    search: CdStubSearch.() -> Unit
+  ): BrainzResult<CdStubList> = brainz {
+    musicBrainz.findCDStub(CdStubSearch().apply(search).toString(), limit?.value, offset?.value)
+  }
+
+  override suspend fun findLabel(
+    limit: Limit?,
+    offset: Offset?,
+    search: LabelSearch.() -> Unit
+  ): BrainzResult<LabelList> = brainz {
+    musicBrainz.findLabel(LabelSearch().apply(search).toString(), limit?.value, offset?.value)
+  }
+
   override suspend fun findRecording(
-    limit: Int?,
-    offset: Int?,
+    limit: Limit?,
+    offset: Offset?,
     search: RecordingSearch.() -> Unit
   ): BrainzResult<RecordingList> = brainz {
-    musicBrainz.findRecording(RecordingSearch().apply(search).toString(), limit, offset)
+    musicBrainz.findRecording(
+      RecordingSearch().apply(search).toString(),
+      limit?.value,
+      offset?.value
+    )
   }
 
   override suspend fun findRelease(
-    limit: Int?,
-    offset: Int?,
+    limit: Limit?,
+    offset: Offset?,
     search: ReleaseSearch.() -> Unit
   ): BrainzResult<ReleaseList> = brainz {
-    musicBrainz.findRelease(ReleaseSearch().apply(search).toString(), limit, offset)
+    musicBrainz.findRelease(ReleaseSearch().apply(search).toString(), limit?.value, offset?.value)
   }
 
   override suspend fun findReleaseGroup(
-    limit: Int?,
-    offset: Int?,
+    limit: Limit?,
+    offset: Offset?,
     search: ReleaseGroupSearch.() -> Unit
   ): BrainzResult<ReleaseGroupList> = brainz {
-    musicBrainz.findReleaseGroup(ReleaseGroupSearch().apply(search).toString(), limit, offset)
+    musicBrainz.findReleaseGroup(
+      ReleaseGroupSearch().apply(search).toString(),
+      limit?.value,
+      offset?.value
+    )
+  }
+
+  override suspend fun findTag(
+    limit: Limit?,
+    offset: Offset?,
+    search: TagSearch.() -> Unit
+  ): BrainzResult<TagList> = brainz {
+    musicBrainz.findTag(TagSearch().apply(search).toString(), limit?.value, offset?.value)
+  }
+
+  override suspend fun findWork(
+    limit: Limit?,
+    offset: Offset?,
+    search: WorkSearch.() -> Unit
+  ): BrainzResult<WorkList> = brainz {
+    musicBrainz.findWork(WorkSearch().apply(search).toString(), limit?.value, offset?.value)
   }
 
   override suspend fun <T : Any> brainz(
@@ -705,9 +874,19 @@ private fun buildMusicBrainz(
   appName: String,
   appVersion: String,
   emailContact: String,
+  credentialsProvider: CredentialsProvider?,
   cacheDirectory: File
 ) = Retrofit.Builder()
-  .client(makeOkHttpClient(SERVICE_NAME, appName, appVersion, emailContact, cacheDirectory))
+  .client(
+    makeOkHttpClient(
+      SERVICE_NAME,
+      appName,
+      appVersion,
+      emailContact,
+      cacheDirectory,
+      credentialsProvider
+    )
+  )
   .baseUrl(MUSIC_BRAINZ_API_SECURE_URL)
   .addMoshiConverterFactory()
   .build()

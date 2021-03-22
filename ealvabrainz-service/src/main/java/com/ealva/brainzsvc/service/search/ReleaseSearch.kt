@@ -271,13 +271,6 @@ public class ReleaseSearch : BaseSearch() {
   @OverloadResolutionByLambdaReturnType
   public inline fun status(status: () -> Release.Status): Field = status { Term(status()) }
 
-  @JvmName("tagTerm")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun tag(term: () -> Term): Field = add(SearchField.Tag, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun tag(term: () -> String): Field = tag { Term(term()) }
-
   @JvmName("trackCountTerm")
   @OverloadResolutionByLambdaReturnType
   public inline fun trackCount(term: () -> Term): Field = add(SearchField.TrackCount, term())

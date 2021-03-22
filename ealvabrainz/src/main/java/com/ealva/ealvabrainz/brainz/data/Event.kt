@@ -118,7 +118,7 @@ public class Event(
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
   public var annotation: String = "",
-  /** Used when querying a list of events */
+  /** score ranking used in query results */
   public var score: Int = 0
 ) {
 
@@ -130,6 +130,13 @@ public class Event(
     Annotation("annotation"),
     Tags("tags"),
     Genres("genres")
+  }
+
+  public enum class Browse(override val value: String) : Lookup {
+    Annotation("annotation"),
+    Tags("tags"),
+    Genres("genres"),
+    Ratings("ratings");
   }
 
   @Suppress("unused")

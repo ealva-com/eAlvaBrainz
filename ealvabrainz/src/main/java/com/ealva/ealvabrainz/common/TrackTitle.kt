@@ -17,14 +17,6 @@
 
 package com.ealva.ealvabrainz.common
 
-/**
- * Convert this String to an [TrackTitle] or [TrackTitle.UNKNOWN] if this is null.
- */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toTrackTitle(): TrackTitle {
-  return this?.let { TrackTitle.make(this) } ?: TrackTitle.UNKNOWN
-}
-
 @JvmInline
 public value class TrackTitle(public val value: String) {
   public companion object {
@@ -34,4 +26,12 @@ public value class TrackTitle(public val value: String) {
     public inline fun make(value: String): TrackTitle =
       TrackTitle(value.trim())
   }
+}
+
+/**
+ * Convert this String to an [TrackTitle] or [TrackTitle.UNKNOWN] if this is null.
+ */
+@Suppress("NOTHING_TO_INLINE")
+public inline fun String?.toTrackTitle(): TrackTitle {
+  return this?.let { TrackTitle.make(this) } ?: TrackTitle.UNKNOWN
 }

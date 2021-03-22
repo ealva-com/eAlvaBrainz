@@ -120,7 +120,16 @@ private fun buildCoverArt(
   contactEmail: String,
   cacheDirectory: File
 ) = Retrofit.Builder()
-  .client(makeOkHttpClient(SERVICE_NAME, appName, appVersion, contactEmail, cacheDirectory))
+  .client(
+    makeOkHttpClient(
+      SERVICE_NAME,
+      appName,
+      appVersion,
+      contactEmail,
+      cacheDirectory,
+      addLoggingInterceptor = BuildConfig.DEBUG
+    )
+  )
   .baseUrl(COVER_ART_API_SECURE_URL)
   .addMoshiConverterFactory()
   .build()

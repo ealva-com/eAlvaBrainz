@@ -18,12 +18,14 @@
 package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.Alias.Companion.NullAlias
+import com.ealva.ealvabrainz.brainz.data.Annotation.Companion.NullAnnotation
 import com.ealva.ealvabrainz.brainz.data.Area.Companion.NullArea
 import com.ealva.ealvabrainz.brainz.data.AreaRelation.Companion.NullAreaRelation
 import com.ealva.ealvabrainz.brainz.data.Artist.Companion.NullArtist
 import com.ealva.ealvabrainz.brainz.data.ArtistCredit.Companion.NullArtistCredit
 import com.ealva.ealvabrainz.brainz.data.ArtistRelation.Companion.NullArtistRelation
 import com.ealva.ealvabrainz.brainz.data.Attribute.Companion.NullAttribute
+import com.ealva.ealvabrainz.brainz.data.CdStub.Companion.NullCdStub
 import com.ealva.ealvabrainz.brainz.data.Coordinates.Companion.NullCoordinates
 import com.ealva.ealvabrainz.brainz.data.CoverArtArchive.Companion.NullCoverArtArchive
 import com.ealva.ealvabrainz.brainz.data.CoverArtImage.Companion.NullCoverArtImage
@@ -67,6 +69,7 @@ import org.junit.Test
  */
 internal class FallbackMapTest {
   private val expectedMap: Map<String, Any> = mapOf(
+    Annotation.fallbackMapping,
     Alias.fallbackMapping,
     Area.fallbackMapping,
     AreaRelation.fallbackMapping,
@@ -79,6 +82,7 @@ internal class FallbackMapTest {
     CoverArtImage.fallbackMapping,
     CoverArtRelease.fallbackMapping,
     Disc.fallbackMapping,
+    CdStub.fallbackMapping,
     Event.fallbackMapping,
     EventRelation.fallbackMapping,
     Genre.fallbackMapping,
@@ -126,6 +130,7 @@ internal class FallbackMapTest {
   @Test
   fun `test mappings`() {
     val map = FallbackMap.map.toMutableMap()
+    expect(map.remove(Annotation::class.java.name)).toBe(NullAnnotation)
     expect(map.remove(Alias::class.java.name)).toBe(NullAlias)
     expect(map.remove(Area::class.java.name)).toBe(NullArea)
     expect(map.remove(AreaRelation::class.java.name)).toBe(NullAreaRelation)
@@ -133,6 +138,7 @@ internal class FallbackMapTest {
     expect(map.remove(ArtistRelation::class.java.name)).toBe(NullArtistRelation)
     expect(map.remove(ArtistCredit::class.java.name)).toBe(NullArtistCredit)
     expect(map.remove(Attribute::class.java.name)).toBe(NullAttribute)
+    expect(map.remove(CdStub::class.java.name)).toBe(NullCdStub)
     expect(map.remove(Coordinates::class.java.name)).toBe(NullCoordinates)
     expect(map.remove(CoverArtArchive::class.java.name)).toBe(NullCoverArtArchive)
     expect(map.remove(CoverArtImage::class.java.name)).toBe(NullCoverArtImage)

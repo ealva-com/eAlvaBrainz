@@ -17,10 +17,14 @@
 
 package com.ealva.ealvabrainz.common
 
+import com.ealva.ealvabrainz.brainz.data.CdStub
 import com.ealva.ealvabrainz.brainz.data.Disc
 
 @JvmInline
 public value class DiscId(public val value: String)
 
 public inline val Disc.discId: DiscId
+  get() = DiscId(id)
+
+public inline val CdStub.discId: DiscId
   get() = DiscId(id)

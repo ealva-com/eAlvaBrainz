@@ -18,6 +18,7 @@
 package com.ealva.ealvabrainz.common
 
 @JvmInline
+/** The name of an Area. May be a partial name if used in a query. */
 public value class AreaName(public val value: String) {
   public companion object {
     public val UNKNOWN: AreaName = AreaName("Unknown")

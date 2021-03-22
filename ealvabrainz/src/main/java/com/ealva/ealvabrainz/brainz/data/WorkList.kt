@@ -14,28 +14,16 @@
  * You should have received a copy of the GNU Lesser General Public License along with eAlvaBrainz.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.Tag.Companion.NullTag
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-public data class Tag(
-  public var name: String = "",
+public class WorkList(
+  public var created: String = "",
   public var count: Int = 0,
-  /** score ranking used in query results */
-  public var score: Int = 0
+  public var offset: Int = 0,
+  public var works: List<Work> = emptyList()
 ) {
-  public enum class SearchField(public val value: String) {
-    Tag("tag")
-  }
-
-  public companion object {
-    public val NullTag: Tag = Tag(name = NullObject.NAME)
-    public val fallbackMapping: Pair<String, Any> = Tag::class.java.name to NullTag
-  }
+  override fun toString(): String = toJson()
 }
-
-public val Tag.isNullObject: Boolean
-  get() = this === NullTag

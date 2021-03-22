@@ -2,8 +2,8 @@ eAlvaBrainz
 ===========
 Kotlin [MusicBrainz][brainz]/[CoverArtArchive][coverart] [Retrofit][retrofit] libraries for Android
 
-**Currently in an alpha state**. The current API direction is to provide configuring lambdas in
-lookup/browse functions and to provide a query DSL for find functions. There is an escape hatch of
+**Currently in an beta state**. The current version covers the majority of the MusicBrainz API and
+provides a high level DSL for lookup, browse, and query. There is an escape hatch of
 sorts in that the client can indirectly call the Retrofit interfaces via the MusicBrainzService
 interface and have correct dispatching and error handling behavior. This is the same method used
 internally. An example lookup function and builder are:
@@ -52,16 +52,15 @@ val result = lookupArtist(NIRVANA_MBID) { misc(Artist.Misc.Aliases) }
 ```
 
 This repository consists of 3 parts:
-  * **ealvabrainz** - A library which consists of 2 Retrofit interfaces, MusicBrainz and CoverArt, 
-  and supporting data classes to generate a MusicBrainz REST client.
-  * **ealvabrainz-service** - Higher-level abstractions that wrap the Retrofit clients with a 
-  richer interface, configures necessary Retrofit/OkHttp clients, provides support for cache 
-  control/throttling/user agent/etc, and dispatches calls on background threads using main-safe
-  suspend functions.
+  * **ealvabrainz** - A library which consists of 2 Retrofit interfaces, MusicBrainz and CoverArt,
+    and supporting data classes to generate a MusicBrainz REST client.
+  * **ealvabrainz-service** - Higher-level abstractions that wrap the Retrofit clients with a
+    richer interface, configures necessary Retrofit/OkHttp clients, provides support for cache
+    control/throttling/user agent/authentication/etc, and dispatches calls on background threads 
+    using main-safe suspend functions.
   * **app** - Demonstrates search and lookup
   
-As of now things are very preliminary, a small portion of the MusicBrainz API is supported,
-and only SNAPSHOT libraries are being published. **Pull requests welcome.** 
+As of now only SNAPSHOT libraries are being published. **Pull requests welcome.** 
 
 For the latest SNAPSHOT check [here][ealvabrainz-snapshot] and [here][ealvabrainz-service-snapshot]
   
@@ -174,8 +173,9 @@ fun Flow<ReleaseGropMbid>.transform(service: CoverArtService): Flow<CoverArtImag
 This service is similar to CoverArtService in that it provides a higher-level abstraction and builds
 the appropriate underlying Retrofit/OkHttp classes. MusicBrainzService has functions that take type 
 specific parameters and format these into parameters for the underlying calls to the MusicBrainz
-Retrofit client. There is also a generic ```brainz()``` function accepting a lambda which allows direct calls to the
-MusicBrainz client while providing correct coroutine dispatch and simplifying error handling.
+Retrofit client. There is also a generic ```brainz()``` function accepting a lambda which allows
+direct calls to the MusicBrainz client while providing correct coroutine dispatch and simplifying
+error handling.
 ```kotlin
 typealias BrainzCall<T> = suspend MusicBrainz.() -> Response<T>
 typealias BrainzResult<T> = Result<T, BrainzMessage>
@@ -257,6 +257,24 @@ value of type T is the result of the call to MusicBrainz. If an Err is returned,
 subtype of BrainzMessage which indicates the type of error. Result is from the 
 [kotlin-result] library and provides a nice implementation for
 [Railway Oriented Programming][railway].
+
+### Integration Tests
+One or more integration tests require authentication with the MusicBrainz server. The required
+username and password must be defined in the local.properties file in the root folder of this
+project. This file is not committed to version control as it's contents are private (obviously). If
+the file doesn't exist, create it. It would typically look something like:
+```text
+sdk.dir=/home/user/Android/Sdk
+BRAINZ_USERNAME="my_username"
+BRAINZ_PASSWORD="my_password"
+```
+where BRAINZ_USERNAME and BRAINZ_PASSWORD are set to your MusicBrainz.org credentials. If you don't
+have an account, go to https://musicbrainz.org/register and create one. Not mandatory, however not 
+setting these values correctly will result in some tests failing due to authentication errors.
+
+Applications which call functions requiring authentication must implement the CredentialsProvider
+interface and use it when constructing a MusicBrainzService implementation.
+
 ## app
 The application demonstrates searching, browsing, and display of various MusicBrainz entities.
 Currently the user needs to know how to build a MusicBrainz 
@@ -278,18 +296,22 @@ It's expected the app will be ported to Compose some time in the future.
   
 Of Note
 =======
-This library contains classes others may find useful in a different context. While not necessarily canonical, these
+This library contains classes others may find useful in a different context. While not necessarily
+canonical, these
 may be used as examples or a starting point:
 * Moshi annotated data classes for codegen and json adapter generation
-* Moshi combination of data class style, annotations, and adapters to support the Null Object Pattern 
-* Moshi annotation and adapter to support a fallback strategy for items missing from json (part of Null Object pattern)
+* Moshi combination of data class style, annotations, and adapters to support the Null Object
+  Pattern 
+* Moshi annotation and adapter to support a fallback strategy for items missing from json
+  (part of Null Object pattern)
 * Moshi adapter that peeks names to determine which subtype to instantiate in relationships
 * Retrofit interfaces defined with suspend or returning a flow 
 * Retrofit, OkHttp, and Moshi builders to fully support the Rest client
 * Sealed class MusicBrainzResult from MusicBrainzService as opposed to exceptions
 * Coroutine test strategy with a JUnit rule and a test dispatcher (test concurrent code)
 * App uses Kotlin Views DSL for UI ([Splitties][splitties]) - no XML layout files 
-* App defines some event callback flows to automate listener register/unregister based on lifecycle resulting in less client boilerplate
+* App defines some event callback flows to automate listener register/unregister based on lifecycle
+  resulting in less client boilerplate
 
 Related
 =======

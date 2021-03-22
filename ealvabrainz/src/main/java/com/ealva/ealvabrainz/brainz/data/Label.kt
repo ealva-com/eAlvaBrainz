@@ -100,20 +100,18 @@ public class Label(
    * usually hard to know if an imprint has folded or is just on hold, and in generally the end
    * date should only be entered if there's a clear indication of its demise.
    *
-   * * Begin date
-   * For officially registered trademarks or companies (holdings, distributors), it's the date at
-   * which it was registered. For imprints, collection names (when used as labels) and subdivisions
-   * (or subsidiaries) for which there is no available creation date, it's the release date of the
-   * first release ever issued under that label name. For bootleg companies (more generally for
-   * obscure/dubious companies), it's also tolerable to use the release date of the first release,
-   * unless more accurate data is available.
-   * * End date
-   * For companies (holdings, distributors), it's the date at which the company stopped to exist
-   * (be it bankrupted or dismantled). For imprints, collection names (when used as labels) and
-   * subdivisions (or subsidiaries) for which there is no available dismantling date, it's the
-   * release date of the last release ever issued under that label name. For bootlegs companies
-   * (or otherwise obscure/dubious companies), it's also tolerable to use the release date of the
-   * last release, unless one has more accurate information.
+   * * Begin date: For officially registered trademarks or companies (holdings, distributors), it's
+   * the date at which it was registered. For imprints, collection names (when used as labels) and
+   * subdivisions (or subsidiaries) for which there is no available creation date, it's the release
+   * date of the first release ever issued under that label name. For bootleg companies (more
+   * generally for obscure/dubious companies), it's also tolerable to use the release date of the
+   * first release, unless more accurate data is available.
+   * * End date: For companies (holdings, distributors), it's the date at which the company stopped
+   * to exist (be it bankrupted or dismantled). For imprints, collection names (when used as labels)
+   * and subdivisions (or subsidiaries) for which there is no available dismantling date, it's the
+   * release date of the last release ever issued under that label name. For bootlegs companies (or
+   * otherwise obscure/dubious companies), it's also tolerable to use the release date of the last
+   * release, unless one has more accurate information.
    */
   @Json(name = "life-span") public var lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
   public var rating: Rating = Rating.NullRating,
@@ -122,12 +120,32 @@ public class Label(
   public var tags: List<Tag> = emptyList(),
   /**
    * The [type](https://musicbrainz.org/doc/Label/Type) describes the main activity of the label.
+   *
+   * * "imprint": should be used where the label is just a logo (usually either created by a company
+   * for a specific product line, or where a former company’s logo is still used on releases after
+   * the company was closed or purchased, or both) example: RCA Red Seal
+   * * one of the "production" types:
+   *     * "original production": should be used for labels producing entirely new releases example:
+   *     Riverside Records
+   *     * "bootleg production": should be used for known bootlegs labels (as in "not sanctioned by
+   *     the rights owner(s) of the released work") example: Charly Records
+   *     * "reissue production": should be used for labels specializing in catalog reissues example:
+   *     Rhino
+   *  * "distributor": should be used for companies mainly distributing other labels production,
+   *  often in a specific region of the world example: ZYX, which distributes in Europe most jazz
+   *  records in the Concord Music Group catalog.
+   * * "holding": should be used for holdings, conglomerates or other financial entities whose main
+   * activity is not to produce records, but to manage a large set of recording labels owned by them
+   * example: Concord Music Group
+   * * "rights society": A rights society is an organization which collects royalties on behalf of
+   * the artists. This type is designed to be used with the rights society relationship type rather
+   * than as a normal release label. example: GEMA
    */
   public var type: String = "",
   @Json(name = "type-id")
   public var typeId: String = "",
-  /** Used when querying Labels */
-  public var count: Int = 0
+  /** score ranking used in query results */
+  public var score: Int = 0
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -164,6 +182,13 @@ public class Label(
     Genres("genres")
   }
 
+  public enum class Browse(override val value: String) : Lookup {
+    Annotation("annotation"),
+    Tags("tags"),
+    Genres("genres"),
+    Ratings("ratings");
+  }
+
   @Suppress("unused")
   public enum class SearchField(public val value: String) {
     /** the aliases/misspellings for this label */
@@ -190,8 +215,9 @@ public class Label(
     /** true if know ended even if do not know end date */
     Ended("ended"),
 
-    /** ipi */
     Ipi("ipi"),
+
+    Isni("isni"),
 
     /** label name */
     Label("label"),
@@ -201,6 +227,8 @@ public class Label(
 
     /** MBID of the label */
     LabelId("laid"),
+
+    ReleaseCount("release_count"),
 
     /** label sortname */
     SortName("sortname"),

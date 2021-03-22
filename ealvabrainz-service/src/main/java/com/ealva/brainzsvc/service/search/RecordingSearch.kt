@@ -19,16 +19,15 @@
 
 package com.ealva.brainzsvc.service.search
 
-import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.Recording.SearchField
-import com.ealva.ealvabrainz.common.RecordingMbid
 import com.ealva.ealvabrainz.brainz.data.Release
+import com.ealva.ealvabrainz.common.AlbumTitle
+import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.RecordingMbid
+import com.ealva.ealvabrainz.common.RecordingTitle
 import com.ealva.ealvabrainz.common.ReleaseGroupMbid
 import com.ealva.ealvabrainz.common.TrackMbid
-import com.ealva.ealvabrainz.common.AlbumTitle
-import com.ealva.ealvabrainz.common.ArtistName
-import com.ealva.ealvabrainz.common.RecordingTitle
-import com.ealva.ealvabrainz.common.TrackTitle
 import com.ealva.ealvabrainz.lucene.BrainzMarker
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Term
@@ -74,9 +73,9 @@ public class RecordingSearch : BaseSearch() {
   @OverloadResolutionByLambdaReturnType
   public inline fun artistName(name: () -> ArtistName): Field = artistName { Term(name()) }
 
-  /** (part of) the recording's disambiguation comment */
   @JvmName("commentTerm")
   @OverloadResolutionByLambdaReturnType
+  /** (part of) the recording's disambiguation comment */
   public inline fun comment(term: () -> Term): Field = add(SearchField.Comment, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -182,20 +181,16 @@ public class RecordingSearch : BaseSearch() {
   @OverloadResolutionByLambdaReturnType
   public inline fun quantizedDuration(term: () -> Long): Field = quantizedDuration { Term(term()) }
 
+  @JvmName("recordingTerm")
+  @OverloadResolutionByLambdaReturnType
   /**
    * (part of) the recording's title, or the name of a track connected to this recording
    * (diacritics are ignored)
    */
-  @JvmName("recordingTerm")
-  @OverloadResolutionByLambdaReturnType
   public inline fun recording(term: () -> Term): Field = add(SearchField.Recording, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun recording(term: () -> RecordingTitle): Field = recording { Term(term()) }
-
-  @JvmName("recordingTrackTitle")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun recording(term: () -> TrackTitle): Field = recording { Term(term()) }
 
   /**
    * (part of) the recording's name, or the name of a track connected to this recording (with the

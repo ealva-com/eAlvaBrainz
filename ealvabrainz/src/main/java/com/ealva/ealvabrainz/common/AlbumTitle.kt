@@ -18,6 +18,9 @@
 package com.ealva.ealvabrainz.common
 
 @JvmInline
+/**
+ * The name of a Release or Release Group. May be a partial title if used in a query.
+ */
 public value class AlbumTitle(public val value: String) {
   public companion object {
     public val UNKNOWN: AlbumTitle = AlbumTitle("Unknown")
