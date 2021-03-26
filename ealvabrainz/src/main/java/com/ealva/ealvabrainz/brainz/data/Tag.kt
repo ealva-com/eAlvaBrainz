@@ -27,7 +27,8 @@ public data class Tag(
   /** score ranking used in query results */
   public var score: Int = 0
 ) {
-  public enum class SearchField(public val value: String) {
+  public enum class SearchField(public override val value: String) : EntitySearchField {
+    Default(""),
     Tag("tag")
   }
 

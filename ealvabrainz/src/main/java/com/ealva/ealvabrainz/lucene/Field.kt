@@ -104,8 +104,7 @@ public infix fun Field.and(other: Field): Field = when {
 }
 
 /** A renaming of the infix and() just to avoid naming conflict, perceived or actual */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun Field.andAnother(other: Field): Field = this.and(other)
+public fun Field.andAnother(other: Field): Field = this.and(other)
 
 public infix fun Field.or(other: Field): Field = when {
   this is OrExp && other is OrExp -> OrExp(fields + other.fields)
@@ -120,5 +119,4 @@ public infix fun Field.or(other: Field): Field = when {
 }
 
 /** A renaming of the infix or() just to avoid naming conflict, perceived or actual */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun Field.orAnother(other: Field): Field = this.or(other)
+public fun Field.orAnother(other: Field): Field = this.or(other)

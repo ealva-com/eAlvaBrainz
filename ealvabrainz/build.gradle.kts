@@ -38,6 +38,9 @@ android {
     consumerProguardFiles("consumer-rules.pro")
   }
 
+  kotlinOptions {
+    jvmTarget = "11"
+  }
   compileOptions {
     isCoreLibraryDesugaringEnabled = true
     sourceCompatibility = JavaVersion.VERSION_1_8

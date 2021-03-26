@@ -17,24 +17,16 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-/**
- * Represents a single part of a MusicBrainz inc= parameter. An Include allows you to request
- * more information to be included about an entity
- */
-public interface Include {
-  public val value: String
-}
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-public fun Set<Include>.joinOrNull(): String? {
-  return if (isEmpty()) null else joinToString("+") { it.value }
-}
-
-/**
- * Join each [Include] instance into an inc= value for MusicBrainz lookup.
- *
- * @return list entries concatenated together separated by "+" as required by MusicBrainz Lucene
- * query, or null if the list isEmpty
- */
-public fun Set<Include>.joinToString(): String {
-  return joinToString("+") { it.value }
+@JsonClass(generateAdapter = true)
+public class BrowseSeriesList(
+  @Json(name = "series-count")
+  public var seriesCount: Int = 0,
+  @Json(name = "series-offset")
+  public var seriesOffset: Int = 0,
+  public var seriess: List<Series> = emptyList()
+) {
+  override fun toString(): String = toJson()
 }

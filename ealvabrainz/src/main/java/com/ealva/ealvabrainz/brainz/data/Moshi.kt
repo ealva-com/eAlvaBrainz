@@ -17,14 +17,11 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.moshi.FallbackOnNull
-import com.ealva.ealvabrainz.moshi.NullPrimitiveAdapter
-import com.ealva.ealvabrainz.moshi.RelationAdapter
-import com.ealva.ealvabrainz.moshi.StringJsonAdapter
 import com.squareup.moshi.Moshi
 
 internal fun Moshi.Builder.addRequired(): Moshi.Builder {
   add(RelationAdapter.ADAPTER_FACTORY)
+  add(CollectionAdapter.ADAPTER_FACTORY)
   add(FallbackOnNull.ADAPTER_FACTORY)
   add(NullPrimitiveAdapter())
   add(StringJsonAdapter())

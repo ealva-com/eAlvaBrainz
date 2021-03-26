@@ -18,36 +18,39 @@
 package com.ealva.brainzsvc.service.browse
 
 import com.ealva.brainzsvc.common.ArtistQueryMapItem
+import com.ealva.brainzsvc.common.CollectionQueryMapItem
+import com.ealva.brainzsvc.common.Limit
+import com.ealva.brainzsvc.common.Offset
 import com.ealva.brainzsvc.common.QueryMap
 import com.ealva.brainzsvc.common.QueryMapItem
 import com.ealva.brainzsvc.service.browse.WorkBrowse.BrowseOn
-import com.ealva.ealvabrainz.brainz.MusicBrainz
-import com.ealva.ealvabrainz.brainz.data.BrowseWorkList
-import com.ealva.ealvabrainz.brainz.data.Work
+import com.ealva.ealvabrainz.brainz.data.Work.Browse
 import com.ealva.ealvabrainz.common.ArtistMbid
-import retrofit2.Response
+import com.ealva.ealvabrainz.common.CollectionMbid
 
 /**
  * Builds the release browsing call based on [BrowseOn] type, [include], [relationships], [types],
  * and [status]
  */
-public interface WorkBrowse : EntityBrowse<Work.Browse> {
+public interface WorkBrowse : EntityBrowse<Browse> {
   /**
    * BrowseOn the entity related to a group of releases.
    */
   @Suppress("unused")
   public sealed interface BrowseOn : QueryMapItem {
     public class Artist(mbid: ArtistMbid) : BrowseOn, ArtistQueryMapItem(mbid)
+    public class Collection(mbid: CollectionMbid) : BrowseOn, CollectionQueryMapItem(mbid)
+  }
+
+  public companion object {
+    internal operator fun invoke(
+      browseOn: BrowseOn,
+      limit: Limit?,
+      offset: Offset?,
+      browse: WorkBrowse.() -> Unit
+    ): QueryMap =
+      WorkBrowseOp(browseOn).apply(browse).queryMap(limit, offset)
   }
 }
 
-internal class WorkBrowseOp(
-  override val browseOn: BrowseOn
-) : WorkBrowse, BaseEntityBrowse<Work.Browse, BrowseWorkList>() {
-  override suspend fun doExecute(
-    musicBrainz: MusicBrainz,
-    queryMap: QueryMap
-  ): Response<BrowseWorkList> {
-    return musicBrainz.browseWorks(queryMap)
-  }
-}
+private class WorkBrowseOp(browseOn: BrowseOn) : WorkBrowse, BaseBrowse<Browse>(browseOn)

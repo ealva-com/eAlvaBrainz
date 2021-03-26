@@ -17,30 +17,24 @@
 
 package com.ealva.brainzsvc.service.lookup
 
+import com.ealva.brainzsvc.common.QueryMap
 import com.ealva.brainzsvc.common.buildQueryMap
 import com.ealva.brainzsvc.common.include
 import com.ealva.brainzsvc.common.status
 import com.ealva.brainzsvc.common.types
-import com.ealva.ealvabrainz.brainz.MusicBrainz
-import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
-import com.ealva.ealvabrainz.common.ReleaseGroupMbid
-import retrofit2.Response
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup.Include
 
-public interface ReleaseGroupLookup : EntitySubqueryLookup<ReleaseGroup.Subquery, ReleaseGroup.Misc>
+public interface ReleaseGroupLookup : EntitySubqueryLookup<Include> {
+  public companion object {
+    internal operator fun invoke(lookup: ReleaseGroupLookup.() -> Unit): QueryMap =
+      ReleaseGroupLookupOp().apply(lookup).queryMap()
+  }
+}
 
-internal class ReleaseGroupLookupOp :
-  BaseSubqueryLookup<ReleaseGroup.Subquery, ReleaseGroup.Misc>(),
-  ReleaseGroupLookup {
-
-  suspend fun execute(
-    mbid: ReleaseGroupMbid,
-    brainz: MusicBrainz
-  ): Response<ReleaseGroup> = brainz.lookupReleaseGroup(
-    mbid.value,
-    buildQueryMap {
-      include(includeSet)
-      types(typeSet)
-      status(statusSet?.ensureValidStatus(includeSet))
-    }
-  )
+private class ReleaseGroupLookupOp : BaseSubqueryLookup<Include>(), ReleaseGroupLookup {
+  fun queryMap(): QueryMap = buildQueryMap {
+    include(incSet)
+    types(typeSet)
+    status(statusSet?.ensureValidStatus(incSet))
+  }
 }

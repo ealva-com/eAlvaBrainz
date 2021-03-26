@@ -17,14 +17,19 @@
 
 package com.ealva.brainzapp.data
 
+@Suppress("MagicNumber")
+private val VALID_STAR_RANGE = 0.0F..5.0F
+
 @JvmInline
 value class StarRating(val value: Float) {
+  init {
+    require(value in VALID_STAR_RANGE)
+  }
+
   companion object {
     /** Prefer this for error correction instead of calling ctor directly */
-    @Suppress("NOTHING_TO_INLINE", "MagicNumber")
-    inline fun make(value: Float): StarRating = StarRating(value.coerceIn(0.0F..5.0F))
+    fun make(value: Float): StarRating = StarRating(value.coerceIn(VALID_STAR_RANGE))
   }
 }
 
-@Suppress("NOTHING_TO_INLINE")
-inline fun Float.toStarRating(): StarRating = StarRating.make(this)
+fun Float.toStarRating(): StarRating = StarRating.make(this)

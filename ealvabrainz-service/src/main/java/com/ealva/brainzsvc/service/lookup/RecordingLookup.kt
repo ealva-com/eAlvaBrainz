@@ -17,29 +17,24 @@
 
 package com.ealva.brainzsvc.service.lookup
 
+import com.ealva.brainzsvc.common.QueryMap
 import com.ealva.brainzsvc.common.buildQueryMap
 import com.ealva.brainzsvc.common.include
-import com.ealva.brainzsvc.common.types
 import com.ealva.brainzsvc.common.status
-import com.ealva.ealvabrainz.brainz.MusicBrainz
+import com.ealva.brainzsvc.common.types
 import com.ealva.ealvabrainz.brainz.data.Recording
-import com.ealva.ealvabrainz.common.RecordingMbid
-import retrofit2.Response
 
-public interface RecordingLookup : EntitySubqueryLookup<Recording.Subquery, Recording.Misc>
+public interface RecordingLookup : EntitySubqueryLookup<Recording.Include> {
+  public companion object {
+    internal operator fun invoke(lookup: RecordingLookup.() -> Unit): QueryMap =
+      RecordingLookupOp().apply(lookup).queryMap()
+  }
+}
 
-internal class RecordingLookupOp :
-  BaseSubqueryLookup<Recording.Subquery, Recording.Misc>(), RecordingLookup {
-
-  suspend fun execute(
-    mbid: RecordingMbid,
-    brainz: MusicBrainz
-  ): Response<Recording> = brainz.lookupRecording(
-    mbid.value,
-    buildQueryMap {
-      include(includeSet)
-      types(typeSet?.ensureValidType(includeSet))
-      status(statusSet?.ensureValidStatus(includeSet))
-    }
-  )
+private class RecordingLookupOp : BaseSubqueryLookup<Recording.Include>(), RecordingLookup {
+  fun queryMap(): QueryMap = buildQueryMap {
+    include(incSet)
+    types(typeSet?.ensureValidType(incSet))
+    status(statusSet?.ensureValidStatus(incSet))
+  }
 }

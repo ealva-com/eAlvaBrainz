@@ -37,7 +37,7 @@ import kotlin.experimental.ExperimentalTypeInference
 
 @OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
-public class RecordingSearch : BaseSearch() {
+public class RecordingSearch : BaseSearch<SearchField>() {
   /** (part of) any alias attached to the recording (diacritics are ignored) */
   @JvmName("aliasTerm")
   @OverloadResolutionByLambdaReturnType
@@ -111,6 +111,17 @@ public class RecordingSearch : BaseSearch() {
   @JvmName("dateString")
   @OverloadResolutionByLambdaReturnType
   public inline fun date(term: () -> String): Field = date { Term(term()) }
+
+  @JvmName("defaultTerm")
+  @OverloadResolutionByLambdaReturnType
+  /**
+   * (part of) the default's title, or the name of a track connected to this default
+   * (diacritics are ignored)
+   */
+  public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
+
+  @OverloadResolutionByLambdaReturnType
+  public inline fun default(term: () -> RecordingTitle): Field = default { Term(term()) }
 
   /** duration of track in milliseconds */
   @JvmName("durationTerm")
@@ -304,5 +315,9 @@ public class RecordingSearch : BaseSearch() {
   @OverloadResolutionByLambdaReturnType
   public inline fun video(term: () -> Boolean): Field = video { Term(term()) }
 
-  public fun add(field: SearchField, term: Term): Field = makeAndAddField(field.value, term)
+  public companion object {
+    public inline operator fun invoke(search: RecordingSearch.() -> Unit): String {
+      return RecordingSearch().apply(search).toString()
+    }
+  }
 }

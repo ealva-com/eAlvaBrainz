@@ -19,6 +19,7 @@ package com.ealva.brainzsvc.net
 
 import retrofit2.Response
 
+@Suppress("unused")
 public class RawResponse(
   public val httpStatusCode: Int,
   public val httpStatus: String,

@@ -18,40 +18,45 @@
 package com.ealva.brainzsvc.service.browse
 
 import com.ealva.brainzsvc.common.ArtistQueryMapItem
+import com.ealva.brainzsvc.common.CollectionQueryMapItem
+import com.ealva.brainzsvc.common.Limit
+import com.ealva.brainzsvc.common.Offset
 import com.ealva.brainzsvc.common.QueryMap
 import com.ealva.brainzsvc.common.QueryMapItem
 import com.ealva.brainzsvc.common.ReleaseQueryMapItem
 import com.ealva.brainzsvc.common.WorkQueryMapItem
 import com.ealva.brainzsvc.service.browse.RecordingBrowse.BrowseOn
-import com.ealva.ealvabrainz.brainz.MusicBrainz
-import com.ealva.ealvabrainz.brainz.data.BrowseRecordingList
-import com.ealva.ealvabrainz.brainz.data.Recording
+import com.ealva.ealvabrainz.brainz.data.Recording.Browse
 import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.common.CollectionMbid
 import com.ealva.ealvabrainz.common.ReleaseMbid
 import com.ealva.ealvabrainz.common.WorkMbid
-import retrofit2.Response
 
 /**
  * Builds the recording browsing call based on [BrowseOn] type, [include], [relationships], [types],
  * and [status]
  */
-public interface RecordingBrowse : EntityBrowse<Recording.Browse> {
+public interface RecordingBrowse : EntityBrowse<Browse> {
   /**
    * BrowseOn the entity related to a group of releases.
    */
   @Suppress("unused")
   public sealed interface BrowseOn : QueryMapItem {
     public class Artist(mbid: ArtistMbid) : BrowseOn, ArtistQueryMapItem(mbid)
+    public class Collection(mbid: CollectionMbid) : BrowseOn, CollectionQueryMapItem(mbid)
     public class Release(mbid: ReleaseMbid) : BrowseOn, ReleaseQueryMapItem(mbid)
     public class Work(mbid: WorkMbid) : BrowseOn, WorkQueryMapItem(mbid)
   }
+
+  public companion object {
+    internal operator fun invoke(
+      browseOn: BrowseOn,
+      limit: Limit?,
+      offset: Offset?,
+      browse: RecordingBrowse.() -> Unit
+    ): QueryMap =
+      RecordingBrowseOp(browseOn).apply(browse).queryMap(limit, offset)
+  }
 }
 
-internal class RecordingBrowseOp(
-  override val browseOn: BrowseOn
-) : RecordingBrowse, BaseEntityBrowse<Recording.Browse, BrowseRecordingList>() {
-  override suspend fun doExecute(
-    musicBrainz: MusicBrainz,
-    queryMap: QueryMap
-  ): Response<BrowseRecordingList> = musicBrainz.browseRecordings(queryMap)
-}
+private class RecordingBrowseOp(browseOn: BrowseOn) : RecordingBrowse, BaseBrowse<Browse>(browseOn)

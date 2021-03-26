@@ -17,8 +17,24 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-@Suppress("unused")
-public enum class Relationships(override val value: String) : Include {
+/**
+ * You can request relationships with the appropriate includes. These will load relationships
+ * between the requested entity and the specific entity type. For example, if you request
+ * "work-rels" when looking up an artist, you'll get all the relationships between this artist and
+ * any works, and if you request "artist-rels" you'll get the relationships between this artist and
+ * any other artists. As such, keep in mind requesting "artist-rels" for an artist, "release-rels"
+ * for a release, etc. will not load all the relationships for the entity, just the ones to other
+ * entities of the same type.
+ *
+ * If you request work-level-rels for a recording, you will still need to request work-rels (to get
+ * the relationship from the recording to the work in the first place) and any other relationship
+ * types you want to see (for example, artist-rels if you want to see work-artist relationships).
+ *
+ * With relationships included, entities will include a list of [Relation]s
+ *
+ * [MusicBrainz Relationships](https://musicbrainz.org/doc/MusicBrainz_API#Relationships)
+ */
+public enum class Relationships(override val value: String) : Inc {
   Area("area-rels"),
   Artist("artist-rels"),
   Event("event-rels"),

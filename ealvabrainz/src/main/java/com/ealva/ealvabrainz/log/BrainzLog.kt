@@ -21,9 +21,7 @@ import com.ealva.ealvabrainz.BuildConfig
 import com.ealva.ealvalog.LogEntry
 import com.ealva.ealvalog.Logger
 import com.ealva.ealvalog.Marker
-import com.ealva.ealvalog.MarkerFactory
 import com.ealva.ealvalog.Markers
-import com.ealva.ealvalog.core.BasicMarkerFactory
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.filter.MarkerFilter
 import com.ealva.ealvalog.i
@@ -34,11 +32,7 @@ public object BrainzLog {
 
   public const val BRAINZ_ERROR_TAG: String = "Brainz_Err"
 
-  /** Call this function to ensure a MarkerFactory is set, typically done at App startup */
-  public fun configureLogging(factory: MarkerFactory = BasicMarkerFactory()) {
-    Markers.setFactory(factory)
-  }
-
+  @Suppress("MemberVisibilityCanBePrivate")
   public const val markerName: String = "eAlvaBrainz"
 
   /**
@@ -51,9 +45,11 @@ public object BrainzLog {
    * desired (file, Android log, ...). See [eAlvaLog](https://github.com/ealva-com/ealvalog) for
    * information on configuring logging.
    */
+  @Suppress("unused")
   public val markerFilter: MarkerFilter by lazy { MarkerFilter(marker) }
 }
 
+@Suppress("FunctionName", "unused")
 internal inline fun Logger._i(
   throwable: Throwable? = null,
   marker: Marker? = null,
@@ -62,6 +58,7 @@ internal inline fun Logger._i(
   if (BuildConfig.DEBUG) i(throwable, marker, null, block)
 }
 
+@Suppress("FunctionName", "unused")
 internal inline fun Logger._w(
   throwable: Throwable? = null,
   marker: Marker? = null,
@@ -70,6 +67,7 @@ internal inline fun Logger._w(
   if (BuildConfig.DEBUG) w(throwable, marker, null, block)
 }
 
+@Suppress("FunctionName", "unused")
 internal inline fun Logger._e(
   throwable: Throwable? = null,
   marker: Marker? = null,

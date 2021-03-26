@@ -18,7 +18,6 @@
 package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.LabelInfo.Companion.NullLabelInfo
-import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 

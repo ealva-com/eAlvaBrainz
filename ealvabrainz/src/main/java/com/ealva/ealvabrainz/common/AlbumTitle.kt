@@ -24,17 +24,12 @@ package com.ealva.ealvabrainz.common
 public value class AlbumTitle(public val value: String) {
   public companion object {
     public val UNKNOWN: AlbumTitle = AlbumTitle("Unknown")
-
-    @Suppress("NOTHING_TO_INLINE")
-    public inline fun make(value: String): AlbumTitle =
-      AlbumTitle(value.trim())
   }
 }
 
 /**
  * Convert this String to an [AlbumTitle] or [AlbumTitle.UNKNOWN] if this is null.
  */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toAlbumTitle(): AlbumTitle {
-  return this?.let { AlbumTitle.make(this) } ?: AlbumTitle.UNKNOWN
+public fun String?.toAlbumTitle(): AlbumTitle {
+  return if (this != null) AlbumTitle(trim()) else AlbumTitle.UNKNOWN
 }

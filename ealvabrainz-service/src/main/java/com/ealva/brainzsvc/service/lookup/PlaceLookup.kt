@@ -17,20 +17,13 @@
 
 package com.ealva.brainzsvc.service.lookup
 
-import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.Place
-import com.ealva.ealvabrainz.brainz.data.joinOrNull
-import com.ealva.ealvabrainz.common.PlaceMbid
-import retrofit2.Response
 
-public interface PlaceLookup : EntityLookup<Place.Misc>
-
-internal class PlaceLookupOp : BaseEntityLookup<Place.Misc>(), PlaceLookup {
-  suspend fun execute(
-    mbid: PlaceMbid,
-    brainz: MusicBrainz
-  ): Response<Place> = brainz.lookupPlace(
-    mbid.value,
-    includeSet.joinOrNull()
-  )
+public interface PlaceLookup : EntityLookup<Place.Include> {
+  public companion object {
+    internal operator fun invoke(lookup: PlaceLookup.() -> Unit): String? =
+      PlaceLookupOp().apply(lookup).include
+  }
 }
+
+private class PlaceLookupOp : BaseEntityLookup<Place.Include>(), PlaceLookup

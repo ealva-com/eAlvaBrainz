@@ -36,8 +36,7 @@ value class Isni(val value: String) {
   }
 }
 
-@Suppress("NOTHING_TO_INLINE")
-inline fun String.toIsni(): Isni = Isni(this)
+fun String.toIsni(): Isni = Isni(this)
 
 inline val Isni.appearsValid: Boolean
   get() = value.length == 16

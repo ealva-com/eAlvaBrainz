@@ -252,8 +252,6 @@ fun ReleaseGroupType.Primary.toDisplayString(
   }
 }
 
-@Suppress("NOTHING_TO_INLINE")
-private inline fun makePair(type: ReleaseGroupType.Primary) = Pair(type.name, type)
+private fun makePair(type: ReleaseGroupType.Primary) = Pair(type.name, type)
 
-@Suppress("NOTHING_TO_INLINE")
-private inline fun makePair(type: ReleaseGroupType.Secondary) = Pair(type.name, type)
+private fun makePair(type: ReleaseGroupType.Secondary) = Pair(type.name, type)

@@ -18,6 +18,9 @@
 package com.ealva.brainzsvc.service.browse
 
 import com.ealva.brainzsvc.common.AreaQueryMapItem
+import com.ealva.brainzsvc.common.CollectionQueryMapItem
+import com.ealva.brainzsvc.common.Limit
+import com.ealva.brainzsvc.common.Offset
 import com.ealva.brainzsvc.common.QueryMap
 import com.ealva.brainzsvc.common.QueryMapItem
 import com.ealva.brainzsvc.common.RecordingQueryMapItem
@@ -25,39 +28,41 @@ import com.ealva.brainzsvc.common.ReleaseGroupQueryMapItem
 import com.ealva.brainzsvc.common.ReleaseQueryMapItem
 import com.ealva.brainzsvc.common.WorkQueryMapItem
 import com.ealva.brainzsvc.service.browse.ArtistBrowse.BrowseOn
-import com.ealva.ealvabrainz.brainz.MusicBrainz
-import com.ealva.ealvabrainz.brainz.data.Artist
-import com.ealva.ealvabrainz.brainz.data.BrowseArtistList
+import com.ealva.ealvabrainz.brainz.data.Artist.Browse
 import com.ealva.ealvabrainz.common.AreaMbid
+import com.ealva.ealvabrainz.common.CollectionMbid
 import com.ealva.ealvabrainz.common.RecordingMbid
 import com.ealva.ealvabrainz.common.ReleaseGroupMbid
 import com.ealva.ealvabrainz.common.ReleaseMbid
 import com.ealva.ealvabrainz.common.WorkMbid
-import retrofit2.Response
 
 /**
  * Builds the artist browsing call based on [BrowseOn] type, [include], [relationships], [types],
  * and [status]
  */
-public interface ArtistBrowse : EntityBrowse<Artist.Browse> {
+public interface ArtistBrowse : EntityBrowse<Browse> {
   /**
    * BrowseOn the entity related to a group of releases.
    */
   @Suppress("unused")
   public sealed interface BrowseOn : QueryMapItem {
     public class Area(mbid: AreaMbid) : BrowseOn, AreaQueryMapItem(mbid)
+    public class Collection(mbid: CollectionMbid) : BrowseOn, CollectionQueryMapItem(mbid)
     public class Recording(mbid: RecordingMbid) : BrowseOn, RecordingQueryMapItem(mbid)
     public class Release(mbid: ReleaseMbid) : BrowseOn, ReleaseQueryMapItem(mbid)
     public class ReleaseGroup(mbid: ReleaseGroupMbid) : BrowseOn, ReleaseGroupQueryMapItem(mbid)
     public class Work(mbid: WorkMbid) : BrowseOn, WorkQueryMapItem(mbid)
   }
+
+  public companion object {
+    internal operator fun invoke(
+      browseOn: BrowseOn,
+      limit: Limit?,
+      offset: Offset?,
+      browse: ArtistBrowse.() -> Unit
+    ): QueryMap =
+      ArtistBrowseOp(browseOn).apply(browse).queryMap(limit, offset)
+  }
 }
 
-internal class ArtistBrowseOp(
-  override val browseOn: BrowseOn
-) : ArtistBrowse, BaseEntityBrowse<Artist.Browse, BrowseArtistList>() {
-  override suspend fun doExecute(
-    musicBrainz: MusicBrainz,
-    queryMap: QueryMap
-  ): Response<BrowseArtistList> = musicBrainz.browseArtists(queryMap)
-}
+private class ArtistBrowseOp(browseOn: BrowseOn) : ArtistBrowse, BaseBrowse<Browse>(browseOn)

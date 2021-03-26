@@ -34,7 +34,7 @@ import kotlin.experimental.ExperimentalTypeInference
 
 @OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
-public class ReleaseGroupSearch : BaseSearch() {
+public class ReleaseGroupSearch : BaseSearch<SearchField>() {
   @JvmName("aliasTerm")
   @OverloadResolutionByLambdaReturnType
   public inline fun alias(term: () -> Term): Field = add(SearchField.Alias, term())
@@ -76,6 +76,13 @@ public class ReleaseGroupSearch : BaseSearch() {
 
   @OverloadResolutionByLambdaReturnType
   public inline fun creditName(term: () -> ArtistName): Field = creditName { Term(term()) }
+
+  @JvmName("defaultTerm")
+  @OverloadResolutionByLambdaReturnType
+  public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
+
+  @OverloadResolutionByLambdaReturnType
+  public inline fun default(term: () -> AlbumTitle): Field = default { Term(term()) }
 
   @JvmName("dateTerm")
   @OverloadResolutionByLambdaReturnType
@@ -160,5 +167,9 @@ public class ReleaseGroupSearch : BaseSearch() {
   @OverloadResolutionByLambdaReturnType
   public inline fun tag(term: () -> String): Field = tag { Term(term()) }
 
-  public fun add(field: SearchField, term: Term): Field = makeAndAddField(field.value, term)
+  public companion object {
+    public inline operator fun invoke(search: ReleaseGroupSearch.() -> Unit): String {
+      return ReleaseGroupSearch().apply(search).toString()
+    }
+  }
 }

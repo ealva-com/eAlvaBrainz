@@ -17,7 +17,6 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)

@@ -35,10 +35,7 @@ public class Genre(
   public var count: Int = 0
 ) {
 
-  public interface Lookup : Include
-
-  @Suppress("unused")
-  public enum class Misc(override val value: String) : Lookup {
+  public enum class Include(override val value: String) : Inc {
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags")

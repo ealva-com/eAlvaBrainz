@@ -25,16 +25,10 @@ package com.ealva.ealvabrainz.common
 public value class ArtistName(public val value: String) {
   public companion object {
     public val UNKNOWN: ArtistName = ArtistName("Unknown")
-
-    @Suppress("NOTHING_TO_INLINE")
-    public inline fun make(value: String): ArtistName =
-      ArtistName(value.trim())
   }
 }
 /**
  * Convert this String to an [ArtistName] or [ArtistName.UNKNOWN] if this is null.
  */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toArtistName(): ArtistName {
-  return this?.let { ArtistName.make(this) } ?: ArtistName.UNKNOWN
-}
+public fun String?.toArtistName(): ArtistName =
+  if (this != null) ArtistName(trim()) else ArtistName.UNKNOWN

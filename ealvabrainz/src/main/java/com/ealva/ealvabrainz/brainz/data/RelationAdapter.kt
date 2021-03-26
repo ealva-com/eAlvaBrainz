@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  Eric A. Snell
+ * Copyright (c) 2021  Eric A. Snell
  *
  * This file is part of eAlvaBrainz
  *
@@ -15,22 +15,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.moshi
+package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.brainz.data.AreaRelation
-import com.ealva.ealvabrainz.brainz.data.ArtistRelation
-import com.ealva.ealvabrainz.brainz.data.EventRelation
-import com.ealva.ealvabrainz.brainz.data.InstrumentRelation
-import com.ealva.ealvabrainz.brainz.data.LabelRelation
-import com.ealva.ealvabrainz.brainz.data.PlaceRelation
-import com.ealva.ealvabrainz.brainz.data.RecordingRelation
-import com.ealva.ealvabrainz.brainz.data.Relation
-import com.ealva.ealvabrainz.brainz.data.ReleaseGroupRelation
-import com.ealva.ealvabrainz.brainz.data.ReleaseRelation
-import com.ealva.ealvabrainz.brainz.data.SeriesRelation
-import com.ealva.ealvabrainz.brainz.data.UrlRelation
-import com.ealva.ealvabrainz.brainz.data.WorkRelation
-import com.ealva.ealvabrainz.common.ensureExhaustive
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke
 import com.ealva.ealvalog.lazyLogger
@@ -43,21 +29,6 @@ import com.squareup.moshi.Types
 
 private val LOG by lazyLogger(RelationAdapter::class)
 
-/*
-Current list of (sealed class) Relation subclasses:
-  AreaRelation
-  ArtistRelation
-  EventRelation
-  InstrumentRelation
-  LabelRelation
-  PlaceRelation
-  RecordingRelation
-  ReleaseGroupRelation
-  ReleaseRelation
-  SeriesRelation
-  UrlRelation
-  WorkRelation
- */
 /** Associate the name found in Json with the adapter classes needed to parse */
 private val nameClassPairs = listOf(
   "area" to AreaRelation::class.java,
@@ -89,11 +60,11 @@ internal class RelationAdapter(private val moshi: Moshi) : JsonAdapter<Relation>
   /**
    * Peek each name/value looking for the relation type. Skip all name/value which aren't recognized
    * as these are just part of the relation info. When the type of relation if found use the correct
-   * Json adapter to parse the relation and return it. If we don't recognize a name common to
-   * all Relation subtypes we'll log an error as it would indicate a Relation type we of which we
-   * are unaware. The peeker doesn't actually consume anything in the original reader so we can
-   * just hand it off to the correct adapter. Failing to find an adapter we return null (shouldn't
-   * happen which is why we log unrecognized names - pointing us to our missing Relation subtype)
+   * Json adapter to parse the relation and return it. If we don't recognize a name common to all
+   * Relation subtypes we'll log an error as it would indicate a Relation type of which we are
+   * unaware. The peeker doesn't actually consume anything in the original reader so we can just
+   * hand it off to the correct adapter. Failing to find an adapter we return null (shouldn't happen
+   * which is why we log unrecognized names - pointing us to our missing Relation subtype)
    */
   override fun fromJson(reader: JsonReader): Relation? {
     reader.peekJson().use { peeker ->

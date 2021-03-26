@@ -48,9 +48,9 @@ import com.ealva.brainzapp.ui.view.setStarRatingDrawable
 import com.ealva.brainzapp.ui.view.snackErrors
 import com.ealva.brainzapp.ui.view.tabSelectionFlow
 import com.ealva.brainzapp.ui.view.viewPager2
+import com.ealva.ealvabrainz.brainz.data.ensureExhaustive
 import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
-import com.ealva.ealvabrainz.common.ensureExhaustive
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke
 import com.ealva.ealvalog.lazyLogger

@@ -15,11 +15,19 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.moshi;
+package com.ealva.ealvabrainz.brainz.data
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-@Retention(RetentionPolicy.RUNTIME)
-@interface Nullable {
+@JsonClass(generateAdapter = true)
+public class BrowseCollectionList(
+  @Json(name = "collection-count")
+  public var collectionCount: Int = 0,
+  @Json(name = "collection-offset")
+  public var collectionOffset: Int = 0,
+  @Json(name = "collections")
+  public var collections: List<Collection> = emptyList()
+) {
+  override fun toString(): String = toJson()
 }

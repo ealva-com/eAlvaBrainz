@@ -19,23 +19,24 @@ package com.ealva.brainzsvc.service.browse
 
 import com.ealva.brainzsvc.common.AreaQueryMapItem
 import com.ealva.brainzsvc.common.ArtistQueryMapItem
+import com.ealva.brainzsvc.common.CollectionQueryMapItem
+import com.ealva.brainzsvc.common.Limit
+import com.ealva.brainzsvc.common.Offset
 import com.ealva.brainzsvc.common.PlaceQueryMapItem
 import com.ealva.brainzsvc.common.QueryMap
 import com.ealva.brainzsvc.common.QueryMapItem
 import com.ealva.brainzsvc.service.browse.EventBrowse.BrowseOn
-import com.ealva.ealvabrainz.brainz.MusicBrainz
-import com.ealva.ealvabrainz.brainz.data.BrowseEventList
-import com.ealva.ealvabrainz.brainz.data.Event
+import com.ealva.ealvabrainz.brainz.data.Event.Browse
 import com.ealva.ealvabrainz.common.AreaMbid
 import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.common.CollectionMbid
 import com.ealva.ealvabrainz.common.PlaceMbid
-import retrofit2.Response
 
 /**
  * Builds the release browsing call based on [BrowseOn] type, [include], [relationships], [types],
  * and [status]
  */
-public interface EventBrowse : EntityBrowse<Event.Browse> {
+public interface EventBrowse : EntityBrowse<Browse> {
   /**
    * BrowseOn the entity related to a group of releases.
    */
@@ -43,17 +44,19 @@ public interface EventBrowse : EntityBrowse<Event.Browse> {
   public sealed interface BrowseOn : QueryMapItem {
     public class Area(mbid: AreaMbid) : BrowseOn, AreaQueryMapItem(mbid)
     public class Artist(mbid: ArtistMbid) : BrowseOn, ArtistQueryMapItem(mbid)
+    public class Collection(mbid: CollectionMbid) : BrowseOn, CollectionQueryMapItem(mbid)
     public class Place(mbid: PlaceMbid) : BrowseOn, PlaceQueryMapItem(mbid)
+  }
+
+  public companion object {
+    internal operator fun invoke(
+      browseOn: BrowseOn,
+      limit: Limit?,
+      offset: Offset?,
+      browse: EventBrowse.() -> Unit
+    ): QueryMap =
+      EventBrowseOp(browseOn).apply(browse).queryMap(limit, offset)
   }
 }
 
-internal class EventBrowseOp(
-  override val browseOn: BrowseOn
-) : EventBrowse, BaseEntityBrowse<Event.Browse, BrowseEventList>() {
-  override suspend fun doExecute(
-    musicBrainz: MusicBrainz,
-    queryMap: QueryMap
-  ): Response<BrowseEventList> {
-    return musicBrainz.browseEvents(queryMap)
-  }
-}
+private class EventBrowseOp(browseOn: BrowseOn) : EventBrowse, BaseBrowse<Browse>(browseOn)

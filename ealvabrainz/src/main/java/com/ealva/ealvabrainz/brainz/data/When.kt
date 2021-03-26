@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  Eric A. Snell
+ * Copyright (c) 2021  Eric A. Snell
  *
  * This file is part of eAlvaBrainz
  *
@@ -15,10 +15,11 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.common
+package com.ealva.ealvabrainz.brainz.data
 
 /**
- * Put this at the end of a when statement to ensure it's exhaustive. Especially sealed classes
+ * Put this at the end of a when statement not being used as an expression to ensure it's
+ * exhaustive.
  *
  * For example:
  * ```kotlin

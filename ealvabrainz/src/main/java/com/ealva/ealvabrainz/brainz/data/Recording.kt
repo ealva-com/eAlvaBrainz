@@ -18,7 +18,6 @@
 package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.Recording.Companion.NullRecording
-import com.ealva.ealvabrainz.brainz.data.Recording.Subquery.Releases
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -91,18 +90,12 @@ public class Recording(
 
   override fun toString(): String = toJson()
 
-  public interface Lookup : Include
-
-  @Suppress("unused")
-  public enum class Subquery(override val value: String) : Lookup {
+  public enum class Include(override val value: String) : Inc {
     Artists("artists"),
     Releases("releases"),
     Isrcs("isrcs"),
-    ArtistCredits("artist-credits")
-  }
+    ArtistCredits("artist-credits"),
 
-  @Suppress("unused")
-  public enum class Misc(override val value: String) : Lookup {
     /** DiscIds requires [Releases] also be specified and inc params can (currently) repeat */
     DiscIds("releases+discids"),
     Media("media"),
@@ -114,20 +107,20 @@ public class Recording(
   }
 
   @Suppress("unused")
-  public enum class Browse(override val value: String) : Lookup {
-    Artist("artist"),
-    Release("release"),
-    Work("work"),
+  public enum class Browse(override val value: String) : Inc {
     ArtistCredits("artist-credits"),
     Isrcs("isrcs"),
     Annotation("annotation"),
     Tags("tags"),
+    UserTags("user-tags"),
     Genres("genres"),
-    Ratings("ratings")
+    UserGenres("user-genres"),
+    Ratings("ratings"),
+    UserRatings("user-ratings");
   }
 
-  @Suppress("unused")
-  public enum class SearchField(public val value: String) {
+  public enum class SearchField(public override val value: String) : EntitySearchField {
+    Default(""),
     /** (part of) any alias attached to the recording (diacritics are ignored) */
     Alias("alias"),
 

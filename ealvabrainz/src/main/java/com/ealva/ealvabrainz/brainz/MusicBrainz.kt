@@ -17,16 +17,21 @@
 
 package com.ealva.ealvabrainz.brainz
 
+import com.ealva.ealvabrainz.brainz.data.AnnotationList
 import com.ealva.ealvabrainz.brainz.data.Area
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistList
+import com.ealva.ealvabrainz.brainz.data.BrowseAreaList
 import com.ealva.ealvabrainz.brainz.data.BrowseArtistList
+import com.ealva.ealvabrainz.brainz.data.BrowseCollectionList
 import com.ealva.ealvabrainz.brainz.data.BrowseEventList
+import com.ealva.ealvabrainz.brainz.data.BrowseInstrumentList
 import com.ealva.ealvabrainz.brainz.data.BrowseLabelList
 import com.ealva.ealvabrainz.brainz.data.BrowsePlaceList
 import com.ealva.ealvabrainz.brainz.data.BrowseRecordingList
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseList
+import com.ealva.ealvabrainz.brainz.data.BrowseSeriesList
 import com.ealva.ealvabrainz.brainz.data.BrowseWorkList
 import com.ealva.ealvabrainz.brainz.data.CdStubList
 import com.ealva.ealvabrainz.brainz.data.DiscLookupList
@@ -61,6 +66,7 @@ import retrofit2.http.QueryMap
  * Possible response status codes are:
  * * 200 Ok, the response contains an entity/entities
  * * 400 if client data is bad, possibly a malformed MBID.
+ * * 401 not authorized
  * * 404 if there was nothing found.
  * * 405 if the request method is not one of GET or HEAD.
  * * 406 if the server is unable to generate a response suitable to the Accept header.
@@ -90,11 +96,17 @@ public interface MusicBrainz {
     /** Must be a valid Area MBID */
     @Path("mbid") mbid: String,
     /**
-     * A combination of [Area.Misc] and/or
+     * A combination of [Area.Include] and/or
      * [Relationships][com.ealva.ealvabrainz.brainz.data.Relationships]
      */
     @Query("inc") include: String? = null
   ): Response<Area>
+
+  @GET("collection/{mbid}")
+  public suspend fun lookupCollection(
+    @Path("mbid") mbid: String,
+    @Query("inc") include: String? = null
+  ): Response<com.ealva.ealvabrainz.brainz.data.Collection>
 
   /**
    * [mbid] is an Artist MBID and the [options] QueryMap may contain "inc", "type", and/or
@@ -125,7 +137,7 @@ public interface MusicBrainz {
     /** Must be a valid Event MBID */
     @Path("mbid") mbid: String,
     /**
-     * A combination of [Event.Misc] and/or
+     * A combination of [Event.Include] and/or
      * [Relationships][com.ealva.ealvabrainz.brainz.data.Relationships]
      */
     @Query("inc") include: String? = null
@@ -145,7 +157,7 @@ public interface MusicBrainz {
     /** Must be a valid Genre MBID */
     @Path("mbid") mbid: String,
     /**
-     * A combination of [Genre.Misc] and/or
+     * A combination of [Genre.Include] and/or
      * [Relationships][com.ealva.ealvabrainz.brainz.data.Relationships]
      */
     @Query("inc") include: String? = null
@@ -165,7 +177,7 @@ public interface MusicBrainz {
     /** Must be a valid Instrument MBID */
     @Path("mbid") mbid: String,
     /**
-     * A combination of [Instrument.Misc] and/or
+     * A combination of [Instrument.Include] and/or
      * [Relationships][com.ealva.ealvabrainz.brainz.data.Relationships]
      */
     @Query("inc") include: String? = null
@@ -200,7 +212,7 @@ public interface MusicBrainz {
     /** Must be a valid Place MBID */
     @Path("mbid") mbid: String,
     /**
-     * A combination of [Place.Misc] and/or
+     * A combination of [Place.Include] and/or
      * [Relationships][com.ealva.ealvabrainz.brainz.data.Relationships]
      */
     @Query("inc") include: String? = null
@@ -258,7 +270,7 @@ public interface MusicBrainz {
     /** Must be a valid Series MBID */
     @Path("mbid") mbid: String,
     /**
-     * A combination of [Series.Misc] and/or
+     * A combination of [Series.Include] and/or
      * [Relationships][com.ealva.ealvabrainz.brainz.data.Relationships]
      */
     @Query("inc") include: String? = null
@@ -278,7 +290,7 @@ public interface MusicBrainz {
     /** Must be a valid Url MBID */
     @Path("mbid") mbid: String,
     /**
-     * A combination of [Url.Misc] and/or
+     * A combination of [Url.Include] and/or
      * [Relationships][com.ealva.ealvabrainz.brainz.data.Relationships]
      */
     @Query("inc") include: String? = null
@@ -298,7 +310,7 @@ public interface MusicBrainz {
     /** Must be a valid Work MBID */
     @Path("mbid") mbid: String,
     /**
-     * A combination of [Work.Misc] and/or
+     * A combination of [Work.Include] and/or
      * [Relationships][com.ealva.ealvabrainz.brainz.data.Relationships]
      */
     @Query("inc") include: String? = null
@@ -362,6 +374,151 @@ public interface MusicBrainz {
     @Path("iswc") iswc: String,
     @Query("inc") include: String? = null
   ): Response<BrowseWorkList>
+
+  @GET("area")
+  public suspend fun browseAreas(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowseAreaList>
+
+  /**
+   * Only one of:
+   * * area
+   * * recording
+   * * release
+   * * release-group
+   * * work
+   *
+   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
+   */
+  @GET("artist")
+  public suspend fun browseArtists(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowseArtistList>
+
+  /**
+   * Only one of:
+   * * area
+   * * artist
+   * * editor
+   * * event
+   * * label
+   * * place
+   * * recording
+   * * release
+   * * release-group
+   * * work
+   */
+  @GET("collection")
+  public suspend fun browseCollections(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowseCollectionList>
+
+  /**
+   * Only one of:
+   * * area
+   * * artist
+   * * place
+   *
+   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
+   */
+  @GET("event")
+  public suspend fun browseEvents(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowseEventList>
+
+  @GET("instrument")
+  public suspend fun browseInstruments(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowseInstrumentList>
+
+  /**
+   * Only one of:
+   * * area
+   * * release
+   *
+   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
+   */
+  @GET("label")
+  public suspend fun browseLabels(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowseLabelList>
+
+  /**
+   * Only one of:
+   * * area
+   *
+   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
+   */
+  @GET("place")
+  public suspend fun browsePlaces(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowsePlaceList>
+
+  /**
+   * Only one of:
+   * * artist
+   * * release
+   * * work
+   *
+   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
+   */
+  @GET("recording")
+  public suspend fun browseRecordings(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowseRecordingList>
+
+  /**
+   * Only one of:
+   * * area
+   * * artist
+   * * collection
+   * * label
+   * * trac
+   * * track_artist
+   * * recording
+   * * release-group
+   *
+   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
+   */
+  @GET("release")
+  public suspend fun browseReleases(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowseReleaseList>
+
+  /**
+   * Only one of:
+   * artist
+   * release
+   *
+   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
+   */
+  @GET("release-group")
+  public suspend fun browseReleaseGroups(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowseReleaseGroupList>
+
+  @GET("series")
+  public suspend fun browseSeries(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowseSeriesList>
+
+  /**
+   * Only one of:
+   * artist
+   *
+   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
+   */
+  @GET("work")
+  public suspend fun browseWorks(
+    @QueryMap options: Map<String, String>
+  ): Response<BrowseWorkList>
+
+  @GET("annotation")
+  public suspend fun findAnnotation(
+    @Query("query") query: String,
+    @Query("limit") limit: Int? = null,
+    @Query("offset") offset: Int? = null
+  ): Response<AnnotationList>
 
   /**
    * Returns an [ArtistList] given [query] which is the fully formed MusicBrainz query (in the
@@ -460,6 +617,9 @@ public interface MusicBrainz {
     @Query("offset") offset: Int? = null
   ): Response<ReleaseGroupList>
 
+  /**
+   * This function requires that the caller be authenticated.
+   */
   @GET("tag")
   public suspend fun findTag(
     @Query("query") query: String,
@@ -476,109 +636,4 @@ public interface MusicBrainz {
     @Query("limit") limit: Int? = null,
     @Query("offset") offset: Int? = null
   ): Response<WorkList>
-
-  /**
-   * Only one of:
-   * * area
-   * * recording
-   * * release
-   * * release-group
-   * * work
-   *
-   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
-   */
-  @GET("artist")
-  public suspend fun browseArtists(
-    @QueryMap options: Map<String, String>
-  ): Response<BrowseArtistList>
-
-  /**
-   * Only one of:
-   * * area
-   * * artist
-   * * place
-   *
-   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
-   */
-  @GET("event")
-  public suspend fun browseEvents(
-    @QueryMap options: Map<String, String>
-  ): Response<BrowseEventList>
-
-  /**
-   * Only one of:
-   * * area
-   * * release
-   *
-   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
-   */
-  @GET("label")
-  public suspend fun browseLabels(
-    @QueryMap options: Map<String, String>
-  ): Response<BrowseLabelList>
-
-  /**
-   * Only one of:
-   * * area
-   *
-   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
-   */
-  @GET("place")
-  public suspend fun browsePlaces(
-    @QueryMap options: Map<String, String>
-  ): Response<BrowsePlaceList>
-
-  /**
-   * Only one of:
-   * * artist
-   * * release
-   * * work
-   *
-   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
-   */
-  @GET("recording")
-  public suspend fun browseRecordings(
-    @QueryMap options: Map<String, String>
-  ): Response<BrowseRecordingList>
-
-  /**
-   * Only one of:
-   * * area
-   * * artist
-   * * collection
-   * * label
-   * * trac
-   * * track_artist
-   * * recording
-   * * release-group
-   *
-   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
-   */
-  @GET("release")
-  public suspend fun browseReleases(
-    @QueryMap options: Map<String, String>
-  ): Response<BrowseReleaseList>
-
-  /**
-   * Only one of:
-   * artist
-   * release
-   *
-   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
-   */
-  @GET("release-group")
-  public suspend fun browseReleaseGroups(
-    @QueryMap options: Map<String, String>
-  ): Response<BrowseReleaseGroupList>
-
-  /**
-   * Only one of:
-   * artist
-   *
-   * are allowed in an invocation. Using more than one ID will generate a malformed URI.
-   */
-  @GET("work")
-  public suspend fun browseWorks(
-    @QueryMap options: Map<String, String>
-  ): Response<BrowseWorkList>
 }

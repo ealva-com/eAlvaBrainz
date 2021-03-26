@@ -18,39 +18,42 @@
 package com.ealva.brainzsvc.service.browse
 
 import com.ealva.brainzsvc.common.AreaQueryMapItem
+import com.ealva.brainzsvc.common.CollectionQueryMapItem
+import com.ealva.brainzsvc.common.Limit
+import com.ealva.brainzsvc.common.Offset
 import com.ealva.brainzsvc.common.QueryMap
 import com.ealva.brainzsvc.common.QueryMapItem
 import com.ealva.brainzsvc.common.ReleaseQueryMapItem
 import com.ealva.brainzsvc.service.browse.PlaceBrowse.BrowseOn
-import com.ealva.ealvabrainz.brainz.MusicBrainz
-import com.ealva.ealvabrainz.brainz.data.BrowsePlaceList
-import com.ealva.ealvabrainz.brainz.data.Place
+import com.ealva.ealvabrainz.brainz.data.Place.Browse
 import com.ealva.ealvabrainz.common.AreaMbid
+import com.ealva.ealvabrainz.common.CollectionMbid
 import com.ealva.ealvabrainz.common.ReleaseMbid
-import retrofit2.Response
 
 /**
  * Builds the release browsing call based on [BrowseOn] type, [include], [relationships], [types],
  * and [status]
  */
-public interface PlaceBrowse : EntityBrowse<Place.Browse> {
+public interface PlaceBrowse : EntityBrowse<Browse> {
   /**
    * BrowseOn the entity related to a group of releases.
    */
   @Suppress("unused")
   public sealed interface BrowseOn : QueryMapItem {
     public class Area(mbid: AreaMbid) : BrowseOn, AreaQueryMapItem(mbid)
+    public class Collection(mbid: CollectionMbid) : BrowseOn, CollectionQueryMapItem(mbid)
     public class Release(mbid: ReleaseMbid) : BrowseOn, ReleaseQueryMapItem(mbid)
+  }
+
+  public companion object {
+    internal operator fun invoke(
+      browseOn: BrowseOn,
+      limit: Limit?,
+      offset: Offset?,
+      browse: PlaceBrowse.() -> Unit
+    ): QueryMap =
+      PlaceBrowseOp(browseOn).apply(browse).queryMap(limit, offset)
   }
 }
 
-internal class PlaceBrowseOp(
-  override val browseOn: BrowseOn
-) : PlaceBrowse, BaseEntityBrowse<Place.Browse, BrowsePlaceList>() {
-  override suspend fun doExecute(
-    musicBrainz: MusicBrainz,
-    queryMap: QueryMap
-  ): Response<BrowsePlaceList> {
-    return musicBrainz.browsePlaces(queryMap)
-  }
-}
+private class PlaceBrowseOp(browseOn: BrowseOn) : PlaceBrowse, BaseBrowse<Browse>(browseOn)

@@ -22,17 +22,12 @@ package com.ealva.ealvabrainz.common
 public value class AreaName(public val value: String) {
   public companion object {
     public val UNKNOWN: AreaName = AreaName("Unknown")
-
-    @Suppress("NOTHING_TO_INLINE")
-    public inline fun make(value: String): AreaName =
-      AreaName(value.trim())
   }
 }
 
 /**
  * Convert this String to an [AreaName] or [AreaName.UNKNOWN] if this is null.
  */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toAreaName(): AreaName {
-  return this?.let { AreaName.make(this) } ?: AreaName.UNKNOWN
-}
+@Suppress("unused")
+public fun String?.toAreaName(): AreaName =
+  if (this != null) AreaName(trim()) else AreaName.UNKNOWN

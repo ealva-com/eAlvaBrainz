@@ -105,10 +105,7 @@ public class Area(
 
   override fun toString(): String = toJson()
 
-  public interface Lookup : Include
-
-  @Suppress("unused")
-  public enum class Misc(override val value: String) : Lookup {
+  public enum class Include(override val value: String) : Inc {
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
@@ -116,8 +113,17 @@ public class Area(
     Genres("genres")
   }
 
-  @Suppress("unused")
-  public enum class SearchField(public val value: String) {
+  public enum class Browse(override val value: String) : Inc {
+    Aliases("aliases"),
+    Annotation("annotation"),
+    Tags("tags"),
+    UserTags("user-tags"),
+    Genres("genres"),
+    UserGenres("user-genres");
+  }
+
+  public enum class SearchField(public override val value: String) : EntitySearchField {
+    Default(""),
     /** the area's MBID */
     AreaId("aid"),
 

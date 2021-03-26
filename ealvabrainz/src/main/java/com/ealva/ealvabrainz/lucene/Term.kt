@@ -39,7 +39,6 @@ import com.ealva.ealvabrainz.common.ReleaseGroupMbid
 import com.ealva.ealvabrainz.common.ReleaseMbid
 import com.ealva.ealvabrainz.common.SeriesMbid
 import com.ealva.ealvabrainz.common.TrackMbid
-import com.ealva.ealvabrainz.common.TrackTitle
 import com.ealva.ealvabrainz.common.UrlMbid
 import com.ealva.ealvabrainz.common.WorkMbid
 import com.ealva.ealvabrainz.common.WorkName
@@ -47,7 +46,6 @@ import com.ealva.ealvabrainz.common.brainzFormat
 import java.time.LocalDate
 import java.util.Date
 
-@Suppress("NOTHING_TO_INLINE")
 public inline fun String.toTerm(): Term = Term(this)
 
 @Suppress("MaxLineLength")
@@ -135,7 +133,6 @@ public class Phrase internal constructor(private val value: String) : Term() {
   }
 }
 
-@Suppress("NOTHING_TO_INLINE")
 public inline fun String.toRegExTerm(): Term = RegExTerm(this)
 
 @Suppress("KDocUnresolvedReference") // how to escape brackets? []

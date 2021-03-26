@@ -162,19 +162,12 @@ public class Label(
 
   override fun toString(): String = toJson()
 
-  public interface Lookup : Include
-
-  @Suppress("unused")
-  public enum class Subquery(override val value: String) : Lookup {
-    Releases("releases"),
-  }
-
-  @Suppress("unused")
-  public enum class Misc(override val value: String) : Lookup {
+  public enum class Include(override val value: String) : Inc {
     /**
      * include artist, label, area or work aliases; treat these as a set, as they are not
      * deliberately ordered
      */
+    Releases("releases"),
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
@@ -182,15 +175,19 @@ public class Label(
     Genres("genres")
   }
 
-  public enum class Browse(override val value: String) : Lookup {
+  public enum class Browse(override val value: String) : Inc {
+    Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
+    UserTags("user-tags"),
     Genres("genres"),
-    Ratings("ratings");
+    UserGenres("user-genres"),
+    Ratings("ratings"),
+    UserRatings("user-ratings");
   }
 
-  @Suppress("unused")
-  public enum class SearchField(public val value: String) {
+  public enum class SearchField(public override val value: String) : EntitySearchField {
+    Default(""),
     /** the aliases/misspellings for this label */
     Alias("alias"),
 

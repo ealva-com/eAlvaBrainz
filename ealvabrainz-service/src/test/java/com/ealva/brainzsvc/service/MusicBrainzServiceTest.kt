@@ -19,6 +19,8 @@
 
 package com.ealva.brainzsvc.service
 
+import com.ealva.brainzsvc.common.BrainzException
+import com.ealva.brainzsvc.common.BrainzInvalidStatusException
 import com.ealva.brainzsvc.common.Limit
 import com.ealva.brainzsvc.common.Offset
 import com.ealva.brainzsvc.common.buildQueryMap
@@ -163,7 +165,7 @@ public class MusicBrainzServiceTest {
     val service = makeServiceForTest(mockBrainz)
     expect(
       service.lookupReleaseGroup(mbid) {
-        subquery(ReleaseGroup.Subquery.Releases)
+        include(ReleaseGroup.Include.Releases)
         status(*Release.Status.values())
       }
     ).toBeInstanceOf<Ok<ReleaseGroup>> { result ->

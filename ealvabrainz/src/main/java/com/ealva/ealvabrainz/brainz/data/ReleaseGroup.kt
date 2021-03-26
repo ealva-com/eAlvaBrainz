@@ -18,7 +18,6 @@
 package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup.Companion.NullReleaseGroup
-import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -112,21 +111,14 @@ public class ReleaseGroup(
 
   override fun toString(): String = toJson()
 
-  public interface Lookup : Include
-
-  @Suppress("unused")
-  public enum class Subquery(override val value: String) : Lookup {
+  public enum class Include(override val value: String) : Inc {
     Artists("artists"),
     Releases("releases"),
 
     /** An ID calculated from the TOC of a CD */
     DiscIds("discids"),
     Media("media"),
-    ArtistCredits("artist-credits"); // include artists credits for all releases and recordings
-  }
-
-  @Suppress("unused")
-  public enum class Misc(override val value: String) : Lookup {
+    ArtistCredits("artist-credits"), // include artists credits for all releases and recordings
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
@@ -135,20 +127,23 @@ public class ReleaseGroup(
 
     public companion object {
       /** Doesn't create a values() array and/or list every time */
-      public val all: List<Misc> by lazy { values().asList() }
+      public val all: List<Include> by lazy { values().asList() }
     }
   }
 
-  public enum class Browse(override val value: String) : Lookup {
+  public enum class Browse(override val value: String) : Inc {
     ArtistCredits("artist-credits"),
     Annotation("annotation"),
     Tags("tags"),
+    UserTags("user-tags"),
     Genres("genres"),
-    Ratings("ratings");
+    UserGenres("user-genres"),
+    Ratings("ratings"),
+    UserRatings("user-ratings");
   }
 
-  @Suppress("unused")
-  public enum class SearchField(public val value: String) {
+  public enum class SearchField(public override val value: String) : EntitySearchField {
+    Default(""),
     /** (part of) any alias attached to the release group (diacritics are ignored) */
     Alias("alias"),
 

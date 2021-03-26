@@ -17,7 +17,6 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -122,25 +121,26 @@ public class Event(
   public var score: Int = 0
 ) {
 
-  public interface Lookup : Include
-
-  @Suppress("unused")
-  public enum class Misc(override val value: String) : Lookup {
+  public enum class Include(override val value: String) : Inc {
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
     Genres("genres")
   }
 
-  public enum class Browse(override val value: String) : Lookup {
+  public enum class Browse(override val value: String) : Inc {
+    Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
+    UserTags("user-tags"),
     Genres("genres"),
-    Ratings("ratings");
+    UserGenres("user-genres"),
+    Ratings("ratings"),
+    UserRatings("user-ratings");
   }
 
-  @Suppress("unused")
-  public enum class SearchField(public val value: String) {
+  public enum class SearchField(public override val value: String) : EntitySearchField {
+    Default(""),
     /** an alias attached to the event */
     Alias("alias"),
 

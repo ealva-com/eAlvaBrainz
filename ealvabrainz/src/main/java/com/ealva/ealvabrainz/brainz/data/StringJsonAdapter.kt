@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  Eric A. Snell
+ * Copyright (c) 2021  Eric A. Snell
  *
  * This file is part of eAlvaBrainz
  *
@@ -15,20 +15,25 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainzsvc.service
+package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.brainzsvc.net.RawResponse
+import com.ealva.ealvalog.e
+import com.ealva.ealvalog.invoke
+import com.ealva.ealvalog.lazyLogger
+import com.squareup.moshi.FromJson
+import com.squareup.moshi.JsonReader
 
-public open class BrainzException(message: String, cause: Throwable? = null) :
-  RuntimeException(message, cause)
+private val LOG by lazyLogger(StringJsonAdapter::class)
 
-public class BrainzInvalidTypeException : BrainzException(
-  "Type is not a valid parameter unless 'include' contains releases or release-groups"
-)
-
-public class BrainzInvalidStatusException : BrainzException(
-  "Status is not a valid parameter unless 'include' contains releases"
-)
-
-public class BrainzUnknownErrorException(public val rawResponse: RawResponse) :
-  BrainzException("Error body could not be deserialized", null)
+internal class StringJsonAdapter {
+  @FromJson
+  fun fromJson(reader: JsonReader): String {
+    return when (val token = reader.peek()) {
+      JsonReader.Token.NULL -> "".also { reader.nextNull<String>() }
+      JsonReader.Token.STRING -> reader.nextString()
+      else -> "".also {
+        LOG.e { it("Unrecognized token ${token.name}, expecting null or string", token.name) }
+      }
+    }
+  }
+}

@@ -19,7 +19,6 @@ package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.CoverArtArchive.Companion.NullCoverArtArchive
 import com.ealva.ealvabrainz.brainz.data.Release.Companion.NullRelease
-import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -177,10 +176,8 @@ public class Release(
 
   override fun toString(): String = toJson()
 
-  public interface Lookup : Include
-
   @Suppress("unused")
-  public enum class Subquery(override val value: String) : Lookup {
+  public enum class Include(override val value: String) : Inc {
     Artists("artists"),
     Collections("collections"),
     Labels("labels"),
@@ -196,11 +193,7 @@ public class Release(
      * video recordings. Includes isrcs for all recordings
      */
     Isrcs("isrcs"),
-    ArtistCredits("artist-credits"); // include artists credits for all releases and recordings
-  }
-
-  @Suppress("unused")
-  public enum class Misc(override val value: String) : Lookup {
+    ArtistCredits("artist-credits"), // include artists credits for all releases and recordings
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
@@ -209,19 +202,12 @@ public class Release(
 
     public companion object {
       /** Doesn't create a values() array and/or list every time */
-      public val all: List<Misc> by lazy { values().asList() }
+      public val all: List<Include> by lazy { values().asList() }
     }
   }
 
   @Suppress("unused")
-  public enum class Browse(override val value: String) : Lookup {
-    Area("area"),
-    Artist("artist"),
-    Label("label"),
-    Track("track"),
-    TrackArtist("track_artist"),
-    Recording("recording"),
-    ReleaseGroup("release-group"),
+  public enum class Browse(override val value: String) : Inc {
     ArtistCredits("artist-credits"),
     Labels("labels"),
     Recordings("recordings"),
@@ -231,11 +217,19 @@ public class Release(
     Isrcs("isrcs"),
     Annotation("annotation"),
     Tags("tags"),
+    UserTags("user-tags"),
     Genres("genres"),
-    Ratings("ratings")
+    UserGenres("user-genres"),
+    /**
+     * Entities supporting ratings: artist, event, instrument, label, recording, release-group,
+     * work, url
+     */
+    Ratings("ratings"),
+    UserRatings("user-ratings");
   }
 
-  public enum class SearchField(public val value: String) {
+  public enum class SearchField(public override val value: String) : EntitySearchField {
+    Default(""),
     /** 	(part of) any alias attached to the release (diacritics are ignored) */
     Alias("alias"),
 

@@ -17,20 +17,13 @@
 
 package com.ealva.brainzsvc.service.lookup
 
-import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.Instrument
-import com.ealva.ealvabrainz.brainz.data.joinOrNull
-import com.ealva.ealvabrainz.common.InstrumentMbid
-import retrofit2.Response
 
-public interface InstrumentLookup : EntityLookup<Instrument.Misc>
-
-internal class InstrumentLookupOp : BaseEntityLookup<Instrument.Misc>(), InstrumentLookup {
-  suspend fun execute(
-    mbid: InstrumentMbid,
-    brainz: MusicBrainz
-  ): Response<Instrument> = brainz.lookupInstrument(
-    mbid.value,
-    includeSet.joinOrNull()
-  )
+public interface InstrumentLookup : EntityLookup<Instrument.Include> {
+  public companion object {
+    internal operator fun invoke(lookup: InstrumentLookup.() -> Unit): String? =
+      InstrumentLookupOp().apply(lookup).include
+  }
 }
+
+private class InstrumentLookupOp : BaseEntityLookup<Instrument.Include>(), InstrumentLookup

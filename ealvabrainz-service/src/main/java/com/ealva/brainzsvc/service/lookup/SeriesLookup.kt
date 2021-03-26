@@ -17,20 +17,13 @@
 
 package com.ealva.brainzsvc.service.lookup
 
-import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.Series
-import com.ealva.ealvabrainz.brainz.data.joinOrNull
-import com.ealva.ealvabrainz.common.SeriesMbid
-import retrofit2.Response
 
-public interface SeriesLookup : EntityLookup<Series.Misc>
-
-internal class SeriesLookupOp : BaseEntityLookup<Series.Misc>(), SeriesLookup {
-  suspend fun execute(
-    mbid: SeriesMbid,
-    brainz: MusicBrainz
-  ): Response<Series> = brainz.lookupSeries(
-    mbid.value,
-    includeSet.joinOrNull()
-  )
+public interface SeriesLookup : EntityLookup<Series.Include> {
+  public companion object {
+    internal operator fun invoke(lookup: SeriesLookup.() -> Unit): String? =
+      SeriesLookupOp().apply(lookup).include
+  }
 }
+
+private class SeriesLookupOp : BaseEntityLookup<Series.Include>(), SeriesLookup

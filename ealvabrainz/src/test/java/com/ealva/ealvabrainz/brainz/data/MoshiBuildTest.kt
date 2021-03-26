@@ -17,10 +17,6 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.moshi.FallbackOnNull
-import com.ealva.ealvabrainz.moshi.NullPrimitiveAdapter
-import com.ealva.ealvabrainz.moshi.RelationAdapter
-import com.ealva.ealvabrainz.moshi.StringJsonAdapter
 import com.nhaarman.mockitokotlin2.isA
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -34,6 +30,7 @@ internal class MoshiBuildTest {
     val builder = mock<Moshi.Builder> {}
     builder.addRequired()
     verify(builder).add(RelationAdapter.ADAPTER_FACTORY)
+    verify(builder).add(CollectionAdapter.ADAPTER_FACTORY)
     verify(builder).add(FallbackOnNull.ADAPTER_FACTORY)
     verify(builder).add(isA<NullPrimitiveAdapter>())
     verify(builder).add(isA<StringJsonAdapter>())

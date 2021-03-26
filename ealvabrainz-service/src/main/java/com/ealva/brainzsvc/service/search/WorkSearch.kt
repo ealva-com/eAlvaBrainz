@@ -34,7 +34,7 @@ import kotlin.experimental.ExperimentalTypeInference
 
 @OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
-public class WorkSearch : BaseSearch() {
+public class WorkSearch : BaseSearch<SearchField>() {
   @JvmName("aliasTerm")
   @OverloadResolutionByLambdaReturnType
   /** alias	(part of) any alias attached to the work (diacritics are ignored) */
@@ -66,6 +66,16 @@ public class WorkSearch : BaseSearch() {
 
   @OverloadResolutionByLambdaReturnType
   public inline fun comment(term: () -> String): Field = comment { Term(term()) }
+
+  @JvmName("defaultTerm")
+  @OverloadResolutionByLambdaReturnType
+  /**
+   * (part of) the default's title (diacritics are ignored)
+   */
+  public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
+
+  @OverloadResolutionByLambdaReturnType
+  public inline fun default(term: () -> WorkName): Field = default { Term(term()) }
 
   @JvmName("iswcTerm")
   @OverloadResolutionByLambdaReturnType
@@ -153,5 +163,9 @@ public class WorkSearch : BaseSearch() {
   @OverloadResolutionByLambdaReturnType
   public inline fun workId(term: () -> WorkMbid): Field = workId { Term(term().value) }
 
-  public fun add(field: SearchField, term: Term): Field = makeAndAddField(field.value, term)
+  public companion object {
+    public inline operator fun invoke(search: WorkSearch.() -> Unit): String {
+      return WorkSearch().apply(search).toString()
+    }
+  }
 }

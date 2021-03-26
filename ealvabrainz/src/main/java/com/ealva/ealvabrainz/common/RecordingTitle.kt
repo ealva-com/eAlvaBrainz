@@ -28,17 +28,11 @@ package com.ealva.ealvabrainz.common
 public value class RecordingTitle(public val value: String) {
   public companion object {
     public val UNKNOWN: RecordingTitle = RecordingTitle("Unknown")
-
-    @Suppress("NOTHING_TO_INLINE")
-    public inline fun make(value: String): RecordingTitle =
-      RecordingTitle(value.trim())
   }
 }
 
 /**
  * Convert this String to an [RecordingTitle] or [RecordingTitle.UNKNOWN] if this is null.
  */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toRecordingTitle(): RecordingTitle {
-  return this?.let { RecordingTitle.make(this) } ?: RecordingTitle.UNKNOWN
-}
+public fun String?.toRecordingTitle(): RecordingTitle =
+  if (this != null) RecordingTitle(trim()) else RecordingTitle.UNKNOWN

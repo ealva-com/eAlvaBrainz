@@ -25,11 +25,11 @@ import kotlin.experimental.ExperimentalTypeInference
 
 @OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
-public class TagSearch : BaseSearch() {
+public class TagSearch : BaseSearch<SearchField>() {
   @JvmName("defaultTerm")
   @OverloadResolutionByLambdaReturnType
   /** (part of) the tag's name  */
-  public fun default(term: () -> Term): Field = makeAndAddField("", term())
+  public fun default(term: () -> Term): Field = add(SearchField.Default, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun default(crossinline term: () -> String): Field = default { Term(term()) }
@@ -42,5 +42,9 @@ public class TagSearch : BaseSearch() {
   @OverloadResolutionByLambdaReturnType
   public inline fun tag(term: () -> String): Field = tag { Term(term()) }
 
-  public fun add(field: SearchField, term: Term): Field = makeAndAddField(field.value, term)
+  public companion object {
+    public inline operator fun invoke(search: TagSearch.() -> Unit): String {
+      return TagSearch().apply(search).toString()
+    }
+  }
 }

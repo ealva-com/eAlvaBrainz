@@ -17,19 +17,19 @@
 
 package com.ealva.brainzsvc.service.lookup
 
-import com.ealva.brainzsvc.service.BrainzInvalidStatusException
-import com.ealva.brainzsvc.service.BrainzInvalidTypeException
-import com.ealva.ealvabrainz.brainz.data.Artist
-import com.ealva.ealvabrainz.brainz.data.Include
+import com.ealva.brainzsvc.common.BrainzInvalidStatusException
+import com.ealva.brainzsvc.common.BrainzInvalidTypeException
+import com.ealva.ealvabrainz.brainz.data.Inc
 import com.ealva.ealvabrainz.brainz.data.Relationships
 import com.ealva.ealvabrainz.brainz.data.Release
+import com.ealva.ealvabrainz.brainz.data.joinOrNull
 
 /**
  * All entity lookups have these basic parameters
  */
-public interface EntityLookup<M : Include> {
+public interface EntityLookup<M : Inc> {
   /** Add the entity miscellaneous types to includes param */
-  public fun misc(vararg misc: M)
+  public fun include(vararg misc: M)
 
   /** Add entity relationships to includes param */
   public fun relationships(vararg rels: Relationships)
@@ -38,17 +38,15 @@ public interface EntityLookup<M : Include> {
 /**
  * Several entity lookups have an additional subquery list of related entities
  */
-public interface EntitySubqueryLookup<S : Include, M : Include> : EntityLookup<M> {
-  public fun subquery(vararg subquery: S)
-
+public interface EntitySubqueryLookup<M : Inc> : EntityLookup<M> {
   /**
-   * If entities include [Artist.Subquery.Releases] or [Artist.Subquery.ReleaseGroups] the
+   * If entities include Releases or ReleaseGroups the
    * [Release.Type] can be specified to further narrow results
    */
   public fun types(vararg types: Release.Type)
 
   /**
-   * If entities includes [Artist.Subquery.Releases] a [Release.Status] can be specified to
+   * If entities includes Releases a [Release.Status] can be specified to
    * further narrow results
    */
   public fun status(vararg status: Release.Status)
@@ -57,30 +55,29 @@ public interface EntitySubqueryLookup<S : Include, M : Include> : EntityLookup<M
 /**
  * Base class just implements the collection of various includes
  */
-internal abstract class BaseEntityLookup<M : Include> : EntityLookup<M> {
-  protected val includeSet: MutableSet<Include> = mutableSetOf()
+internal abstract class BaseEntityLookup<M : Inc> : EntityLookup<M> {
+  protected val incSet: MutableSet<Inc> = mutableSetOf()
 
-  override fun misc(vararg misc: M) {
-    includeSet.addAll(misc)
+  override fun include(vararg misc: M) {
+    incSet.addAll(misc)
   }
 
   override fun relationships(vararg rels: Relationships) {
-    includeSet.addAll(rels)
+    incSet.addAll(rels)
   }
+
+  val include: String?
+    get() = incSet.joinOrNull()
 }
 
 /**
  * Adds subquery to base entity lookups
  */
-internal abstract class BaseSubqueryLookup<S : Include, M : Include> :
-  BaseEntityLookup<M>(), EntitySubqueryLookup<S, M> {
+internal abstract class BaseSubqueryLookup<M : Inc> :
+  BaseEntityLookup<M>(), EntitySubqueryLookup<M> {
 
   protected var typeSet: Set<Release.Type>? = null
   protected var statusSet: Set<Release.Status>? = null
-
-  override fun subquery(vararg subquery: S) {
-    includeSet.addAll(subquery)
-  }
 
   override fun types(vararg types: Release.Type) {
     typeSet = types.toSet()
@@ -92,21 +89,19 @@ internal abstract class BaseSubqueryLookup<S : Include, M : Include> :
 }
 
 internal fun Set<Release.Type>.ensureValidType(
-  include: Set<Include>
+  incSet: Set<Inc>
 ): Set<Release.Type> = apply {
-  if (isNotEmpty() && include.doesNotContainReleasesOrGroups()) throw BrainzInvalidTypeException()
+  if (isNotEmpty() && incSet.doesNotContainReleasesOrGroups()) throw BrainzInvalidTypeException()
 }
 
 internal fun Set<Release.Status>.ensureValidStatus(
-  include: Set<Include>
+  incSet: Set<Inc>
 ): Set<Release.Status> = apply {
-  if (isNotEmpty() && include.doesNotContainReleases()) throw BrainzInvalidStatusException()
+  if (isNotEmpty() && incSet.doesNotContainReleases()) throw BrainzInvalidStatusException()
 }
 
-@Suppress("NOTHING_TO_INLINE") // only used once
-private inline fun Set<Include>?.doesNotContainReleases(): Boolean =
+private fun Set<Inc>?.doesNotContainReleases(): Boolean =
   this == null || none { it.value == "releases" }
 
-@Suppress("NOTHING_TO_INLINE") // only used once
-private inline fun Set<Include>?.doesNotContainReleasesOrGroups(): Boolean =
+private fun Set<Inc>?.doesNotContainReleasesOrGroups(): Boolean =
   this == null || none { it.value == "releases" || it.value == "release-groups" }

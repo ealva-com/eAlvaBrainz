@@ -17,28 +17,24 @@
 
 package com.ealva.brainzsvc.service.lookup
 
+import com.ealva.brainzsvc.common.QueryMap
 import com.ealva.brainzsvc.common.buildQueryMap
 import com.ealva.brainzsvc.common.include
 import com.ealva.brainzsvc.common.status
 import com.ealva.brainzsvc.common.types
-import com.ealva.ealvabrainz.brainz.MusicBrainz
-import com.ealva.ealvabrainz.brainz.data.IsrcRecordingList
 import com.ealva.ealvabrainz.brainz.data.Recording
-import com.ealva.ealvabrainz.common.Isrc
-import retrofit2.Response
 
-internal class IsrcLookupOp :
-  BaseSubqueryLookup<Recording.Subquery, Recording.Misc>(), RecordingLookup {
+public interface IsrcLookup : RecordingLookup {
+  public companion object {
+    internal operator fun invoke(lookup: RecordingLookup.() -> Unit): QueryMap =
+      IsrcLookupOp().apply(lookup).queryMap()
+  }
+}
 
-  suspend fun execute(
-    isrc: Isrc,
-    brainz: MusicBrainz
-  ): Response<IsrcRecordingList> = brainz.lookupIsrc(
-    isrc.value,
-    buildQueryMap {
-      include(includeSet)
-      types(typeSet?.ensureValidType(includeSet))
-      status(statusSet?.ensureValidStatus(includeSet))
-    }
-  )
+private class IsrcLookupOp : BaseSubqueryLookup<Recording.Include>(), IsrcLookup {
+  fun queryMap(): QueryMap = buildQueryMap {
+    include(incSet)
+    types(typeSet?.ensureValidType(incSet))
+    status(statusSet?.ensureValidStatus(incSet))
+  }
 }

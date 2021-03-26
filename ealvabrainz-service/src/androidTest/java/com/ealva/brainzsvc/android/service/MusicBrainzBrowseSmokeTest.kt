@@ -25,11 +25,17 @@ import com.ealva.brainzsvc.common.Limit
 import com.ealva.brainzsvc.common.Offset
 import com.ealva.brainzsvc.service.BrainzErrorMessage
 import com.ealva.brainzsvc.service.BrainzMessage
+import com.ealva.brainzsvc.service.BuildConfig
 import com.ealva.brainzsvc.service.ContextResourceFetcher
 import com.ealva.brainzsvc.service.CoverArtService
+import com.ealva.brainzsvc.service.Credentials
+import com.ealva.brainzsvc.service.CredentialsProvider
 import com.ealva.brainzsvc.service.MusicBrainzService
+import com.ealva.brainzsvc.service.Password
 import com.ealva.brainzsvc.service.ResourceFetcher
+import com.ealva.brainzsvc.service.UserName
 import com.ealva.brainzsvc.service.browse.ArtistBrowse
+import com.ealva.brainzsvc.service.browse.CollectionBrowse
 import com.ealva.brainzsvc.service.browse.EventBrowse
 import com.ealva.brainzsvc.service.browse.LabelBrowse
 import com.ealva.brainzsvc.service.browse.PlaceBrowse
@@ -39,13 +45,17 @@ import com.ealva.brainzsvc.service.browse.ReleaseGroupBrowse.BrowseOn
 import com.ealva.brainzsvc.service.browse.WorkBrowse
 import com.ealva.brainzsvc.service.getErrorString
 import com.ealva.ealvabrainz.brainz.data.BrowseReleaseGroupList
+import com.ealva.ealvabrainz.brainz.data.Collection
+import com.ealva.ealvabrainz.brainz.data.EventCollection
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.common.AreaMbid
 import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.common.EditorName
 import com.ealva.ealvabrainz.common.ReleaseGroupMbid
 import com.ealva.ealvabrainz.test.shared.MainCoroutineRule
 import com.ealva.ealvabrainz.test.shared.runBlockingTest
 import com.ealva.ealvabrainz.test.shared.toHaveAny
+import com.ealva.ealvabrainz.test.shared.toNotBeEmpty
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.nhaarman.expect.expect
@@ -102,6 +112,10 @@ public class MusicBrainzBrowseSmokeTest {
       appVersion = appVersion,
       contact = contactEmail,
       coverArt = coverArtService,
+      credentialsProvider = object : CredentialsProvider {
+        override val credentials: Credentials =
+          Credentials(UserName(BuildConfig.BRAINZ_USERNAME), Password(BuildConfig.BRAINZ_PASSWORD))
+      },
       dispatcher = coroutineRule.testDispatcher,
     )
     // ensure we do not exceed rate limiting as we are creating the services each time and not
@@ -113,11 +127,9 @@ public class MusicBrainzBrowseSmokeTest {
   public fun browseArtistsBeatlesRevolver(): Unit = coroutineRule.runBlockingTest {
     withBrainz {
       when (val result = browseArtists(ArtistBrowse.BrowseOn.ReleaseGroup(THE_BEATLES_REVOLVER))) {
-        is Ok -> {
-          result.value.let { browseArtistList ->
-            expect(browseArtistList.artists).toHaveSize(1)
-            expect(browseArtistList.artists[0].name).toBe("The Beatles")
-          }
+        is Ok -> result.value.let { browseArtistList ->
+          expect(browseArtistList.artists).toHaveSize(1)
+          expect(browseArtistList.artists[0].name).toBe("The Beatles")
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
       }
@@ -143,6 +155,35 @@ public class MusicBrainzBrowseSmokeTest {
   }
 
   @Test
+  public fun browseCollectionsForEditor(): Unit = coroutineRule.runBlockingTest {
+    withBrainz {
+      when (
+        val result = browseCollections(
+          CollectionBrowse.BrowseOn.Editor(EditorName(BuildConfig.BRAINZ_USERNAME))
+        ) {
+          include(Collection.Browse.UserCollections)
+        }
+      ) {
+        is Ok -> result.value.let { browseList ->
+          expect(browseList.collections).toNotBeEmpty { "Expected some collections" }
+          // Test for both default collections each MusicBrainz user has
+          expect(browseList.collections).toHaveAny(
+            { " Didn't contain Maybe attending of type EventCollection" }
+          ) { collection ->
+            collection.name == "Maybe attending" && collection is EventCollection
+          }
+          expect(browseList.collections).toHaveAny(
+            { " Didn't contain Attending of type EventCollection" }
+          ) { collection ->
+            collection.name == "Attending" && collection is EventCollection
+          }
+        }
+        is Err -> fail("Brainz call failed") { failReason(result) }
+      }
+    }
+  }
+
+  @Test
   public fun browseEventsForMetallica(): Unit = coroutineRule.runBlockingTest {
     withBrainz {
       val metallicaMbid = ArtistMbid("65f4f0c5-ef9e-490c-aee3-909e7ae6b2ab")
@@ -153,18 +194,16 @@ public class MusicBrainzBrowseSmokeTest {
           limit
         )
       ) {
-        is Ok -> {
-          result.value.let { browseList ->
-            expect(browseList.eventCount).toBeGreaterThan(39) // 40 last checked
-            expect(browseList.events).toHaveSize(limit.value)
-            expect(browseList.events).toHaveAny({ "Metallica at UIC Pavilion" }) {
-              it.name == "Metallica at UIC Pavilion"
-            }
-            expect(browseList.events).toHaveAny(
-              { " Expected to contain Monsters of Rock Pforzheim 1987 Festival " }
-            ) {
-              it.type == "Festival" && it.name == "Monsters of Rock Pforzheim 1987"
-            }
+        is Ok -> result.value.let { browseList ->
+          expect(browseList.eventCount).toBeGreaterThan(39) // 40 last checked
+          expect(browseList.events).toHaveSize(limit.value)
+          expect(browseList.events).toHaveAny({ "Metallica at UIC Pavilion" }) {
+            it.name == "Metallica at UIC Pavilion"
+          }
+          expect(browseList.events).toHaveAny(
+            { " Expected to contain Monsters of Rock Pforzheim 1987 Festival " }
+          ) {
+            it.type == "Festival" && it.name == "Monsters of Rock Pforzheim 1987"
           }
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
@@ -180,13 +219,11 @@ public class MusicBrainzBrowseSmokeTest {
       when (
         val result = browseLabels(LabelBrowse.BrowseOn.Area(unitedKingdom), limit)
       ) {
-        is Ok -> {
-          result.value.let { browseList ->
-            expect(browseList.labelCount).toBeGreaterThan(15350) // last checked was 15359
-            expect(browseList.labels).toHaveSize(limit.value)
-            expect(browseList.labels).toHaveAny { it.name == "[Detail] Recordings" }
-            expect(browseList.labels).toHaveAny { it.name == "@10footclown" }
-          }
+        is Ok -> result.value.let { browseList ->
+          expect(browseList.labelCount).toBeGreaterThan(15350) // last checked was 15359
+          expect(browseList.labels).toHaveSize(limit.value)
+          expect(browseList.labels).toHaveAny { it.name == "[Detail] Recordings" }
+          expect(browseList.labels).toHaveAny { it.name == "@10footclown" }
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
       }
@@ -201,16 +238,14 @@ public class MusicBrainzBrowseSmokeTest {
       when (
         val result = browsePlaces(PlaceBrowse.BrowseOn.Area(unitedKingdom), limit)
       ) {
-        is Ok -> {
-          result.value.let { browseList ->
-            expect(browseList.places).toHaveSize(limit.value)
-            expect(browseList.placeCount).toBeGreaterThan(4200) // 4206 last count
-            expect(browseList.places).toHaveAny {
-              it.name == "2khz Studio" && it.type == "Studio"
-            }
-            expect(browseList.places).toHaveAny {
-              it.name == "13th Note Club" && it.type == "Venue"
-            }
+        is Ok -> result.value.let { browseList ->
+          expect(browseList.places).toHaveSize(limit.value)
+          expect(browseList.placeCount).toBeGreaterThan(4200) // 4206 last count
+          expect(browseList.places).toHaveAny {
+            it.name == "2khz Studio" && it.type == "Studio"
+          }
+          expect(browseList.places).toHaveAny {
+            it.name == "13th Note Club" && it.type == "Venue"
           }
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
@@ -230,11 +265,9 @@ public class MusicBrainzBrowseSmokeTest {
           offset
         )
       ) {
-        is Ok -> {
-          result.value.let { browseList ->
-            expect(browseList.releaseOffset).toBe(offset.value)
-            expect(browseList.releases).toHaveSize(5)
-          }
+        is Ok -> result.value.let { browseList ->
+          expect(browseList.releaseOffset).toBe(offset.value)
+          expect(browseList.releases).toHaveSize(5)
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
       }
@@ -246,18 +279,11 @@ public class MusicBrainzBrowseSmokeTest {
     withBrainz {
       val nirvana = ArtistMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
       val limit = Limit(5)
-      when (
-        val result = browseRecordings(
-          RecordingBrowse.BrowseOn.Artist(nirvana),
-          limit
-        )
-      ) {
-        is Ok -> {
-          result.value.let { browseList ->
-            expect(browseList.recordingCount).toBeGreaterThan(13620) // 13622 last check
-            expect(browseList.recordings).toHaveSize(limit.value)
-            expect(browseList.recordings).toHaveAny { it.title == "(New Wave) Polly" }
-          }
+      when (val result = browseRecordings(RecordingBrowse.BrowseOn.Artist(nirvana), limit)) {
+        is Ok -> result.value.let { browseList ->
+          expect(browseList.recordingCount).toBeGreaterThan(13620) // 13622 last check
+          expect(browseList.recordings).toHaveSize(limit.value)
+          expect(browseList.recordings).toHaveAny { it.title == "(New Wave) Polly" }
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
       }
@@ -278,11 +304,9 @@ public class MusicBrainzBrowseSmokeTest {
           types(Release.Type.Album)
         }
       ) {
-        is Ok -> {
-          result.value.let { browseList ->
-            expect(browseList.releaseOffset).toBe(offset.value)
-            expect(browseList.releases).toHaveSize(5)
-          }
+        is Ok -> result.value.let { browseList ->
+          expect(browseList.releaseOffset).toBe(offset.value)
+          expect(browseList.releases).toHaveSize(5)
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
       }
@@ -303,11 +327,9 @@ public class MusicBrainzBrowseSmokeTest {
           status(Release.Status.Official)
         }
       ) {
-        is Ok -> {
-          result.value.let { browseList ->
-            expect(browseList.releaseOffset).toBe(offset.value)
-            expect(browseList.releases).toHaveSize(5)
-          }
+        is Ok -> result.value.let { browseList ->
+          expect(browseList.releaseOffset).toBe(offset.value)
+          expect(browseList.releases).toHaveSize(5)
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
       }
@@ -319,11 +341,9 @@ public class MusicBrainzBrowseSmokeTest {
     withBrainz {
       val limit = Limit(5)
       when (val result = browseReleaseGroups(BrowseOn.Artist(JETHRO_TULL_MBID), limit)) {
-        is Ok -> {
-          result.value.let { browseList: BrowseReleaseGroupList ->
-            expect(browseList.releaseGroups).toHaveSize(limit.value)
-            expect(browseList.releaseGroups[0].title).toBe("Aqualung")
-          }
+        is Ok -> result.value.let { browseList: BrowseReleaseGroupList ->
+          expect(browseList.releaseGroups).toHaveSize(limit.value)
+          expect(browseList.releaseGroups[0].title).toBe("Aqualung")
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
       }
@@ -335,18 +355,12 @@ public class MusicBrainzBrowseSmokeTest {
     withBrainz {
       val limit = Limit(5)
       when (
-        val result =
-          browseReleaseGroups(
-            BrowseOn.Artist(JETHRO_TULL_MBID),
-            limit = limit
-          ) {
-            types(Release.Type.Album)
-          }
+        val result = browseReleaseGroups(BrowseOn.Artist(JETHRO_TULL_MBID), limit = limit) {
+          types(Release.Type.Album)
+        }
       ) {
-        is Ok -> {
-          result.value.let { browseList: BrowseReleaseGroupList ->
-            expect(browseList.releaseGroups).toHaveSize(limit.value)
-          }
+        is Ok -> result.value.let { browseList: BrowseReleaseGroupList ->
+          expect(browseList.releaseGroups).toHaveSize(limit.value)
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
       }
@@ -365,13 +379,11 @@ public class MusicBrainzBrowseSmokeTest {
           offset
         )
       ) {
-        is Ok -> {
-          result.value.let { browseList ->
-            expect(browseList.workCount).toBeGreaterThan(340) // 343 last checked
-            expect(browseList.workOffset).toBe(offset.value)
-            expect(browseList.works).toHaveSize(limit.value)
-            expect(browseList.works).toHaveAny { it.title == "Her Majesty" }
-          }
+        is Ok -> result.value.let { browseList ->
+          expect(browseList.workCount).toBeGreaterThan(340) // 343 last checked
+          expect(browseList.workOffset).toBe(offset.value)
+          expect(browseList.works).toHaveSize(limit.value)
+          expect(browseList.works).toHaveAny { it.title == "Her Majesty" }
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
       }

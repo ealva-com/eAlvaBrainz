@@ -29,7 +29,7 @@ import kotlin.experimental.ExperimentalTypeInference
 
 @OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
-public class LabelSearch : BaseSearch() {
+public class LabelSearch : BaseSearch<SearchField>() {
   /** (part of) any alias attached to the label (diacritics are ignored) */
   @JvmName("aliasTerm")
   @OverloadResolutionByLambdaReturnType
@@ -75,7 +75,7 @@ public class LabelSearch : BaseSearch() {
   @JvmName("defaultTerm")
   @OverloadResolutionByLambdaReturnType
   /** (part of) the label's name (diacritics are ignored) */
-  public fun default(term: () -> Term): Field = makeAndAddField("", term())
+  public fun default(term: () -> Term): Field = add(SearchField.Default, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun default(crossinline term: () -> LabelName): Field = default { Term(term()) }
@@ -171,5 +171,9 @@ public class LabelSearch : BaseSearch() {
   @OverloadResolutionByLambdaReturnType
   public inline fun type(type: () -> String): Field = type { Term(type()) }
 
-  public fun add(field: SearchField, term: Term): Field = makeAndAddField(field.value, term)
+  public companion object {
+    public inline operator fun invoke(search: LabelSearch.() -> Unit): String {
+      return LabelSearch().apply(search).toString()
+    }
+  }
 }

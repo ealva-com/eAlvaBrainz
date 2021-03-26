@@ -32,9 +32,9 @@ package com.ealva.ealvabrainz.common
 public value class Iswc(public val value: String) {
   public companion object {
     public val UNKNOWN: Iswc = Iswc("Unknown")
-
-    @Suppress("NOTHING_TO_INLINE")
-    public inline fun make(value: String): Iswc =
-      Iswc(value.trim())
   }
 }
+
+@Suppress("unused")
+public fun String?.toIswc(): Iswc =
+  if (this != null) Iswc(trim()) else Iswc.UNKNOWN

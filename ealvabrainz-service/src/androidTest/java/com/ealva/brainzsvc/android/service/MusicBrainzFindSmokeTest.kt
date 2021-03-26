@@ -26,9 +26,12 @@ import com.ealva.brainzsvc.service.BrainzMessage
 import com.ealva.brainzsvc.service.BuildConfig
 import com.ealva.brainzsvc.service.ContextResourceFetcher
 import com.ealva.brainzsvc.service.CoverArtService
+import com.ealva.brainzsvc.service.Credentials
 import com.ealva.brainzsvc.service.CredentialsProvider
 import com.ealva.brainzsvc.service.MusicBrainzService
+import com.ealva.brainzsvc.service.Password
 import com.ealva.brainzsvc.service.ResourceFetcher
+import com.ealva.brainzsvc.service.UserName
 import com.ealva.brainzsvc.service.getErrorString
 import com.ealva.ealvabrainz.common.AlbumTitle
 import com.ealva.ealvabrainz.common.ArtistMbid
@@ -97,10 +100,8 @@ public class MusicBrainzFindSmokeTest {
       contact = contactEmail,
       coverArt = coverArtService,
       credentialsProvider = object : CredentialsProvider {
-        override val userName: String
-          get() = BuildConfig.BRAINZ_USERNAME // defined in local.properties, see README.md
-        override val password: String
-          get() = BuildConfig.BRAINZ_PASSWORD // defined in local.properties, see README.md
+        override val credentials: Credentials =
+          Credentials(UserName(BuildConfig.BRAINZ_USERNAME), Password(BuildConfig.BRAINZ_PASSWORD))
       },
       dispatcher = coroutineRule.testDispatcher,
     )
@@ -112,19 +113,13 @@ public class MusicBrainzFindSmokeTest {
   @Test
   public fun findArtistJethroTullSearch(): Unit = coroutineRule.runBlockingTest {
     withBrainz {
-      when (
-        val result = findArtist(limit = 4) {
-          artist { JETHRO_TULL }
-        }
-      ) {
-        is Ok -> {
-          result.value.let { artistList ->
-            expect(artistList.count).toBeGreaterThan(0)
-            result.value.artists.let { artists ->
-              expect(artists).toHaveSize(1)
-              val artist = artists[0]
-              expect(ArtistMbid(artist.id)).toBe(JETHRO_TULL_MBID)
-            }
+      when (val result = findArtist(limit = Limit(4)) { artist { JETHRO_TULL } }) {
+        is Ok -> result.value.let { artistList ->
+          expect(artistList.count).toBeGreaterThan(0)
+          result.value.artists.let { artists ->
+            expect(artists).toHaveSize(1)
+            val artist = artists[0]
+            expect(ArtistMbid(artist.id)).toBe(JETHRO_TULL_MBID)
           }
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
@@ -136,13 +131,11 @@ public class MusicBrainzFindSmokeTest {
   public fun findCdStubWithTitleDoo(): Unit = coroutineRule.runBlockingTest {
     withBrainz {
       when (val result = findCdStub { title { AlbumTitle("Doo") } }) {
-        is Ok -> {
-          result.value.let { stubList ->
-            expect(stubList.count).toBeGreaterThan(50) // 56 last check
-            expect(stubList.cdStubs).toHaveAny { it.title == "Doo- Be - Doo" }
-            expect(stubList.cdStubs).toHaveAny { it.title == "Doo-lang Doo-lang" }
-            expect(stubList.cdStubs).toHaveAny { it.title == "Doo-Bop" }
-          }
+        is Ok -> result.value.let { stubList ->
+          expect(stubList.count).toBeGreaterThan(50) // 56 last check
+          expect(stubList.cdStubs).toHaveAny { it.title == "Doo- Be - Doo" }
+          expect(stubList.cdStubs).toHaveAny { it.title == "Doo-lang Doo-lang" }
+          expect(stubList.cdStubs).toHaveAny { it.title == "Doo-Bop" }
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
       }
@@ -153,16 +146,10 @@ public class MusicBrainzFindSmokeTest {
   public fun findLabelDevilsRecords(): Unit = coroutineRule.runBlockingTest {
     withBrainz {
       val labelName = LabelName("Devil's Records")
-      when (
-        val result = findLabel(limit = Limit(4)) {
-          default { labelName }
-        }
-      ) {
-        is Ok -> {
-          result.value.let { labelList ->
-            expect(labelList.count).toBe(27)
-            expect(labelList.labels[0].name).toBe(labelName.value)
-          }
+      when (val result = findLabel(limit = Limit(4)) { default { labelName } }) {
+        is Ok -> result.value.let { labelList ->
+          expect(labelList.count).toBeGreaterThan(27)
+          expect(labelList.labels[0].name).toBe(labelName.value)
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
       }
@@ -174,14 +161,10 @@ public class MusicBrainzFindSmokeTest {
     withBrainz {
       val aqualung = "Aqualung".toAlbumTitle()
       when (
-        val result = findRelease(Limit(4)) {
-          artist { JETHRO_TULL } and release { aqualung }
-        }
+        val result = findRelease(Limit(4)) { artist { JETHRO_TULL } and release { aqualung } }
       ) {
-        is Ok -> {
-          result.value.let { releaseList ->
-            expect(releaseList.releases).toHaveSize(4)
-          }
+        is Ok -> result.value.let { releaseList ->
+          expect(releaseList.releases).toHaveSize(4)
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
       }
@@ -196,10 +179,8 @@ public class MusicBrainzFindSmokeTest {
           artist { JETHRO_TULL } and release { "not found".toAlbumTitle() }
         }
       ) {
-        is Ok -> {
-          result.value.let { releaseList ->
-            expect(releaseList.count).toBe(0) // expect nothing found
-          }
+        is Ok -> result.value.let { releaseList ->
+          expect(releaseList.count).toBe(0) // expect nothing found
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
       }
@@ -216,13 +197,11 @@ public class MusicBrainzFindSmokeTest {
           artist { ledZeppelin } and releaseGroup { housesOfTheHoly }
         }
       ) {
-        is Ok -> {
-          result.value.let { groupList ->
-            expect(groupList.count).toBe(2)
-            expect(groupList.releaseGroups).toHaveSize(2)
-            expect(groupList.releaseGroups[0].title).toBe(housesOfTheHoly.value)
-            expect(groupList.releaseGroups[0].artistCredit[0].name).toBe(ledZeppelin.value)
-          }
+        is Ok -> result.value.let { groupList ->
+          expect(groupList.count).toBe(2)
+          expect(groupList.releaseGroups).toHaveSize(2)
+          expect(groupList.releaseGroups[0].title).toBe(housesOfTheHoly.value)
+          expect(groupList.releaseGroups[0].artistCredit[0].name).toBe(ledZeppelin.value)
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
       }
@@ -230,24 +209,25 @@ public class MusicBrainzFindSmokeTest {
   }
 
   @Test
-  public fun findTagShoegaze(): Unit = coroutineRule.runBlockingTest {
+  public fun findTagShoegazeAndIndie(): Unit = coroutineRule.runBlockingTest {
     withBrainz {
-      when (
-        val result = findTag {
-          default { "shoegaze" }
-        }
-      ) {
-        is Ok -> {
-          result.value.let { tagList ->
-            expect(tagList.count).toBeGreaterThan(25) // 28 last checked
-            expect(tagList.tags).toHaveSize(25)
-            expect(tagList.tags).toHaveAny {
-              it.score == 100 && it.name == "rock shoegaze"
-            }
-            expect(tagList.tags).toHaveAny {
-              it.score == 100 && it.name == "indie shoegaze"
-            }
+      when (val result = findTag { default { "shoegaze" } }) {
+        is Ok -> result.value.let { tagList ->
+          expect(tagList.count).toBeGreaterThan(25) // 28 last checked
+          expect(tagList.tags).toHaveSize(25)
+          expect(tagList.tags).toHaveAny {
+            it.score == 100 && it.name == "rock shoegaze"
           }
+          expect(tagList.tags).toHaveAny {
+            it.score == 100 && it.name == "indie shoegaze"
+          }
+        }
+        is Err -> fail("Brainz call failed") { failReason(result) }
+      }
+
+      when (val result = findTag { default { "indie" } }) {
+        is Ok -> result.value.let { tagList ->
+          expect(tagList.tags).toHaveAny { it.name.contains("indie") }
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
       }
@@ -263,12 +243,10 @@ public class MusicBrainzFindSmokeTest {
           work { WorkName("Frozen") } and artistId { michielPetersMbid }
         }
       ) {
-        is Ok -> {
-          result.value.let { workList ->
-            expect(workList.works).toHaveSize(1)
-            expect(workList.works[0].id).toBe("10c1a66a-8166-32ec-a00f-540f111ce7a3")
-            expect(workList.works[0].title).toBe("Frozen Fred")
-          }
+        is Ok -> result.value.let { workList ->
+          expect(workList.works).toHaveSize(1)
+          expect(workList.works[0].id).toBe("10c1a66a-8166-32ec-a00f-540f111ce7a3")
+          expect(workList.works[0].title).toBe("Frozen Fred")
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
       }

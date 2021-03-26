@@ -38,17 +38,12 @@ package com.ealva.ealvabrainz.common
 public value class LabelName(public val value: String) {
   public companion object {
     public val UNKNOWN: LabelName = LabelName("Unknown")
-
-    @Suppress("NOTHING_TO_INLINE")
-    public inline fun make(value: String): LabelName =
-      LabelName(value.trim())
   }
 }
 
 /**
  * Convert this String to an [LabelName] or [LabelName.UNKNOWN] if this is null.
  */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toLabelName(): LabelName {
-  return this?.let { LabelName.make(this) } ?: LabelName.UNKNOWN
+public fun String?.toLabelName(): LabelName {
+  return if (this != null) LabelName(trim()) else LabelName.UNKNOWN
 }

@@ -17,11 +17,14 @@
 
 package com.ealva.brainzsvc.common
 
-import com.ealva.ealvabrainz.brainz.data.Include
+import com.ealva.ealvabrainz.brainz.data.Inc
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.joinToString
 import com.ealva.ealvabrainz.common.AreaMbid
 import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.common.CollectionMbid
+import com.ealva.ealvabrainz.common.EditorName
+import com.ealva.ealvabrainz.common.EventMbid
 import com.ealva.ealvabrainz.common.LabelMbid
 import com.ealva.ealvabrainz.common.PlaceMbid
 import com.ealva.ealvabrainz.common.RecordingMbid
@@ -33,9 +36,8 @@ import com.ealva.ealvabrainz.lucene.BrainzMarker
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
-@Suppress("NOTHING_TO_INLINE")
 @OptIn(ExperimentalContracts::class)
-private inline fun <E> Set<E>?.neitherNullNorEmpty(): Boolean {
+private fun <E> Set<E>?.neitherNullNorEmpty(): Boolean {
   contract {
     returns(true) implies (this@neitherNullNorEmpty != null)
   }
@@ -50,7 +52,7 @@ public inline fun buildQueryMap(builder: QueryMap.() -> Unit): QueryMap =
 
 public fun QueryMap.putItem(item: QueryMapItem): QueryMap = apply { item.put(this) }
 
-public fun QueryMap.include(inc: Set<Include>?): QueryMap = apply {
+public fun QueryMap.include(inc: Set<Inc>?): QueryMap = apply {
   if (inc.neitherNullNorEmpty()) {
     this["inc"] = inc.joinToString()
   }
@@ -82,6 +84,18 @@ public fun QueryMap.area(areaId: AreaMbid): QueryMap = apply {
 
 public fun QueryMap.artist(artistId: ArtistMbid): QueryMap = apply {
   this["artist"] = artistId.value
+}
+
+public fun QueryMap.collection(collectionMbid: CollectionMbid): QueryMap = apply {
+  this["collection"] = collectionMbid.value
+}
+
+public fun QueryMap.editor(editorName: EditorName): QueryMap = apply {
+  this["editor"] = editorName.value
+}
+
+public fun QueryMap.event(eventMbid: EventMbid): QueryMap = apply {
+  this["event"] = eventMbid.value
 }
 
 public fun QueryMap.label(labelId: LabelMbid): QueryMap = apply {

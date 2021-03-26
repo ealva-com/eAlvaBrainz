@@ -17,29 +17,24 @@
 
 package com.ealva.brainzsvc.service.lookup
 
+import com.ealva.brainzsvc.common.QueryMap
 import com.ealva.brainzsvc.common.buildQueryMap
 import com.ealva.brainzsvc.common.include
 import com.ealva.brainzsvc.common.status
 import com.ealva.brainzsvc.common.types
-import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.Label
-import com.ealva.ealvabrainz.common.LabelMbid
-import retrofit2.Response
 
-public interface LabelLookup : EntitySubqueryLookup<Label.Subquery, Label.Misc>
+public interface LabelLookup : EntitySubqueryLookup<Label.Include> {
+  public companion object {
+    internal operator fun invoke(lookup: LabelLookup.() -> Unit): QueryMap =
+      LabelLookupOp().apply(lookup).queryMap()
+  }
+}
 
-internal class LabelLookupOp :
-  BaseSubqueryLookup<Label.Subquery, Label.Misc>(), LabelLookup {
-
-  suspend fun execute(
-    mbid: LabelMbid,
-    brainz: MusicBrainz
-  ): Response<Label> = brainz.lookupLabel(
-    mbid.value,
-    buildQueryMap {
-      include(includeSet)
-      types(typeSet?.ensureValidType(includeSet))
-      status(statusSet?.ensureValidStatus(includeSet))
-    }
-  )
+private class LabelLookupOp : BaseSubqueryLookup<Label.Include>(), LabelLookup {
+  fun queryMap(): QueryMap = buildQueryMap {
+    include(incSet)
+    types(typeSet?.ensureValidType(incSet))
+    status(statusSet?.ensureValidStatus(incSet))
+  }
 }

@@ -17,14 +17,13 @@
 
 package com.ealva.ealvabrainz.common
 
-@Suppress("unused")
 @JvmInline
 public value class WorkName(public val value: String) {
   public companion object {
     public val UNKNOWN: WorkName = WorkName("Unknown")
-
-    @Suppress("NOTHING_TO_INLINE")
-    public inline fun make(value: String): WorkName =
-      WorkName(value.trim())
   }
 }
+
+@Suppress("unused")
+public fun String?.toWorkName(): WorkName =
+  if (this != null) WorkName(trim()) else WorkName.UNKNOWN

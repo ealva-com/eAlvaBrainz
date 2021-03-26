@@ -59,8 +59,7 @@ public fun String.toArtistType(): ArtistType {
   return typeNameToArtistMap[this] ?: mapToUnknown(this)
 }
 
-@Suppress("NOTHING_TO_INLINE")
-private inline fun mapToUnknown(typeString: String): ArtistType {
+private fun mapToUnknown(typeString: String): ArtistType {
   LOG.w { it("'%s' is an Unknown ArtistType", typeString) }
   return ArtistType.Unknown
 }

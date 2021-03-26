@@ -27,7 +27,9 @@ import com.ealva.brainzsvc.net.BrainzJsonFormatUserAgentInterceptor
 import com.ealva.brainzsvc.net.CacheControlInterceptor
 import com.ealva.brainzsvc.net.ThrottlingInterceptor
 import com.ealva.ealvabrainz.log.BrainzLog
+import com.ealva.ealvalog.invoke
 import com.ealva.ealvalog.lazyLogger
+import com.ealva.ealvalog.w
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -54,7 +56,7 @@ internal fun makeOkHttpClient(
 ): OkHttpClient = OkHttpClient.Builder().apply {
   if (credentialsProvider != null) {
     val authCache = ConcurrentHashMap<String, CachingAuthenticator>()
-    authenticator(DigestAuthenticator(RuntimeCredentials(credentialsProvider)))
+    authenticator(DigestAuthenticator(OnTheFlyCredentials(credentialsProvider, authCache)))
     addInterceptor(AuthenticationCacheInterceptor(authCache))
   }
   addInterceptor(CacheControlInterceptor(DAYS_MAX_AGE, DAYS_MIN_FRESH, DAYS_MAX_STALE))
@@ -70,12 +72,38 @@ internal fun makeOkHttpClient(
  * Implement okhttp-digest Credentials so we don't have to create with username/pwd at construction
  * and instead get when needed. Client will decide how this info is obtained.
  */
-private class RuntimeCredentials(private val provider: CredentialsProvider) : Credentials("", "") {
-  override fun getUserName(): String {
-    return provider.userName
+private class OnTheFlyCredentials(
+  private val provider: CredentialsProvider,
+  private val authCache: ConcurrentHashMap<String, CachingAuthenticator>
+) : Credentials("", "") {
+  private var credentials: com.ealva.brainzsvc.service.Credentials? = null
+
+  private fun clearAuthCache() {
+    authCache.clear()
   }
 
-  override fun getPassword(): String {
-    return provider.password
+  /**
+   * If a race occurs between [getUserName] and [getPassword] it's expected the call(s) will fail
+   * and another attempt will be made. If our "last copy" of credentials doesn't match we clear
+   * the auth cache and start over
+   */
+  private fun getCredentials(): com.ealva.brainzsvc.service.Credentials {
+    println("getCredentials")
+    val newCredentials = provider.credentials
+    if (credentials == null || credentials != newCredentials) {
+      println("Credentials changed (maybe first call)")
+      if (credentials != null) LOG.w { it("Credentials changed") }
+      clearAuthCache()
+      credentials = newCredentials
+    }
+    return newCredentials
   }
+
+  override fun getUserName(): String = getCredentials().userName.value
+
+  /**
+   * Bit of a hack as we know [getUserName] is always called first and credential changing
+   * should be rare. See [getCredentials]
+   */
+  override fun getPassword(): String = credentials?.password?.value ?: "".also { clearAuthCache() }
 }

@@ -17,20 +17,13 @@
 
 package com.ealva.brainzsvc.service.lookup
 
-import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.Genre
-import com.ealva.ealvabrainz.brainz.data.joinOrNull
-import com.ealva.ealvabrainz.common.GenreMbid
-import retrofit2.Response
 
-public interface GenreLookup : EntityLookup<Genre.Misc>
-
-internal class GenreLookupOp : BaseEntityLookup<Genre.Misc>(), GenreLookup {
-  suspend fun execute(
-    mbid: GenreMbid,
-    brainz: MusicBrainz
-  ): Response<Genre> = brainz.lookupGenre(
-    mbid.value,
-    includeSet.joinOrNull()
-  )
+public interface GenreLookup : EntityLookup<Genre.Include> {
+  public companion object {
+    internal operator fun invoke(lookup: GenreLookup.() -> Unit): String? =
+      GenreLookupOp().apply(lookup).include
+  }
 }
+
+private class GenreLookupOp : BaseEntityLookup<Genre.Include>(), GenreLookup

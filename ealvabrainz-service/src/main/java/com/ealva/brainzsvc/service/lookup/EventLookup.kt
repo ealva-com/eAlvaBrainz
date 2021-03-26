@@ -17,20 +17,13 @@
 
 package com.ealva.brainzsvc.service.lookup
 
-import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.Event
-import com.ealva.ealvabrainz.brainz.data.joinOrNull
-import com.ealva.ealvabrainz.common.EventMbid
-import retrofit2.Response
 
-public interface EventLookup : EntityLookup<Event.Misc>
-
-internal class EventLookupOp : BaseEntityLookup<Event.Misc>(), EventLookup {
-  suspend fun execute(
-    mbid: EventMbid,
-    brainz: MusicBrainz
-  ): Response<Event> = brainz.lookupEvent(
-    mbid.value,
-    includeSet.joinOrNull()
-  )
+public interface EventLookup : EntityLookup<Event.Include> {
+  public companion object {
+    internal operator fun invoke(lookup: EventLookup.() -> Unit): String? =
+      EventLookupOp().apply(lookup).include
+  }
 }
+
+private class EventLookupOp : BaseEntityLookup<Event.Include>(), EventLookup

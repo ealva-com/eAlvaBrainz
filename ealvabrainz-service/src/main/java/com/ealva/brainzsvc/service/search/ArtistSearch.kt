@@ -20,8 +20,8 @@
 package com.ealva.brainzsvc.service.search
 
 import com.ealva.ealvabrainz.brainz.data.Artist.SearchField
-import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.ArtistType
+import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.lucene.BrainzMarker
 import com.ealva.ealvabrainz.lucene.Field
@@ -32,7 +32,7 @@ import kotlin.experimental.ExperimentalTypeInference
 
 @OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
-public class ArtistSearch : BaseSearch() {
+public class ArtistSearch : BaseSearch<SearchField>() {
   @JvmName("aliasTerm")
   @OverloadResolutionByLambdaReturnType
   /** (part of) any alias attached to the artist (diacritics are ignored) */
@@ -118,7 +118,7 @@ public class ArtistSearch : BaseSearch() {
   @JvmName("defaultTerm")
   @OverloadResolutionByLambdaReturnType
   /** the artist's name (diacritics are ignored) */
-  public fun default(term: () -> Term): Field = makeAndAddField("", term())
+  public fun default(term: () -> Term): Field = add(SearchField.Default, term())
 
   @JvmName("defaultName")
   @OverloadResolutionByLambdaReturnType
@@ -194,7 +194,11 @@ public class ArtistSearch : BaseSearch() {
   public inline fun type(term: () -> Term): Field = add(SearchField.Type, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun type(type: () -> ArtistType): Field = add(SearchField.Type, Term(type()))
+  public inline fun type(type: () -> ArtistType): Field = type { Term(type()) }
 
-  public fun add(field: SearchField, term: Term): Field = makeAndAddField(field.value, term)
+  public companion object {
+    public inline operator fun invoke(search: ArtistSearch.() -> Unit): String {
+      return ArtistSearch().apply(search).toString()
+    }
+  }
 }

@@ -19,6 +19,7 @@
 
 package com.ealva.ealvabrainz.common
 
+import com.ealva.ealvabrainz.brainz.data.Annotation
 import com.ealva.ealvabrainz.brainz.data.Area
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.Event
@@ -79,11 +80,9 @@ public interface Mbid {
 @JvmInline
 public value class UnknownEntityMbid(override val value: String) : Mbid
 
-@Suppress("NOTHING_TO_INLINE")
 public inline val Mbid.isValid: Boolean
   get() = value.isValidMbid()
 
-@Suppress("NOTHING_TO_INLINE")
 public inline val Mbid.isInvalid: Boolean
   get() = !isValid
 
@@ -93,8 +92,7 @@ public inline val Mbid.isInvalid: Boolean
  * MBID from a file tag that has change since last parse or if reading a "more accurate" MBID from
  * MusicBrainz
  */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun <T : Mbid> T.isObsolete(newValue: T?): Boolean {
+public fun <T : Mbid> T.isObsolete(newValue: T?): Boolean {
   return (newValue != null && newValue.isValid && (this.isInvalid || newValue != this))
 }
 
@@ -135,6 +133,9 @@ public inline val Artist.mbid: ArtistMbid
 
 @JvmInline
 public value class CollectionMbid(override val value: String) : Mbid
+
+public inline val com.ealva.ealvabrainz.brainz.data.Collection.mbid: CollectionMbid
+  get() = CollectionMbid(id)
 
 @JvmInline
 public value class EventMbid(override val value: String) : Mbid
@@ -258,4 +259,40 @@ private fun Char.isHex(): Boolean = when (this) {
   'E' -> true
   'F' -> true
   else -> false
+}
+
+public inline val Annotation.areaMbid: AreaMbid
+  get() = AreaMbid(entity)
+public inline val Annotation.artistMbid: ArtistMbid
+  get() = ArtistMbid(entity)
+public inline val Annotation.eventMbid: EventMbid
+  get() = EventMbid(entity)
+public inline val Annotation.labelMbid: LabelMbid
+  get() = LabelMbid(entity)
+public inline val Annotation.placeMbid: PlaceMbid
+  get() = PlaceMbid(entity)
+public inline val Annotation.recordingMbid: RecordingMbid
+  get() = RecordingMbid(entity)
+public inline val Annotation.releaseMbid: ReleaseMbid
+  get() = ReleaseMbid(entity)
+public inline val Annotation.releaseGroupMbid: ReleaseGroupMbid
+  get() = ReleaseGroupMbid(entity)
+public inline val Annotation.seriesMbid: SeriesMbid
+  get() = SeriesMbid(entity)
+public inline val Annotation.workMbid: WorkMbid
+  get() = WorkMbid(entity)
+
+@Suppress("unused")
+public fun Annotation.entityMbid(): Mbid = when (type) {
+  "area" -> areaMbid
+  "artist" -> artistMbid
+  "event" -> eventMbid
+  "label" -> labelMbid
+  "place" -> placeMbid
+  "recording" -> recordingMbid
+  "release" -> releaseMbid
+  "release-group" -> releaseGroupMbid
+  "series" -> seriesMbid
+  "work" -> workMbid
+  else -> UnknownEntityMbid(entity)
 }

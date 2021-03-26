@@ -17,18 +17,6 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.common.AreaMbid
-import com.ealva.ealvabrainz.common.ArtistMbid
-import com.ealva.ealvabrainz.common.EventMbid
-import com.ealva.ealvabrainz.common.LabelMbid
-import com.ealva.ealvabrainz.common.Mbid
-import com.ealva.ealvabrainz.common.PlaceMbid
-import com.ealva.ealvabrainz.common.RecordingMbid
-import com.ealva.ealvabrainz.common.ReleaseGroupMbid
-import com.ealva.ealvabrainz.common.ReleaseMbid
-import com.ealva.ealvabrainz.common.SeriesMbid
-import com.ealva.ealvabrainz.common.UnknownEntityMbid
-import com.ealva.ealvabrainz.common.WorkMbid
 import com.squareup.moshi.JsonClass
 
 /**
@@ -88,6 +76,20 @@ public class Annotation(
 
   override fun toString(): String = toJson()
 
+  public enum class SearchField(public override val value: String) : EntitySearchField {
+    Default(""),
+    /** The annotated entity's MBID */
+    Entity("entity"),
+    /** The numeric ID of the annotation (e.g. 703027) */
+    Id("id"),
+    /** The annotated entity's name or title (diacritics are ignored) */
+    Name("name"),
+    /** The annotation's content (includes wiki formatting) */
+    Text("text"),
+    /** The annotated entity's entity type */
+    Type("type")
+  }
+
   public companion object {
     public val NullAnnotation: Annotation =
       Annotation(entity = NullObject.NAME, name = NullObject.NAME)
@@ -97,48 +99,3 @@ public class Annotation(
 
 public inline val Annotation.isNullObject: Boolean
   get() = this === Annotation.NullAnnotation
-
-public inline val Annotation.areaMbid: AreaMbid
-  get() = AreaMbid(entity)
-
-public inline val Annotation.artistMbid: ArtistMbid
-  get() = ArtistMbid(entity)
-
-public inline val Annotation.eventMbid: EventMbid
-  get() = EventMbid(entity)
-
-public inline val Annotation.labelMbid: LabelMbid
-  get() = LabelMbid(entity)
-
-public inline val Annotation.placeMbid: PlaceMbid
-  get() = PlaceMbid(entity)
-
-public inline val Annotation.recordingMbid: RecordingMbid
-  get() = RecordingMbid(entity)
-
-public inline val Annotation.releaseMbid: ReleaseMbid
-  get() = ReleaseMbid(entity)
-
-public inline val Annotation.releaseGroupMbid: ReleaseGroupMbid
-  get() = ReleaseGroupMbid(entity)
-
-public inline val Annotation.seriesMbid: SeriesMbid
-  get() = SeriesMbid(entity)
-
-public inline val Annotation.workMbid: WorkMbid
-  get() = WorkMbid(entity)
-
-@Suppress("unused")
-public fun Annotation.entityMbid(): Mbid = when (type) {
-  "area" -> areaMbid
-  "artist" -> artistMbid
-  "event" -> eventMbid
-  "label" -> labelMbid
-  "place" -> placeMbid
-  "recording" -> recordingMbid
-  "release" -> releaseMbid
-  "release-group" -> releaseGroupMbid
-  "series" -> seriesMbid
-  "work" -> workMbid
-  else -> UnknownEntityMbid(entity)
-}

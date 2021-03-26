@@ -15,24 +15,18 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.moshi
+package com.ealva.ealvabrainz.brainz.data
 
-import com.squareup.moshi.FromJson
-import com.squareup.moshi.JsonReader
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-@Suppress("unused")
-internal class StringJsonAdapter {
-  @FromJson
-  fun fromJson(reader: JsonReader): String {
-    return when (val token = reader.peek()) {
-      JsonReader.Token.NULL -> {
-        reader.nextNull<String>(); ""
-      }
-      JsonReader.Token.STRING -> reader.nextString()
-      else -> {
-        // Don't want to be tied to any logger here
-        println("Unrecognized token ${token.name}, expecting null or string"); ""
-      }
-    }
-  }
+@JsonClass(generateAdapter = true)
+public class BrowseAreaList(
+  @Json(name = "area-count")
+  public var areaCount: Int = 0,
+  @Json(name = "area-offset")
+  public var areaOffset: Int = 0,
+  public var areas: List<Area> = emptyList()
+) {
+  override fun toString(): String = toJson()
 }

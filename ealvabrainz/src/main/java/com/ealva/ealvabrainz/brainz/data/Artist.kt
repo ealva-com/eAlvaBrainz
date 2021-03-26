@@ -19,7 +19,6 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -151,10 +150,7 @@ public class Artist(
 
   override fun toString(): String = toJson()
 
-  public interface Lookup : Include
-
-  @Suppress("unused")
-  public enum class Subquery(override val value: String) : Lookup {
+  public enum class Include(override val value: String) : Inc {
     Recordings("recordings"),
     Releases("releases"),
     ReleaseGroups("release-groups"),
@@ -170,11 +166,7 @@ public class Artist(
      */
     Isrcs("isrcs"),
     ArtistCredits("artist-credits"), // include artists credits for all releases and recordings
-    VariousArtists("various-artists")
-  }
-
-  @Suppress("unused")
-  public enum class Misc(override val value: String) : Lookup {
+    VariousArtists("various-artists"),
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
@@ -183,25 +175,23 @@ public class Artist(
 
     public companion object {
       /** Doesn't create a values() array and/or list every time */
-      public val all: List<Misc> by lazy { values().asList() }
+      public val all: List<Include> by lazy { values().asList() }
     }
   }
 
-  @Suppress("unused")
-  public enum class Browse(override val value: String) : Lookup {
-    Area("area"),
-    Recording("recording"),
-    Release("release"),
-    ReleaseGroup("release-group"),
-    Work("work"),
+  public enum class Browse(override val value: String) : Inc {
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
+    UserTags("user-tags"),
     Genres("genres"),
-    Ratings("ratings");
+    UserGenres("user-genres"),
+    Ratings("ratings"),
+    UserRatings("user-ratings");
   }
 
-  public enum class SearchField(public val value: String) {
+  public enum class SearchField(public override val value: String) : EntitySearchField {
+    Default(""),
     /** (part of) any alias attached to the artist (diacritics are ignored) */
     Alias("alias"),
 

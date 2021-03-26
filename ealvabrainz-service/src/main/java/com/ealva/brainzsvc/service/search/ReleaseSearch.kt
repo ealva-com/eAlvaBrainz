@@ -19,15 +19,15 @@
 
 package com.ealva.brainzsvc.service.search
 
-import com.ealva.ealvabrainz.common.ArtistMbid
-import com.ealva.ealvabrainz.common.LabelMbid
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.Release.SearchField
+import com.ealva.ealvabrainz.common.AlbumTitle
+import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.LabelMbid
+import com.ealva.ealvabrainz.common.LabelName
 import com.ealva.ealvabrainz.common.ReleaseGroupMbid
 import com.ealva.ealvabrainz.common.ReleaseMbid
-import com.ealva.ealvabrainz.common.AlbumTitle
-import com.ealva.ealvabrainz.common.ArtistName
-import com.ealva.ealvabrainz.common.LabelName
 import com.ealva.ealvabrainz.lucene.BrainzMarker
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Term
@@ -37,7 +37,7 @@ import kotlin.experimental.ExperimentalTypeInference
 
 @OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
-public class ReleaseSearch : BaseSearch() {
+public class ReleaseSearch : BaseSearch<SearchField>() {
   @JvmName("aliasTerm")
   @OverloadResolutionByLambdaReturnType
   public inline fun alias(term: () -> Term): Field = add(SearchField.Alias, term())
@@ -130,6 +130,13 @@ public class ReleaseSearch : BaseSearch() {
   @OverloadResolutionByLambdaReturnType
   public inline fun date(term: () -> String): Field =
     add(SearchField.Date, Term(term()))
+
+  @JvmName("defaultTerm")
+  @OverloadResolutionByLambdaReturnType
+  public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
+
+  @OverloadResolutionByLambdaReturnType
+  public inline fun default(term: () -> AlbumTitle): Field = default { Term(term()) }
 
   @JvmName("discIdCountTerm")
   @OverloadResolutionByLambdaReturnType
@@ -278,5 +285,9 @@ public class ReleaseSearch : BaseSearch() {
   @OverloadResolutionByLambdaReturnType
   public inline fun trackCount(term: () -> Int): Field = trackCount { Term(term()) }
 
-  public fun add(field: SearchField, term: Term): Field = makeAndAddField(field.value, term)
+  public companion object {
+    public inline operator fun invoke(search: ReleaseSearch.() -> Unit): String {
+      return ReleaseSearch().apply(search).toString()
+    }
+  }
 }

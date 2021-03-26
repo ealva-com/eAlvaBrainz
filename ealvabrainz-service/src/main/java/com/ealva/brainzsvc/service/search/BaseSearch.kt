@@ -17,32 +17,31 @@
 
 package com.ealva.brainzsvc.service.search
 
+import com.ealva.ealvabrainz.brainz.data.EntitySearchField
 import com.ealva.ealvabrainz.lucene.BaseExpression
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Query
 import com.ealva.ealvabrainz.lucene.Term
 import com.ealva.ealvabrainz.lucene.andAnother
+import com.ealva.ealvabrainz.lucene.appendExpression
 import com.ealva.ealvabrainz.lucene.orAnother
 
-public interface Search {
-  public infix fun Field.and(field: Field): Field
-  public infix fun Field.or(field: Field): Field
-}
-
-public abstract class BaseSearch(
+public abstract class BaseSearch<F : EntitySearchField>(
   private val query: Query = Query()
-) : BaseExpression(), Query by query, Search {
+) : BaseExpression() {
+  public fun add(field: F, term: Term): Field = Field(field.value, term).also { query.add(it) }
 
-  protected fun makeAndAddField(field: String, term: Term): Field =
-    Field(field, term).also { query.add(it) }
-
-  override infix fun Field.and(field: Field): Field {
+  public infix fun Field.and(field: Field): Field {
     query.remove(field) // field likely added when made, so remove it before "and"ing to another
     return query.replace(this, this.andAnother(field)) // 'and'ing creates new field
   }
 
-  override infix fun Field.or(field: Field): Field {
+  public infix fun Field.or(field: Field): Field {
     query.remove(field) // field likely added when made, so remove it before "or"ing to another
     return query.replace(this, this.orAnother(field)) // 'or'ing creates new field
+  }
+
+  override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {
+    builder.appendExpression(query)
   }
 }

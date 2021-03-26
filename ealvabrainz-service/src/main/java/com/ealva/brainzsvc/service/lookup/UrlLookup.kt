@@ -17,20 +17,13 @@
 
 package com.ealva.brainzsvc.service.lookup
 
-import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.Url
-import com.ealva.ealvabrainz.brainz.data.joinOrNull
-import com.ealva.ealvabrainz.common.UrlMbid
-import retrofit2.Response
 
-public interface UrlLookup : EntityLookup<Url.Misc>
-
-internal class UrlLookupOp : BaseEntityLookup<Url.Misc>(), UrlLookup {
-  suspend fun execute(
-    mbid: UrlMbid,
-    brainz: MusicBrainz
-  ): Response<Url> = brainz.lookupUrl(
-    mbid.value,
-    includeSet.joinOrNull()
-  )
+public interface UrlLookup : EntityLookup<Url.Include> {
+  public companion object {
+    internal operator fun invoke(lookup: UrlLookup.() -> Unit): String? =
+      UrlLookupOp().apply(lookup).include
+  }
 }
+
+private class UrlLookupOp : BaseEntityLookup<Url.Include>(), UrlLookup

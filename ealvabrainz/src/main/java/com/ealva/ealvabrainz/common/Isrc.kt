@@ -32,9 +32,9 @@ package com.ealva.ealvabrainz.common
 public value class Isrc(public val value: String) {
   public companion object {
     public val UNKNOWN: Isrc = Isrc("Unknown")
-
-    @Suppress("NOTHING_TO_INLINE")
-    public inline fun make(value: String): Isrc =
-      Isrc(value.trim())
   }
 }
+
+@Suppress("unused")
+public fun String?.toIsrc(): Isrc =
+  if (this != null) Isrc(trim()) else Isrc.UNKNOWN

@@ -28,13 +28,11 @@ import com.ealva.brainzsvc.common.offset
 import com.ealva.brainzsvc.common.putItem
 import com.ealva.brainzsvc.common.status
 import com.ealva.brainzsvc.common.types
-import com.ealva.ealvabrainz.brainz.MusicBrainz
-import com.ealva.ealvabrainz.brainz.data.Include
+import com.ealva.ealvabrainz.brainz.data.Inc
 import com.ealva.ealvabrainz.brainz.data.Relationships
 import com.ealva.ealvabrainz.brainz.data.Release
-import retrofit2.Response
 
-public interface EntityBrowse<B : Include> {
+public interface EntityBrowse<B : Inc> {
   /** What information should be included with the returned entities */
   public fun include(vararg browse: B)
 
@@ -48,17 +46,19 @@ public interface EntityBrowse<B : Include> {
   public fun status(vararg status: Release.Status)
 }
 
-internal abstract class BaseEntityBrowse<B : Include, R> : EntityBrowse<B> {
-  private var includeSet: MutableSet<Include> = mutableSetOf()
+internal abstract class BaseBrowse<B : Inc>(
+  private val browseOn: QueryMapItem
+) : EntityBrowse<B> {
+  private var incSet: MutableSet<Inc> = mutableSetOf()
   private var typeSet: Set<Release.Type>? = null
   private var statusSet: Set<Release.Status>? = null
 
   override fun include(vararg browse: B) {
-    includeSet.addAll(browse)
+    incSet.addAll(browse)
   }
 
   override fun relationships(vararg rels: Relationships) {
-    includeSet.addAll(rels)
+    incSet.addAll(rels)
   }
 
   override fun types(vararg types: Release.Type) {
@@ -69,35 +69,17 @@ internal abstract class BaseEntityBrowse<B : Include, R> : EntityBrowse<B> {
     statusSet = status.toSet()
   }
 
-  protected open fun verifyIncludes(set: Set<Include>) {}
-  protected open fun verifyTypes(types: Set<Release.Type>, includes: Set<Include>) {}
-  protected open fun verifyStatus(types: Set<Release.Status>, includes: Set<Include>) {}
+  protected open fun Set<Inc>.verifyIncludes(): Set<Inc> = apply {}
+  protected open fun Set<Release.Type>.verifyTypes(includes: Set<Inc>): Set<Release.Type> = apply {}
+  protected open fun Set<Release.Status>.verifyStatus(includes: Set<Inc>): Set<Release.Status> =
+    apply {}
 
-  protected abstract val browseOn: QueryMapItem
-
-  suspend fun execute(
-    musicBrainz: MusicBrainz,
-    limit: Limit? = null,
-    offset: Offset? = null,
-  ): Response<R> {
-    verifyIncludes(includeSet)
-    typeSet?.let { verifyTypes(it, includeSet) }
-    statusSet?.let { verifyStatus(it, includeSet) }
-    return doExecute(
-      musicBrainz,
-      buildQueryMap {
-        putItem(browseOn)
-        include(includeSet)
-        limit(limit)
-        offset(offset)
-        types(typeSet)
-        status(statusSet)
-      }
-    )
+  fun queryMap(limit: Limit? = null, offset: Offset? = null): QueryMap = buildQueryMap {
+    putItem(browseOn)
+    include(incSet.verifyIncludes())
+    limit(limit)
+    offset(offset)
+    types(typeSet?.verifyTypes(incSet))
+    status(statusSet?.verifyStatus(incSet))
   }
-
-  protected abstract suspend fun doExecute(
-    musicBrainz: MusicBrainz,
-    queryMap: QueryMap
-  ): Response<R>
 }

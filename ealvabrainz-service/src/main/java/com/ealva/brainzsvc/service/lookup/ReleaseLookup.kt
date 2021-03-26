@@ -17,6 +17,7 @@
 
 package com.ealva.brainzsvc.service.lookup
 
+import com.ealva.brainzsvc.common.QueryMap
 import com.ealva.brainzsvc.common.TocParam
 import com.ealva.brainzsvc.common.buildQueryMap
 import com.ealva.brainzsvc.common.cdstubs
@@ -25,58 +26,33 @@ import com.ealva.brainzsvc.common.mediaFormat
 import com.ealva.brainzsvc.common.status
 import com.ealva.brainzsvc.common.toc
 import com.ealva.brainzsvc.common.types
-import com.ealva.ealvabrainz.brainz.MusicBrainz
-import com.ealva.ealvabrainz.brainz.data.BrowseReleaseList
-import com.ealva.ealvabrainz.brainz.data.DiscLookupList
 import com.ealva.ealvabrainz.brainz.data.Release
-import com.ealva.ealvabrainz.common.DiscId
-import com.ealva.ealvabrainz.common.ReleaseMbid
-import retrofit2.Response
 
-public interface ReleaseLookup : EntitySubqueryLookup<Release.Subquery, Release.Misc>
+public interface ReleaseLookup : EntitySubqueryLookup<Release.Include> {
+  public companion object {
+    internal operator fun invoke(lookup: ReleaseLookup.() -> Unit): QueryMap =
+      ReleaseLookupOp().apply(lookup).queryMap()
 
-internal class ReleaseLookupOp :
-  BaseSubqueryLookup<Release.Subquery, Release.Misc>(), ReleaseLookup {
+    internal operator fun invoke(
+      toc: TocParam?,
+      excludeCDStubs: Boolean,
+      allMediumFormats: Boolean,
+      lookup: ReleaseLookup.() -> Unit
+    ): QueryMap = ReleaseLookupOp().apply(lookup).queryMap(toc, excludeCDStubs, allMediumFormats)
+  }
+}
 
-  suspend fun lookupRelease(
-    brainz: MusicBrainz,
-    mbid: ReleaseMbid
-  ): Response<Release> = brainz.lookupRelease(
-    mbid.value,
-    buildQueryMap {
-      include(includeSet)
-      types(typeSet)
-      status(statusSet)
-    }
-  )
+private class ReleaseLookupOp : BaseSubqueryLookup<Release.Include>(), ReleaseLookup {
+  fun queryMap(): QueryMap = buildQueryMap {
+    include(incSet)
+    types(typeSet)
+    status(statusSet)
+  }
 
-  suspend fun lookupDisc(
-    brainz: MusicBrainz,
-    discId: DiscId,
-    toc: TocParam?,
-    excludeCDStubs: Boolean,
-    allMediumFormats: Boolean,
-  ): Response<DiscLookupList> = brainz.lookupDisc(
-    discId.value,
-    buildQueryMap {
-      include(includeSet)
-      toc(toc)
-      cdstubs(excludeCDStubs)
-      mediaFormat(allMediumFormats)
-    }
-  )
-
-  suspend fun fuzzyLookupTOC(
-    brainz: MusicBrainz,
-    toc: TocParam,
-    excludeCDStubs: Boolean,
-    allMediumFormats: Boolean,
-  ): Response<BrowseReleaseList> = brainz.fuzzyLookupTOC(
-    buildQueryMap {
-      include(includeSet)
-      toc(toc)
-      cdstubs(excludeCDStubs)
-      mediaFormat(allMediumFormats)
-    }
-  )
+  fun queryMap(toc: TocParam?, excludeCDStubs: Boolean, allMediumFormats: Boolean) = buildQueryMap {
+    include(incSet)
+    toc(toc)
+    cdstubs(excludeCDStubs)
+    mediaFormat(allMediumFormats)
+  }
 }

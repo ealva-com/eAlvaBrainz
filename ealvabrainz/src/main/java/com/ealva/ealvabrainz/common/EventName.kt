@@ -25,17 +25,13 @@ package com.ealva.ealvabrainz.common
 public value class EventName(public val value: String) {
   public companion object {
     public val UNKNOWN: EventName = EventName("Unknown")
-
-    @Suppress("NOTHING_TO_INLINE")
-    public inline fun make(value: String): EventName =
-      EventName(value.trim())
   }
 }
 
 /**
  * Convert this String to an [EventName] or [EventName.UNKNOWN] if this is null.
  */
-@Suppress("NOTHING_TO_INLINE")
-public inline fun String?.toEventName(): EventName {
-  return if (this != null) EventName.make(this) else EventName.UNKNOWN
+@Suppress("unused")
+public fun String?.toEventName(): EventName {
+  return if (this != null) EventName(trim()) else EventName.UNKNOWN
 }

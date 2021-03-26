@@ -58,9 +58,8 @@ public class CdStub(
 
   override fun toString(): String = toJson()
 
-  public interface Lookup : Include
-
-  public enum class SearchField(public val value: String) {
+  public enum class SearchField(public override val value: String) : EntitySearchField {
+    Default(""),
     /** the date the CD stub was added (e.g. "2020-01-22") */
     Added("added"),
 

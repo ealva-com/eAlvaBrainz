@@ -29,15 +29,18 @@ import okhttp3.Response
 
 private val LOG by lazyLogger(ThrottlingInterceptor::class, BrainzLog.marker)
 
+@Suppress("MaxLineLength")
 /**
  * Interceptor that throttles requests to the server
  *
- * Be sure to read [MusicBrainz requirements]
- * (https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings)
+ * Be sure to read
+ * [MusicBrainz requirements](https://musicbrainz.org/doc/MusicBrainz_API/Rate_Limiting)
  * for querying their servers.
  */
-internal class ThrottlingInterceptor(maxCallsPerSecond: Double, private val serviceName: String) :
-  Interceptor {
+internal class ThrottlingInterceptor(
+  maxCallsPerSecond: Double,
+  private val serviceName: String
+) : Interceptor {
   private val throttle = Throttle.create(maxCallsPerSecond)
 
   override fun intercept(chain: Interceptor.Chain): Response {
@@ -52,11 +55,12 @@ internal class ThrottlingInterceptor(maxCallsPerSecond: Double, private val serv
   }
 }
 
+@Suppress("MaxLineLength")
 /**
  * Adds a fmt=json and User-Agent to every call
  *
- * Be sure to read [MusicBrainz requirements]
- * (https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings)
+ * Be sure to read
+ * [MusicBrainz requirements](https://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings)
  * for querying their servers.
  */
 internal class BrainzJsonFormatUserAgentInterceptor(

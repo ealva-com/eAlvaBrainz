@@ -15,16 +15,24 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainzsvc.art
+package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.brainzsvc.service.R
+/**
+ * Represents a single part of a MusicBrainz inc= parameter. An Include allows you to request
+ * more information to be included about an entity
+ */
+public interface Inc {
+  public val value: String
+}
 
-@Suppress("unused")
-public enum class SizeBucket(public val maybeVeryLarge: Boolean, public val stringRes: Int) {
-  ORIGINAL(true, R.string.Original),
-  EXTRA_LARGE(true, R.string.ExtraLarge),
-  LARGE(false, R.string.Large),
-  MEDIUM(false, R.string.Medium),
-  SMALL(false, R.string.Small),
-  UNKNOWN(false, R.string.Unknown)
+public fun Set<Inc>.joinOrNull(): String? {
+  return if (isEmpty()) null else joinToString("+") { it.value }
+}
+
+/**
+ * Join each [Inc] instance into an inc= value for MusicBrainz lookup. Returns the list items
+ * concatenated together separated by "+" as required by MusicBrainz Lucene query.
+ */
+public fun Set<Inc>.joinToString(): String {
+  return joinToString("+") { it.value }
 }

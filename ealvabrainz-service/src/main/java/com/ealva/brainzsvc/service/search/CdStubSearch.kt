@@ -30,7 +30,7 @@ import kotlin.experimental.ExperimentalTypeInference
 
 @OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
-public class CdStubSearch : BaseSearch() {
+public class CdStubSearch : BaseSearch<SearchField>() {
   @JvmName("addedTerm")
   @OverloadResolutionByLambdaReturnType
   /** the date the CD stub was added (e.g. "2020-01-22") */
@@ -79,7 +79,7 @@ public class CdStubSearch : BaseSearch() {
   @JvmName("defaultTerm")
   @OverloadResolutionByLambdaReturnType
   /** the title (diacritics are ignored) */
-  public fun default(term: () -> Term): Field = makeAndAddField("", term())
+  public fun default(term: () -> Term): Field = add(SearchField.Default, term())
 
   @OverloadResolutionByLambdaReturnType
   public fun default(name: () -> AlbumTitle): Field = default { Term(name()) }
@@ -100,5 +100,9 @@ public class CdStubSearch : BaseSearch() {
   @OverloadResolutionByLambdaReturnType
   public inline fun trackCount(term: () -> Int): Field = trackCount { Term(term()) }
 
-  public fun add(field: SearchField, term: Term): Field = makeAndAddField(field.value, term)
+  public companion object {
+    public inline operator fun invoke(search: CdStubSearch.() -> Unit): String {
+      return CdStubSearch().apply(search).toString()
+    }
+  }
 }

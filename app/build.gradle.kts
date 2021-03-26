@@ -31,6 +31,7 @@ android {
     versionCode = AppCoordinates.APP_VERSION_CODE
     versionName = AppCoordinates.APP_VERSION_NAME
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    signingConfig = signingConfigs.getByName("debug")
   }
   compileOptions {
     isCoreLibraryDesugaringEnabled = true
@@ -76,12 +77,12 @@ dependencies {
   implementation(ThirdParty.KOTLIN_RESULT)
 
   implementation("androidx.viewpager2:viewpager2:1.0.0")
-  implementation("androidx.activity:activity-ktx:1.2.1")
+  implementation("androidx.activity:activity-ktx:1.2.2")
   implementation("androidx.fragment:fragment-ktx:1.3.1")
-  implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0")
-  implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.0")
-  implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.0")
-  implementation("androidx.lifecycle:lifecycle-common-java8:2.3.0")
+  implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
+  implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
+  implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
+  implementation("androidx.lifecycle:lifecycle-common-java8:2.3.1")
   implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
   implementation("androidx.constraintlayout:constraintlayout:2.0.4")
   implementation("com.google.android.material:material:1.3.0")

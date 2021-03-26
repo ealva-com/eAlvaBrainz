@@ -290,7 +290,7 @@ internal class ArtistViewModelImpl(
   private suspend fun doArtistLookup(mbid: ArtistMbid): Boolean {
     return when (
       val result = brainz.lookupArtist(mbid) {
-        misc(*Artist.Misc.values())
+        include(*Artist.Include.values())
       }
     ) {
       is Ok -> {

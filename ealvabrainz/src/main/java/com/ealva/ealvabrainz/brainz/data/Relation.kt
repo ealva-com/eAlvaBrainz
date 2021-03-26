@@ -29,7 +29,6 @@ import com.ealva.ealvabrainz.brainz.data.ReleaseRelation.Companion.NullReleaseRe
 import com.ealva.ealvabrainz.brainz.data.SeriesRelation.Companion.NullSeriesRelation
 import com.ealva.ealvabrainz.brainz.data.UrlRelation.Companion.NullUrlRelation
 import com.ealva.ealvabrainz.brainz.data.WorkRelation.Companion.NullWorkRelation
-import com.ealva.ealvabrainz.moshi.FallbackOnNull
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 

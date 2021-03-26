@@ -93,12 +93,17 @@ public fun <V> Result<V, BrainzMessage>.getErrorString(
   is Err -> getError()?.asString(fetcher) ?: "No BrainzMessage Error"
 }
 
-public class BrainzErrorMessage(public val error: BrainzError) : BrainzMessage() {
+@Suppress("MemberVisibilityCanBePrivate")
+public class BrainzErrorMessage(
+  public val error: BrainzError,
+  public val statusCode: Int
+) : BrainzMessage() {
   init {
-    if (BrainzLog.logBrainzErrors) LOG.e { it("BrainzError=%s", error) }
+    if (BrainzLog.logBrainzErrors) LOG.e { it("Status code=%d BrainzError=%s", statusCode, error) }
   }
 
-  override fun asString(fetcher: ResourceFetcher): String = error.toString()
+  override fun asString(fetcher: ResourceFetcher): String =
+    "Status code=$statusCode response=$error"
 }
 
 public fun <V : Response<U>, U> Result<V, BrainzMessage>.mapResponse(): Result<U, BrainzMessage> =
@@ -118,13 +123,13 @@ private fun <U, V : Response<U>> Ok<V>.handleResponse(): Result<U, BrainzMessage
 }
 
 private fun <T, U> Response<T>.toErrResult(): Result<U, BrainzMessage> =
-  Err(errorBody()?.string()?.makeBrainzErrorMessage() ?: BrainzErrorCodeMessage(code(), this))
+  Err(errorBody()?.string()?.makeBrainzErrorMessage(code()) ?: BrainzErrorCodeMessage(code(), this))
 
-private fun String.makeBrainzErrorMessage(): BrainzErrorMessage? = try {
+private fun String.makeBrainzErrorMessage(statusCode: Int): BrainzErrorMessage? = try {
   when {
     startsWith("<!DOCTYPE HTML") -> htmlToBrainzError() // Coverart returns HTML error response
     else -> errorAdapter.fromJson(this)
-  }?.toBrainzErrorMessage()
+  }?.toBrainzErrorMessage(statusCode)
 } catch (e: Exception) {
   null
 }
@@ -142,4 +147,5 @@ private fun String.htmlToBrainzError(): BrainzError? {
   } else null
 }
 
-private fun BrainzError.toBrainzErrorMessage(): BrainzErrorMessage = BrainzErrorMessage(this)
+private fun BrainzError.toBrainzErrorMessage(statusCode: Int): BrainzErrorMessage =
+  BrainzErrorMessage(this, statusCode)

@@ -15,21 +15,11 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainzsvc.service.lookup
+package com.ealva.ealvabrainz.brainz.data;
 
-import com.ealva.ealvabrainz.brainz.MusicBrainz
-import com.ealva.ealvabrainz.brainz.data.BrowseWorkList
-import com.ealva.ealvabrainz.brainz.data.Work
-import com.ealva.ealvabrainz.brainz.data.joinOrNull
-import com.ealva.ealvabrainz.common.Iswc
-import retrofit2.Response
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-internal class IswcLookupOp : BaseEntityLookup<Work.Misc>(), WorkLookup {
-  suspend fun execute(
-    iswc: Iswc,
-    brainz: MusicBrainz
-  ): Response<BrowseWorkList> = brainz.lookupIswc(
-    iswc.value,
-    includeSet.joinOrNull()
-  )
+@Retention(RetentionPolicy.RUNTIME)
+@interface Nullable {
 }

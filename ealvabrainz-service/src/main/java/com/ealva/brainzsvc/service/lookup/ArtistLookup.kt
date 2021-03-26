@@ -17,30 +17,25 @@
 
 package com.ealva.brainzsvc.service.lookup
 
+import com.ealva.brainzsvc.common.QueryMap
 import com.ealva.brainzsvc.common.buildQueryMap
 import com.ealva.brainzsvc.common.include
 import com.ealva.brainzsvc.common.status
 import com.ealva.brainzsvc.common.types
-import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.Artist
-import com.ealva.ealvabrainz.common.ArtistMbid
-import retrofit2.Response
 
-public interface ArtistLookup :
-  EntitySubqueryLookup<Artist.Subquery, Artist.Misc>
-
-internal class ArtistLookupOp :
-  BaseSubqueryLookup<Artist.Subquery, Artist.Misc>(), ArtistLookup {
-
-  suspend fun execute(
-    mbid: ArtistMbid,
-    brainz: MusicBrainz
-  ): Response<Artist> = brainz.lookupArtist(
-    mbid.value,
-    buildQueryMap {
-      include(includeSet)
-      types(typeSet?.ensureValidType(includeSet))
-      status(statusSet?.ensureValidStatus(includeSet))
+public interface ArtistLookup : EntitySubqueryLookup<Artist.Include> {
+  public companion object {
+    internal operator fun invoke(lookup: ArtistLookup.() -> Unit): QueryMap {
+      return ArtistLookupOp().apply(lookup).queryMap()
     }
-  )
+  }
+}
+
+private class ArtistLookupOp : BaseSubqueryLookup<Artist.Include>(), ArtistLookup {
+  fun queryMap(): QueryMap = buildQueryMap {
+    include(incSet)
+    types(typeSet?.ensureValidType(incSet))
+    status(statusSet?.ensureValidStatus(incSet))
+  }
 }

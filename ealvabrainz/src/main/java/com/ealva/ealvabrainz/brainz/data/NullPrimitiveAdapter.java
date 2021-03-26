@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  Eric A. Snell
+ * Copyright (c) 2021  Eric A. Snell
  *
  * This file is part of eAlvaBrainz
  *
@@ -15,7 +15,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.moshi;
+package com.ealva.ealvabrainz.brainz.data;
 
 import com.squareup.moshi.FromJson;
 

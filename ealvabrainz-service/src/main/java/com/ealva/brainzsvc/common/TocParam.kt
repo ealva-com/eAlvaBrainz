@@ -17,11 +17,6 @@
 
 package com.ealva.brainzsvc.common
 
-@Suppress("NOTHING_TO_INLINE")
-private inline fun StringBuilder.appendPlus() = apply {
-  append('+')
-}
-
 /**
  * A builder for the "toc" parameter of a discid lookup.
  */
@@ -40,9 +35,9 @@ public class TocParam private constructor(
    * Example:1+12+267257+150+22767+41887+58317+72102+91375+104652+115380+132165+143932+159870+174597
    */
   override fun toString(): String = buildString {
-    append(1).appendPlus()
-    append(sectorOffsets.size + 1).appendPlus()
-    append(leadoutSectorOffset).appendPlus()
+    append(1).append('+')
+    append(sectorOffsets.size + 1).append('+')
+    append(leadoutSectorOffset).append('+')
     append(firstSectorOffset)
     if (sectorOffsets.isNotEmpty()) {
       sectorOffsets.joinTo(buffer = this, separator = "+", prefix = "+") { it.toString() }
