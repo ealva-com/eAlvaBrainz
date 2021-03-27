@@ -38,7 +38,7 @@ import com.ealva.brainzapp.data.toSecondaryReleaseGroupList
 import com.ealva.brainzapp.data.toStarRating
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.ResourceFetcher
-import com.ealva.brainzsvc.service.browse.ReleaseBrowse.BrowseOn
+import com.ealva.ealvabrainz.browse.ReleaseBrowse.BrowseOn
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistCredit
 import com.ealva.ealvabrainz.brainz.data.ArtistType

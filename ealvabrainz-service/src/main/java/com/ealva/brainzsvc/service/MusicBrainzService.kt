@@ -19,47 +19,9 @@ package com.ealva.brainzsvc.service
 
 import android.content.Context
 import android.net.Uri
-import com.ealva.brainzsvc.common.Limit
-import com.ealva.brainzsvc.common.Offset
-import com.ealva.brainzsvc.common.TocParam
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzExceptionMessage
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzErrorCodeMessage
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzNullReturn
-import com.ealva.brainzsvc.service.browse.AreaBrowse
-import com.ealva.brainzsvc.service.browse.ArtistBrowse
-import com.ealva.brainzsvc.service.browse.CollectionBrowse
-import com.ealva.brainzsvc.service.browse.EventBrowse
-import com.ealva.brainzsvc.service.browse.InstrumentBrowse
-import com.ealva.brainzsvc.service.browse.LabelBrowse
-import com.ealva.brainzsvc.service.browse.PlaceBrowse
-import com.ealva.brainzsvc.service.browse.RecordingBrowse
-import com.ealva.brainzsvc.service.browse.ReleaseBrowse
-import com.ealva.brainzsvc.service.browse.ReleaseGroupBrowse
-import com.ealva.brainzsvc.service.browse.SeriesBrowse
-import com.ealva.brainzsvc.service.browse.WorkBrowse
-import com.ealva.brainzsvc.service.lookup.AreaLookup
-import com.ealva.brainzsvc.service.lookup.ArtistLookup
-import com.ealva.brainzsvc.service.lookup.CollectionLookup
-import com.ealva.brainzsvc.service.lookup.EventLookup
-import com.ealva.brainzsvc.service.lookup.GenreLookup
-import com.ealva.brainzsvc.service.lookup.InstrumentLookup
-import com.ealva.brainzsvc.service.lookup.LabelLookup
-import com.ealva.brainzsvc.service.lookup.PlaceLookup
-import com.ealva.brainzsvc.service.lookup.RecordingLookup
-import com.ealva.brainzsvc.service.lookup.ReleaseGroupLookup
-import com.ealva.brainzsvc.service.lookup.ReleaseLookup
-import com.ealva.brainzsvc.service.lookup.SeriesLookup
-import com.ealva.brainzsvc.service.lookup.UrlLookup
-import com.ealva.brainzsvc.service.lookup.WorkLookup
-import com.ealva.brainzsvc.service.search.AnnotationSearch
-import com.ealva.brainzsvc.service.search.ArtistSearch
-import com.ealva.brainzsvc.service.search.CdStubSearch
-import com.ealva.brainzsvc.service.search.LabelSearch
-import com.ealva.brainzsvc.service.search.RecordingSearch
-import com.ealva.brainzsvc.service.search.ReleaseGroupSearch
-import com.ealva.brainzsvc.service.search.ReleaseSearch
-import com.ealva.brainzsvc.service.search.TagSearch
-import com.ealva.brainzsvc.service.search.WorkSearch
 import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.AnnotationList
 import com.ealva.ealvabrainz.brainz.data.Area
@@ -98,8 +60,21 @@ import com.ealva.ealvabrainz.brainz.data.TagList
 import com.ealva.ealvabrainz.brainz.data.Url
 import com.ealva.ealvabrainz.brainz.data.Work
 import com.ealva.ealvabrainz.brainz.data.WorkList
+import com.ealva.ealvabrainz.browse.AreaBrowse
+import com.ealva.ealvabrainz.browse.ArtistBrowse
+import com.ealva.ealvabrainz.browse.CollectionBrowse
+import com.ealva.ealvabrainz.browse.EventBrowse
+import com.ealva.ealvabrainz.browse.InstrumentBrowse
+import com.ealva.ealvabrainz.browse.LabelBrowse
+import com.ealva.ealvabrainz.browse.PlaceBrowse
+import com.ealva.ealvabrainz.browse.RecordingBrowse
+import com.ealva.ealvabrainz.browse.ReleaseBrowse
+import com.ealva.ealvabrainz.browse.ReleaseGroupBrowse
+import com.ealva.ealvabrainz.browse.SeriesBrowse
+import com.ealva.ealvabrainz.browse.WorkBrowse
 import com.ealva.ealvabrainz.common.AreaMbid
 import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.common.CollectionMbid
 import com.ealva.ealvabrainz.common.DiscId
 import com.ealva.ealvabrainz.common.EventMbid
@@ -108,14 +83,39 @@ import com.ealva.ealvabrainz.common.InstrumentMbid
 import com.ealva.ealvabrainz.common.Isrc
 import com.ealva.ealvabrainz.common.Iswc
 import com.ealva.ealvabrainz.common.LabelMbid
+import com.ealva.ealvabrainz.common.Limit
+import com.ealva.ealvabrainz.common.Offset
 import com.ealva.ealvabrainz.common.PlaceMbid
 import com.ealva.ealvabrainz.common.RecordingMbid
 import com.ealva.ealvabrainz.common.ReleaseGroupMbid
 import com.ealva.ealvabrainz.common.ReleaseMbid
 import com.ealva.ealvabrainz.common.SeriesMbid
+import com.ealva.ealvabrainz.common.TocParam
 import com.ealva.ealvabrainz.common.UrlMbid
 import com.ealva.ealvabrainz.common.WorkMbid
-import com.ealva.ealvabrainz.lucene.BrainzMarker
+import com.ealva.ealvabrainz.lookup.AreaLookup
+import com.ealva.ealvabrainz.lookup.ArtistLookup
+import com.ealva.ealvabrainz.lookup.CollectionLookup
+import com.ealva.ealvabrainz.lookup.EventLookup
+import com.ealva.ealvabrainz.lookup.GenreLookup
+import com.ealva.ealvabrainz.lookup.InstrumentLookup
+import com.ealva.ealvabrainz.lookup.LabelLookup
+import com.ealva.ealvabrainz.lookup.PlaceLookup
+import com.ealva.ealvabrainz.lookup.RecordingLookup
+import com.ealva.ealvabrainz.lookup.ReleaseGroupLookup
+import com.ealva.ealvabrainz.lookup.ReleaseLookup
+import com.ealva.ealvabrainz.lookup.SeriesLookup
+import com.ealva.ealvabrainz.lookup.UrlLookup
+import com.ealva.ealvabrainz.lookup.WorkLookup
+import com.ealva.ealvabrainz.search.AnnotationSearch
+import com.ealva.ealvabrainz.search.ArtistSearch
+import com.ealva.ealvabrainz.search.CdStubSearch
+import com.ealva.ealvabrainz.search.LabelSearch
+import com.ealva.ealvabrainz.search.RecordingSearch
+import com.ealva.ealvabrainz.search.ReleaseGroupSearch
+import com.ealva.ealvabrainz.search.ReleaseSearch
+import com.ealva.ealvabrainz.search.TagSearch
+import com.ealva.ealvabrainz.search.WorkSearch
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
@@ -146,12 +146,32 @@ public typealias BrainzResult<T> = Result<T, BrainzMessage>
  *
  * An [Err] will be a [BrainzMessage] of type:
  * * [BrainzExceptionMessage] if an underlying exception is thrown
- * * [BrainzErrorMessage] is MusicBrainz returns an error decoded to a
- * [BrainzError][com.ealva.ealvabrainz.brainz.data.BrainzError]
+ * * [BrainzErrorMessage] if MusicBrainz returns an error decoded to a
+ * [BrainzError][com.ealva.ealvabrainz.brainz.data.BrainzError] and also the response status code.
  * * [BrainzNullReturn] subclass of BrainzStatusMessage, if the response is OK but null
- * * [BrainzErrorCodeMessage] subclass of BrainzStatusMessage, if the response is not successful
+ * * [BrainzErrorCodeMessage] subclass of BrainzStatusMessage, if the response is not successful,
+ * which contains the response status code.
+ *
+ * For all functions capable of paging results, an optional Limit and Offset parameter are provided.
+ * If Limit is not specified it defaults to 25 and Offset defaults to 0. Results returned from
+ * these functions specify the total count, the offset of the results, and a list of the entities.
+ * If the function is a find (query), a score is assigned to each result which indicates how well
+ * the particular entity matches the search results.
+ *
+ * All suspend functions are main safe, in that they are dispatched on a contained
+ * Coroutine dispatcher, typically Dispatchers.IO. Exceptions are not thrown across this boundary
+ * and instead a Result monad, indicating success (Ok) or failure (Err), is returned. Look at the
+ * implementation of the [brainz] method to see where everything comes together. It's also suggested
+ * to read about, or watch the talk regarding,
+ * [Railway Oriented Programming](https://fsharpforfunandprofit.com/rop/) which gives insight into
+ * the philosophy of why the Result monad was chosen and how it is expected to be used. This is not
+ * a functional library, but the simple Result monad makes for very clean code for sunny day and
+ * error paths, especially with regard to results returned from functions where many things can go
+ * wrong (such as calling a remote server, using a lucene search interface, with rate limiting
+ * requirements, that returns Json which must be parsed into non-trivial objects, etc.)
  *
  * [MusicBrainz API](https://musicbrainz.org/doc/MusicBrainz_API#Introduction)
+ * [Result monad](https://github.com/michaelbull/kotlin-result)
  */
 @BrainzMarker
 public interface MusicBrainzService {
@@ -388,6 +408,13 @@ public interface MusicBrainzService {
     browse: PlaceBrowse.() -> Unit = {}
   ): BrainzResult<BrowsePlaceList>
 
+  /**
+   * Browse the recordings of the entity specified by [browseOn] (eg. Artist, Collection, Release,
+   * or Work). Use [limit] and [offset] to page through the results. Provide an optional lambda with
+   * a RecordingBrowse receiver to specify if other information should be included, such as
+   * Artist Credits or some other relationships. [BrowseRecordingList] contains the total
+   * number of Recordings, the offset returned, and a list of [Recording] objects.
+   */
   public suspend fun browseRecordings(
     browseOn: RecordingBrowse.BrowseOn,
     limit: Limit? = null,
@@ -453,6 +480,17 @@ public interface MusicBrainzService {
     search: RecordingSearch.() -> Unit
   ): BrainzResult<RecordingList>
 
+  /**
+   * Find a Releases which matches the criteria built using the ReleaseSearch interface, using
+   * [limit] and [offset] to page through the results. ReleaseSearch is the foundation of a DSL
+   * which provides for more than 30 difference searchable fields. A simple example would be:
+   * ```
+   * val result = findRelease(Limit(4)) { artist { JETHRO_TULL } and release { AQUALUNG } }
+   * ```
+   * where ```JETHRO_TULL``` is an Artist MBID and ```AQUALUNG``` is an AlbumTitle.
+   *
+   * If not specified [limit] defaults to 25. If [offset] is not specified it defaults to 0.
+   */
   public suspend fun findRelease(
     limit: Limit? = null,
     offset: Offset? = null,

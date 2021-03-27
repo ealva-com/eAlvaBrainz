@@ -21,7 +21,6 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import com.ealva.brainzsvc.common.Limit
 import com.ealva.brainzsvc.service.BrainzMessage
 import com.ealva.brainzsvc.service.BuildConfig
 import com.ealva.brainzsvc.service.ContextResourceFetcher
@@ -37,6 +36,7 @@ import com.ealva.ealvabrainz.common.AlbumTitle
 import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.LabelName
+import com.ealva.ealvabrainz.common.Limit
 import com.ealva.ealvabrainz.common.WorkName
 import com.ealva.ealvabrainz.common.toAlbumTitle
 import com.ealva.ealvabrainz.common.toArtistName

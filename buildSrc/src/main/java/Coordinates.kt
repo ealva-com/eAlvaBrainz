@@ -24,8 +24,8 @@ object AppCoordinates {
 object EalvaBrainzCoordinates {
   // All parts of versioning can be up to 2 digits: 0-99
   private const val versionMajor = 0
-  private const val versionMinor = 0
-  private const val versionPatch = 12
+  private const val versionMinor = 1
+  private const val versionPatch = 0
   private const val versionBuild = 0
 
   const val LIBRARY_VERSION_CODE = versionMajor * 1000000 + versionMinor * 10000 +
@@ -36,8 +36,8 @@ object EalvaBrainzCoordinates {
 object EalvaBrainzServiceCoordinates {
   // All parts of versioning can be up to 2 digits: 0-99
   private const val versionMajor = 0
-  private const val versionMinor = 0
-  private const val versionPatch = 12
+  private const val versionMinor = 1
+  private const val versionPatch = 0
   private const val versionBuild = 0
 
   const val LIBRARY_VERSION_CODE = versionMajor * 1000000 + versionMinor * 10000 +

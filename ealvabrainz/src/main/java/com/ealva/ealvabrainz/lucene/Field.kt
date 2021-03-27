@@ -17,6 +17,8 @@
 
 package com.ealva.ealvabrainz.lucene
 
+import com.ealva.ealvabrainz.common.BrainzMarker
+
 @BrainzMarker
 public sealed class Field : BaseExpression() {
   @Suppress("MaxLineLength")

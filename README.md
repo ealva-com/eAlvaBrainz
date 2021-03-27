@@ -2,53 +2,65 @@ eAlvaBrainz
 ===========
 Kotlin [MusicBrainz][brainz]/[CoverArtArchive][coverart] [Retrofit][retrofit] libraries for Android
 
-**Currently in an beta state**. The current version covers the majority of the MusicBrainz API and
-provides a high level DSL for lookup, browse, and query. There is an escape hatch of
+**Currently in an beta state**.
+
+# Design philosophy
+The design philosophy is to provide a type safe interface to the MusicBrainz server, dispatching
+work on a background thread using coroutine dispatchers, providing many of the requirements for
+well-behaved clients (rate limiting, user agent, etc), and converting responses to easily handled
+results. Given the complexity of a typical call path regarding the litany of possible errors with
+calling remote servers, parsing Json, etc., special care is given to returned values. A Result
+monad style was chosen to make sunny day and error path code straightforward and to avoid throwing
+exceptions across coroutine boundaries. This is not a functional library, but the style of
+[Railway Oriented Programming][railway] fits very nicely with handling the various result
+possibilities.
+
+For lookup and browse functions, a call specific lambda receiver is provided to guide the client
+with regard to what options are available without needing to know the underlying details. Find
+functions provide call specific lambda receivers which are the base of a relatively simple, but
+extensive, DSL for building a lucene query. This style provides type safety and attempts to
+constrain choices to a valid set of options. Using the bare MusicBrainz retrofit client would
+require extensive string building which can be error-prone and lacks type support. There are quite a
+few value (inline) classes to provide type support without generating extra garbage.
+
+The current version covers the majority of the MusicBrainz API. There is an escape hatch of
 sorts in that the client can indirectly call the Retrofit interfaces via the MusicBrainzService
 interface and have correct dispatching and error handling behavior. This is the same method used
-internally. An example lookup function and builder are:
-```kotlin
-suspend fun lookupArtist(
-  artistMbid: ArtistMbid,
-  lookup: ArtistLookup.() -> Unit = {}
-): BrainzResult<Artist>
+internally. There are currently no write capabilities (can't set ratings or create collections),
 
-suspend fun <T : Any> brainz(block: BrainzCall<T>): BrainzResult<T>
+This is a Kotlin library and not much thought was given to possible Java clients. Input and pull
+requests are welcome.
 
-interface ArtistLookup {
-  /** Specify if any other entities and data related to the entities should be included */
-  fun subquery(vararg subquery: Artist.Subquery)
-  /** Specify other miscellaneous data to be included */
-  fun misc(vararg misc: Artist.Misc)
-  /** Include relationships based on subquery */
-  fun relationships(vararg rels: Artist.Relations)
-  /**
-   * If [subquery] includes Artist.Subquery.Releases or Artist.Subquery.ReleaseGroups the
-   * Release.Type can be specified to further narrow results
-   */
-  fun types(vararg types: Release.Type)
+A few small examples:
 
-  /**
-   * If [subquery] includes Artist.Subquery.Releases a Release.Status can be specified to
-   * further narrow results
-   */
-  fun status(vararg status: Release.Status)
-}
-```
-This style provides type safety and attempts to constrain choices to a valid set of options. The
-bare MusicBrainz retrofit client often requires a lot of string building which can be error-prone
-and lacks type support.
-
-Examples of lookupArtist are:
 ```kotlin
 // Get the artist represented by the ArtistMbid and include all Misc info
-when (val result = brainz.lookupArtist(mbid) { misc(*Artist.Misc.values()) }) {
+when (val result = brainzSvc.lookupArtist(mbid) { include(*Artist.Include.values()) }) {
   is Ok -> handleArtist(result.value, mbid)
-  is Err -> unsuccessful.postValue(result.error.asString(resourceFetcher))
+  is Err -> displayError(result.error.asString(resourceFetcher))
 }
 
 // Get the artist Nirvana's info and include aliases
-val result = lookupArtist(NIRVANA_MBID) { misc(Artist.Misc.Aliases) }
+val nirvana = ArtistMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da") // maybe obtained via find
+val result = lookupArtist(nirvana) { misc(Artist.Misc.Aliases) }
+
+// Find releases for the artist name and release title
+val jethroTull = ArtistName("Jethro Tull")
+val aqualung = AlbumTitle("Aqualung")
+val result = findRelease(Limit(4)) { artist { jethroTull } and release { aqualung } }
+
+// Browse events for the given artist and limit the results to 15
+val metallicaMbid = ArtistMbid("65f4f0c5-ef9e-490c-aee3-909e7ae6b2ab") // maybe obtained via find
+val limit = Limit(15)
+val result = browseEvents(EventBrowse.BrowseOn.Artist(metallicaMbid), limit)
+
+// Browse Releases by an artist and limit the results to official, album releases (no bootlegs or
+// promos and no singles, compilations, etc)
+val theBeatles = ArtistMbid("b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d") // maybe obtained via find
+val result = browseReleases(ReleaseBrowse.BrowseOn.Artist(theBeatles)) {
+  types(Release.Type.Album)
+  status(Release.Status.Official)
+}
 ```
 
 This repository consists of 3 parts:
@@ -67,7 +79,8 @@ For the latest SNAPSHOT check [here][ealvabrainz-snapshot] and [here][ealvabrain
 # Libraries
 ## ealvabrainz
 Provides MusicBrainz and CoverArt interfaces which Retrofit.Builder can use to generate a REST 
-client for the MusicBrainz and CoverArtArchive servers. 
+client for the MusicBrainz and CoverArtArchive servers. This module contains the bulk of the code
+to build the requests and decode the responses into objects. 
 
 The data classes created as response to MusicBrainz requests, plus added annotations/JsonAdapters, 
 are provided to support the Null Object Pattern. Null is avoided almost entirely (one specific case 
@@ -106,9 +119,9 @@ and the fallback NullArea object. An extension function defines a Boolean isNull
 note the AreaMbid value class. Since a MusicBrainz identifier (MBID) is just a string, these inline 
 classes are meant to differentiate types of MBID to facilitate compile time type checking.
 
-While this module is not directly dependent upon Kotlin [coroutine][coroutines] libraries, the 
-Retrofit interface functions are defined with suspend. This means clients will require Kotlin 
-coroutine libraries.
+The MusicBrainz and CoverArt interfaces are defined with suspend functions, so are only callable
+from aa coroutine. It is expected that the service module will be used to handle constructing and
+calling the generated Retrofit classes.
 ```kotlin
 interface CoverArt {
   /**
@@ -146,13 +159,11 @@ interface CoverArtService {
 
   suspend fun getReleaseGroupArt(mbid: ReleaseGroupMbid): CoverArtResult
 
-  val resourceFetcher: ResourceFetcher
-
   companion object {
     /**
      * Instantiate a CoverArtService implementation which handles MusicBrainz server requirements
      * such as a required User-Agent format, throttling requests, and factories/adapters to support
-     * the returned data classes.
+     * converting Json to objects.
      */
     operator fun invoke(
       ctx: Context,
@@ -174,58 +185,50 @@ This service is similar to CoverArtService in that it provides a higher-level ab
 the appropriate underlying Retrofit/OkHttp classes. MusicBrainzService has functions that take type 
 specific parameters and format these into parameters for the underlying calls to the MusicBrainz
 Retrofit client. There is also a generic ```brainz()``` function accepting a lambda which allows
-direct calls to the MusicBrainz client while providing correct coroutine dispatch and simplifying
-error handling.
+direct calls to the MusicBrainz Retrofit client while providing correct coroutine dispatch and
+simplifying error handling.
+
+The MusicBrainz server API is extensively supported. Below are 3 examples of a lookup, a browse,
+a find (query), and brainz function which underlies all calls to the server.
 ```kotlin
 typealias BrainzCall<T> = suspend MusicBrainz.() -> Response<T>
 typealias BrainzResult<T> = Result<T, BrainzMessage>
 
 interface MusicBrainzService {
   /**
-   * Lookup the Artist with the [artistMbid] ID. Provide an optional lambda with an ArtistLookup
+   * Find the Artist with the mbid ID. Provide an optional lambda with an ArtistLookup
    * receiver to specify if any other information should be included.
    */
   suspend fun lookupArtist(
-    artistMbid: ArtistMbid,
+    mbid: ArtistMbid,
     lookup: ArtistLookup.() -> Unit = {}
   ): BrainzResult<Artist>
 
-  /** Find a ReleaseGroup using the query builder ReleaseGroupSearch */
-  suspend fun findReleaseGroup(
-    limit: Int? = null,
-    offset: Int? = null,
-    search: ReleaseGroupSearch.() -> Unit
-  ): BrainzResult<ReleaseGroupList>
-
   /**
-   * Browse Releases based on the type specified by [browse], using ReleaseBrowse to specify
-   * information to include and use [limit]/[offset] to page results.
+   * Browse the recordings of the entity specified by [browseOn] (eg. Artist, Collection, Release,
+   * or Work). Use [limit] and [offset] to page through the results. Provide an optional lambda with
+   * a RecordingBrowse receiver to specify if other information should be included, such as
+   * Artist Credits or some other relationships. BrowseRecordingList contains the total
+   * number of Recordings, the offset returned, and a list of Recording objects.
    */
-  suspend fun browseReleases(
-    browseOn: ReleaseBrowse.BrowseOn,
-    limit: Int? = null,
-    offset: Int? = null,
-    browse: ReleaseBrowse.() -> Unit
-  ): BrainzResult<BrowseReleaseList>
+  suspend fun browseRecordings(
+    browseOn: RecordingBrowse.BrowseOn,
+    limit: Limit? = null,
+    offset: Offset? = null,
+    browse: RecordingBrowse.() -> Unit = {}
+  ): BrainzResult<BrowseRecordingList>
 
-  /**
-   * A main-safe function that calls the [block] function, with MusicBrainz as a receiver,
-   * dispatched by the contained CoroutineDispatcher (typically Dispatchers.IO when not under
-   * test)
-   *
-   * Usually [block] is a lambda which makes a direct call to the MusicBrainz Retrofit client. The
-   * [block] is responsible for building the necessary String parameters, "query" in case of a
-   * find call and "inc" include if doing a lookup. Use the Subquery and Misc defined
-   * in the various entity objects for doing a lookup and use SearchField to build queries
-   *
-   * @return an Ok with value of type [T] or, if response is not successful, an Err. An Err
-   * will be a BrainzMessage of type:
-   * * BrainzExceptionMessage if an underlying exception is thrown
-   * * BrainzErrorMessage if MusicBrainz returned an error response converted to a BrainzError
-   * * BrainzNullReturn subclass of BrainzStatusMessage, if the response is OK but null
-   * * BrainzErrorCodeMessage subclass of BrainzStatusMessage, if the response is not successful
-   */
-  suspend fun <T : Any> brainz(block: BrainzCall<T>): BrainzResult<T>
+
+  suspend fun findRelease(
+    limit: Limit? = null,
+    offset: Offset? = null,
+    search: ReleaseSearch.() -> Unit
+  ): BrainzResult<ReleaseList>
+
+  // Calls the [block]
+  suspend fun <T : Any> brainz(
+    block: suspend MusicBrainz.() -> Response<T>
+  ): Result<T, BrainzMessage>
 }
 ```
 The MusicBrainzService is constructed with a CoverArtService instance. This allows 

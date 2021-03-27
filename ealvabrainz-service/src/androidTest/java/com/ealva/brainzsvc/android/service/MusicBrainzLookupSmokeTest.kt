@@ -21,9 +21,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import com.ealva.brainzsvc.common.BrainzInvalidStatusException
-import com.ealva.brainzsvc.common.BrainzInvalidTypeException
-import com.ealva.brainzsvc.common.TocParam
+import com.ealva.ealvabrainz.common.TocParam
 import com.ealva.brainzsvc.service.BrainzMessage
 import com.ealva.brainzsvc.service.ContextResourceFetcher
 import com.ealva.brainzsvc.service.CoverArtService
@@ -40,6 +38,8 @@ import com.ealva.ealvabrainz.brainz.data.Release.Include
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.common.AreaMbid
 import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.common.BrainzInvalidStatusException
+import com.ealva.ealvabrainz.common.BrainzInvalidTypeException
 import com.ealva.ealvabrainz.common.DiscId
 import com.ealva.ealvabrainz.common.EventMbid
 import com.ealva.ealvabrainz.common.GenreMbid
