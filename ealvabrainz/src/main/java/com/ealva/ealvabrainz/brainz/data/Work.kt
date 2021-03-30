@@ -52,38 +52,38 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class Work(
   /** The MusicBrainz ID (MBID) for this work */
-  public var id: String = "",
+  public val id: String = "",
   /** The canonical title of the work, expressed in the language it was originally written. */
-  public var title: String = "",
+  public val title: String = "",
   /**
    * See the
    * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  public var disambiguation: String = "",
+  public val disambiguation: String = "",
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  public var annotation: String = "",
+  public val annotation: String = "",
   /**
    * The International Standard Musical Work Code assigned to the work by copyright collecting
    * agencies.
    */
-  public var iswcs: List<String> = emptyList(),
-  public var language: String = "",
-  public var languages: List<String> = emptyList(),
-  public var type: String = "",
-  @field:Json(name = "type-id") public var typeId: String = "",
-  public var attributes: List<Attribute> = emptyList(),
+  public val iswcs: List<String> = emptyList(),
+  public val language: String = "",
+  public val languages: List<String> = emptyList(),
+  public val type: String = "",
+  @field:Json(name = "type-id") public val typeId: String = "",
+  public val attributes: List<Attribute> = emptyList(),
   /**
    * If a discrete work is known by name(s) or in language(s) other than its canonical name, these
    * are specified in the work’s aliases.
    */
-  public var aliases: List<Alias> = emptyList(),
-  public var relations: List<Relation> = emptyList(),
-  public var tags: List<Tag> = emptyList(),
+  public val aliases: List<Alias> = emptyList(),
+  public val relations: List<Relation> = emptyList(),
+  public val tags: List<Tag> = emptyList(),
   /** score ranking used in query results */
-  public var score: Int = 0
+  public val score: Int = 0
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -119,48 +119,51 @@ public class Work(
   }
 
   public enum class SearchField(public override val value: String) : EntitySearchField {
-    Default(""),
-    /** the aliases/misspellings for this work */
+    /** (part of) any alias attached to the work (diacritics are ignored) */
     Alias("alias"),
 
-    /** artist id */
+    /** the MBID of an artist related to the event (e.g. a composer or lyricist) */
     ArtistId("arid"),
 
     /**
-     * artist name, an artist in the context of a work is an artist-work relation such as composer
-     * or lyricist
-     **/
+     * (part of) the name of an artist related to the work (e.g. a composer or lyricist)
+     */
     Artist("artist"),
 
-    /** disambiguation comment */
+    /** (part of) the work's disambiguation comment */
     Comment("comment"),
 
-    /** ISWC of work */
+    /** Default searches for [Alias] and [Work] */
+    Default(""),
+
+    /** any ISWC associated to the work */
     Iswc("iswc"),
 
-    /** Lyrics language of work */
+    /** the ISO 639-3 code for any of the languages of the work's lyrics */
     Language("lang"),
 
     /** (part of) the title of a recording related to the work  */
     Recording("recording"),
 
-    RecordingId("rid"),
-
     /** the number of recordings related to the work */
     RecordingCount("recording_count"),
 
+    /** the MBID of a recording related to the work */
+    RecordingId("rid"),
+
+    /** (part of) a tag attached to the work */
     Tag("tag"),
 
-    /** work type */
+    /** the work's type (e.g. "opera", "song", "symphony") */
     Type("type"),
 
-    /** work id */
+    /** the work's MBID */
     WorkId("wid"),
 
-    /** name of work */
+    /** (part of) the work's title (diacritics are ignored) */
     Work("work"),
 
-    /** name of the work with any accent characters retained */
+    /** (part of) the work's title (with the specified diacritics) */
     WorkAccent("workaccent"),
   }
 

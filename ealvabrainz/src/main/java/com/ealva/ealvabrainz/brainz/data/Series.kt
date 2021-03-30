@@ -29,10 +29,10 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class Series(
   /** The Series MBID */
-  public var id: String = "",
+  public val id: String = "",
   /** The official name of the series. */
-  public var name: String = "",
-  public var disambiguation: String = "",
+  public val name: String = "",
+  public val disambiguation: String = "",
   /**
    * The type primarily describes what type of entity the series contains. The possible values are:
    * * Release group - A series of release groups.
@@ -45,13 +45,13 @@ public class Series(
    *     * Festival - A recurring festival, usually happening annually in the same location.
    *     * Run - A series of performances of the same show at the same venue.
    */
-  public var type: String = "",
-  @field:Json(name = "type-id") public var typeId: String = "",
+  public val type: String = "",
+  @field:Json(name = "type-id") public val typeId: String = "",
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  public var annotation: String = "",
-  public var relations: List<Relation> = emptyList()
+  public val annotation: String = "",
+  public val relations: List<Relation> = emptyList()
 ) {
 
   @Suppress("unused")
@@ -87,24 +87,32 @@ public class Series(
   }
 
   public enum class SearchField(public override val value: String) : EntitySearchField {
-    Default(""),
-    /** an alias attached to the series */
+    /**
+     * (part of) any [alias](https://musicbrainz.org/doc/Aliases attached to the series (diacritics
+     * are ignored)
+     */
     Alias("alias"),
 
-    /** the disambiguation comment for the series */
+    /** (part of) the series' disambiguation comment  */
     Comment("comment"),
 
-    /** the name of the series */
+    /** Default searches [Alias] and [Series] */
+    Default(""),
+
+    /** (part of) the series' name (diacritics are ignored) */
     Series("series"),
 
-    /** the MBID of the series */
+    /** (part of) the series' name (with the specified diacritics) */
+    SeriesAccent("seriesaccent"),
+
+    /** the Series MBID*/
     SeriesId("sid"),
 
-    /** the series' type */
-    Type("type"),
-
-    /** a tag attached to the series */
+    /** (part of) a tag attached to the series  */
     Tag("tag"),
+
+    /** the series' [type](https://musicbrainz.org/doc/Series#Type) */
+    Type("type"),
   }
 
   public companion object {

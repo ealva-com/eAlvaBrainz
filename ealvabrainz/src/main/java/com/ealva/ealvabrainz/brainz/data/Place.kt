@@ -27,9 +27,9 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class Place(
   /** MusicBrainz ID (MBID) */
-  public var id: String = "",
+  public val id: String = "",
   /** The place name is the official name of a place. */
-  public var name: String = "",
+  public val name: String = "",
   /**
    * The type categorises the place based on its primary function. The possible values are:
    * * **Studio**
@@ -54,19 +54,19 @@ public class Place(
    * * **Other**
    * Anything which does not fit into the above categories.
    */
-  public var type: String = "",
-  @field:Json(name = "type-id") public var typeId: String = "",
+  public val type: String = "",
+  @field:Json(name = "type-id") public val typeId: String = "",
   /**
    * The address describes the location of the place using the standard addressing format for the
    * country it is located in.
    */
-  public var address: String = "",
+  public val address: String = "",
   /** The area links to the area, such as the city, in which the place is located. */
-  @field:FallbackOnNull public var area: Area = Area.NullArea,
+  @field:FallbackOnNull public val area: Area = Area.NullArea,
   /** The latitude and longitude describe the location of the place using geographic coordinates. */
-  @field:FallbackOnNull public var coordinates: Coordinates = Coordinates.NullCoordinates,
+  @field:FallbackOnNull public val coordinates: Coordinates = Coordinates.NullCoordinates,
   /** Begin/end information */
-  @field:Json(name = "life-span") @field:FallbackOnNull public var lifeSpan: LifeSpan =
+  @field:Json(name = "life-span") @field:FallbackOnNull public val lifeSpan: LifeSpan =
     LifeSpan.NullLifeSpan,
   /**
    * Aliases are alternate names for a place, which currently have two main functions: localised
@@ -75,18 +75,18 @@ public class Place(
    * name is for. Search hints are used to help both users and the server when searching and can be
    * a number of things including alternate names, nicknames or even misspellings.
    */
-  public var aliases: List<Alias> = emptyList(),
-  public var relations: List<Relation> = emptyList(),
+  public val aliases: List<Alias> = emptyList(),
+  public val relations: List<Relation> = emptyList(),
   /**
    * See the
    * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  public var disambiguation: String = "",
+  public val disambiguation: String = "",
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  public var annotation: String = ""
+  public val annotation: String = ""
 ) {
 
   override fun equals(other: Any?): Boolean {
@@ -121,44 +121,55 @@ public class Place(
   }
 
   public enum class SearchField(public override val value: String) : EntitySearchField {
-    Default(""),
-    /** the place ID */
-    PlaceId("pid"),
-
-    /** the address of this place */
+    /** (part of) the physical address for this place  */
     Address("address"),
 
-    /** the aliases/misspellings for this area */
+    /**
+     * (part of) any [alias](https://musicbrainz.org/doc/Aliases) attached to the place (diacritics
+     * are ignored)
+     */
     Alias("alias"),
 
-    /** area name */
+    /** (part of) the name of the place's main associated area */
     Area("area"),
 
-    /** place begin date */
+    /** the place's begin date (e.g. "1980-01-22") */
     Begin("begin"),
 
-    /** disambiguation comment */
+    /** (part of) the place's disambiguation comment */
     Comment("comment"),
 
-    /** place end date */
+    /** Default searches [Address], [Alias], [Area], and [Place] */
+    Default(""),
+
+    /** the place's end date (e.g. "1980-01-22")  */
     End("end"),
 
-    /** place ended */
+    /** a boolean flag (true/false) indicating whether or not the place has ended (is closed) */
     Ended("ended"),
 
-    /** place latitude */
+    /**
+     * the [(WGS 84)](https://en.wikipedia.org/wiki/World_Geodetic_System) latitude of the place's
+     * coordinates (e.g. "58.388226")
+     */
     Latitude("lat"),
 
-    /** place longitude */
+    /**
+     * the [(WGS 84)](https://en.wikipedia.org/wiki/World_Geodetic_System) longitude of the place's
+     * coordinates (e.g. "58.388226")
+     */
     Longitude("long"),
 
-    /** the place name (without accented characters) */
+    /** (part of) the place's name (diacritics are ignored) */
     Place("place"),
 
-    /** the place name (with accented characters) */
+    /** (part of) the place's name (with the specified diacritics) */
     PlaceAccent("placeaccent"),
 
-    /** the places type */
+    /** the place's MBID  */
+    PlaceId("pid"),
+
+    /** the place's [type](https://musicbrainz.org/doc/Place#Type) */
     Type("type"),
   }
 

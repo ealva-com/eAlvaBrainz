@@ -23,9 +23,9 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 public class Attribute(
-  public var value: String = "",
-  @field:Json(name = "type-id") public var typeId: String = "",
-  public var type: String = ""
+  public val value: String = "",
+  @field:Json(name = "type-id") public val typeId: String = "",
+  public val type: String = ""
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

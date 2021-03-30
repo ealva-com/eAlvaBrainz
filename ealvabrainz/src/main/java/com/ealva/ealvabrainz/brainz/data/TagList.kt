@@ -20,10 +20,10 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 public class TagList(
-  public var created: String = "",
-  public var count: Int = 0,
-  public var offset: Int = 0,
-  public var tags: List<Tag> = emptyList()
+  public val created: String = "",
+  public val count: Int = 0,
+  public val offset: Int = 0,
+  public val tags: List<Tag> = emptyList()
 ) {
   override fun toString(): String = toJson()
 }

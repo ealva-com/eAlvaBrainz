@@ -22,13 +22,16 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 public data class Tag(
-  public var name: String = "",
-  public var count: Int = 0,
+  public val name: String = "",
+  public val count: Int = 0,
   /** score ranking used in query results */
-  public var score: Int = 0
+  public val score: Int = 0
 ) {
   public enum class SearchField(public override val value: String) : EntitySearchField {
+    /** Default searches [Tag] */
     Default(""),
+
+    /** (part of) the tag's name */
     Tag("tag")
   }
 

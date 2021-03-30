@@ -34,10 +34,10 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public data class Url(
   /** MBID of the Url */
-  public var id: String = "",
+  public val id: String = "",
   /** The url */
-  public var resource: String = "",
-  public var relations: List<Relation> = emptyList()
+  public val resource: String = "",
+  public val relations: List<Relation> = emptyList()
 ) {
 
   public enum class Include(override val value: String) : Inc {

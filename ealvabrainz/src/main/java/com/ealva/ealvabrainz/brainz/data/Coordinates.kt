@@ -22,8 +22,8 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 public data class Coordinates(
-  public var latitude: Double = 0.0,
-  public var longitude: Double = 0.0
+  public val latitude: Double = 0.0,
+  public val longitude: Double = 0.0
 ) {
   public companion object {
     public val NullCoordinates: Coordinates = Coordinates()

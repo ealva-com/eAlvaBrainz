@@ -26,9 +26,9 @@ public class FieldTest {
     val field = Field("title", Term("The Right Way"))
     expect(field.toString()).toBe("""title:"The Right Way"""")
     val require = Field("text", Term("Hello").require())
-    expect(require.toString()).toBe("""text:\+Hello""")
+    expect(require.toString()).toBe("""text:+Hello""")
     val range = Field("date", "20200102".toTerm() inclusive "20200104".toTerm())
-    expect(range.toString()).toBe("""date:\[20200102 TO 20200104\]""")
+    expect(range.toString()).toBe("""date:[20200102 TO 20200104]""")
 
     expect(Field("album", Term("Aqualung")).toString()).toBe("album:Aqualung")
     expect(Field("album", Term("Aqualung"), Term("Thick as a Brick")).toString())
@@ -42,7 +42,7 @@ public class FieldTest {
     val andAgain = Field("title", Term("The Right Way"), Term("Up Again"), Term("And Again"))
     expect(andAgain.toString()).toBe("""title:("The Right Way" "Up Again" "And Again")""")
     val prohibitUpAgain = Field("title", Term("The Right Way"), Term("Up Again").prohibit())
-    expect(prohibitUpAgain.toString()).toBe("""title:("The Right Way" \-"Up Again")""")
+    expect(prohibitUpAgain.toString()).toBe("""title:("The Right Way" -"Up Again")""")
   }
 
   @Test
@@ -72,3 +72,6 @@ public class FieldTest {
       .toBe("""((artist:"The Beatles" AND album:Revolver) OR album:"Rubber Soul")""")
   }
 }
+
+private infix fun Field.and(other: Field): Field = AndExp(listOf(this, other))
+private infix fun Field.or(other: Field): Field = OrExp(listOf(this, other))

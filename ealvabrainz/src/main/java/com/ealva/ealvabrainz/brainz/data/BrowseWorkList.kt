@@ -23,10 +23,10 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class BrowseWorkList(
   @Json(name = "work-count")
-  public var workCount: Int = 0,
+  public val workCount: Int = 0,
   @Json(name = "work-offset")
-  public var workOffset: Int = 0,
-  public var works: List<Work> = emptyList()
+  public val workOffset: Int = 0,
+  public val works: List<Work> = emptyList()
 ) {
   override fun toString(): String = toJson()
 }

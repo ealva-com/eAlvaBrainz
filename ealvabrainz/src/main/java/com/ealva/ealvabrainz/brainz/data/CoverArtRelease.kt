@@ -26,9 +26,9 @@ public class CoverArtRelease(
    * MusicBrainz page url for the release. Has the form:
    * * http://musicbrainz.org/release/76df3287-6cda-33eb-8e9a-044b5e15ffdd
    */
-  public var release: String = "",
+  public val release: String = "",
 
-  public var images: List<CoverArtImage> = emptyList()
+  public val images: List<CoverArtImage> = emptyList()
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

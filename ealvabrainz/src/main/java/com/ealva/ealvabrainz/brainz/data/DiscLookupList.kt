@@ -21,11 +21,11 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 public class DiscLookupList(
-  public var id: String = "",
-  @field:Json(name = "offset-count") public var offsetCount: Int = 0,
-  public var offsets: List<Int> = emptyList(),
-  public var sectors: Int = 0,
-  public var releases: List<Release> = emptyList()
+  public val id: String = "",
+  @field:Json(name = "offset-count") public val offsetCount: Int = 0,
+  public val offsets: List<Int> = emptyList(),
+  public val sectors: Int = 0,
+  public val releases: List<Release> = emptyList()
 ) {
   override fun toString(): String = toJson()
 }

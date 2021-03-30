@@ -217,7 +217,7 @@ public inline val Work.mbid: WorkMbid
 
 public fun String.isValidMbid(): Boolean {
   return length == MBID_LENGTH &&
-    DASHES.all { this[it] == '-' } &&
+    DASHES.all { get(it) == '-' } &&
     RANGES.all { rangeIsHex(it) }
 }
 
@@ -232,7 +232,7 @@ private val FIFTH_GROUP: IntRange = 24..35
 private val RANGES = arrayOf(FIRST_GROUP, SECOND_GROUP, THIRD_GROUP, FOURTH_GROUP, FIFTH_GROUP)
 
 public fun String.rangeIsHex(range: IntRange): Boolean {
-  return range.all { this[it].isHex() }
+  return range.all { get(it).isHex() }
 }
 
 private fun Char.isHex(): Boolean = when (this) {

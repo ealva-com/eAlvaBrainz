@@ -23,10 +23,10 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class BrowseAreaList(
   @Json(name = "area-count")
-  public var areaCount: Int = 0,
+  public val areaCount: Int = 0,
   @Json(name = "area-offset")
-  public var areaOffset: Int = 0,
-  public var areas: List<Area> = emptyList()
+  public val areaOffset: Int = 0,
+  public val areas: List<Area> = emptyList()
 ) {
   override fun toString(): String = toJson()
 }

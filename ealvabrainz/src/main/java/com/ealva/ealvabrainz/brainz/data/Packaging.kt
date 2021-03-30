@@ -42,8 +42,8 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 public class Packaging(
-  public var id: String = "",
-  public var name: String = ""
+  public val id: String = "",
+  public val name: String = ""
 ) {
   public companion object {
     public val NullPackaging: Packaging = Packaging(id = NullObject.ID, name = NullObject.NAME)

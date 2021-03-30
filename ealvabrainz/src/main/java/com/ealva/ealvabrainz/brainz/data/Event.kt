@@ -27,14 +27,14 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class Event(
   /** Event MBID */
-  public var id: String = "",
+  public val id: String = "",
   /**
    * The name is the official name of the event if it has one, or a descriptive name
    * (like "Main Artist at Place") if not.
    */
-  public var name: String = "",
+  public val name: String = "",
   /** The time the event occurred/will occur */
-  public var time: String = "",
+  public val time: String = "",
   /**
    * The type describes what kind of event the event is. The possible values are:
    * * **Concert**
@@ -53,9 +53,9 @@ public class Event(
    * audience and instructs them individually and/or takes questions intended to improve the
    * audience members' playing skills.
    */
-  public var type: String = "",
+  public val type: String = "",
   /** The cancelled field describes whether or not the event took place. */
-  public var cancelled: Boolean = false,
+  public val cancelled: Boolean = false,
   @Suppress("MaxLineLength")
   /**
    * The setlist stores a list of songs performed, optionally including links to artists and works.
@@ -90,7 +90,7 @@ public class Event(
    * * [de4c0fa3-a578-38e6-99fd-3448f7cbd640|Rock and Roll All Nite]
    * ```
    */
-  public var setList: String = "",
+  public val setList: String = "",
   /** begin date */
   /**
    * Aliases are alternate names for an event, which currently have two main functions: localised
@@ -99,26 +99,26 @@ public class Event(
    * name is for. Search hints are used to help both users and the server when searching and can be
    * a number of things including alternate names, nicknames or even misspellings.
    */
-  public var aliases: List<Alias> = emptyList(),
+  public val aliases: List<Alias> = emptyList(),
   /**
    * Lifespan is begin/end dates and if the event has ended
    */
-  @Json(name = "life-span") @field:FallbackOnNull public var lifeSpan: LifeSpan =
+  @Json(name = "life-span") @field:FallbackOnNull public val lifeSpan: LifeSpan =
     LifeSpan.NullLifeSpan,
 
-  public var relations: List<Relation> = emptyList(),
+  public val relations: List<Relation> = emptyList(),
   /**
    * See the
    * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  public var disambiguation: String = "",
+  public val disambiguation: String = "",
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  public var annotation: String = "",
+  public val annotation: String = "",
   /** score ranking used in query results */
-  public var score: Int = 0
+  public val score: Int = 0
 ) {
 
   public enum class Include(override val value: String) : Inc {
@@ -140,15 +140,17 @@ public class Event(
   }
 
   public enum class SearchField(public override val value: String) : EntitySearchField {
-    Default(""),
-    /** an alias attached to the event */
+    /**
+     * (part of) any [alias](https://musicbrainz.org/doc/Aliases) attached to the artist (diacritics
+     * are ignored)
+     */
     Alias("alias"),
 
     /** the MBID of an area related to the event */
     AreaId("aid"),
 
     /** the name of an area related to the event */
-    Area("area"),
+    AreaName("area"),
 
     /** the MBID of an artist related to the event */
     ArtistId("arid"),
@@ -156,14 +158,29 @@ public class Event(
     /** the name of an artist related to the event */
     Artist("artist"),
 
+    /** the event's begin date (e.g. "1980-01-22") */
+    Begin("begin"),
+
     /** the disambiguation comment for the event */
     Comment("comment"),
+
+    /** Default searches [Alias], [Artist], and [Event] */
+    Default(""),
+
+    /** the event's end date (e.g. "1980-01-22") */
+    End("end"),
+
+    /** a boolean flag (true/false) indicating whether or not the event has an end date set */
+    Ended("ended"),
 
     /** the MBID of the event */
     EventId("eid"),
 
     /** the name of the event */
-    Event("event"),
+    EventName("event"),
+
+    /** (part of) the event's name (with the specified diacritics) */
+    EventAccent("eventaccent"),
 
     /** the MBID of a place related to the event */
     PlaceId("pid"),

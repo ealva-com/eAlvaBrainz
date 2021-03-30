@@ -21,10 +21,10 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 public class AreaList(
-  public var created: String = "",
-  public var count: Int = 0,
-  public var offset: Int = 0,
-  public var areas: List<Area> = emptyList()
+  public val created: String = "",
+  public val count: Int = 0,
+  public val offset: Int = 0,
+  public val areas: List<Area> = emptyList()
 ) {
   override fun toString(): String = toJson()
 }

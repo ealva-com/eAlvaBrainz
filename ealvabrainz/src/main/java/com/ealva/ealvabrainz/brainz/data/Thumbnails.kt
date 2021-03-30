@@ -41,11 +41,11 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 public class Thumbnails(
-  @field:Json(name = "250") public var size250: String = "",
-  @field:Json(name = "500") public var size500: String = "",
-  @field:Json(name = "1200") public var size1200: String = "",
-  public var small: String = "",
-  public var large: String = ""
+  @field:Json(name = "250") public val size250: String = "",
+  @field:Json(name = "500") public val size500: String = "",
+  @field:Json(name = "1200") public val size1200: String = "",
+  public val small: String = "",
+  public val large: String = ""
 ) {
   public companion object {
     public val NullThumbnails: Thumbnails = Thumbnails()

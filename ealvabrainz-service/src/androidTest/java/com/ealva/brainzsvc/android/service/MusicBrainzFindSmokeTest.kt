@@ -32,14 +32,20 @@ import com.ealva.brainzsvc.service.Password
 import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.brainzsvc.service.UserName
 import com.ealva.brainzsvc.service.getErrorString
+import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.common.AlbumTitle
+import com.ealva.ealvabrainz.common.AreaName
 import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.LabelName
 import com.ealva.ealvabrainz.common.Limit
+import com.ealva.ealvabrainz.common.ReleaseMbid
 import com.ealva.ealvabrainz.common.WorkName
 import com.ealva.ealvabrainz.common.toAlbumTitle
 import com.ealva.ealvabrainz.common.toArtistName
+import com.ealva.ealvabrainz.lucene.Term
+import com.ealva.ealvabrainz.lucene.inclusive
+import com.ealva.ealvabrainz.lucene.or
 import com.ealva.ealvabrainz.test.shared.MainCoroutineRule
 import com.ealva.ealvabrainz.test.shared.runBlockingTest
 import com.ealva.ealvabrainz.test.shared.toHaveAny
@@ -64,6 +70,23 @@ private const val contactEmail = "musicbrainz@ealva.com"
  * open source library) services. Given that, please don't run this test often. Preferably, do all
  * your work, do unit tests, and save this test suite for a (hopefully) single run before committing
  * code.
+ *
+ * One or more integration tests require authentication with the MusicBrainz server. The required
+ * username and password must be defined in the local.properties file in the root folder of this
+ * project. This file is not committed to version control as it's contents are private (obviously).
+ * If the file doesn't exist, create it. It would typically look something like:
+ * ```text
+ * sdk.dir=/home/user/Android/Sdk
+ * BRAINZ_USERNAME="my_username"
+ * BRAINZ_PASSWORD="my_password"
+ * ```
+ * where BRAINZ_USERNAME and BRAINZ_PASSWORD are set to your MusicBrainz.org credentials. If you
+ * don't have an account, go to https://musicbrainz.org/register and create one. Not mandatory,
+ * however not setting these values correctly will result in some tests failing due to
+ * authentication errors.
+ *
+ * Applications which call functions requiring authentication must implement the CredentialsProvider
+ * interface and use it when constructing a MusicBrainzService implementation.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
@@ -111,6 +134,37 @@ public class MusicBrainzFindSmokeTest {
   }
 
   @Test
+  public fun findAnnotation(): Unit = coroutineRule.runBlockingTest {
+    withBrainz {
+      when (
+        val result = findAnnotation {
+          entity { ReleaseMbid("bdb24cb5-404b-4f60-bba4-7b730325ae47") }
+        }
+      ) {
+        is Ok -> result.value.let { annotationList ->
+          expect(annotationList.count).toBeGreaterThan(0)
+          expect(annotationList.annotations).toHaveAny { it.type == "release" }
+          expect(annotationList.annotations).toHaveAny { it.name == "Pieds nus sur la braise" }
+        }
+        is Err -> fail("Brainz call failed") { failReason(result) }
+      }
+    }
+  }
+
+  @Test
+  public fun findAreaIledeFrance(): Unit = coroutineRule.runBlockingTest {
+    withBrainz {
+      when (val result = findArea { default { AreaName("Île-de-France") } }) {
+        is Ok -> result.value.let { areaList ->
+          expect(areaList.count).toBeGreaterThan(0)
+          expect(areaList.areas).toHaveAny { it.name == "Île-de-France" }
+        }
+        is Err -> fail("Brainz call failed") { failReason(result) }
+      }
+    }
+  }
+
+  @Test
   public fun findArtistJethroTullSearch(): Unit = coroutineRule.runBlockingTest {
     withBrainz {
       when (val result = findArtist(limit = Limit(4)) { artist { JETHRO_TULL } }) {
@@ -143,6 +197,38 @@ public class MusicBrainzFindSmokeTest {
   }
 
   @Test
+  public fun findEvent(): Unit = coroutineRule.runBlockingTest {
+    withBrainz {
+      when (val result = findEvent { default { "unique" } }) {
+        is Ok -> result.value.let { eventList ->
+          expect(eventList.count).toBeGreaterThan(6) // 8 last checked
+          expect(eventList.events).toHaveAny {
+            it.name == "Dominique A at Le Lieu Unique, April 2012"
+          }
+          expect(eventList.events).toHaveAny {
+            it.name == "Joung & Junique at Maybe's"
+          }
+        }
+        is Err -> fail("Brainz call failed") { failReason(result) }
+      }
+    }
+  }
+
+  @Test
+  public fun findInstrument(): Unit = coroutineRule.runBlockingTest {
+    withBrainz {
+      when (val result = findInstrument { default { "Nose" } }) {
+        is Ok -> result.value.let { instrumentList ->
+          expect(instrumentList.count).toBeGreaterThan(3)
+          expect(instrumentList.instruments).toHaveAny { it.name == "nose whistle" }
+          expect(instrumentList.instruments).toHaveAny { it.name == "nose flute" }
+        }
+        is Err -> fail("Brainz call failed") { failReason(result) }
+      }
+    }
+  }
+
+  @Test
   public fun findLabelDevilsRecords(): Unit = coroutineRule.runBlockingTest {
     withBrainz {
       val labelName = LabelName("Devil's Records")
@@ -152,6 +238,31 @@ public class MusicBrainzFindSmokeTest {
           expect(labelList.labels[0].name).toBe(labelName.value)
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
+      }
+    }
+  }
+
+  @Test
+  public fun findPlaceChipping(): Unit = coroutineRule.runBlockingTest {
+    withBrainz {
+      when (val result = findPlace { default { "chipping" } }) {
+        is Ok -> result.value.let { placeList ->
+          expect(placeList.count).toBeGreaterThan(0)
+          expect(placeList.places).toHaveAny { it.name == "Chipping Norton Recording Studios" }
+        }
+        is Err -> fail("Brainz call failed") { failReason(result) }
+      }
+    }
+  }
+
+  @Test
+  public fun findRecording(): Unit = coroutineRule.runBlockingTest {
+    withBrainz {
+      when (val result = findRecording { isrc { "GBAHT1600302" } }) {
+        is Ok -> result.value.let { recordingList ->
+          expect(recordingList.count).toBeGreaterThan(0)
+          expect(recordingList.recordings).toHaveAny { it.title == "Blow Your Mind (Mwah)" }
+        }
       }
     }
   }
@@ -188,6 +299,34 @@ public class MusicBrainzFindSmokeTest {
   }
 
   @Test
+  public fun findBeatlesAlbums67Through69(): Unit = coroutineRule.runBlockingTest {
+    withBrainz {
+      when (
+        val result = findReleaseGroup {
+
+          artist { ArtistName("The Beatles") } and
+            firstReleaseDate { Term("1967") inclusive Term("1969") } and
+            primaryType { Release.Type.Album } and
+            !secondaryType { Term(Release.Type.Compilation) or Term(Release.Type.Interview) } and
+            status { Release.Status.Official }
+        }
+      ) {
+        is Ok -> result.value.let { releaseList ->
+          expect(releaseList.count).toBe(5)
+          expect(releaseList.releaseGroups).toHaveAny { it.title == "Magical Mystery Tour" }
+          expect(releaseList.releaseGroups).toHaveAny {
+            it.title == "Sgt. Pepper’s Lonely Hearts Club Band"
+          }
+          expect(releaseList.releaseGroups).toHaveAny { it.title == "Yellow Submarine" }
+          expect(releaseList.releaseGroups).toHaveAny { it.title == "Abbey Road" }
+          expect(releaseList.releaseGroups).toHaveAny { it.title == "The Beatles" }
+        }
+        is Err -> fail("Brainz call failed") { failReason(result) }
+      }
+    }
+  }
+
+  @Test
   public fun findReleaseGroupZeppelinHousesOfTheHoly(): Unit = coroutineRule.runBlockingTest {
     withBrainz {
       val ledZeppelin = "Led Zeppelin".toArtistName()
@@ -202,6 +341,20 @@ public class MusicBrainzFindSmokeTest {
           expect(groupList.releaseGroups).toHaveSize(2)
           expect(groupList.releaseGroups[0].title).toBe(housesOfTheHoly.value)
           expect(groupList.releaseGroups[0].artistCredit[0].name).toBe(ledZeppelin.value)
+        }
+        is Err -> fail("Brainz call failed") { failReason(result) }
+      }
+    }
+  }
+
+  @Test
+  public fun findSeries(): Unit = coroutineRule.runBlockingTest {
+    withBrainz {
+      when (val result = findSeries { default { "Studio Brussel" } }) {
+        is Ok -> result.value.let { seriesList ->
+          expect(seriesList.count).toBeGreaterThan(1)
+          expect(seriesList.series).toHaveAny { it.name == "Studio Brussel: De Maxx" }
+          expect(seriesList.series).toHaveAny { it.name == "Studio Brussel: Life Is Music" }
         }
         is Err -> fail("Brainz call failed") { failReason(result) }
       }

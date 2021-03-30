@@ -39,16 +39,16 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 public class Medium(
-  public var title: String = "",
-  @field:Json(name = "format-id") public var formatId: String = "",
-  public var format: String = "",
-  @field:Json(name = "disc-count") public var discCount: Int = 0,
-  @field:Json(name = "track-count") public var trackCount: Int = 0,
-  @field:Json(name = "track-offset") public var trackOffset: Int = 0,
-  public var discs: List<Disc> = emptyList(),
-  public var position: Int = 0,
-  public var tracks: List<Track> = emptyList(),
-  public var track: List<Track> = emptyList()
+  public val title: String = "",
+  @field:Json(name = "format-id") public val formatId: String = "",
+  public val format: String = "",
+  @field:Json(name = "disc-count") public val discCount: Int = 0,
+  @field:Json(name = "track-count") public val trackCount: Int = 0,
+  @field:Json(name = "track-offset") public val trackOffset: Int = 0,
+  public val discs: List<Disc> = emptyList(),
+  public val position: Int = 0,
+  public val tracks: List<Track> = emptyList(),
+  public val track: List<Track> = emptyList()
 ) {
   override fun toString(): String = toJson()
 

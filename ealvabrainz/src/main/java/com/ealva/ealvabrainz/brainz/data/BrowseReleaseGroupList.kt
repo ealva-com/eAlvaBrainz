@@ -23,11 +23,11 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class BrowseReleaseGroupList(
   @Json(name = "release-group-count")
-  public var releaseGroupCount: Int = 0,
+  public val releaseGroupCount: Int = 0,
   @Json(name = "release-group-offset")
-  public var releaseGroupOffset: Int = 0,
+  public val releaseGroupOffset: Int = 0,
   @Json(name = "release-groups")
-  public var releaseGroups: List<ReleaseGroup> = emptyList()
+  public val releaseGroups: List<ReleaseGroup> = emptyList()
 ) {
   override fun toString(): String = toJson()
 }

@@ -30,13 +30,13 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 public class Track(
-  public var id: String = "",
-  public var title: String = "",
-  public var number: String = "",
-  public var position: Int = 0,
-  @field:FallbackOnNull public var recording: Recording = NullRecording,
-  @field:Json(name = "artist-credit") public var artistCredit: List<ArtistCredit> = emptyList(),
-  public var length: Int = 0
+  public val id: String = "",
+  public val title: String = "",
+  public val number: String = "",
+  public val position: Int = 0,
+  @field:FallbackOnNull public val recording: Recording = NullRecording,
+  @field:Json(name = "artist-credit") public val artistCredit: List<ArtistCredit> = emptyList(),
+  public val length: Int = 0
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

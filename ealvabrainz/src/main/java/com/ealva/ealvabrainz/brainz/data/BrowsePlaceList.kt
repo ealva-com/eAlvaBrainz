@@ -23,10 +23,10 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class BrowsePlaceList(
   @Json(name = "place-count")
-  public var placeCount: Int = 0,
+  public val placeCount: Int = 0,
   @Json(name = "place-offset")
-  public var placeOffset: Int = 0,
-  public var places: List<Place> = emptyList()
+  public val placeOffset: Int = 0,
+  public val places: List<Place> = emptyList()
 ) {
   override fun toString(): String = toJson()
 }

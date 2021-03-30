@@ -30,7 +30,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class Artist(
   /** The MBID for this artist */
-  public var id: String = "",
+  public val id: String = "",
   /**
    * The type is used to state whether an artist is a person, a group, or something else.
    * * Person
@@ -48,28 +48,28 @@ public class Artist(
    *
    * Note that not every ensemble related to classical music is an orchestra or choir.
    */
-  public var type: String = "",
+  public val type: String = "",
   /** The official name of an artist, be it a person or a band */
-  public var name: String = "",
+  public val name: String = "",
   /**
    * The sort name is a variant of the artist name which would be used when sorting artists by
    * name, such as in record shops or libraries. Among other things, sort names help to ensure
    * that all the artists that start with Navigation"The" don't end up up under "T".
    */
-  @field:Json(name = "sort-name") public var sortName: String = "",
-  public var country: String = "",
-  @field:Json(name = "begin-area") @field:FallbackOnNull public var beginArea: Area = Area.NullArea,
-  @field:Json(name = "end-area") @field:FallbackOnNull public var endArea: Area = Area.NullArea,
+  @field:Json(name = "sort-name") public val sortName: String = "",
+  public val country: String = "",
+  @field:Json(name = "begin-area") @field:FallbackOnNull public val beginArea: Area = Area.NullArea,
+  @field:Json(name = "end-area") @field:FallbackOnNull public val endArea: Area = Area.NullArea,
   /**
    * See the
    * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  public var disambiguation: String = "",
+  public val disambiguation: String = "",
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  public var annotation: String = "",
+  public val annotation: String = "",
   /**
    * For an Artist lifespan, begin and end dates indicate when an artist started and finished its
    * existence. Its exact meaning depends on the type of artist:
@@ -94,46 +94,46 @@ public class Artist(
    * There are no clear indications about how to use dates for artists of the type Other at the
    * moment.
    */
-  @field:Json(name = "life-span") @field:FallbackOnNull public var lifeSpan: LifeSpan =
+  @field:Json(name = "life-span") @field:FallbackOnNull public val lifeSpan: LifeSpan =
     LifeSpan.NullLifeSpan,
   /**
    * The gender is used to explicitly state whether a person or character identifies as male,
    * female or neither. Groups do not have genders.
    */
-  public var gender: String = "",
-  @field:Json(name = "gender-id") public var genderId: String = "",
-  @field:Json(name = "type-id") public var typeId: String = "",
+  public val gender: String = "",
+  @field:Json(name = "gender-id") public val genderId: String = "",
+  @field:Json(name = "type-id") public val typeId: String = "",
   /**
    * The artist area, as the name suggests, indicates the area with which an artist is primarily
    * identified with. It is often, but not always, its birth/formation country.
    */
-  @field:FallbackOnNull public var area: Area = Area.NullArea,
-  public var genres: List<Genre> = emptyList(),
+  @field:FallbackOnNull public val area: Area = Area.NullArea,
+  public val genres: List<Genre> = emptyList(),
   /**
    * Aliases are used to store alternate names or misspellings. For more information and examples,
    * see the [page about aliases](https://musicbrainz.org/doc/Aliases).
    */
-  public var aliases: List<Alias> = emptyList(),
+  public val aliases: List<Alias> = emptyList(),
   /**
    * An IPI (interested party information) code is an identifying number assigned by the CISAC
    * database for musical rights management. See [IPI](https://musicbrainz.org/doc/IPI) for more
    * information, including how to find these codes.
    */
-  public var ipis: List<String> = emptyList(),
+  public val ipis: List<String> = emptyList(),
   /**
    * The International Standard Name Identifier for the artist. See
    * [ISNI](https://musicbrainz.org/doc/ISNI) for more information.
    */
-  public var isnis: List<String> = emptyList(),
+  public val isnis: List<String> = emptyList(),
 
-  @field:FallbackOnNull public var rating: Rating = Rating.NullRating,
-  public var tags: List<Tag> = emptyList(),
-  @field:Json(name = "release-groups") public var releaseGroups: List<ReleaseGroup> = emptyList(),
-  public var recordings: List<Recording> = emptyList(),
-  public var releases: List<Release> = emptyList(),
-  public var relations: List<Relation> = emptyList(),
+  @field:FallbackOnNull public val rating: Rating = Rating.NullRating,
+  public val tags: List<Tag> = emptyList(),
+  @field:Json(name = "release-groups") public val releaseGroups: List<ReleaseGroup> = emptyList(),
+  public val recordings: List<Recording> = emptyList(),
+  public val releases: List<Release> = emptyList(),
+  public val relations: List<Relation> = emptyList(),
   /** score ranking used in query results */
-  public var score: Int = 0
+  public val score: Int = 0
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -191,7 +191,6 @@ public class Artist(
   }
 
   public enum class SearchField(public override val value: String) : EntitySearchField {
-    Default(""),
     /** (part of) any alias attached to the artist (diacritics are ignored) */
     Alias("alias"),
 
@@ -204,19 +203,19 @@ public class Artist(
     /** the artist's MBID */
     ArtistId("arid"),
 
-    /** the artist's name (without accented characters) */
+    /** (part of) the artist's name (diacritics are ignored) */
     Artist("artist"),
 
-    /** the artist's name (with accented characters) */
+    /** (part of) the artist's name (with the specified diacritics) */
     ArtistAccent("artistaccent"),
 
-    /** the artist's begin date */
+    /** the artist's begin date (e.g. "1980-01-22")  */
     Begin("begin"),
 
-    /** the artist's begin area */
+    /** (part of) the name of the artist's begin area */
     BeginArea("beginarea"),
 
-    /** the artist's disambiguation comment */
+    /** (part of) the artist's disambiguation comment  */
     Comment("comment"),
 
     /**
@@ -224,35 +223,41 @@ public class Artist(
      */
     Country("country"),
 
-    /** the artist's end date */
+    /** Default searches [Alias], [Artist], and [SortName] */
+    Default(""),
+
+    /** the artist's end date (e.g. "1980-01-22")  */
     End("end"),
 
-    /** the artist's end area */
+    /** 	(part of) the name of the artist's end area  */
     EndArea("endarea"),
 
-    /** a flag indicating whether or not the artist has ended */
+    /**
+     * 	a boolean flag (true/false) indicating whether or not the artist has ended (is
+     * dissolved/deceased)
+     */
     Ended("ended"),
 
-    /** the artist's gender (“male”, “female”, or “other”) */
+    /** the artist's gender (“male”, “female”, “other” or “not applicable”)  */
     Gender("gender"),
 
-    /**
-     * A number identifying persons connected to ISWC registered works (authors, composers, etc.).
-     */
+    /** an IPI code associated with the artist */
     Ipi("ipi"),
 
-    /**
-     * an ISNI code associated with the artist
-     */
+    /** an ISNI code associated with the artist */
     Isni("isni"),
 
-    /** the artist's sort name */
+    /**
+     * (part of) the artist's [sort name](https://musicbrainz.org/doc/Artist#Sort_name)
+     *
+     * Sort name [style](https://musicbrainz.org/doc/Style/Artist/Sort_Name)
+     */
     SortName("sortname"),
 
-    /** a tag attached to the artist */
+    /** (part of) a tag attached to the artist */
     Tag("tag"),
 
-    /** the artist's type (“person”, “group”, ...) */
+    /** the artist's [type](https://musicbrainz.org/doc/Artist#Type) (“person”, “group”, etc.) */
     Type("type")
   }
 

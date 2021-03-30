@@ -48,19 +48,19 @@ public class TermTest {
   @Test
   public fun `test term appends correctly`() {
     expect(Term("term").toString()).toBe("term")
-    expect(Term("ter?m").toString()).toBe("""ter\?m""")
-    expect(Term("ter?m*").toString()).toBe("""ter\?m\*""")
-    expect(Term(" &&ter?m*").toString()).toBe("""\&&ter\?m\*""")
-    expect(Term(" &&ter?m*^ ").toString()).toBe("""\&&ter\?m\*\^""")
-    expect(" &&ter?m*^ ".toTerm().toString()).toBe("""\&&ter\?m\*\^""")
+    expect(Term("ter?m", true).toString()).toBe("""ter\?m""")
+    expect(Term("ter?m*", true).toString()).toBe("""ter\?m\*""")
+    expect(Term(" &&ter?m*", true).toString()).toBe("""\&&ter\?m\*""")
+    expect(Term(" &&ter?m*^ ", true).toString()).toBe("""\&&ter\?m\*\^""")
+    expect(" &&ter?m*^ ".toTerm().toString()).toBe("""&&ter?m*^""")
   }
 
   @Test
   public fun `test phrase appends correctly`() {
     expect(Term(" a phrase ").toString()).toBe(""""a phrase"""")
-    expect(Term(" a+phrase else").toString()).toBe(""""a\+phrase else"""")
+    expect(Term(" a+phrase else", true).toString()).toBe(""""a\+phrase else"""")
     expect(" a+phrase else".toTerm()).toBeInstanceOf<Phrase>()
-    expect(" a+phrase else".toTerm().toString()).toBe(""""a\+phrase else"""")
+    expect(" a+phrase else".toTerm().toString()).toBe(""""a+phrase else"""")
   }
 
   @Test
@@ -98,26 +98,26 @@ public class TermTest {
   @Test
   public fun `test require term`() {
     val term = Term("Alice")
-    expect((+term).toString()).toBe("""\+Alice""")
+    expect((+term).toString()).toBe("""+Alice""")
     val phrase = Term("One more")
-    expect((+phrase).toString()).toBe("""\+"One more"""")
+    expect((+phrase).toString()).toBe("""+"One more"""")
   }
 
   @Test
   public fun `test prohibit term`() {
     val term = Term("Alice")
-    expect((-term).toString()).toBe("""\-Alice""")
-    expect((!term).toString()).toBe("""\-Alice""")
+    expect((-term).toString()).toBe("""-Alice""")
+    expect((!term).toString()).toBe("""-Alice""")
     val phrase = Term("One more")
-    expect((-phrase).toString()).toBe("""\-"One more"""")
-    expect((!phrase).toString()).toBe("""\-"One more"""")
+    expect((-phrase).toString()).toBe("""-"One more"""")
+    expect((!phrase).toString()).toBe("""-"One more"""")
   }
 
   @Test
   public fun `test fuzzy term`() {
     val term = Term("Bob")
-    expect(term.fuzzy().toString()).toBe("""Bob\~2""")
-    expect(term.fuzzy(1).toString()).toBe("""Bob\~1""")
+    expect(term.fuzzy().toString()).toBe("""Bob~2""")
+    expect(term.fuzzy(1).toString()).toBe("""Bob~1""")
   }
 
   @Test(expected = IllegalArgumentException::class)
@@ -137,8 +137,8 @@ public class TermTest {
   @Test
   public fun `test proximity phrase`() {
     val term = Term("Bob and Alice")
-    expect(term.proximity(1).toString()).toBe(""""Bob and Alice"\~1""")
-    expect(term.proximity(10).toString()).toBe(""""Bob and Alice"\~10""")
+    expect(term.proximity(1).toString()).toBe(""""Bob and Alice"~1""")
+    expect(term.proximity(10).toString()).toBe(""""Bob and Alice"~10""")
   }
 
   @Test(expected = IllegalArgumentException::class)
@@ -150,30 +150,30 @@ public class TermTest {
 
   @Test
   public fun `test boost term`() {
-    expect(Term("jakarta").boost(4).toString()).toBe("""jakarta\^4""")
-    expect(Term("jakarta apache").boost(4).toString()).toBe(""""jakarta apache"\^4""")
+    expect(Term("jakarta").boost(4).toString()).toBe("""jakarta^4""")
+    expect(Term("jakarta apache").boost(4).toString()).toBe(""""jakarta apache"^4""")
   }
 
   @Test
   public fun `test inclusive range`() {
     val alice = "Alice".toTerm()
     val bob = "Bob".toTerm()
-    expect((alice inclusive bob).toString()).toBe("""\[Alice TO Bob\]""")
-    expect((alice to bob).inclusive().toString()).toBe("""\[Alice TO Bob\]""")
+    expect((alice inclusive bob).toString()).toBe("""[Alice TO Bob]""")
+    expect((alice to bob).inclusive().toString()).toBe("""[Alice TO Bob]""")
   }
 
   @Test
   public fun `test exclusive range`() {
     val alice = "Alice".toTerm()
     val bob = "Bob".toTerm()
-    expect((alice exclusive bob).toString()).toBe("""\{Alice TO Bob\}""")
-    expect((alice to bob).exclusive().toString()).toBe("""\{Alice TO Bob\}""")
+    expect((alice exclusive bob).toString()).toBe("""{Alice TO Bob}""")
+    expect((alice to bob).exclusive().toString()).toBe("""{Alice TO Bob}""")
   }
 
   @Test
   public fun `test type to Term functions`() {
     val aMbid = "5b11f4ce-a62d-471e-81fc-a69a8278c7da"
-    val escapedMbid = aMbid.luceneEscape()
+    val escapedMbid = aMbid
     expect(Term(AreaMbid(aMbid)).toString()).toBe(escapedMbid)
     expect(Term(ArtistMbid(aMbid)).toString()).toBe(escapedMbid)
     expect(Term(EventMbid(aMbid)).toString()).toBe(escapedMbid)
@@ -191,7 +191,7 @@ public class TermTest {
     expect(Term(PackagingMbid(aMbid)).toString()).toBe(escapedMbid)
 
     val aTitle = "Short (Subtitle)"
-    val escapedTitle = """"${aTitle.luceneEscape()}""""
+    val escapedTitle = """"$aTitle""""
     expect(Term(aTitle.toAlbumTitle()).toString()).toBe(escapedTitle)
     expect(Term(aTitle.toArtistName()).toString()).toBe(escapedTitle)
     expect(Term(aTitle.toLabelName()).toString()).toBe(escapedTitle)

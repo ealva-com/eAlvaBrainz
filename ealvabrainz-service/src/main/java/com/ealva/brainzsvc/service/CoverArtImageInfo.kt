@@ -50,6 +50,13 @@ public fun Flow<ReleaseMbid>.transform(service: CoverArtService): Flow<CoverArtI
   }
 }.onEmpty { emit(CoverArtImageInfo.NONE) }
 
+public fun ReleaseMbid.artwork(service: CoverArtService): Flow<CoverArtImageInfo> = flow {
+  when (val result = service.getReleaseArt(this@artwork)) {
+    is Ok -> result.value.allImages.forEach { emit(it) }
+    is Err -> emit(CoverArtImageInfo.NONE)
+  }
+}
+
 /**
  * Transform operator converts ReleaseGroupMbid to a RemoteImage which points to the CoverArtImage
  * Uri and contains other information about the image
@@ -65,6 +72,13 @@ public fun Flow<ReleaseGroupMbid>.transform(
     }
   }
 }.onEmpty { emit(CoverArtImageInfo.NONE) }
+
+public fun ReleaseGroupMbid.artwork(service: CoverArtService): Flow<CoverArtImageInfo> = flow {
+  when (val result = service.getReleaseGroupArt(this@artwork)) {
+    is Ok -> result.value.allImages.forEach { emit(it) }
+    is Err -> emit(CoverArtImageInfo.NONE)
+  }
+}
 
 public sealed class CoverArtImageInfo {
   public abstract val location: Uri

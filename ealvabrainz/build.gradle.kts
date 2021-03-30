@@ -98,10 +98,10 @@ dependencies {
   implementation(ThirdParty.FASTUTIL)
   implementation(ThirdParty.COROUTINE_CORE)
   implementation(ThirdParty.COROUTINE_ANDROID)
+
   implementation(ThirdParty.MOSHI)
   implementation(ThirdParty.MOSHI_RETROFIT)
-
-  kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.2")
+  kapt(ThirdParty.MOSHI_CODEGEN)
 
   testImplementation(TestingLib.JUNIT)
   testImplementation(AndroidTestingLib.ANDROIDX_TEST_CORE) {

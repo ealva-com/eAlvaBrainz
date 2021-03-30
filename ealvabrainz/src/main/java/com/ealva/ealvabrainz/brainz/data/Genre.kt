@@ -23,16 +23,16 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class Genre(
   /** This genre's MusicBrainz ID (MBID) */
-  public var id: String = "",
+  public val id: String = "",
   /** Genre name in lowercase */
-  public var name: String = "",
+  public val name: String = "",
   /**
    * See the [page about disambiguation](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  public var disambiguation: String = "",
+  public val disambiguation: String = "",
   /** Number of votes for this genres applicability to the entity */
-  public var count: Int = 0
+  public val count: Int = 0
 ) {
 
   public enum class Include(override val value: String) : Inc {

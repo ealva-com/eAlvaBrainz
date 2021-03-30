@@ -22,11 +22,11 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 public class CoverArtArchive(
-  public var back: Boolean = false,
-  public var front: Boolean = false,
-  public var darkened: Boolean = false,
-  public var count: Int = 0,
-  public var artwork: Boolean = false
+  public val back: Boolean = false,
+  public val front: Boolean = false,
+  public val darkened: Boolean = false,
+  public val count: Int = 0,
+  public val artwork: Boolean = false
 ) {
   public companion object {
     public val NullCoverArtArchive: CoverArtArchive = CoverArtArchive(count = -1)

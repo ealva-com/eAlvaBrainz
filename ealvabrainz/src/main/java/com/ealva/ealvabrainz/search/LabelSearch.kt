@@ -18,10 +18,13 @@
 package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Label.SearchField
+import com.ealva.ealvabrainz.brainz.data.Label.SearchField.Alias
+import com.ealva.ealvabrainz.brainz.data.Label.SearchField.Label
 import com.ealva.ealvabrainz.common.LabelMbid
 import com.ealva.ealvabrainz.common.LabelName
 import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.lucene.Field
+import com.ealva.ealvabrainz.lucene.Query
 import com.ealva.ealvabrainz.lucene.Term
 import java.time.LocalDate
 import java.util.Date
@@ -29,11 +32,14 @@ import kotlin.experimental.ExperimentalTypeInference
 
 @OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
-public class LabelSearch : BaseSearch<SearchField>() {
-  /** (part of) any alias attached to the label (diacritics are ignored) */
+public class LabelSearch(query: Query = Query()) : BaseSearch<SearchField>(query) {
   @JvmName("aliasTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun alias(term: () -> Term): Field = add(SearchField.Alias, term())
+  /**
+   * (part of) any [alias](https://musicbrainz.org/doc/Aliases) attached to the label (diacritics
+   * are ignored)
+   */
+  public inline fun alias(term: () -> Term): Field = add(Alias, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun alias(term: () -> String): Field = alias { Term(term()) }
@@ -48,6 +54,7 @@ public class LabelSearch : BaseSearch<SearchField>() {
 
   @JvmName("beginDateTerm")
   @OverloadResolutionByLambdaReturnType
+  /** the label's begin date (e.g. "1980-01-22") */
   public inline fun beginDate(term: () -> Term): Field = add(SearchField.Begin, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -57,9 +64,9 @@ public class LabelSearch : BaseSearch<SearchField>() {
   @OverloadResolutionByLambdaReturnType
   public inline fun beginDate(term: () -> Date): Field = beginDate { Term(term()) }
 
-  /** the artist's disambiguation comment */
   @JvmName("commentTerm")
   @OverloadResolutionByLambdaReturnType
+  /** (part of) the label's disambiguation comment */
   public inline fun comment(term: () -> Term): Field = add(SearchField.Comment, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -67,6 +74,7 @@ public class LabelSearch : BaseSearch<SearchField>() {
 
   @JvmName("countryTerm")
   @OverloadResolutionByLambdaReturnType
+  /** the 2-letter code (ISO 3166-1 alpha-2) for the label's associated country */
   public inline fun country(term: () -> Term): Field = add(SearchField.Country, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -74,14 +82,19 @@ public class LabelSearch : BaseSearch<SearchField>() {
 
   @JvmName("defaultTerm")
   @OverloadResolutionByLambdaReturnType
-  /** (part of) the label's name (diacritics are ignored) */
-  public fun default(term: () -> Term): Field = add(SearchField.Default, term())
+  /** Default searches [Alias] and [Label] */
+  public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun default(crossinline term: () -> LabelName): Field = default { Term(term()) }
+  public inline fun default(term: () -> String): Field = default { Term(term()) }
+
+  @JvmName("defaultLabelName")
+  @OverloadResolutionByLambdaReturnType
+  public inline fun default(term: () -> LabelName): Field = default { Term(term()) }
 
   @JvmName("endDateTerm")
   @OverloadResolutionByLambdaReturnType
+  /** the label's end date (e.g. "1980-01-22") */
   public inline fun endDate(term: () -> Term): Field = add(SearchField.End, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -91,25 +104,25 @@ public class LabelSearch : BaseSearch<SearchField>() {
   @OverloadResolutionByLambdaReturnType
   public inline fun endDate(term: () -> Date): Field = endDate { Term(term()) }
 
-  /** a flag indicating whether or not the artist has ended */
   @JvmName("endedTerm")
   @OverloadResolutionByLambdaReturnType
+  /** a boolean flag (true/false) indicating whether or not the label has ended (is dissolved) */
   public inline fun ended(term: () -> Term): Field = add(SearchField.Ended, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun ended(term: () -> Boolean): Field = ended { Term(term()) }
 
-  /** an IPI code associated with the label */
   @JvmName("ipiTerm")
   @OverloadResolutionByLambdaReturnType
+  /** an IPI code associated with the label */
   public inline fun ipi(term: () -> Term): Field = add(SearchField.Ipi, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun ipi(term: () -> String): Field = ipi { Term(term()) }
 
   @JvmName("isniTerm")
-  /** an ISNI code associated with the label */
   @OverloadResolutionByLambdaReturnType
+  /** an ISNI code associated with the label */
   public inline fun isni(term: () -> Term): Field = add(SearchField.Isni, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -118,7 +131,7 @@ public class LabelSearch : BaseSearch<SearchField>() {
   @JvmName("labelTerm")
   @OverloadResolutionByLambdaReturnType
   /** (part of) the label's name (diacritics are ignored) */
-  public inline fun label(term: () -> Term): Field = add(SearchField.Label, term())
+  public inline fun label(term: () -> Term): Field = add(Label, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun label(term: () -> LabelName): Field = label { Term(term()) }
@@ -133,7 +146,10 @@ public class LabelSearch : BaseSearch<SearchField>() {
 
   @JvmName("labelCodeTerm")
   @OverloadResolutionByLambdaReturnType
-  /** the label code for the label (only the numbers, without "LC") */
+  /**
+   * the [label code](https://musicbrainz.org/doc/Label/Label_Code) for the label (only the
+   * numbers, without "LC")
+   */
   public inline fun labelCode(term: () -> Term): Field = add(SearchField.Code, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -165,7 +181,7 @@ public class LabelSearch : BaseSearch<SearchField>() {
 
   @JvmName("typeTerm")
   @OverloadResolutionByLambdaReturnType
-  /** the label's type */
+  /** the label's [type](https://musicbrainz.org/doc/Label/Type) */
   public inline fun type(term: () -> Term): Field = add(SearchField.Type, term())
 
   @OverloadResolutionByLambdaReturnType

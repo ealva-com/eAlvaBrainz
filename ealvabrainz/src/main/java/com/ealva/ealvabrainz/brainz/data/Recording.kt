@@ -38,41 +38,41 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class Recording(
   /** Recording MusicBrainz ID (MBID) */
-  public var id: String = "",
+  public val id: String = "",
   /** The title of the recording. */
-  public var title: String = "",
+  public val title: String = "",
   /** The artist(s) that the recording is primarily credited to. */
-  @field:Json(name = "artist-credit") public var artistCredit: List<ArtistCredit> = emptyList(),
+  @field:Json(name = "artist-credit") public val artistCredit: List<ArtistCredit> = emptyList(),
   /**
    * The length of the recording. It's only entered manually for standalone recordings. For
    * recordings that are being used on releases, the recording length is the median length of all
    * tracks (that have a track length) associated with that recording. If there is an even number
    * of track lengths, the smaller median candidate is used.
    */
-  public var length: Int = 0,
-  @field:Json(name = "first-release-date") public var firstReleaseDate: String = "",
-  public var aliases: List<Alias> = emptyList(),
+  public val length: Int = 0,
+  @field:Json(name = "first-release-date") public val firstReleaseDate: String = "",
+  public val aliases: List<Alias> = emptyList(),
   /**
    * See the
    * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  public var disambiguation: String = "",
+  public val disambiguation: String = "",
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  public var annotation: String = "",
-  public var genres: List<Genre> = emptyList(),
+  public val annotation: String = "",
+  public val genres: List<Genre> = emptyList(),
   /** The International Standard Recording Code assigned to the recording. */
-  public var isrcs: List<String> = emptyList(),
-  public var rating: Rating = Rating.NullRating,
-  public var relations: List<Relation> = emptyList(),
-  public var releases: List<Release> = emptyList(),
-  public var tags: List<Tag> = emptyList(),
+  public val isrcs: List<String> = emptyList(),
+  public val rating: Rating = Rating.NullRating,
+  public val relations: List<Relation> = emptyList(),
+  public val releases: List<Release> = emptyList(),
+  public val tags: List<Tag> = emptyList(),
   /** If this recording is video */
-  public var video: Boolean = false,
+  public val video: Boolean = false,
   /** used with queries */
-  public var score: Int = 0
+  public val score: Int = 0
 ) {
 
   override fun equals(other: Any?): Boolean {
@@ -120,8 +120,10 @@ public class Recording(
   }
 
   public enum class SearchField(public override val value: String) : EntitySearchField {
-    Default(""),
-    /** (part of) any alias attached to the recording (diacritics are ignored) */
+    /**
+     * (part of) any [alias](https://musicbrainz.org/doc/Aliases) attached to the recording
+     * (diacritics are ignored)
+     */
     Alias("alias"),
 
     /** the MBID of any of the recording artists */
@@ -151,18 +153,24 @@ public class Recording(
     /** the release date of any release including this recording (e.g. "1980-01-22") */
     Date("date"),
 
+    /** Default searches [Recording] */
+    Default(""),
+
     /** duration of track in milliseconds */
     Duration("dur"),
 
     /** the release date of the earliest release including this recording (e.g. "1980-01-22") */
-    FirstReleaseDate("firstrelasedate"),
+    FirstReleaseDate("firstreleasedate"),
 
-    /** recording release format */
+    /**
+     * the [format](https://musicbrainz.org/doc/Release/Format) of any medium including this
+     * recording (insensitive to case, spaces, and separators)
+     */
     Format("format"),
 
     /**
-     * The International Standard Recording Code, an identification system for audio and music
-     * video recordings. Includes isrcs for all recordings
+     * The International Standard Recording Code [(ISRC)](https://musicbrainz.org/doc/ISRC), an
+     * identification system for audio and music video recordings. Includes isrcs for all recordings
      */
     Isrc("isrc"),
 
@@ -172,7 +180,10 @@ public class Recording(
     /** the position inside its release of any medium including this recording (starts at 1)  */
     Position("position"),
 
-    /** primary type of the release group (album, single, ep, other) */
+    /**
+     * the primary [type](https://musicbrainz.org/doc/Release_Group/Type#Primary_types) of any
+     * release group including this recording
+     */
     PrimaryType("primarytype"),
 
     /** the recording duration, quantized (duration in milliseconds / 2000) */
@@ -199,16 +210,19 @@ public class Recording(
     /** the MBID of any release group including this recording */
     ReleaseGroupId("rgid"),
 
-    /** recording id */
+    /** the recording's MBID  */
     RecordingId("rid"),
 
     /**
-     * secondary type of the release group (audiobook, compilation, interview, live, remix
-     * soundtrack, spokenword)
+     * any of the [secondary types](https://musicbrainz.org/doc/Release_Group/Type#Secondary_types)
+     * of any release group including this recording
      */
     SecondaryType("secondarytype"),
 
-    /** Release status (official, promotion, Bootleg, Pseudo-Release) */
+    /**
+     * the [status](https://musicbrainz.org/doc/Release#Status) of any release including this
+     * recording
+     */
     Status("status"),
 
     /** (part of) a tag attached to the recording  */

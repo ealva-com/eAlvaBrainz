@@ -22,8 +22,8 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 public data class ReleaseEvent(
-  public var date: String = "",
-  @field:FallbackOnNull public var area: Area = Area.NullArea
+  public val date: String = "",
+  @field:FallbackOnNull public val area: Area = Area.NullArea
 ) {
   public companion object {
     public val NullReleaseEvent: ReleaseEvent = ReleaseEvent()

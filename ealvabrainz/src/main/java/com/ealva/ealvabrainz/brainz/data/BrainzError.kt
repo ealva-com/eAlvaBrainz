@@ -24,9 +24,9 @@ public data class BrainzError(
   /**
    * Example: "type is not a valid parameter unless releases or release-groups are requested."
    */
-  public var error: String = "",
+  public val error: String = "",
   /**
    * Example: "For usage, please see: https://musicbrainz.org/development/mmd"
    */
-  public var help: String = ""
+  public val help: String = ""
 )

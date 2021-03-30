@@ -21,26 +21,33 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import com.ealva.ealvabrainz.common.TocParam
 import com.ealva.brainzsvc.service.BrainzMessage
+import com.ealva.brainzsvc.service.BuildConfig
 import com.ealva.brainzsvc.service.ContextResourceFetcher
 import com.ealva.brainzsvc.service.CoverArtService
+import com.ealva.brainzsvc.service.Credentials
+import com.ealva.brainzsvc.service.CredentialsProvider
 import com.ealva.brainzsvc.service.MusicBrainzService
+import com.ealva.brainzsvc.service.Password
 import com.ealva.brainzsvc.service.ResourceFetcher
+import com.ealva.brainzsvc.service.UserName
 import com.ealva.brainzsvc.service.getErrorString
 import com.ealva.ealvabrainz.brainz.data.Area
 import com.ealva.ealvabrainz.brainz.data.Artist
+import com.ealva.ealvabrainz.brainz.data.Collection
 import com.ealva.ealvabrainz.brainz.data.Label
 import com.ealva.ealvabrainz.brainz.data.Place
 import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.Release.Include
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
+import com.ealva.ealvabrainz.browse.CollectionBrowse
 import com.ealva.ealvabrainz.common.AreaMbid
 import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.BrainzInvalidStatusException
 import com.ealva.ealvabrainz.common.BrainzInvalidTypeException
 import com.ealva.ealvabrainz.common.DiscId
+import com.ealva.ealvabrainz.common.EditorName
 import com.ealva.ealvabrainz.common.EventMbid
 import com.ealva.ealvabrainz.common.GenreMbid
 import com.ealva.ealvabrainz.common.InstrumentMbid
@@ -52,8 +59,10 @@ import com.ealva.ealvabrainz.common.RecordingMbid
 import com.ealva.ealvabrainz.common.ReleaseGroupMbid
 import com.ealva.ealvabrainz.common.ReleaseMbid
 import com.ealva.ealvabrainz.common.SeriesMbid
+import com.ealva.ealvabrainz.common.TocParam
 import com.ealva.ealvabrainz.common.UrlMbid
 import com.ealva.ealvabrainz.common.WorkMbid
+import com.ealva.ealvabrainz.common.mbid
 import com.ealva.ealvabrainz.test.shared.MainCoroutineRule
 import com.ealva.ealvabrainz.test.shared.runBlockingTest
 import com.ealva.ealvabrainz.test.shared.toHaveAny
@@ -79,6 +88,23 @@ private const val contactEmail = "musicbrainz@ealva.com"
  * open source library) services. Given that, please don't run this test often. Preferably, do all
  * your work, do unit tests, and save this test suite for a (hopefully) single run before committing
  * code.
+ *
+ * One or more integration tests require authentication with the MusicBrainz server. The required
+ * username and password must be defined in the local.properties file in the root folder of this
+ * project. This file is not committed to version control as it's contents are private (obviously).
+ * If the file doesn't exist, create it. It would typically look something like:
+ * ```text
+ * sdk.dir=/home/user/Android/Sdk
+ * BRAINZ_USERNAME="my_username"
+ * BRAINZ_PASSWORD="my_password"
+ * ```
+ * where BRAINZ_USERNAME and BRAINZ_PASSWORD are set to your MusicBrainz.org credentials. If you
+ * don't have an account, go to https://musicbrainz.org/register and create one. Not mandatory,
+ * however not setting these values correctly will result in some tests failing due to
+ * authentication errors.
+ *
+ * Applications which call functions requiring authentication must implement the CredentialsProvider
+ * interface and use it when constructing a MusicBrainzService implementation.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
@@ -114,6 +140,10 @@ public class MusicBrainzLookupSmokeTest {
       appVersion = appVersion,
       contact = contactEmail,
       coverArt = coverArtService,
+      credentialsProvider = object : CredentialsProvider {
+        override val credentials: Credentials =
+          Credentials(UserName(BuildConfig.BRAINZ_USERNAME), Password(BuildConfig.BRAINZ_PASSWORD))
+      },
       dispatcher = coroutineRule.testDispatcher,
     )
     // ensure we do not exceed rate limiting as we are creating the services each time and not
@@ -175,6 +205,36 @@ public class MusicBrainzLookupSmokeTest {
           }
           else -> fail("Expected BrainzExceptionMessage")
         }
+      }
+    }
+  }
+
+  /**
+   * This test requires authentication as it includes Collection.Browse.UserCollections. To get a
+   * valid Collect MBID first browse the
+   */
+  @Test
+  public fun lookupCollection(): Unit = coroutineRule.runBlockingTest {
+    withBrainz {
+      when (
+        val browseResult = browseCollections(
+          CollectionBrowse.BrowseOn.Editor(EditorName(BuildConfig.BRAINZ_USERNAME))
+        ) {
+          include(Collection.Browse.UserCollections)
+        }
+      ) {
+        is Ok -> browseResult.value.let { browseList ->
+          expect(browseList.collections).toNotBeEmpty { "Expected some collections" }
+          browseList.collections[0].let { foundCollection ->
+            when (val lookupResult = lookupCollection(foundCollection.mbid)) {
+              is Ok -> lookupResult.value.let { collection ->
+                expect(collection.editor).toBe(BuildConfig.BRAINZ_USERNAME)
+              }
+              is Err -> fail("Brainz call failed") { failReason(lookupResult) }
+            }
+          }
+        }
+        is Err -> fail("Brainz call failed") { failReason(browseResult) }
       }
     }
   }

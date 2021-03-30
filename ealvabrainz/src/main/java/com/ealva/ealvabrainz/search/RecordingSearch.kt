@@ -20,16 +20,19 @@
 package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Recording.SearchField
+import com.ealva.ealvabrainz.brainz.data.Recording.SearchField.Recording
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.common.AlbumTitle
 import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.common.RecordingMbid
 import com.ealva.ealvabrainz.common.RecordingTitle
 import com.ealva.ealvabrainz.common.ReleaseGroupMbid
+import com.ealva.ealvabrainz.common.ReleaseMbid
 import com.ealva.ealvabrainz.common.TrackMbid
-import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.lucene.Field
+import com.ealva.ealvabrainz.lucene.Query
 import com.ealva.ealvabrainz.lucene.Term
 import java.time.LocalDate
 import java.util.Date
@@ -37,37 +40,40 @@ import kotlin.experimental.ExperimentalTypeInference
 
 @OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
-public class RecordingSearch : BaseSearch<SearchField>() {
-  /** (part of) any alias attached to the recording (diacritics are ignored) */
+public class RecordingSearch(query: Query = Query()) : BaseSearch<SearchField>(query) {
   @JvmName("aliasTerm")
   @OverloadResolutionByLambdaReturnType
+  /**
+   * (part of) any [alias](https://musicbrainz.org/doc/Aliases) attached to the recording
+   * (diacritics are ignored)
+   */
   public inline fun alias(term: () -> Term): Field = add(SearchField.Alias, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun alias(term: () -> String): Field = alias { Term(term()) }
 
-  /** the MBID of any of the recording artists */
-  @JvmName("artistIdTerm")
+  @JvmName("artistTerm")
   @OverloadResolutionByLambdaReturnType
-  public inline fun artistId(term: () -> Term): Field = add(SearchField.ArtistId, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun artistId(mbid: () -> ArtistMbid): Field = artist { Term(mbid()) }
-
   /**
    * (part of) the combined credited artist name for the recording, including join phrases
    * (e.g. "Artist X feat.")
    */
-  @JvmName("artistTerm")
-  @OverloadResolutionByLambdaReturnType
   public inline fun artist(term: () -> Term): Field = add(SearchField.Artist, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun artist(name: () -> ArtistName): Field = artist { Term(name()) }
 
-  /** (part of) the name of any of the recording artists */
+  @JvmName("artistIdTerm")
+  @OverloadResolutionByLambdaReturnType
+  /** the MBID of any of the recording artists */
+  public inline fun artistId(term: () -> Term): Field = add(SearchField.ArtistId, term())
+
+  @OverloadResolutionByLambdaReturnType
+  public inline fun artistId(mbid: () -> ArtistMbid): Field = artistId { Term(mbid()) }
+
   @JvmName("artistNameTerm")
   @OverloadResolutionByLambdaReturnType
+  /** (part of) the name of any of the recording artists */
   public inline fun artistName(term: () -> Term): Field = add(SearchField.ArtistName, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -83,22 +89,26 @@ public class RecordingSearch : BaseSearch<SearchField>() {
 
   @JvmName("countryTerm")
   @OverloadResolutionByLambdaReturnType
+  /**
+   * the 2-letter code (ISO 3166-1 alpha-2) for the country any release of this recording was
+   * released in
+   */
   public inline fun country(term: () -> Term): Field = add(SearchField.Country, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun country(term: () -> String): Field = country { Term(term()) }
 
-  /** (part of) the credited name of any of the recording artists on this particular recording */
   @JvmName("creditNameTerm")
   @OverloadResolutionByLambdaReturnType
+  /** (part of) the credited name of any of the recording artists on this particular recording */
   public inline fun creditName(term: () -> Term): Field = add(SearchField.CreditName, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun creditName(term: () -> ArtistName): Field = creditName { Term(term()) }
 
-  /** the release date of any release including this recording (e.g. "1980-01-22") */
   @JvmName("dateTerm")
   @OverloadResolutionByLambdaReturnType
+  /** the release date of any release including this recording (e.g. "1980-01-22") */
   public inline fun date(term: () -> Term): Field = add(SearchField.Date, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -114,26 +124,23 @@ public class RecordingSearch : BaseSearch<SearchField>() {
 
   @JvmName("defaultTerm")
   @OverloadResolutionByLambdaReturnType
-  /**
-   * (part of) the default's title, or the name of a track connected to this default
-   * (diacritics are ignored)
-   */
+  /** Default searches [Recording] */
   public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun default(term: () -> RecordingTitle): Field = default { Term(term()) }
 
-  /** duration of track in milliseconds */
   @JvmName("durationTerm")
   @OverloadResolutionByLambdaReturnType
+  /** duration of track in milliseconds */
   public inline fun duration(term: () -> Term): Field = add(SearchField.Duration, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun duration(term: () -> Long): Field = duration { Term(term()) }
 
-  /** the release date of the earliest release including this recording (e.g. "1980-01-22") */
   @JvmName("firstReleaseDateTerm")
   @OverloadResolutionByLambdaReturnType
+  /** the release date of the earliest release including this recording (e.g. "1980-01-22") */
   public inline fun firstReleaseDate(term: () -> Term): Field =
     add(SearchField.FirstReleaseDate, term())
 
@@ -147,6 +154,10 @@ public class RecordingSearch : BaseSearch<SearchField>() {
 
   @JvmName("formatTerm")
   @OverloadResolutionByLambdaReturnType
+  /**
+   * the [format](https://musicbrainz.org/doc/Release/Format) of any medium including this
+   * recording (insensitive to case, spaces, and separators)
+   */
   public inline fun format(term: () -> Term): Field = add(SearchField.Format, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -159,33 +170,33 @@ public class RecordingSearch : BaseSearch<SearchField>() {
   @OverloadResolutionByLambdaReturnType
   public inline fun isrc(term: () -> String): Field = isrc { Term(term()) }
 
-  /** the free-text number of the track on any medium including this recording (e.g. "A4")  */
   @JvmName("numberTerm")
   @OverloadResolutionByLambdaReturnType
+  /** the free-text number of the track on any medium including this recording (e.g. "A4")  */
   public inline fun number(term: () -> Term): Field = add(SearchField.Number, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun number(term: () -> String): Field = number { Term(term()) }
 
-  /** the position inside its release of any medium including this recording (starts at 1)  */
   @JvmName("positionTerm")
   @OverloadResolutionByLambdaReturnType
+  /** the position inside its release of any medium including this recording (starts at 1)  */
   public inline fun position(term: () -> Term): Field = add(SearchField.Position, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun position(term: () -> Int): Field = position { Term(term()) }
 
-  /** [Primary type][Release.Type] of the release group (album, single, ep, other) */
   @JvmName("primaryTypeTerm")
   @OverloadResolutionByLambdaReturnType
+  /** [Primary type][Release.Type] of the release group (album, single, ep, other) */
   public inline fun primaryType(term: () -> Term): Field = add(SearchField.PrimaryType, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun primaryType(term: () -> Release.Type): Field = primaryType { Term(term()) }
 
-  /** the recording duration, quantized (duration in milliseconds / 2000) */
   @JvmName("quantizedDurationTerm")
   @OverloadResolutionByLambdaReturnType
+  /** the recording duration, quantized (duration in milliseconds / 2000) */
   public inline fun quantizedDuration(term: () -> Term): Field =
     add(SearchField.QuantizedDuration, term())
 
@@ -198,17 +209,17 @@ public class RecordingSearch : BaseSearch<SearchField>() {
    * (part of) the recording's title, or the name of a track connected to this recording
    * (diacritics are ignored)
    */
-  public inline fun recording(term: () -> Term): Field = add(SearchField.Recording, term())
+  public inline fun recording(term: () -> Term): Field = add(Recording, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun recording(term: () -> RecordingTitle): Field = recording { Term(term()) }
 
+  @JvmName("recordingAccentTerm")
+  @OverloadResolutionByLambdaReturnType
   /**
    * (part of) the recording's name, or the name of a track connected to this recording (with the
    * specified diacritics)
    */
-  @JvmName("recordingAccentTerm")
-  @OverloadResolutionByLambdaReturnType
   public inline fun recordingAccent(term: () -> Term): Field =
     add(SearchField.RecordingAccent, term())
 
@@ -217,29 +228,31 @@ public class RecordingSearch : BaseSearch<SearchField>() {
 
   @JvmName("recordingIdTerm")
   @OverloadResolutionByLambdaReturnType
+  /** the recording's MBID  */
   public inline fun recordingId(term: () -> Term): Field = add(SearchField.RecordingId, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun recordingId(term: () -> RecordingMbid): Field = recordingId { Term(term()) }
 
-  /** the MBID of any release group including this recording */
-  @JvmName("releaseIdTerm")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun releaseId(term: () -> Term): Field = add(SearchField.ReleaseId, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun releaseId(term: () -> RecordingMbid): Field = releaseId { Term(term()) }
-
-  /** (part of) the name of any release including this recording */
   @JvmName("releaseTerm")
   @OverloadResolutionByLambdaReturnType
+  /** (part of) the name of any release including this recording */
   public inline fun release(term: () -> Term): Field = add(SearchField.Release, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun release(term: () -> AlbumTitle): Field = release { Term(term()) }
 
+  @JvmName("releaseIdTerm")
+  @OverloadResolutionByLambdaReturnType
+  /** the MBID of any release group including this recording */
+  public inline fun releaseId(term: () -> Term): Field = add(SearchField.ReleaseId, term())
+
+  @OverloadResolutionByLambdaReturnType
+  public inline fun releaseId(term: () -> ReleaseMbid): Field = releaseId { Term(term()) }
+
   @JvmName("releaseGroupIdTerm")
   @OverloadResolutionByLambdaReturnType
+  /** the MBID of any release group including this recording */
   public inline fun releaseGroupId(term: () -> Term): Field =
     add(SearchField.ReleaseGroupId, term())
 
@@ -247,12 +260,12 @@ public class RecordingSearch : BaseSearch<SearchField>() {
   public inline fun releaseGroupId(term: () -> ReleaseGroupMbid): Field =
     releaseGroupId { Term(term()) }
 
+  @JvmName("secondaryTypeTerm")
+  @OverloadResolutionByLambdaReturnType
   /**
    * secondary type of the release group (audiobook, compilation, interview, live, remix
    * soundtrack, spokenword)
    */
-  @JvmName("secondaryTypeTerm")
-  @OverloadResolutionByLambdaReturnType
   public inline fun secondaryType(term: () -> Term): Field = add(SearchField.SecondaryType, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -260,6 +273,10 @@ public class RecordingSearch : BaseSearch<SearchField>() {
 
   @JvmName("statusTerm")
   @OverloadResolutionByLambdaReturnType
+  /**
+   * the [status](https://musicbrainz.org/doc/Release#Status) of any release including this
+   * recording
+   */
   public inline fun status(term: () -> Term): Field = add(SearchField.Status, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -272,47 +289,47 @@ public class RecordingSearch : BaseSearch<SearchField>() {
   @OverloadResolutionByLambdaReturnType
   public inline fun tag(term: () -> String): Field = tag { Term(term()) }
 
-  /** the MBID of a track connected to this recording  */
   @JvmName("trackIdTerm")
   @OverloadResolutionByLambdaReturnType
+  /** the MBID of a track connected to this recording  */
   public inline fun trackId(term: () -> Term): Field = add(SearchField.TrackId, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun trackId(term: () -> TrackMbid): Field = trackId { Term(term()) }
 
+  @JvmName("trackNumberTerm")
+  @OverloadResolutionByLambdaReturnType
   /**
    * the position of the track on any medium including this recording (starts at 1, pre-gaps at 0)
    */
-  @JvmName("trackNumberTerm")
-  @OverloadResolutionByLambdaReturnType
   public inline fun trackNumber(term: () -> Term): Field = add(SearchField.TrackNumber, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun trackNumber(term: () -> Int): Field = trackNumber { Term(term()) }
 
-  /** the number of tracks on any medium including this recording */
   @JvmName("tracksTerm")
   @OverloadResolutionByLambdaReturnType
+  /** the number of tracks on any medium including this recording */
   public inline fun trackCount(term: () -> Term): Field = add(SearchField.TrackCount, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun trackCount(term: () -> Int): Field = trackCount { Term(term()) }
 
-  /** the number of tracks on any release (as a whole) including this recording */
   @JvmName("tracksReleaseTerm")
   @OverloadResolutionByLambdaReturnType
+  /** the number of tracks on any release (as a whole) including this recording */
   public inline fun releaseTrackCount(term: () -> Term): Field =
     add(SearchField.ReleaseTrackCount, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun releaseTrackCount(term: () -> Int): Field = releaseTrackCount { Term(term()) }
 
-  /** a boolean flag (true/false) indicating whether or not the recording is a video recording */
   @JvmName("videoTerm")
   @OverloadResolutionByLambdaReturnType
   public inline fun video(term: () -> Term): Field = add(SearchField.Video, term())
 
   @OverloadResolutionByLambdaReturnType
+  /** a boolean flag (true/false) indicating whether or not the recording is a video recording */
   public inline fun video(term: () -> Boolean): Field = video { Term(term()) }
 
   public companion object {

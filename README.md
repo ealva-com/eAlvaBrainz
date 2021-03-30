@@ -19,9 +19,11 @@ For lookup and browse functions, a call specific lambda receiver is provided to 
 with regard to what options are available without needing to know the underlying details. Find
 functions provide call specific lambda receivers which are the base of a relatively simple, but
 extensive, DSL for building a lucene query. This style provides type safety and attempts to
-constrain choices to a valid set of options. Using the bare MusicBrainz retrofit client would
-require extensive string building which can be error-prone and lacks type support. There are quite a
-few value (inline) classes to provide type support without generating extra garbage.
+constrain choices to a valid set of options. Using Android Studio's basic or smart completion inside
+one of the lambda receivers will display the possibilities for building the lookup, browse, or find
+in scope. Using the bare MusicBrainz retrofit client would require extensive string building which
+can be error-prone and lacks type support. There are quite a few value (inline) classes to provide
+type support without generating extra garbage.
 
 The current version covers the majority of the MusicBrainz API. There is an escape hatch of
 sorts in that the client can indirectly call the Retrofit interfaces via the MusicBrainzService
@@ -60,6 +62,17 @@ val theBeatles = ArtistMbid("b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d") // maybe obt
 val result = browseReleases(ReleaseBrowse.BrowseOn.Artist(theBeatles)) {
   types(Release.Type.Album)
   status(Release.Status.Official)
+}
+
+// Find all ReleaseGroups by The Beatles whose first release date was between 1967 and 1969
+// inclusively, where the release was an album, but not a compilation or interview, and was an
+// official release (not bootleg or promotion)
+val result = findReleaseGroup {
+  artist { ArtistName("The Beatles") } and
+    firstReleaseDate { Term("1967") inclusive Term("1969") } and
+    primaryType { Release.Type.Album } and
+    !secondaryType { Term(Release.Type.Compilation) or Term(Release.Type.Interview) } and
+    status { Release.Status.Official }
 }
 ```
 

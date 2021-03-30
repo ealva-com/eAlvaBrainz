@@ -23,22 +23,28 @@ import com.ealva.ealvabrainz.brainz.data.ArtistType
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.common.AlbumTitle
 import com.ealva.ealvabrainz.common.AreaMbid
+import com.ealva.ealvabrainz.common.AreaName
 import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.common.DiscId
 import com.ealva.ealvabrainz.common.EventMbid
+import com.ealva.ealvabrainz.common.EventName
 import com.ealva.ealvabrainz.common.GenreMbid
 import com.ealva.ealvabrainz.common.InstrumentMbid
+import com.ealva.ealvabrainz.common.InstrumentName
+import com.ealva.ealvabrainz.common.Iswc
 import com.ealva.ealvabrainz.common.LabelMbid
 import com.ealva.ealvabrainz.common.LabelName
 import com.ealva.ealvabrainz.common.PackagingMbid
 import com.ealva.ealvabrainz.common.PlaceMbid
+import com.ealva.ealvabrainz.common.PlaceName
 import com.ealva.ealvabrainz.common.RecordingMbid
 import com.ealva.ealvabrainz.common.RecordingTitle
 import com.ealva.ealvabrainz.common.ReleaseGroupMbid
 import com.ealva.ealvabrainz.common.ReleaseMbid
 import com.ealva.ealvabrainz.common.SeriesMbid
+import com.ealva.ealvabrainz.common.SeriesName
 import com.ealva.ealvabrainz.common.TrackMbid
 import com.ealva.ealvabrainz.common.UrlMbid
 import com.ealva.ealvabrainz.common.WorkMbid
@@ -75,16 +81,19 @@ public sealed class Term : BaseExpression() {
      * after trimming the ends. Only [SingleTerm]s can by [fuzzy][FuzzyTerm] and only [Phrase]s can
      * have a [proximity][ProximityPhrase].
      */
-    public operator fun invoke(text: String): Term = text.trim().let { str ->
-      if (str.any { it.isWhitespace() }) Phrase(str) else SingleTerm(str)
+    public operator fun invoke(
+      text: String,
+      escape: Boolean = false
+    ): Term = text.trim().let { str ->
+      if (str.any { it.isWhitespace() }) Phrase(str, escape) else SingleTerm(str, escape)
     }
 
     /*
      * NOTE: While this is a very long list of type to Term conversion functions, we'll provide
      * these as a user convenience and let the compiler decide the function to be called instead of
-     * a large when() making a runtime decision. Since SingleTerm and Phrase are public this is
-     * still open to change as new Terms may be introduced (which should be a very rare occurrence
-     * once this library is version 1.0 complete)
+     * a large when() making a runtime decision or requiring "mbid.value" on every invocation.
+     * Since SingleTerm and Phrase are public this is still open to extension as new Terms may be
+     * introduced (which should be relatively rare once this library is version 1.0 complete)
     */
 
     // All MBID listed separately, instead of as Mbid, so they don't have to be boxed
@@ -106,31 +115,48 @@ public sealed class Term : BaseExpression() {
 
     public inline operator fun invoke(title: AlbumTitle): Term = Term(title.value)
     public inline operator fun invoke(type: ArtistType): Term = Term(type.value)
+    public inline operator fun invoke(name: AreaName): Term = Term(name.value)
     public inline operator fun invoke(name: ArtistName): Term = Term(name.value)
     public inline operator fun invoke(discId: DiscId): Term = Term(discId.value)
+    public inline operator fun invoke(name: EventName): Term = Term(name.value)
+    public inline operator fun invoke(name: InstrumentName): Term = Term(name.value)
+    public inline operator fun invoke(name: Iswc): Term = Term(name.value)
     public inline operator fun invoke(name: LabelName): Term = Term(name.value)
+    public inline operator fun invoke(name: PlaceName): Term = Term(name.value)
     public inline operator fun invoke(title: RecordingTitle): Term = Term(title.value)
+    public inline operator fun invoke(name: SeriesName): Term = Term(name.value)
     public inline operator fun invoke(name: WorkName): Term = Term(name.value)
+
     public inline operator fun invoke(type: Release.Type): Term = SingleTerm(type.value)
     public inline operator fun invoke(status: Release.Status): Term = SingleTerm(status.value)
 
-    public inline operator fun invoke(value: Int): Term = SingleTerm(value.toString())
-    public inline operator fun invoke(value: Long): Term = SingleTerm(value.toString())
+    public inline operator fun invoke(value: Int): Term =
+      SingleTerm(value.toString(), escape = true)
+    public inline operator fun invoke(value: Long): Term =
+      SingleTerm(value.toString(), escape = true)
     public inline operator fun invoke(value: Boolean): Term = SingleTerm(value.toString())
-    public inline operator fun invoke(date: LocalDate): Term = SingleTerm(date.brainzFormat())
-    public inline operator fun invoke(date: Date): Term = SingleTerm(date.brainzFormat())
+    public inline operator fun invoke(date: LocalDate): Term =
+      SingleTerm(date.brainzFormat(), escape = true)
+    public inline operator fun invoke(date: Date): Term =
+      SingleTerm(date.brainzFormat(), escape = true)
   }
 }
 
-public open class SingleTerm(private val value: String) : Term() {
+public open class SingleTerm(
+  private val value: String,
+  private val escape: Boolean = false
+) : Term() {
   override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {
-    append(value.luceneEscape())
+    append(value.maybeEscape(escape))
   }
 }
 
-public class Phrase internal constructor(private val value: String) : Term() {
+public class Phrase internal constructor(
+  private val value: String,
+  private val escape: Boolean = false
+) : Term() {
   override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {
-    append('"').append(value.luceneEscape()).append('"')
+    append('"').append(value.maybeEscape(escape)).append('"')
   }
 }
 
@@ -140,7 +166,8 @@ public inline fun String.toRegExTerm(): Term = RegExTerm(this)
 /**
  * Creates a Regular Expression term which will be surrounded by '/' characters.  "abc" -> "\/abc\/"
  * (the '/' must be escaped with a '\'). The text will not be trimmed as with a normal term as
- * whitespace at the ends of a regex string may be part of the regex.
+ * whitespace at the ends of a regex string may be part of the regex. The regex itself will be
+ * escaped based on Lucene escaping rules
  *
  * Lucene supports regular expression searches matching a pattern between forward slashes "/". The
  * syntax may change across releases, but the current supported syntax is documented in the RegExp
@@ -164,7 +191,7 @@ public fun Term.require(): RequireTerm = RequireTerm(this)
  */
 public class RequireTerm(private val term: Term) : Term() {
   override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {
-    builder.append("\\+").appendExpression(term)
+    builder.append("+").appendExpression(term)
   }
 }
 
@@ -186,7 +213,7 @@ public fun Term.prohibit(): ProhibitTerm = ProhibitTerm(this)
  */
 public class ProhibitTerm(private val term: Term) : Term() {
   override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {
-    builder.append("\\-").appendExpression(term)
+    builder.append("-").appendExpression(term)
   }
 }
 
@@ -220,7 +247,7 @@ public class FuzzyTerm(
   }
 
   override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {
-    append(term).append("\\~").append(maxEditsAllowed)
+    append(term).append("~").append(maxEditsAllowed)
   }
 }
 
@@ -241,7 +268,7 @@ public class ProximityPhrase(
   private val proximity: Int
 ) : Term() {
   override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {
-    append(term).append("\\~").append(proximity)
+    append(term).append("~").append(proximity)
   }
 }
 
@@ -271,7 +298,7 @@ public fun Term.boost(boost: Int): BoostTerm = BoostTerm(this, boost)
  */
 public class BoostTerm(private val term: Term, private val boost: Int) : Term() {
   override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {
-    appendExpression(term).append("\\^").append(boost)
+    appendExpression(term).append("^").append(boost)
   }
 }
 
@@ -342,7 +369,7 @@ public fun Pair<Term, Term>.inclusive(): InclusiveRange = InclusiveRange(first, 
  */
 public class InclusiveRange(private val from: Term, private val to: Term) : Term() {
   override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {
-    append("\\[").appendExpression(from).append(" TO ").appendExpression(to).append("\\]")
+    append("[").appendExpression(from).append(" TO ").appendExpression(to).append("]")
   }
 }
 
@@ -363,6 +390,9 @@ public fun Pair<Term, Term>.exclusive(): ExclusiveRange = ExclusiveRange(first, 
  */
 public class ExclusiveRange(private val from: Term, private val to: Term) : Term() {
   override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {
-    append("\\{").appendExpression(from).append(" TO ").appendExpression(to).append("\\}")
+    append("{").appendExpression(from).append(" TO ").appendExpression(to).append("}")
   }
 }
+
+private inline fun String.maybeEscape(shouldEscape: Boolean): String =
+  if (shouldEscape) luceneEscape() else this

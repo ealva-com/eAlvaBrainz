@@ -22,8 +22,8 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 public class CdStubList(
-  public var created: String = "",
-  public var count: Int = 0,
-  public var offset: Int = 0,
-  @field:Json(name = "cdstubs") public var cdStubs: List<CdStub> = emptyList()
+  public val created: String = "",
+  public val count: Int = 0,
+  public val offset: Int = 0,
+  @field:Json(name = "cdstubs") public val cdStubs: List<CdStub> = emptyList()
 )

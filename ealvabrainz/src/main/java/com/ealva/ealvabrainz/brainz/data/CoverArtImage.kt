@@ -23,12 +23,12 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class CoverArtImage(
   /** This is not a MusicBrainz MBID */
-  public var id: Long = 0L,
+  public val id: Long = 0L,
   /**
    * The original image url. Has the form:
    * https://coverartarchive.org/release/76df3287-6cda-33eb-8e9a-044b5e15ffdd/829521842.jpg
    */
-  public var image: String = "",
+  public val image: String = "",
   /**
    * Examples of types are "Front", "Back", "Booklet", etc
    *
@@ -37,13 +37,13 @@ public class CoverArtImage(
    *
    * [https://musicbrainz.org/doc/Cover_Art/Types]
    */
-  public var types: List<String?> = emptyList(),
-  public var front: Boolean = false,
-  public var back: Boolean = false,
-  public var edit: Int = 0,
-  public var comment: String = "",
-  public var isApproved: Boolean = false,
-  @field:FallbackOnNull public var thumbnails: Thumbnails = Thumbnails.NullThumbnails
+  public val types: List<String?> = emptyList(),
+  public val front: Boolean = false,
+  public val back: Boolean = false,
+  public val edit: Int = 0,
+  public val comment: String = "",
+  public val isApproved: Boolean = false,
+  @field:FallbackOnNull public val thumbnails: Thumbnails = Thumbnails.NullThumbnails
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

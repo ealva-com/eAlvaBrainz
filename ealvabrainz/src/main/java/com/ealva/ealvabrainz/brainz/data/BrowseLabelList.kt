@@ -23,10 +23,10 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class BrowseLabelList(
   @Json(name = "label-count")
-  public var labelCount: Int = 0,
+  public val labelCount: Int = 0,
   @Json(name = "label-offset")
-  public var labelOffset: Int = 0,
-  public var labels: List<Label> = emptyList()
+  public val labelOffset: Int = 0,
+  public val labels: List<Label> = emptyList()
 ) {
   override fun toString(): String = toJson()
 }

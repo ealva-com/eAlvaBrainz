@@ -20,7 +20,7 @@ package com.ealva.ealvabrainz.common
 @JvmInline
 /**
  * The name is the official name of the event if it has one, or a descriptive name (like "Main
- * Artist at Place") if not. May be a parial name if used in a query.
+ * Artist at Place") if not. May be a partial name if used in a query.
  */
 public value class EventName(public val value: String) {
   public companion object {

@@ -58,20 +58,20 @@ import com.squareup.moshi.JsonClass
  * see the documentation for the relationship types you are using.
  */
 public sealed class Relation(
-  public var type: String = "",
-  @field:Json(name = "type-id") public var typeId: String = "",
-  @field:Json(name = "target-type") public var targetType: String = "",
-  @field:Json(name = "ordering-key") public var orderingKey: Int = 0,
-  public var direction: String = "",
-  public var attributes: List<String> = emptyList(),
+  public val type: String = "",
+  @field:Json(name = "type-id") public val typeId: String = "",
+  @field:Json(name = "target-type") public val targetType: String = "",
+  @field:Json(name = "ordering-key") public val orderingKey: Int = 0,
+  public val direction: String = "",
+  public val attributes: List<String> = emptyList(),
   @field:Json(name = "attribute-values")
-  public var attributeValues: Map<String, String> = emptyMap(),
-  @field:Json(name = "attribute-ids") public var attributeIds: Map<String, String> = emptyMap(),
-  public var begin: String = "",
-  public var end: String = "",
-  public var ended: Boolean = false,
-  @field:Json(name = "source-credit") public var sourceCredit: String = "",
-  @field:Json(name = "target-credit") public var targetCredit: String = ""
+  public val attributeValues: Map<String, String> = emptyMap(),
+  @field:Json(name = "attribute-ids") public val attributeIds: Map<String, String> = emptyMap(),
+  public val begin: String = "",
+  public val end: String = "",
+  public val ended: Boolean = false,
+  @field:Json(name = "source-credit") public val sourceCredit: String = "",
+  @field:Json(name = "target-credit") public val targetCredit: String = ""
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -132,7 +132,7 @@ public class AreaRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull public var area: Area = Area.NullArea
+  @field:FallbackOnNull public val area: Area = Area.NullArea
 ) : Relation(
   type,
   typeId,
@@ -186,7 +186,7 @@ public class ArtistRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull public var artist: Artist = Artist.NullArtist
+  @field:FallbackOnNull public val artist: Artist = Artist.NullArtist
 ) : Relation(
   type,
   typeId,
@@ -237,7 +237,7 @@ public class EventRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull public var event: Event = Event.NullEvent
+  @field:FallbackOnNull public val event: Event = Event.NullEvent
 ) : Relation(
   type,
   typeId,
@@ -283,7 +283,7 @@ public class InstrumentRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull public var instrument: Instrument = Instrument.NullInstrument
+  @field:FallbackOnNull public val instrument: Instrument = Instrument.NullInstrument
 ) : Relation(
   type,
   typeId,
@@ -334,7 +334,7 @@ public class LabelRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull public var label: Label = Label.NullLabel
+  @field:FallbackOnNull public val label: Label = Label.NullLabel
 ) : Relation(
   type,
   typeId,
@@ -382,7 +382,7 @@ public class PlaceRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull public var place: Place = Place.NullPlace
+  @field:FallbackOnNull public val place: Place = Place.NullPlace
 ) : Relation(
   type,
   typeId,
@@ -430,7 +430,7 @@ public class RecordingRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull public var recording: Recording = Recording.NullRecording
+  @field:FallbackOnNull public val recording: Recording = Recording.NullRecording
 ) : Relation(
   type,
   typeId,
@@ -476,7 +476,7 @@ public class ReleaseRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull public var release: Release = Release.NullRelease
+  @field:FallbackOnNull public val release: Release = Release.NullRelease
 ) : Relation(
   type,
   typeId,
@@ -523,7 +523,7 @@ public class ReleaseGroupRelation(
   sourceCredit: String = "",
   targetCredit: String = "",
   @field:Json(name = "release_group") @field:FallbackOnNull
-  public var releaseGroup: ReleaseGroup = ReleaseGroup.NullReleaseGroup
+  public val releaseGroup: ReleaseGroup = ReleaseGroup.NullReleaseGroup
 ) : Relation(
   type,
   typeId,
@@ -570,7 +570,7 @@ public class SeriesRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull public var series: Series = Series.NullSeries
+  @field:FallbackOnNull public val series: Series = Series.NullSeries
 ) : Relation(
   type,
   typeId,
@@ -614,7 +614,7 @@ public class UrlRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull public var url: Url = Url.NullUrl
+  @field:FallbackOnNull public val url: Url = Url.NullUrl
 ) : Relation(
   type,
   typeId,
@@ -657,7 +657,7 @@ public class WorkRelation(
   ended: Boolean = false,
   sourceCredit: String = "",
   targetCredit: String = "",
-  @field:FallbackOnNull public var work: Work = Work.NullWork
+  @field:FallbackOnNull public val work: Work = Work.NullWork
 ) : Relation(
   type,
   typeId,

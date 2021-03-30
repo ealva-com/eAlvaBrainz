@@ -17,7 +17,7 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.matchers.string.toBeEmpty
+import com.ealva.ealvabrainz.matchers.toBeEmpty
 import com.nhaarman.expect.expect
 import com.squareup.moshi.Moshi
 import org.junit.Assert.fail

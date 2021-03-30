@@ -25,7 +25,7 @@ public data class TextRepresentation(
    * The language a release's track list is written in. The possible values are taken from the
    * [ISO 639-3](https://en.wikipedia.org/wiki/ISO_639-3) standard.
    */
-  public var language: String = "",
+  public val language: String = "",
   /**
    * The script used to write the release's track list. The possible values are taken from the
    * [ISO 15924](https://en.wikipedia.org/wiki/ISO_15924) standard.
@@ -67,7 +67,7 @@ public data class TextRepresentation(
    * * **Thai ไทย**
    * The Thai script is used for Thai, as well as some minor languages in south-east Asia.
    */
-  public var script: String = ""
+  public val script: String = ""
 ) {
   public companion object {
     public val NullTextRepresentation: TextRepresentation = TextRepresentation()

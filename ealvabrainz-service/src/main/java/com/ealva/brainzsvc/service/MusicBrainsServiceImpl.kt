@@ -19,48 +19,11 @@ package com.ealva.brainzsvc.service
 
 import android.content.Context
 import android.net.Uri
-import com.ealva.ealvabrainz.common.TocParam
 import com.ealva.brainzsvc.net.toSecureUri
-import com.ealva.ealvabrainz.browse.AreaBrowse
-import com.ealva.ealvabrainz.browse.ArtistBrowse
-import com.ealva.ealvabrainz.browse.CollectionBrowse
-import com.ealva.ealvabrainz.browse.EventBrowse
-import com.ealva.ealvabrainz.browse.InstrumentBrowse
-import com.ealva.ealvabrainz.browse.LabelBrowse
-import com.ealva.ealvabrainz.browse.PlaceBrowse
-import com.ealva.ealvabrainz.browse.RecordingBrowse
-import com.ealva.ealvabrainz.browse.ReleaseBrowse
-import com.ealva.ealvabrainz.browse.ReleaseGroupBrowse
-import com.ealva.ealvabrainz.browse.SeriesBrowse
-import com.ealva.ealvabrainz.browse.WorkBrowse
-import com.ealva.ealvabrainz.lookup.AreaLookup
-import com.ealva.ealvabrainz.lookup.ArtistLookup
-import com.ealva.ealvabrainz.lookup.CollectionLookup
-import com.ealva.ealvabrainz.lookup.EventLookup
-import com.ealva.ealvabrainz.lookup.GenreLookup
-import com.ealva.ealvabrainz.lookup.InstrumentLookup
-import com.ealva.ealvabrainz.lookup.IsrcLookup
-import com.ealva.ealvabrainz.lookup.IswcLookup
-import com.ealva.ealvabrainz.lookup.LabelLookup
-import com.ealva.ealvabrainz.lookup.PlaceLookup
-import com.ealva.ealvabrainz.lookup.RecordingLookup
-import com.ealva.ealvabrainz.lookup.ReleaseGroupLookup
-import com.ealva.ealvabrainz.lookup.ReleaseLookup
-import com.ealva.ealvabrainz.lookup.SeriesLookup
-import com.ealva.ealvabrainz.lookup.UrlLookup
-import com.ealva.ealvabrainz.lookup.WorkLookup
-import com.ealva.ealvabrainz.search.AnnotationSearch
-import com.ealva.ealvabrainz.search.ArtistSearch
-import com.ealva.ealvabrainz.search.CdStubSearch
-import com.ealva.ealvabrainz.search.LabelSearch
-import com.ealva.ealvabrainz.search.RecordingSearch
-import com.ealva.ealvabrainz.search.ReleaseGroupSearch
-import com.ealva.ealvabrainz.search.ReleaseSearch
-import com.ealva.ealvabrainz.search.TagSearch
-import com.ealva.ealvabrainz.search.WorkSearch
 import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.AnnotationList
 import com.ealva.ealvabrainz.brainz.data.Area
+import com.ealva.ealvabrainz.brainz.data.AreaList
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistList
 import com.ealva.ealvabrainz.brainz.data.BrowseAreaList
@@ -80,12 +43,15 @@ import com.ealva.ealvabrainz.brainz.data.Collection
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
 import com.ealva.ealvabrainz.brainz.data.DiscLookupList
 import com.ealva.ealvabrainz.brainz.data.Event
+import com.ealva.ealvabrainz.brainz.data.EventList
 import com.ealva.ealvabrainz.brainz.data.Genre
 import com.ealva.ealvabrainz.brainz.data.Instrument
+import com.ealva.ealvabrainz.brainz.data.InstrumentList
 import com.ealva.ealvabrainz.brainz.data.IsrcRecordingList
 import com.ealva.ealvabrainz.brainz.data.Label
 import com.ealva.ealvabrainz.brainz.data.LabelList
 import com.ealva.ealvabrainz.brainz.data.Place
+import com.ealva.ealvabrainz.brainz.data.PlaceList
 import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.RecordingList
 import com.ealva.ealvabrainz.brainz.data.Release
@@ -93,12 +59,25 @@ import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.ReleaseList
 import com.ealva.ealvabrainz.brainz.data.Series
+import com.ealva.ealvabrainz.brainz.data.SeriesList
 import com.ealva.ealvabrainz.brainz.data.TagList
 import com.ealva.ealvabrainz.brainz.data.Url
 import com.ealva.ealvabrainz.brainz.data.Work
 import com.ealva.ealvabrainz.brainz.data.WorkList
 import com.ealva.ealvabrainz.brainz.data.the250
 import com.ealva.ealvabrainz.brainz.data.the500
+import com.ealva.ealvabrainz.browse.AreaBrowse
+import com.ealva.ealvabrainz.browse.ArtistBrowse
+import com.ealva.ealvabrainz.browse.CollectionBrowse
+import com.ealva.ealvabrainz.browse.EventBrowse
+import com.ealva.ealvabrainz.browse.InstrumentBrowse
+import com.ealva.ealvabrainz.browse.LabelBrowse
+import com.ealva.ealvabrainz.browse.PlaceBrowse
+import com.ealva.ealvabrainz.browse.RecordingBrowse
+import com.ealva.ealvabrainz.browse.ReleaseBrowse
+import com.ealva.ealvabrainz.browse.ReleaseGroupBrowse
+import com.ealva.ealvabrainz.browse.SeriesBrowse
+import com.ealva.ealvabrainz.browse.WorkBrowse
 import com.ealva.ealvabrainz.common.AreaMbid
 import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.CollectionMbid
@@ -116,8 +95,39 @@ import com.ealva.ealvabrainz.common.RecordingMbid
 import com.ealva.ealvabrainz.common.ReleaseGroupMbid
 import com.ealva.ealvabrainz.common.ReleaseMbid
 import com.ealva.ealvabrainz.common.SeriesMbid
+import com.ealva.ealvabrainz.common.TocParam
 import com.ealva.ealvabrainz.common.UrlMbid
 import com.ealva.ealvabrainz.common.WorkMbid
+import com.ealva.ealvabrainz.lookup.AreaLookup
+import com.ealva.ealvabrainz.lookup.ArtistLookup
+import com.ealva.ealvabrainz.lookup.CollectionLookup
+import com.ealva.ealvabrainz.lookup.EventLookup
+import com.ealva.ealvabrainz.lookup.GenreLookup
+import com.ealva.ealvabrainz.lookup.InstrumentLookup
+import com.ealva.ealvabrainz.lookup.IsrcLookup
+import com.ealva.ealvabrainz.lookup.IswcLookup
+import com.ealva.ealvabrainz.lookup.LabelLookup
+import com.ealva.ealvabrainz.lookup.PlaceLookup
+import com.ealva.ealvabrainz.lookup.RecordingLookup
+import com.ealva.ealvabrainz.lookup.ReleaseGroupLookup
+import com.ealva.ealvabrainz.lookup.ReleaseLookup
+import com.ealva.ealvabrainz.lookup.SeriesLookup
+import com.ealva.ealvabrainz.lookup.UrlLookup
+import com.ealva.ealvabrainz.lookup.WorkLookup
+import com.ealva.ealvabrainz.search.AnnotationSearch
+import com.ealva.ealvabrainz.search.AreaSearch
+import com.ealva.ealvabrainz.search.ArtistSearch
+import com.ealva.ealvabrainz.search.CdStubSearch
+import com.ealva.ealvabrainz.search.EventSearch
+import com.ealva.ealvabrainz.search.InstrumentSearch
+import com.ealva.ealvabrainz.search.LabelSearch
+import com.ealva.ealvabrainz.search.PlaceSearch
+import com.ealva.ealvabrainz.search.RecordingSearch
+import com.ealva.ealvabrainz.search.ReleaseGroupSearch
+import com.ealva.ealvabrainz.search.ReleaseSearch
+import com.ealva.ealvabrainz.search.SeriesSearch
+import com.ealva.ealvabrainz.search.TagSearch
+import com.ealva.ealvabrainz.search.WorkSearch
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke
 import com.ealva.ealvalog.lazyLogger
@@ -127,6 +137,7 @@ import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.mapError
 import com.github.michaelbull.result.runCatching
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import java.io.File
@@ -363,6 +374,14 @@ private class MusicBrainzServiceImpl(
     findAnnotation(AnnotationSearch(search), limit?.value, offset?.value)
   }
 
+  override suspend fun findArea(
+    limit: Limit?,
+    offset: Offset?,
+    search: AreaSearch.() -> Unit
+  ): BrainzResult<AreaList> = brainz {
+    findArea(AreaSearch(search), limit?.value, offset?.value)
+  }
+
   override suspend fun findArtist(
     limit: Limit?,
     offset: Offset?,
@@ -379,12 +398,36 @@ private class MusicBrainzServiceImpl(
     findCDStub(CdStubSearch(search), limit?.value, offset?.value)
   }
 
+  override suspend fun findEvent(
+    limit: Limit?,
+    offset: Offset?,
+    search: EventSearch.() -> Unit
+  ): BrainzResult<EventList> = brainz {
+    findEvent(EventSearch(search), limit?.value, offset?.value)
+  }
+
+  override suspend fun findInstrument(
+    limit: Limit?,
+    offset: Offset?,
+    search: InstrumentSearch.() -> Unit
+  ): BrainzResult<InstrumentList> = brainz {
+    findInstrument(InstrumentSearch(search), limit?.value, offset?.value)
+  }
+
   override suspend fun findLabel(
     limit: Limit?,
     offset: Offset?,
     search: LabelSearch.() -> Unit
   ): BrainzResult<LabelList> = brainz {
     findLabel(LabelSearch(search), limit?.value, offset?.value)
+  }
+
+  override suspend fun findPlace(
+    limit: Limit?,
+    offset: Offset?,
+    search: PlaceSearch.() -> Unit
+  ): BrainzResult<PlaceList> = brainz {
+    findPlace(PlaceSearch(search), limit?.value, offset?.value)
   }
 
   override suspend fun findRecording(
@@ -409,6 +452,14 @@ private class MusicBrainzServiceImpl(
     search: ReleaseGroupSearch.() -> Unit
   ): BrainzResult<ReleaseGroupList> = brainz {
     findReleaseGroup(ReleaseGroupSearch(search), limit?.value, offset?.value)
+  }
+
+  override suspend fun findSeries(
+    limit: Limit?,
+    offset: Offset?,
+    search: SeriesSearch.() -> Unit
+  ): BrainzResult<SeriesList> = brainz {
+    findSeries(SeriesSearch(search), limit?.value, offset?.value)
   }
 
   override suspend fun findTag(
@@ -440,7 +491,7 @@ private class MusicBrainzServiceImpl(
   ) {
     is Ok ->
       result.value
-        .releaseImageSequence()
+        .artImageSequence()
         .filterNot { it.isBlank() }
         .firstOrNull()
         .toSecureUri()
@@ -449,13 +500,16 @@ private class MusicBrainzServiceImpl(
       Uri.EMPTY
     }
   }
+
+  override suspend fun releaseGroupArtFlow(mbid: ReleaseGroupMbid): Flow<CoverArtImageInfo> =
+    mbid.artwork(coverArtService)
 
   override suspend fun getReleaseArtwork(mbid: ReleaseMbid): Uri = when (
     val result = coverArtService.getReleaseArt(mbid)
   ) {
     is Ok ->
       result.value
-        .releaseImageSequence()
+        .artImageSequence()
         .filterNot { it.isBlank() }
         .firstOrNull()
         .toSecureUri()
@@ -465,7 +519,10 @@ private class MusicBrainzServiceImpl(
     }
   }
 
-  private fun CoverArtRelease?.releaseImageSequence(): Sequence<String> {
+  override suspend fun releaseArtFlow(mbid: ReleaseMbid): Flow<CoverArtImageInfo> =
+    mbid.artwork(coverArtService)
+
+  private fun CoverArtRelease?.artImageSequence(): Sequence<String> {
     return if (this == null) emptySequence() else sequence {
       images.forEach { coverArtImage ->
         yield(coverArtImage.image)

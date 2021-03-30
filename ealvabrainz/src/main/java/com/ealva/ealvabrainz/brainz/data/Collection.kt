@@ -40,16 +40,16 @@ import com.squareup.moshi.JsonClass
  */
 public sealed class Collection(
   /** Collection MBID */
-  public var id: String,
+  public val id: String,
   /** Name of the collection */
-  public var name: String,
+  public val name: String,
   /** Username of the owner of the collection */
-  public var editor: String,
+  public val editor: String,
   /** The type of entity in the collection */
-  @field:Json(name = "entity-type") public var entityType: String,
+  @field:Json(name = "entity-type") public val entityType: String,
   /** Descriptive type of the collection. eg. "Attending", "Maybe attending", "Artist" */
-  public var type: String,
-  @field:Json(name = "type-id") public var typeId: String,
+  public val type: String,
+  @field:Json(name = "type-id") public val typeId: String,
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -83,7 +83,7 @@ public class AreaCollection(
   entityType: String = "",
   type: String = "",
   typeId: String = "",
-  @field:Json(name = "area-count") public var areaCount: Int = 0
+  @field:Json(name = "area-count") public val areaCount: Int = 0
 ) : Collection(id, name, editor, entityType, type, typeId) {
   public companion object {
     public val NullAreaCollection: AreaCollection = AreaCollection(name = NullObject.NAME)
@@ -103,7 +103,7 @@ public class ArtistCollection(
   entityType: String = "",
   type: String = "",
   typeId: String = "",
-  @field:Json(name = "artist-count") public var artistCount: Int = 0
+  @field:Json(name = "artist-count") public val artistCount: Int = 0
 ) : Collection(id, name, editor, entityType, type, typeId) {
   public companion object {
     public val NullArtistCollection: ArtistCollection = ArtistCollection(name = NullObject.NAME)
@@ -123,7 +123,7 @@ public class EventCollection(
   entityType: String = "",
   type: String = "",
   typeId: String = "",
-  @field:Json(name = "event-count") public var eventCount: Int = 0
+  @field:Json(name = "event-count") public val eventCount: Int = 0
 ) : Collection(id, name, editor, entityType, type, typeId) {
   public companion object {
     public val NullEventCollection: EventCollection = EventCollection(name = NullObject.NAME)
@@ -143,7 +143,7 @@ public class LabelCollection(
   entityType: String = "",
   type: String = "",
   typeId: String = "",
-  @field:Json(name = "label-count") public var labelCount: Int = 0
+  @field:Json(name = "label-count") public val labelCount: Int = 0
 ) : Collection(id, name, editor, entityType, type, typeId) {
   public companion object {
     public val NullLabelCollection: LabelCollection = LabelCollection(name = NullObject.NAME)
@@ -163,7 +163,7 @@ public class PlaceCollection(
   entityType: String = "",
   type: String = "",
   typeId: String = "",
-  @field:Json(name = "place-count") public var placeCount: Int = 0
+  @field:Json(name = "place-count") public val placeCount: Int = 0
 ) : Collection(id, name, editor, entityType, type, typeId) {
   public companion object {
     public val NullPlaceCollection: PlaceCollection = PlaceCollection(name = NullObject.NAME)
@@ -183,7 +183,7 @@ public class RecordingCollection(
   entityType: String = "",
   type: String = "",
   typeId: String = "",
-  @field:Json(name = "recording-count") public var recordingCount: Int = 0
+  @field:Json(name = "recording-count") public val recordingCount: Int = 0
 ) : Collection(id, name, editor, entityType, type, typeId) {
   public companion object {
     public val NullRecordingCollection: RecordingCollection =
@@ -204,7 +204,7 @@ public class ReleaseCollection(
   entityType: String = "",
   type: String = "",
   typeId: String = "",
-  @field:Json(name = "release-count") public var releaseCount: Int = 0
+  @field:Json(name = "release-count") public val releaseCount: Int = 0
 ) : Collection(id, name, editor, entityType, type, typeId) {
   public companion object {
     public val NullReleaseCollection: ReleaseCollection = ReleaseCollection(name = NullObject.NAME)
@@ -224,7 +224,7 @@ public class ReleaseGroupCollection(
   entityType: String = "",
   type: String = "",
   typeId: String = "",
-  @field:Json(name = "release_group-count") public var releaseGroupCount: Int = 0
+  @field:Json(name = "release_group-count") public val releaseGroupCount: Int = 0
 ) : Collection(id, name, editor, entityType, type, typeId) {
   public companion object {
     public val NullReleaseGroupCollection: ReleaseGroupCollection =
@@ -245,7 +245,7 @@ public class WorkCollection(
   entityType: String = "",
   type: String = "",
   typeId: String = "",
-  @field:Json(name = "work-count") public var workCount: Int = 0
+  @field:Json(name = "work-count") public val workCount: Int = 0
 ) : Collection(id, name, editor, entityType, type, typeId) {
   public companion object {
     public val NullWorkCollection: WorkCollection = WorkCollection(name = NullObject.NAME)

@@ -28,9 +28,9 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public data class Rating(
   /** Ratings are assigned from 1-5 and then averaged to produce this value. */
-  public var value: Float = 0.0F,
+  public val value: Float = 0.0F,
   /** The number of times this entity has been rated  */
-  @field:Json(name = "votes-count") public var votesCount: Int = 0
+  @field:Json(name = "votes-count") public val votesCount: Int = 0
 ) {
   public companion object {
     public val NullRating: Rating = Rating()

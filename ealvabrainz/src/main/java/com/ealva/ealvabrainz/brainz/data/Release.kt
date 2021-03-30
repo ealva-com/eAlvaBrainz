@@ -47,16 +47,16 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class Release(
   /** The MusicBrainz ID (MBID) */
-  public var id: String = "",
+  public val id: String = "",
   /** The title of the release. */
-  public var title: String = "",
+  public val title: String = "",
   /** The date the release was issued */
-  public var date: String = "",
+  public val date: String = "",
   @field:Json(name = "release-group") @field:FallbackOnNull
-  public var releaseGroup: ReleaseGroup = ReleaseGroup.NullReleaseGroup,
-  @field:Json(name = "release-events") public var releaseEvents: List<ReleaseEvent> = emptyList(),
+  public val releaseGroup: ReleaseGroup = ReleaseGroup.NullReleaseGroup,
+  @field:Json(name = "release-events") public val releaseEvents: List<ReleaseEvent> = emptyList(),
   /** The artist(s) that the release is primarily credited to, as credited on the release. */
-  @field:Json(name = "artist-credit") public var artistCredit: List<ArtistCredit> = emptyList(),
+  @field:Json(name = "artist-credit") public val artistCredit: List<ArtistCredit> = emptyList(),
   /**
    * The status describes how "official" a release is. Possible values are:
    * * **official**
@@ -74,30 +74,30 @@ public class Release(
    * to any real release and should be linked to the original release using the transliteration
    * relationship.
    */
-  public var status: String = "",
+  public val status: String = "",
   /**
    * The name of the physical packaging that accompanies the release. See the
    * [list of packaging](https://musicbrainz.org/doc/Release/Packaging) for more information.
    */
-  public var packaging: String = "",
+  public val packaging: String = "",
   /**
    * The ID of the physical packaging
    */
-  @field:Json(name = "packaging-id") public var packagingId: String = "",
+  @field:Json(name = "packaging-id") public val packagingId: String = "",
   /**
    * The barcode, if the release has one, is a machine-readable number used as stock control
    * mechanisms by retailers. The most common types found on releases are 12-digit
    * UPCs and 13-digit EANs.
    */
-  public var barcode: String = "",
+  public val barcode: String = "",
   @field:Json(name = "cover-art-archive") @field:FallbackOnNull
-  public var coverArtArchive: CoverArtArchive = NullCoverArtArchive,
+  public val coverArtArchive: CoverArtArchive = NullCoverArtArchive,
   /**
    * See the
    * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  public var disambiguation: String = "",
+  public val disambiguation: String = "",
   /**
    * Data quality indicates how good the data for a release is. It is not a mark of how good or
    * bad the music itself is - for that, use ratings.
@@ -110,35 +110,35 @@ public class Release(
    * * **Low quality**
    * The release needs serious fixes, or its existence is hard to prove (but it's not clearly fake).
    */
-  public var quality: String = "",
+  public val quality: String = "",
   /** The country the release was issued in. */
-  public var country: String = "",
-  public var asin: String = "",
+  public val country: String = "",
+  public val asin: String = "",
 
-  public var media: List<Medium> = emptyList(),
+  public val media: List<Medium> = emptyList(),
   /**
    * The label which issued the release. There may be more than one.
    * */
-  @field:Json(name = "label-info") public var labelInfo: List<LabelInfo> = emptyList(),
-  @field:Json(name = "track-count") public var trackCount: Int = 0,
-  @field:Json(name = "status-id") public var statusId: String = "",
+  @field:Json(name = "label-info") public val labelInfo: List<LabelInfo> = emptyList(),
+  @field:Json(name = "track-count") public val trackCount: Int = 0,
+  @field:Json(name = "status-id") public val statusId: String = "",
   /**
    * The language and script a release's track list is written in.
    */
   @field:Json(name = "text-representation") @field:FallbackOnNull
-  public var textRepresentation: TextRepresentation = TextRepresentation.NullTextRepresentation,
-  public var aliases: List<Alias> = emptyList(),
+  public val textRepresentation: TextRepresentation = TextRepresentation.NullTextRepresentation,
+  public val aliases: List<Alias> = emptyList(),
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  public var annotation: String = "",
-  public var genres: List<Genre> = emptyList(),
-  public var tags: List<Tag> = emptyList(),
-  @field:Json(name = "primary-type-id") public var primaryTypeId: String = "",
-  @field:Json(name = "secondary-types") public var secondaryTypes: List<String> = emptyList(),
-  @field:Json(name = "secondary-type-ids") public var secondaryTypeIds: List<String> = emptyList(),
-  @field:Json(name = "first-release-date") public var firstReleaseDate: String = "",
-  @field:FallbackOnNull public var rating: Rating = Rating.NullRating,
+  public val annotation: String = "",
+  public val genres: List<Genre> = emptyList(),
+  public val tags: List<Tag> = emptyList(),
+  @field:Json(name = "primary-type-id") public val primaryTypeId: String = "",
+  @field:Json(name = "secondary-types") public val secondaryTypes: List<String> = emptyList(),
+  @field:Json(name = "secondary-type-ids") public val secondaryTypeIds: List<String> = emptyList(),
+  @field:Json(name = "first-release-date") public val firstReleaseDate: String = "",
+  @field:FallbackOnNull public val rating: Rating = Rating.NullRating,
   /**
    * Types may be
    * * "nat"
@@ -154,11 +154,11 @@ public class Release(
    * * "remix"
    * * "other"
    */
-  @field:Json(name = "primary-type") public var primaryType: String = "",
-  public var releases: List<Release> = emptyList(),
-  public var relations: List<Relation> = emptyList(),
+  @field:Json(name = "primary-type") public val primaryType: String = "",
+  public val releases: List<Release> = emptyList(),
+  public val relations: List<Relation> = emptyList(),
   /** score ranking used in query results */
-  public var score: Int = 0
+  public val score: Int = 0
 ) {
 
   override fun equals(other: Any?): Boolean {
@@ -220,6 +220,7 @@ public class Release(
     UserTags("user-tags"),
     Genres("genres"),
     UserGenres("user-genres"),
+
     /**
      * Entities supporting ratings: artist, event, instrument, label, recording, release-group,
      * work, url
@@ -229,23 +230,22 @@ public class Release(
   }
 
   public enum class SearchField(public override val value: String) : EntitySearchField {
-    Default(""),
     /** 	(part of) any alias attached to the release (diacritics are ignored) */
     Alias("alias"),
 
-    /** artist MusicBrainz id (MBID) */
+    /** the MBID of any of the release artists  */
     ArtistId("arid"),
 
-    /** complete artist name(s) as it appears on the release */
+    /**
+     * (part of) the combined credited artist name for the release, including join phrases (e.g.
+     * "Artist X feat.")
+     */
     Artist("artist"),
 
-    /** an artist on the release, each artist added as a separate field */
+    /** (part of) the name of any of the release artists */
     ArtistName("artistname"),
 
-    /**
-     * the Amazon ASIN for this release. Amazon Standard Identification Numbers (ASINs) are unique
-     * blocks of 10 letters and/or numbers that identify items.
-     */
+    /** an Amazon [ASIN](https://musicbrainz.org/doc/ASIN) for the release */
     Asin("asin"),
 
     /**
@@ -254,85 +254,99 @@ public class Release(
      */
     Barcode("barcode"),
 
-    /** The catalog number for this release, can have multiples when major using an imprint */
+    /** any catalog number for this release (insensitive to case, spaces, and separators) */
     CatalogNumber("catno"),
 
-    /** Disambiguation comment */
+    /** (part of) the release's disambiguation comment */
     Comment("comment"),
 
-    /** The two letter country code for the release country */
+    /** the 2-letter code (ISO 3166-1 alpha-2) for any country the release was released in  */
     Country("country"),
 
-    /** name credit on the release, each artist added as a separate field */
+    /** (part of) the credited name of any of the release artists on this particular release */
     CreditName("creditname"),
 
-    /** The release date (format: YYYY-MM-DD) */
+    /** a release date for the release (e.g. "1980-01-22")  */
     Date("date"),
 
-    /** total number of cd ids over all mediums for the release */
+    /** Default searches [Release] */
+    Default(""),
+
+    /** the total number of disc IDs attached to all mediums on the release  */
     DiscIdCount("discids"),
 
-    /** number of cd ids for the release on a medium in the release */
+    /** the number of disc IDs attached to any one medium on the release */
     MediumDiscCount("discidsmedium"),
 
-    /** the format of any medium in the release (insensitive to case, spaces, and separators)  */
+    /**
+     * the [format](https://musicbrainz.org/doc/Release/Format) of any medium in the release
+     * (insensitive to case, spaces, and separators)
+     */
     Format("format"),
 
-    /**
-     * The label MusicBrainz id (MBID) for this release, a release can have multiples when
-     * major using an imprint
-     */
+    /** the MBID of any of the release labels */
     LabelId("laid"),
 
-    /** The name of the label for this release, can have multiples when major using an imprint */
+    /** (part of) the name of any of the release labels  */
     Label("label"),
 
     /**
-     * The language for this release. Use the three character ISO 639-3 codes to search for a
-     * specific language. (e.g. lang:eng)
+     * the [ISO 639-3](https://iso639-3.sil.org/code_tables/639/data) code for the release language
      */
     Language("lang"),
 
     /** number of mediums in the release */
     MediumCount("mediums"),
 
-    /** number of tracks on a medium in the release */
+    /** the number of tracks on any one medium on the release */
     MediumTrackCount("tracksmedium"),
 
-    /** the format of the release (insensitive to case, spaces, and separators) */
+    /**
+     * the [format](https://musicbrainz.org/doc/Release/Packaging) of the release (insensitive to
+     * case, spaces, and separators)
+     */
     Packaging("packaging"),
 
-    /** primary type of the release group (album, single, ep, other) */
+    /**
+     * the [primary type](https://musicbrainz.org/doc/Release_Group/Type#Primary_types) of the
+     * release group for this release
+     */
     PrimaryType("primarytype"),
 
-    /** The quality of the release (low, normal, high) */
+    /**
+     * the listed [quality](https://musicbrainz.org/doc/Release#Data_quality) of the data for the
+     * release (one of "low", "normal", "high")
+     */
     Quality("quality"),
 
-    /** release MBID  */
+    /** the release's MBID  */
     ReleaseId("reid"),
 
-    /** 	(part of) the release's title (diacritics are ignored)  */
+    /** (part of) the release's title (diacritics are ignored)  */
     Release("release"),
 
-    /** 	(part of) the release's title (with the specified diacritics) */
+    /** (part of) the release's title (with the specified diacritics) */
     ReleaseAccentedName("releaseaccent"),
 
-    /** release group MusicBrainz id (MBID) */
+    /** the MBID of the release group for this release */
     ReleaseGroupId("rgid"),
 
-    /** The 4 character the ISO 15924 script script code (e.g. latn) used for this release */
+    /**
+     * The 4 character the [ISO 15924](http://unicode.org/iso15924/iso15924-codes.html) script
+     * script code (e.g. latn) used for this release
+     */
     Script("script"),
 
     /**
-     * secondary type of the release group (audiobook, compilation, interview, live, remix,
-     * soundtrack, spokenword)
+     * any of the [secondary types](https://musicbrainz.org/doc/Release_Group/Type#Secondary_types)
+     * of the release group for this release
      */
     SecondaryType("secondarytype"),
 
-    /** release status (e.g official) */
+    /** the [status][com.ealva.ealvabrainz.brainz.data.Release.Status] of the release */
     Status("status"),
 
-    /** a tag that appears on the release */
+    /** (part of) a tag attached to the release */
     Tag("tag"),
 
     /** total number of tracks over all mediums on the release */
@@ -359,7 +373,7 @@ public class Release(
     public object Live : Type("live")
     public object Remix : Type("remix")
     public object Other : Type("other")
-    public class Unspecified(value: String) : Type(value)
+    public class Unrecognized(value: String) : Type(value)
 
     public companion object {
       public fun values(): Array<Type> = arrayOf(
@@ -376,6 +390,8 @@ public class Release(
         Remix,
         Other
       )
+
+      public val values: Set<Type> = values().toSet()
     }
   }
 
@@ -389,11 +405,15 @@ public class Release(
     public object Promotion : Status("promotion")
     public object Bootleg : Status("bootleg")
     public object PseudoRelease : Status("pseudo-release")
-    public class Unspecified(value: String) : Status(value)
+
+    /**
+     * If an Unrecognized is found, the type should probably be added to this group.
+     */
+    public class Unrecognized(value: String) : Status(value)
 
     public companion object {
       public fun values(): Array<Status> = arrayOf(Official, Promotion, Bootleg, PseudoRelease)
-      public val values: Set<Status> = values().toSet()
+      public val values: Set<Status> by lazy { values().toSet() }
     }
   }
 

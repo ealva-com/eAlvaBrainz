@@ -31,14 +31,22 @@ public fun refSetOf(field: Field): ReferenceSet<Field> = refSetOf<Field>().apply
 private fun Pair<String, String>.toField(): Field = Field(first, Term(second))
 
 public interface Query : Expression {
+  /**
+   * Add the field and return true if added. Set of fields, so if already exists returns false
+   */
   public fun add(field: Field): Boolean
 
+  /**
+   * Remove the field and return true if it existed and was removed. If field not found, returns
+   * false
+   */
   public fun remove(field: Field): Boolean
 
   /**
-   * Replace [original] with [replacement] and returns [replacement]
+   * Replace [original] with [replacement]. If [original] does not exist, just adds [replacement].
+   * The [replacement] is always returned.
    */
-  public fun replace(original: Field, replacement: Field): Field
+  public fun replaceOrAdd(original: Field, replacement: Field): Field
 
   public companion object {
     public operator fun invoke(): Query = QueryImpl()
@@ -63,13 +71,17 @@ private class QueryImpl(
 
   override fun remove(field: Field): Boolean = fields.remove(field)
 
-  override fun replace(original: Field, replacement: Field): Field {
+  override fun replaceOrAdd(original: Field, replacement: Field): Field {
+    var found = false
     val currentFields = fields
+    // maintain order by iterating and replacing the original if found.
     fields = ReferenceLinkedOpenHashSet<Field>(currentFields.size).also { newTerms ->
       currentFields.forEach { field ->
-        newTerms.add(if (field === original) replacement else field)
+        newTerms.add(if (field === original) replacement.also { found = true } else field)
       }
     }
+    // If original wasn't there, add replacement to the end
+    if (!found) fields.add(replacement)
     return replacement
   }
 

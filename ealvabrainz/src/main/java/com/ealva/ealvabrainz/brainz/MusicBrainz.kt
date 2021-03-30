@@ -19,6 +19,7 @@ package com.ealva.ealvabrainz.brainz
 
 import com.ealva.ealvabrainz.brainz.data.AnnotationList
 import com.ealva.ealvabrainz.brainz.data.Area
+import com.ealva.ealvabrainz.brainz.data.AreaList
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistList
 import com.ealva.ealvabrainz.brainz.data.BrowseAreaList
@@ -36,12 +37,15 @@ import com.ealva.ealvabrainz.brainz.data.BrowseWorkList
 import com.ealva.ealvabrainz.brainz.data.CdStubList
 import com.ealva.ealvabrainz.brainz.data.DiscLookupList
 import com.ealva.ealvabrainz.brainz.data.Event
+import com.ealva.ealvabrainz.brainz.data.EventList
 import com.ealva.ealvabrainz.brainz.data.Genre
 import com.ealva.ealvabrainz.brainz.data.Instrument
+import com.ealva.ealvabrainz.brainz.data.InstrumentList
 import com.ealva.ealvabrainz.brainz.data.IsrcRecordingList
 import com.ealva.ealvabrainz.brainz.data.Label
 import com.ealva.ealvabrainz.brainz.data.LabelList
 import com.ealva.ealvabrainz.brainz.data.Place
+import com.ealva.ealvabrainz.brainz.data.PlaceList
 import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.RecordingList
 import com.ealva.ealvabrainz.brainz.data.Release
@@ -49,6 +53,7 @@ import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.ReleaseList
 import com.ealva.ealvabrainz.brainz.data.Series
+import com.ealva.ealvabrainz.brainz.data.SeriesList
 import com.ealva.ealvabrainz.brainz.data.TagList
 import com.ealva.ealvabrainz.brainz.data.Url
 import com.ealva.ealvabrainz.brainz.data.Work
@@ -520,6 +525,13 @@ public interface MusicBrainz {
     @Query("offset") offset: Int? = null
   ): Response<AnnotationList>
 
+  @GET("area")
+  public suspend fun findArea(
+    @Query("query") query: String,
+    @Query("limit") limit: Int? = null,
+    @Query("offset") offset: Int? = null
+  ): Response<AreaList>
+
   /**
    * Returns an [ArtistList] given [query] which is the fully formed MusicBrainz query (in the
    * example this is: artist:"Led Zeppelin". Optional [limit] is
@@ -551,12 +563,33 @@ public interface MusicBrainz {
     @Query("offset") offset: Int? = null
   ): Response<CdStubList>
 
+  @GET("event")
+  public suspend fun findEvent(
+    @Query("query") query: String,
+    @Query("limit") limit: Int? = null,
+    @Query("offset") offset: Int? = null
+  ): Response<EventList>
+
+  @GET("instrument")
+  public suspend fun findInstrument(
+    @Query("query") query: String,
+    @Query("limit") limit: Int? = null,
+    @Query("offset") offset: Int? = null
+  ): Response<InstrumentList>
+
   @GET("label")
   public suspend fun findLabel(
     @Query("query") query: String,
     @Query("limit") limit: Int? = null,
     @Query("offset") offset: Int? = null
   ): Response<LabelList>
+
+  @GET("place")
+  public suspend fun findPlace(
+    @Query("query") query: String,
+    @Query("limit") limit: Int? = null,
+    @Query("offset") offset: Int? = null
+  ): Response<PlaceList>
 
   /**
    * Example is a query for Recording with MBID of "0fc4f7e7-8dcc-4dd3-8d35-d6f4c1f6b0f2", which is
@@ -616,6 +649,13 @@ public interface MusicBrainz {
     @Query("limit") limit: Int? = null,
     @Query("offset") offset: Int? = null
   ): Response<ReleaseGroupList>
+
+  @GET("series")
+  public suspend fun findSeries(
+    @Query("query") query: String,
+    @Query("limit") limit: Int? = null,
+    @Query("offset") offset: Int? = null
+  ): Response<SeriesList>
 
   /**
    * This function requires that the caller be authenticated.

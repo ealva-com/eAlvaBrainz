@@ -23,10 +23,10 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class BrowseSeriesList(
   @Json(name = "series-count")
-  public var seriesCount: Int = 0,
+  public val seriesCount: Int = 0,
   @Json(name = "series-offset")
-  public var seriesOffset: Int = 0,
-  public var seriess: List<Series> = emptyList()
+  public val seriesOffset: Int = 0,
+  public val seriess: List<Series> = emptyList()
 ) {
   override fun toString(): String = toJson()
 }

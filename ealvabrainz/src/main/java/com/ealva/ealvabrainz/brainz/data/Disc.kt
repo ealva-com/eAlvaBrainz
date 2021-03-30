@@ -50,10 +50,10 @@ public class Disc(
    * Disc ID is the code number which MusicBrainz uses to link a physical CD to a release listing.
    * It is a string of letters, like XzPS7vW.HPHsYemQh0HBUGr8vuU-.
    */
-  public var id: String = "",
-  public var sectors: Int = 0,
-  public var offsets: List<Int> = emptyList(),
-  @field:Json(name = "offset-count") public var offsetCount: Int = 0
+  public val id: String = "",
+  public val sectors: Int = 0,
+  public val offsets: List<Int> = emptyList(),
+  @field:Json(name = "offset-count") public val offsetCount: Int = 0
 ) {
 
   override fun equals(other: Any?): Boolean {

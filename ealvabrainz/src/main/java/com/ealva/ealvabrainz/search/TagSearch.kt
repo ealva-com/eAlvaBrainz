@@ -18,18 +18,20 @@
 package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Tag.SearchField
+import com.ealva.ealvabrainz.brainz.data.Tag.SearchField.Tag
 import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.lucene.Field
+import com.ealva.ealvabrainz.lucene.Query
 import com.ealva.ealvabrainz.lucene.Term
 import kotlin.experimental.ExperimentalTypeInference
 
 @OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
-public class TagSearch : BaseSearch<SearchField>() {
+public class TagSearch(query: Query = Query()) : BaseSearch<SearchField>(query) {
   @JvmName("defaultTerm")
   @OverloadResolutionByLambdaReturnType
-  /** (part of) the tag's name  */
-  public fun default(term: () -> Term): Field = add(SearchField.Default, term())
+  /** Default searches [Tag] */
+  public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun default(crossinline term: () -> String): Field = default { Term(term()) }
@@ -37,7 +39,7 @@ public class TagSearch : BaseSearch<SearchField>() {
   @JvmName("tagTerm")
   @OverloadResolutionByLambdaReturnType
   /** (part of) the tag's name  */
-  public inline fun tag(term: () -> Term): Field = add(SearchField.Tag, term())
+  public inline fun tag(term: () -> Term): Field = add(Tag, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun tag(term: () -> String): Field = tag { Term(term()) }

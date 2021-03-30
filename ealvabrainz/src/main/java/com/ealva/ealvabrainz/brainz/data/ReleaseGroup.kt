@@ -42,33 +42,33 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class ReleaseGroup(
   /** Release Group MusicBrainz ID (MBID) */
-  public var id: String = "",
+  public val id: String = "",
   /**
    * The title of a release group is usually very similar, if not the same, as the titles of the
    * releases contained within it.
    */
-  public var title: String = "",
-  public var count: Int = 0,
+  public val title: String = "",
+  public val count: Int = 0,
   /**
    * The artist of a release group is usually very similar, if not the same, as the artist of the
    * releases contained within it. Multiple artists can be linked using artist credits.
    */
-  @field:Json(name = "artist-credit") public var artistCredit: List<ArtistCredit> = emptyList(),
+  @field:Json(name = "artist-credit") public val artistCredit: List<ArtistCredit> = emptyList(),
   /** The releases in this Release Group */
-  public var releases: List<Release> = emptyList(),
+  public val releases: List<Release> = emptyList(),
   /** Genres associated with the releases in this group */
-  public var genres: List<Genre> = emptyList(),
+  public val genres: List<Genre> = emptyList(),
   /**
    * See the
    * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  public var disambiguation: String = "",
+  public val disambiguation: String = "",
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  public var annotation: String = "",
-  public var tags: List<Tag> = emptyList(),
+  public val annotation: String = "",
+  public val tags: List<Tag> = emptyList(),
   /**
    * Types may be
    * * "nat"
@@ -84,17 +84,17 @@ public class ReleaseGroup(
    * * "remix"
    * * "other"
    */
-  @field:Json(name = "primary-type") public var primaryType: String = "",
-  @field:Json(name = "primary-type-id") public var primaryTypeId: String = "",
-  @field:Json(name = "type-id") public var typeId: String = "",
-  @field:FallbackOnNull public var rating: Rating = Rating.NullRating,
-  @field:Json(name = "secondary-type-ids") public var secondaryTypeIds: List<String> = emptyList(),
-  @field:Json(name = "secondary-types") public var secondaryTypes: List<String> = emptyList(),
-  @field:Json(name = "first-release-date") public var firstReleaseDate: String = "",
-  public var aliases: List<Alias> = emptyList(),
-  public var relations: List<Relation> = emptyList(),
+  @field:Json(name = "primary-type") public val primaryType: String = "",
+  @field:Json(name = "primary-type-id") public val primaryTypeId: String = "",
+  @field:Json(name = "type-id") public val typeId: String = "",
+  @field:FallbackOnNull public val rating: Rating = Rating.NullRating,
+  @field:Json(name = "secondary-type-ids") public val secondaryTypeIds: List<String> = emptyList(),
+  @field:Json(name = "secondary-types") public val secondaryTypes: List<String> = emptyList(),
+  @field:Json(name = "first-release-date") public val firstReleaseDate: String = "",
+  public val aliases: List<Alias> = emptyList(),
+  public val relations: List<Relation> = emptyList(),
   /** score ranking used in query results */
-  public var score: Int = 0
+  public val score: Int = 0
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -143,8 +143,10 @@ public class ReleaseGroup(
   }
 
   public enum class SearchField(public override val value: String) : EntitySearchField {
-    Default(""),
-    /** (part of) any alias attached to the release group (diacritics are ignored) */
+    /**
+     * (part of) any [alias](https://musicbrainz.org/doc/Aliases) attached to the release group
+     * (diacritics are ignored)
+     */
     Alias("alias"),
 
     /** MBID of the release group’s artist */
@@ -156,49 +158,61 @@ public class ReleaseGroup(
      */
     Artist("artist"),
 
-    /** “real name” of any artist that is included in the release group’s artist credit  */
+    /** (part of) the name of any of the release group artists   */
     ArtistName("artistname"),
 
-    /** release group comment to differentiate similar release groups */
+    /** (part of) the release group's disambiguation comment */
     Comment("comment"),
 
-    /** name of any artist in multi-artist credits, as it appears on the cover */
+    /**
+     * (part of) the credited name of any of the release group artists on this particular release
+     * group
+     */
     CreditName("creditname"),
+
+    /** Default searches [ReleaseGroup] */
+    Default(""),
 
     /** the release date of the earliest release in this release group (e.g. "1980-01-22") */
     FirstReleaseDate("firstreleasedate"),
 
-    /** primary type of the release group (album, single, ep, other) */
+    /**
+     * [primary type](https://musicbrainz.org/doc/Release_Group/Type#Primary_types) of the release
+     * group
+     */
     PrimaryType("primarytype"),
 
-    /** MBID of a release that appears in the release group  */
+    /** the MBID of any of the releases in the release group   */
     ReleaseId("reid"),
 
-    /** name of a release that appears in the release group */
+    /** (part of) the title of any of the releases in the release group */
     Release("release"),
 
-    /** release group name */
+    /**	(part of) the release group's title (diacritics are ignored) */
     ReleaseGroup("releasegroup"),
 
-    /** name of the releasegroup with any accent characters retained */
+    /** (part of) the release group's title (with the specified diacritics) */
     ReleaseGroupAccentedName("releasegroupaccent"),
 
     /** number of releases in this release group  */
     Releases("releases"),
 
-    /** MBID of the release group */
+    /** the release group's MBID  */
     ReleaseGroupId("rgid"),
 
     /**
-     * secondary type of the release group (audiobook, compilation, interview, live, remix,
-     * soundtrack, spokenword)
+     * any of the [secondary types](https://musicbrainz.org/doc/Release_Group/Type#Secondary_types)
+     * of the release group
      */
     SecondaryType("secondarytype"),
 
-    /** status of a release that appears within the release group */
+    /**
+     * the [status][com.ealva.ealvabrainz.brainz.data.Release.Status] of any of the releases in the
+     * release group
+     */
     Status("status"),
 
-    /** a tag that appears on the release group */
+    /** (part of) a tag attached to the release group */
     Tag("tag")
   }
 

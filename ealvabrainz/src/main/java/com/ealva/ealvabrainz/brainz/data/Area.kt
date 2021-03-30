@@ -32,11 +32,11 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class Area(
   /** This area's MusicBrainz ID (MBID) */
-  public var id: String = "",
+  public val id: String = "",
   /** The name of the area */
-  public var name: String = "",
+  public val name: String = "",
   /** Use this field to sort a list of Area */
-  @field:Json(name = "sort-name") public var sortName: String = "",
+  @field:Json(name = "sort-name") public val sortName: String = "",
   /**
    * The type of area. Possible values are:
    * * **Country**
@@ -60,34 +60,34 @@ public class Area(
    * Island is used for islands and atolls which don't form subdivisions of their own, e.g. Skye.
    * These are not considered when displaying the parent areas for a given area.
    */
-  public var type: String = "",
+  public val type: String = "",
   @Json(name = "type-id")
-  public var typeId: String = "",
+  public val typeId: String = "",
   /**
    * See the [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  public var disambiguation: String = "",
+  public val disambiguation: String = "",
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  public var annotation: String = "",
+  public val annotation: String = "",
   /** The aliases are used to store alternate names or misspellings. */
-  public var aliases: List<Alias> = emptyList(),
+  public val aliases: List<Alias> = emptyList(),
 
   /** The ISO 3166 codes are the codes assigned by ISO to countries and subdivisions. */
-  @field:Json(name = "iso-3166-1-codes") public var iso31661Codes: List<String> = emptyList(),
-  @field:Json(name = "iso-3166-2-codes") public var iso31662Codes: List<String> = emptyList(),
-  @field:Json(name = "iso-3166-3-codes") public var iso31663Codes: List<String> = emptyList(),
+  @field:Json(name = "iso-3166-1-codes") public val iso31661Codes: List<String> = emptyList(),
+  @field:Json(name = "iso-3166-2-codes") public val iso31662Codes: List<String> = emptyList(),
+  @field:Json(name = "iso-3166-3-codes") public val iso31663Codes: List<String> = emptyList(),
   /**
    * The lifespan dates indicate when a certain area was founded and/or ceased to exist.
    * For example, the Soviet Union has a begin date of 1922 and an end date of 1991.
    */
   @Json(name = "life-span")
-  public var lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
-  public var relations: List<Relation> = emptyList(),
+  public val lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
+  public val relations: List<Relation> = emptyList(),
 
-  public var score: Int = 0
+  public val score: Int = 0
 ) {
 
   override fun equals(other: Any?): Boolean {
@@ -123,44 +123,58 @@ public class Area(
   }
 
   public enum class SearchField(public override val value: String) : EntitySearchField {
-    Default(""),
+    /** (part of) any alias attached to the artist (diacritics are ignored) */
+    Alias("alias"),
+
     /** the area's MBID */
     AreaId("aid"),
 
-    /** an alias attached to the area */
-    Alias("alias"),
-
-    /** the area's name */
+    /** (part of) the area's name (diacritics are ignored) */
     AreaName("area"),
 
-    /** the area's begin date */
-    BeginDate("begin"),
+    /** (part of) the area's name (with the specified diacritics) */
+    AreaAccent("areaaccent"),
 
-    /** the area's disambiguation comment */
+    /** the area's begin date (e.g. "1980-01-22") */
+    Begin("begin"),
+
+    /** (part of) the area's disambiguation comment */
     Comment("comment"),
 
-    /** the area's end date */
-    EndDate("end"),
+    /** Default searches the [AreaName] */
+    Default(""),
 
-    /** a flag indicating whether or not the area has ended */
+    /** the area's end date (e.g. "1980-01-22") */
+    End("end"),
+
+    /**
+     * A boolean flag (true/false) indicating whether or not the area has ended (is no longer
+     * current)
+     */
     Ended("ended"),
 
-    /** an ISO 3166-1/2/3 code attached to the area */
+    /**
+     * An [ISO 3166-1, 3166-2 or 3166-3](https://en.wikipedia.org/wiki/ISO_3166) code attached to
+     * the area
+     */
     Iso("iso"),
 
-    /** an ISO 3166-1 code attached to the area */
-    Iso1("iso1"),
+//    /** an ISO 3166-1 code attached to the area */
+//    Iso1("iso1"),
+//
+//    /** an ISO 3166-2 code attached to the area */
+//    Iso2("iso2"),
+//
+//    /** an ISO 3166-3 code attached to the area */
+//    Iso3("iso3"),
+//
+//    Area's no longer have sort names
+//    SortName("sortname"),
 
-    /** an ISO 3166-2 code attached to the area */
-    Iso2("iso2"),
+    /** a tag attached to the area */
+    Tag("tag"),
 
-    /** an ISO 3166-3 code attached to the area */
-    Iso3("iso3"),
-
-    /** the area's sort name */
-    SortName("sortname"),
-
-    /** the area's type  */
+    /** the area's [type](https://musicbrainz.org/doc/Area#Type)  */
     Type("type"),
   }
 

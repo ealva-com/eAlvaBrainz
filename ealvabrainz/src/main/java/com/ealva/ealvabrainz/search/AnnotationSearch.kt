@@ -18,8 +18,11 @@
 package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Annotation.SearchField
-import com.ealva.ealvabrainz.common.Mbid
+import com.ealva.ealvabrainz.brainz.data.Annotation.SearchField.EntityName
+import com.ealva.ealvabrainz.brainz.data.Annotation.SearchField.EntityType
+import com.ealva.ealvabrainz.brainz.data.Annotation.SearchField.Text
 import com.ealva.ealvabrainz.common.BrainzMarker
+import com.ealva.ealvabrainz.common.Mbid
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Term
 import kotlin.experimental.ExperimentalTypeInference
@@ -29,11 +32,11 @@ import kotlin.experimental.ExperimentalTypeInference
 public class AnnotationSearch : BaseSearch<SearchField>() {
   @JvmName("defaultTerm")
   @OverloadResolutionByLambdaReturnType
-  /** part of the annotation's content (includes wiki formatting)  */
-  public fun default(term: () -> Term): Field = add(SearchField.Default, term())
+  /** Default searches [EntityName], [Text] and [EntityType] */
+  public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
 
   @OverloadResolutionByLambdaReturnType
-  public fun default(default: () -> Mbid): Field = default { Term(default().value) }
+  public inline fun default(default: () -> String): Field = default { Term(default()) }
 
   @JvmName("entityTerm")
   @OverloadResolutionByLambdaReturnType
@@ -54,26 +57,29 @@ public class AnnotationSearch : BaseSearch<SearchField>() {
   @JvmName("nameTerm")
   @OverloadResolutionByLambdaReturnType
   /** The annotated entity's name or title (diacritics are ignored) */
-  public fun name(term: () -> Term): Field = add(SearchField.Name, term())
+  public inline fun name(term: () -> Term): Field = add(EntityName, term())
 
   @OverloadResolutionByLambdaReturnType
-  public fun name(name: () -> String): Field = name { Term(name()) }
+  public inline fun name(name: () -> String): Field = name { Term(name()) }
 
   @JvmName("textTerm")
   @OverloadResolutionByLambdaReturnType
-  /** The annotated entity's text or title (diacritics are ignored) */
-  public fun text(term: () -> Term): Field = add(SearchField.Text, term())
+  /**
+   * The annotation's content (includes
+   * [wiki formatting](https://musicbrainz.org/doc/Annotation#Wiki_formatting))
+   */
+  public inline fun text(term: () -> Term): Field = add(Text, term())
 
   @OverloadResolutionByLambdaReturnType
-  public fun text(text: () -> String): Field = text { Term(text()) }
+  public inline fun text(text: () -> String): Field = text { Term(text()) }
 
   @JvmName("typeTerm")
   @OverloadResolutionByLambdaReturnType
   /** The annotated entity's entity type */
-  public inline fun type(term: () -> Term): Field = add(SearchField.Type, term())
+  public inline fun type(term: () -> Term): Field = add(EntityType, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun type(type: () -> String): Field = add(SearchField.Type, Term(type()))
+  public inline fun type(type: () -> String): Field = add(EntityType, Term(type()))
 
   public companion object {
     public inline operator fun invoke(search: AnnotationSearch.() -> Unit): String {

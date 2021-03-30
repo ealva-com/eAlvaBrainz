@@ -23,10 +23,10 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class BrowseEventList(
   @Json(name = "event-count")
-  public var eventCount: Int = 0,
+  public val eventCount: Int = 0,
   @Json(name = "event-offset")
-  public var eventOffset: Int = 0,
-  public var events: List<Event> = emptyList()
+  public val eventOffset: Int = 0,
+  public val events: List<Event> = emptyList()
 ) {
   override fun toString(): String = toJson()
 }

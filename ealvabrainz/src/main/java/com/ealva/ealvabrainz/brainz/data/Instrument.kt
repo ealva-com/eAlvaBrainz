@@ -23,9 +23,9 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class Instrument(
   /** The MusicBrainz ID (MBID */
-  public var id: String = "",
+  public val id: String = "",
   /** Name of the instrument, typically the most common name in English. */
-  public var name: String = "",
+  public val name: String = "",
   /**
    * The type categorises the instrument by the way the sound is created, similar to the
    * Hornbostel-Sachs classification. The possible values are:
@@ -47,25 +47,25 @@ public class Instrument(
    * * **Other instrument**
    * An instrument which doesn't fit in the categories above.
    */
-  public var type: String = "",
-  @Json(name = "type-id") public var typeId: String = "",
+  public val type: String = "",
+  @Json(name = "type-id") public val typeId: String = "",
   /** A brief description of the main characteristics of the instrument. */
-  public var description: String = "",
+  public val description: String = "",
   /**
    * See the
    * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  public var disambiguation: String = "",
+  public val disambiguation: String = "",
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  public var annotation: String = "",
-  public var aliases: List<Alias> = emptyList(),
-  public var tags: List<Tag> = emptyList(),
-  public var relations: List<Relation> = emptyList(),
+  public val annotation: String = "",
+  public val aliases: List<Alias> = emptyList(),
+  public val tags: List<Tag> = emptyList(),
+  public val relations: List<Relation> = emptyList(),
   /** score ranking used in query results */
-  public var score: Int = 0
+  public val score: Int = 0
 ) {
 
   /**
@@ -107,27 +107,32 @@ public class Instrument(
   }
 
   public enum class SearchField(public override val value: String) : EntitySearchField {
-    Default(""),
-    /** an alias attached to the instrument */
+    /** (part of) any alias attached to the instrument (diacritics are ignored) */
     Alias("alias"),
 
-    /** the disambiguation comment for the instrument */
+    /** (part of) the instrument's disambiguation comment */
     Comment("comment"),
 
-    /** the description of the instrument */
+    /** Default searches [Alias], [Description], and [Instrument] */
+    Default(""),
+
+    /** (part of) the description of the instrument (in English) */
     Description("description"),
 
     /** the MBID of the instrument */
     InstrumentId("iid"),
 
-    /** the name of the instrument */
-    Instrument("instrument"),
+    /** (part of) the instrument's name (diacritics are ignored)  */
+    InstrumentName("instrument"),
 
-    /** the instrument's type */
-    Type("type"),
+    /** (part of) the instrument's name (with the specified diacritics) */
+    InstrumentAccent("instrumentaccent"),
 
-    /** a tag attached to the instrument */
+    /** (part of) a tag attached to the instrument */
     Tag("tag"),
+
+    /** the instrument's [type](https://musicbrainz.org/doc/Instrument#Type) */
+    Type("type");
   }
 
   public companion object {

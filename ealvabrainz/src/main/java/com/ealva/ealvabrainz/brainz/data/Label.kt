@@ -29,7 +29,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class Label(
   /** The MusicBrainz ID (MBID) for this label */
-  public var id: String = "",
+  public val id: String = "",
   /**
    * The official name of the label.
    *
@@ -47,14 +47,14 @@ public class Label(
    * help differentiate between identically named labels, you should use a disambiguation comment
    * and possibly an annotation as well.
    */
-  public var name: String = "",
-  @field:Json(name = "sort-name") public var sortName: String = "",
+  public val name: String = "",
+  @field:Json(name = "sort-name") public val sortName: String = "",
   /**: String
    * See the
    * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
    * for more information
    */
-  public var disambiguation: String = "",
+  public val disambiguation: String = "",
   /**
    * The label code is the "LC" code of the label. This is only the numeric portion; any prefix
    * is not stored. eg LC-0193 is stored as "0193"
@@ -70,31 +70,31 @@ public class Label(
    * A label code should not be confused with a release's catalog number. A catalog number
    * identifies a particular release, whereas a label code identifies an entire label.
    */
-  @field:Json(name = "label-code") public var labelCode: Int = 0,
+  @field:Json(name = "label-code") public val labelCode: Int = 0,
   /**
    * Aliases are used to store alternate names or misspellings. For more information and examples,
    * see the page about [aliases](https://musicbrainz.org/doc/Aliases).
    */
-  public var aliases: List<Alias> = emptyList(),
+  public val aliases: List<Alias> = emptyList(),
   /**
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
-  public var annotation: String = "",
-  public var area: Area = Area.NullArea,
+  public val annotation: String = "",
+  public val area: Area = Area.NullArea,
   /** The country of origin for the label. */
-  public var country: String = "",
-  public var genres: List<Genre> = emptyList(),
+  public val country: String = "",
+  public val genres: List<Genre> = emptyList(),
   /**
    * An IPI (interested party information) code is an identifying number assigned by the CISAC
    * database for musical rights management. See IPI for more information, including how to find
    * these codes.
    */
-  public var ipis: List<String> = emptyList(),
+  public val ipis: List<String> = emptyList(),
   /**
    * The International Standard Name Identifier for the label. See
    * [ISNI](https://musicbrainz.org/doc/Label/Label_Code) for more information.
    */
-  public var isnis: List<String> = emptyList(),
+  public val isnis: List<String> = emptyList(),
   /**
    * The exact meaning of the begin and end dates depends on the type of label. Note that it's
    * usually hard to know if an imprint has folded or is just on hold, and in generally the end
@@ -113,11 +113,11 @@ public class Label(
    * otherwise obscure/dubious companies), it's also tolerable to use the release date of the last
    * release, unless one has more accurate information.
    */
-  @Json(name = "life-span") public var lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
-  public var rating: Rating = Rating.NullRating,
-  public var releases: List<Release> = emptyList(),
-  public var relations: List<Relation> = emptyList(),
-  public var tags: List<Tag> = emptyList(),
+  @Json(name = "life-span") public val lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
+  public val rating: Rating = Rating.NullRating,
+  public val releases: List<Release> = emptyList(),
+  public val relations: List<Relation> = emptyList(),
+  public val tags: List<Tag> = emptyList(),
   /**
    * The [type](https://musicbrainz.org/doc/Label/Type) describes the main activity of the label.
    *
@@ -141,11 +141,11 @@ public class Label(
    * the artists. This type is designed to be used with the rights society relationship type rather
    * than as a normal release label. example: GEMA
    */
-  public var type: String = "",
+  public val type: String = "",
   @Json(name = "type-id")
-  public var typeId: String = "",
+  public val typeId: String = "",
   /** score ranking used in query results */
-  public var score: Int = 0
+  public val score: Int = 0
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -187,54 +187,65 @@ public class Label(
   }
 
   public enum class SearchField(public override val value: String) : EntitySearchField {
-    Default(""),
-    /** the aliases/misspellings for this label */
+    /**
+     * (part of) any [alias](https://musicbrainz.org/doc/Aliases) attached to the label (diacritics
+     * are ignored)
+     */
     Alias("alias"),
 
-    /** label area */
+    /** (part of) the name of the label's main associated area */
     Area("area"),
 
-    /** label founding date */
+    /** the label's begin date (e.g. "1980-01-22") */
     Begin("begin"),
 
-    /** label code (only the figures part, i.e. without "LC") */
+    /**
+     * the [label code](https://musicbrainz.org/doc/Label/Label_Code) for the label (only the
+     * numbers, without "LC")
+     */
     Code("code"),
 
-    /** label comment to differentiate similar labels */
+    /** (part of) the label's disambiguation comment */
     Comment("comment"),
 
-    /** The two letter country code of the label country */
+    /** the 2-letter code (ISO 3166-1 alpha-2) for the label's associated country */
     Country("country"),
 
-    /** label dissolution date */
+    /** Default searches [Alias] and [Label] */
+    Default(""),
+
+    /** the label's end date (e.g. "1980-01-22") */
     End("end"),
 
-    /** true if know ended even if do not know end date */
+    /** a boolean flag (true/false) indicating whether or not the label has ended (is dissolved) */
     Ended("ended"),
 
+    /** an IPI code associated with the label */
     Ipi("ipi"),
 
+    /** an ISNI code associated with the label */
     Isni("isni"),
 
-    /** label name */
+    /** (part of) the label's name (diacritics are ignored) */
     Label("label"),
 
-    /** name of the label with any accent characters retained */
+    /** 	(part of) the label's name (with the specified diacritics) */
     LabelAccent("labelaccent"),
 
-    /** MBID of the label */
+    /** the label's MBID  */
     LabelId("laid"),
 
+    /** the amount of releases related to the label */
     ReleaseCount("release_count"),
 
-    /** label sortname */
-    SortName("sortname"),
+//    Labels no longer have sort names
+//    SortName("sortname"),
 
-    /** label type */
-    Type("type"),
-
-    /** folksonomy tag */
+    /** (part of) a tag attached to the label  */
     Tag("tag"),
+
+    /** the label's [type](https://musicbrainz.org/doc/Label/Type) */
+    Type("type"),
   }
 
   public companion object {

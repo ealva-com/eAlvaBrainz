@@ -76,7 +76,27 @@ public sealed class Field : BaseExpression() {
   }
 }
 
-public sealed class FieldExpression(
+/**
+ * The field value is required to appear in the query result. When written the field is prepended
+ * with a '+'
+ */
+internal class RequireField(private val field: Field) : Field() {
+  override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {
+    builder.append('+').appendExpression(field)
+  }
+}
+
+/**
+ * The field value is must not appear in the query result. When written the field is prepended with
+ * a '-'
+ */
+internal class ProhibitField(private val field: Field) : Field() {
+  override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {
+    builder.append('-').appendExpression(field)
+  }
+}
+
+internal sealed class CompoundFieldExpression(
   private val operator: String,
   internal val fields: List<Field>
 ) : Field() {
@@ -90,35 +110,5 @@ public sealed class FieldExpression(
   }
 }
 
-public class AndExp(fields: List<Field>) : FieldExpression(" AND ", fields)
-public class OrExp(fields: List<Field>) : FieldExpression(" OR ", fields)
-
-public infix fun Field.and(other: Field): Field = when {
-  this is AndExp && other is AndExp -> AndExp(fields + other.fields)
-  this is AndExp -> AndExp(fields + other)
-  other is AndExp -> AndExp(
-    ArrayList<Field>(other.fields.size + 1).also {
-      it.add(this)
-      it.addAll(other.fields)
-    }
-  )
-  else -> AndExp(listOf(this, other))
-}
-
-/** A renaming of the infix and() just to avoid naming conflict, perceived or actual */
-public fun Field.andAnother(other: Field): Field = this.and(other)
-
-public infix fun Field.or(other: Field): Field = when {
-  this is OrExp && other is OrExp -> OrExp(fields + other.fields)
-  this is OrExp -> OrExp(fields + other)
-  other is OrExp -> OrExp(
-    ArrayList<Field>(other.fields.size + 1).also {
-      it.add(this)
-      it.addAll(other.fields)
-    }
-  )
-  else -> OrExp(listOf(this, other))
-}
-
-/** A renaming of the infix or() just to avoid naming conflict, perceived or actual */
-public fun Field.orAnother(other: Field): Field = this.or(other)
+internal class AndExp(fields: List<Field>) : CompoundFieldExpression(" AND ", fields)
+internal class OrExp(fields: List<Field>) : CompoundFieldExpression(" OR ", fields)

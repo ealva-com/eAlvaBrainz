@@ -36,21 +36,21 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class Annotation(
   /** The annotated entity's MBID */
-  public var entity: String = "",
+  public val entity: String = "",
   /** the annotated entity's name or title */
-  public var name: String = "",
+  public val name: String = "",
   /**
    * The annotated entity's entity type; one of artist, release, release-group, recording, work,
    * label, (track is supported but maps to recording)
    */
-  public var type: String = "",
+  public val type: String = "",
   /**
    * The annotation's content (includes
    * [wiki formatting](https://musicbrainz.org/doc/Annotation#Wiki_formatting))
    */
-  public var text: String = "",
+  public val text: String = "",
   /** score ranking used in query results */
-  public var score: Int = 0
+  public val score: Int = 0
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -77,17 +77,26 @@ public class Annotation(
   override fun toString(): String = toJson()
 
   public enum class SearchField(public override val value: String) : EntitySearchField {
+    /** Default searches [EntityName], [Text] and [EntityType] */
     Default(""),
+
     /** The annotated entity's MBID */
     Entity("entity"),
+
     /** The numeric ID of the annotation (e.g. 703027) */
     Id("id"),
+
     /** The annotated entity's name or title (diacritics are ignored) */
-    Name("name"),
-    /** The annotation's content (includes wiki formatting) */
+    EntityName("name"),
+
+    /**
+     * The annotation's content (includes
+     * [wiki formatting](https://musicbrainz.org/doc/Annotation#Wiki_formatting))
+     */
     Text("text"),
+
     /** The annotated entity's entity type */
-    Type("type")
+    EntityType("type")
   }
 
   public companion object {

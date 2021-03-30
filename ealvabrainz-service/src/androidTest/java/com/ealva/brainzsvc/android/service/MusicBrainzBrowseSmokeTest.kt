@@ -77,6 +77,23 @@ private const val contactEmail = "musicbrainz@ealva.com"
  * open source library) services. Given that, please don't run this test often. Preferably, do all
  * your work, do unit tests, and save this test suite for a (hopefully) single run before committing
  * code.
+ *
+ * One or more integration tests require authentication with the MusicBrainz server. The required
+ * username and password must be defined in the local.properties file in the root folder of this
+ * project. This file is not committed to version control as it's contents are private (obviously).
+ * If the file doesn't exist, create it. It would typically look something like:
+ * ```text
+ * sdk.dir=/home/user/Android/Sdk
+ * BRAINZ_USERNAME="my_username"
+ * BRAINZ_PASSWORD="my_password"
+ * ```
+ * where BRAINZ_USERNAME and BRAINZ_PASSWORD are set to your MusicBrainz.org credentials. If you
+ * don't have an account, go to https://musicbrainz.org/register and create one. Not mandatory,
+ * however not setting these values correctly will result in some tests failing due to
+ * authentication errors.
+ *
+ * Applications which call functions requiring authentication must implement the CredentialsProvider
+ * interface and use it when constructing a MusicBrainzService implementation.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
@@ -155,6 +172,9 @@ public class MusicBrainzBrowseSmokeTest {
   }
 
   @Test
+  /**
+   * This test requires authentication as it includes Collection.Browse.UserCollections
+   */
   public fun browseCollectionsForEditor(): Unit = coroutineRule.runBlockingTest {
     withBrainz {
       when (

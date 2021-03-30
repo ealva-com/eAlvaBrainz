@@ -25,6 +25,7 @@ import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzNullR
 import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.AnnotationList
 import com.ealva.ealvabrainz.brainz.data.Area
+import com.ealva.ealvabrainz.brainz.data.AreaList
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistList
 import com.ealva.ealvabrainz.brainz.data.BrowseAreaList
@@ -43,12 +44,15 @@ import com.ealva.ealvabrainz.brainz.data.CdStubList
 import com.ealva.ealvabrainz.brainz.data.Collection
 import com.ealva.ealvabrainz.brainz.data.DiscLookupList
 import com.ealva.ealvabrainz.brainz.data.Event
+import com.ealva.ealvabrainz.brainz.data.EventList
 import com.ealva.ealvabrainz.brainz.data.Genre
 import com.ealva.ealvabrainz.brainz.data.Instrument
+import com.ealva.ealvabrainz.brainz.data.InstrumentList
 import com.ealva.ealvabrainz.brainz.data.IsrcRecordingList
 import com.ealva.ealvabrainz.brainz.data.Label
 import com.ealva.ealvabrainz.brainz.data.LabelList
 import com.ealva.ealvabrainz.brainz.data.Place
+import com.ealva.ealvabrainz.brainz.data.PlaceList
 import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.RecordingList
 import com.ealva.ealvabrainz.brainz.data.Release
@@ -56,6 +60,7 @@ import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupList
 import com.ealva.ealvabrainz.brainz.data.ReleaseList
 import com.ealva.ealvabrainz.brainz.data.Series
+import com.ealva.ealvabrainz.brainz.data.SeriesList
 import com.ealva.ealvabrainz.brainz.data.TagList
 import com.ealva.ealvabrainz.brainz.data.Url
 import com.ealva.ealvabrainz.brainz.data.Work
@@ -108,12 +113,17 @@ import com.ealva.ealvabrainz.lookup.SeriesLookup
 import com.ealva.ealvabrainz.lookup.UrlLookup
 import com.ealva.ealvabrainz.lookup.WorkLookup
 import com.ealva.ealvabrainz.search.AnnotationSearch
+import com.ealva.ealvabrainz.search.AreaSearch
 import com.ealva.ealvabrainz.search.ArtistSearch
 import com.ealva.ealvabrainz.search.CdStubSearch
+import com.ealva.ealvabrainz.search.EventSearch
+import com.ealva.ealvabrainz.search.InstrumentSearch
 import com.ealva.ealvabrainz.search.LabelSearch
+import com.ealva.ealvabrainz.search.PlaceSearch
 import com.ealva.ealvabrainz.search.RecordingSearch
 import com.ealva.ealvabrainz.search.ReleaseGroupSearch
 import com.ealva.ealvabrainz.search.ReleaseSearch
+import com.ealva.ealvabrainz.search.SeriesSearch
 import com.ealva.ealvabrainz.search.TagSearch
 import com.ealva.ealvabrainz.search.WorkSearch
 import com.github.michaelbull.result.Err
@@ -121,6 +131,7 @@ import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
 /**
@@ -456,6 +467,12 @@ public interface MusicBrainzService {
     search: AnnotationSearch.() -> Unit
   ): BrainzResult<AnnotationList>
 
+  public suspend fun findArea(
+    limit: Limit? = null,
+    offset: Offset? = null,
+    search: AreaSearch.() -> Unit
+  ): BrainzResult<AreaList>
+
   public suspend fun findArtist(
     limit: Limit? = null,
     offset: Offset? = null,
@@ -468,11 +485,29 @@ public interface MusicBrainzService {
     search: CdStubSearch.() -> Unit
   ): BrainzResult<CdStubList>
 
+  public suspend fun findEvent(
+    limit: Limit? = null,
+    offset: Offset? = null,
+    search: EventSearch.() -> Unit
+  ): BrainzResult<EventList>
+
+  public suspend fun findInstrument(
+    limit: Limit? = null,
+    offset: Offset? = null,
+    search: InstrumentSearch.() -> Unit
+  ): BrainzResult<InstrumentList>
+
   public suspend fun findLabel(
     limit: Limit? = null,
     offset: Offset? = null,
     search: LabelSearch.() -> Unit
   ): BrainzResult<LabelList>
+
+  public suspend fun findPlace(
+    limit: Limit? = null,
+    offset: Offset? = null,
+    search: PlaceSearch.() -> Unit
+  ): BrainzResult<PlaceList>
 
   public suspend fun findRecording(
     limit: Limit? = null,
@@ -503,6 +538,12 @@ public interface MusicBrainzService {
     search: ReleaseGroupSearch.() -> Unit
   ): BrainzResult<ReleaseGroupList>
 
+  public suspend fun findSeries(
+    limit: Limit? = null,
+    offset: Offset? = null,
+    search: SeriesSearch.() -> Unit
+  ): BrainzResult<SeriesList>
+
   /**
    * Authorization is required. See [CredentialsProvider]
    */
@@ -518,9 +559,39 @@ public interface MusicBrainzService {
     search: WorkSearch.() -> Unit
   ): BrainzResult<WorkList>
 
+  /**
+   * Returns the location for a ReleaseGroups's artwork, or Uri.EMPTY if none was found or there was
+   * an error. If the Uris is not secure (http), it is converted to secure (https). CoverArt returns
+   * a possible list of artwork and this method chooses 1 from the list in this priority order:
+   * * "Original" image size
+   * * 500x500
+   * * 250x250
+   * * 1200x1200
+   *
+   * Multiple resolutions of multiple image "types" (front, back, booklet, etc..) are returned, so
+   * there are also flow transforms available that emit all options and provides for fine grained
+   * filtering.
+   */
   public suspend fun getReleaseGroupArtwork(mbid: ReleaseGroupMbid): Uri
 
+  public suspend fun releaseGroupArtFlow(mbid: ReleaseGroupMbid): Flow<CoverArtImageInfo>
+
+  /**
+   * Returns the location for a Release's artwork, or Uri.EMPTY if none was found or there was an
+   * error. If the Uris is not secure (http), it is converted to secure (https). CoverArt returns a
+   * possible list of artwork and this method chooses 1 from the list in this priority order:
+   * * "Original" image size
+   * * 500x500
+   * * 250x250
+   * * 1200x1200
+   *
+   * Multiple resolutions of multiple image "types" (front, back, booklet, etc..) are returned, so
+   * there are also flow transforms available that emit all options and provides for fine grained
+   * filtering.
+   */
   public suspend fun getReleaseArtwork(mbid: ReleaseMbid): Uri
+
+  public suspend fun releaseArtFlow(mbid: ReleaseMbid): Flow<CoverArtImageInfo>
 
   /**
    * NOTE: when eAlvaBrainz is complete it should not be necessary for clients to invoke this

@@ -23,11 +23,11 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public data class LifeSpan(
   /** Date this lifespan started */
-  public var begin: String = "",
+  public val begin: String = "",
   /** Date this lifespan ended. Will be empty string if [ended] = false */
-  public var end: String = "",
+  public val end: String = "",
   /** True if this Lifespan has ended (should be an [end] date */
-  public var ended: Boolean = false
+  public val ended: Boolean = false
 ) {
   public companion object {
     public val NullLifeSpan: LifeSpan = LifeSpan()

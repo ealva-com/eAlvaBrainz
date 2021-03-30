@@ -21,8 +21,8 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 public data class Target(
-  public var id: String = "",
-  public var type: String = ""
+  public val id: String = "",
+  public val type: String = ""
 ) {
   public companion object {
     public val NullTarget: Target = Target(id = NullObject.ID)

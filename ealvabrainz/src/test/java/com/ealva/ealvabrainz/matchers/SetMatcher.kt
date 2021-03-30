@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  Eric A. Snell
+ * Copyright (c) 2021  Eric A. Snell
  *
  * This file is part of eAlvaBrainz
  *
@@ -15,18 +15,16 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-@file:Suppress("unused")
-
-package com.ealva.ealvabrainz.matchers.map
+package com.ealva.ealvabrainz.matchers
 
 import com.nhaarman.expect.Matcher
 import com.nhaarman.expect.fail
 
-public fun <K, V> expect(actual: Map<K, V>?): MapMatcher<K, V> {
-  return MapMatcher(actual)
+public fun <T> expect(actual: Set<T>?): SetMatcher<T> {
+  return SetMatcher(actual)
 }
 
-public class MapMatcher<K, V>(override val actual: Map<K, V>?) : Matcher<Map<K, V>>(actual) {
+public class SetMatcher<T>(override val actual: Set<T>?) : Matcher<Set<T>>(actual) {
 
   public fun toBeEmpty(message: (() -> Any?)? = null) {
     if (actual == null) {
@@ -48,33 +46,13 @@ public class MapMatcher<K, V>(override val actual: Map<K, V>?) : Matcher<Map<K, 
     }
   }
 
-  public fun toContainKey(expected: K, message: (() -> Any?)? = null) {
+  public fun toContain(expected: T, message: (() -> Any?)? = null) {
     if (actual == null) {
       fail("Expected to contain Key:$expected, but the actual value was null.", message)
     }
 
-    if (!actual.containsKey(expected)) {
+    if (!actual.contains(expected)) {
       fail("Expected $actual to contain Key:$expected", message)
-    }
-  }
-
-  public fun toContainValue(expected: V, message: (() -> Any?)? = null) {
-    if (actual == null) {
-      fail("Expected to contain Value:$expected, but the actual value was null.", message)
-    }
-
-    if (!actual.containsValue(expected)) {
-      fail("Expected $actual to contain Value:$expected", message)
-    }
-  }
-
-  public fun toContainKeyValue(expected: Pair<K, V>, message: (() -> Any?)? = null) {
-    if (actual == null) {
-      fail("Expected to contain $expected, but the actual value was null.", message)
-    }
-
-    if (!actual.containsKey(expected.first) || actual[expected.first] != expected.second) {
-      fail("Expected $actual to contain $expected", message)
     }
   }
 }

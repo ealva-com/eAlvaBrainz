@@ -42,17 +42,17 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 public class Alias(
-  public var name: String = "",
-  @field:Json(name = "sort-name") public var sortName: String = "",
-  public var type: String = "",
-  @field:Json(name = "type-id") public var typeId: String = "",
-  public var primary: Boolean = false,
-  public var locale: String = "",
-  public var begin: String = "",
-  public var end: String = "",
-  public var ended: Boolean = false,
-  @field:Json(name = "begin-date") public var beginDate: String = "",
-  @field:Json(name = "end-date") public var endDate: String = ""
+  public val name: String = "",
+  @field:Json(name = "sort-name") public val sortName: String = "",
+  public val type: String = "",
+  @field:Json(name = "type-id") public val typeId: String = "",
+  public val primary: Boolean = false,
+  public val locale: String = "",
+  public val begin: String = "",
+  public val end: String = "",
+  public val ended: Boolean = false,
+  @field:Json(name = "begin-date") public val beginDate: String = "",
+  @field:Json(name = "end-date") public val endDate: String = ""
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

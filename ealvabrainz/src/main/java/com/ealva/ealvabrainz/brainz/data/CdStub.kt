@@ -28,17 +28,17 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class CdStub(
   /** The Disc ID */
-  public var id: String = "",
+  public val id: String = "",
   /** The release title */
-  public var title: String = "",
+  public val title: String = "",
   /** (part of) the artist name set on the CD stub */
-  public var artist: String = "",
-  public var barcode: String = "",
+  public val artist: String = "",
+  public val barcode: String = "",
   /** The number of tracks in the track list */
-  public var count: Int = 0,
-  public var disambiguation: String = "",
+  public val count: Int = 0,
+  public val disambiguation: String = "",
   /** score ranking used in query results */
-  public var score: Int = 0
+  public val score: Int = 0
 ) {
 
   override fun equals(other: Any?): Boolean {
@@ -59,7 +59,6 @@ public class CdStub(
   override fun toString(): String = toJson()
 
   public enum class SearchField(public override val value: String) : EntitySearchField {
-    Default(""),
     /** the date the CD stub was added (e.g. "2020-01-22") */
     Added("added"),
 
@@ -72,7 +71,10 @@ public class CdStub(
     /** (part of) the comment set on the CD stub */
     Comment("comment"),
 
-    /** the CD stub's Disc ID */
+    /** Default searches [Artist] and [Title] */
+    Default(""),
+
+    /** the CD stub's [Disc ID](https://musicbrainz.org/doc/Disc_ID) */
     Discid("discid"),
 
     /** (part of) the release title set on the CD stub */

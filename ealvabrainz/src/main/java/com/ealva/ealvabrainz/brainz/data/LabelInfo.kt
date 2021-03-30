@@ -27,8 +27,8 @@ public class LabelInfo(
    * or near the barcode. There may be more than one, especially when multiple labels are involved.
    * This is not the ASIN — there is a relationship for that — nor the label code.
    */
-  @field:Json(name = "catalog-number") public var catalogNumber: String = "",
-  @field:FallbackOnNull public var label: Label = Label.NullLabel
+  @field:Json(name = "catalog-number") public val catalogNumber: String = "",
+  @field:FallbackOnNull public val label: Label = Label.NullLabel
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  Eric A. Snell
+ * Copyright (c) 2021  Eric A. Snell
  *
  * This file is part of eAlvaBrainz
  *
@@ -15,7 +15,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.matchers.string
+package com.ealva.ealvabrainz.matchers
 
 import com.nhaarman.expect.StringMatcher
 import com.nhaarman.expect.fail
@@ -25,4 +25,10 @@ public fun StringMatcher.toBeEmpty() {
   if (actual?.isEmpty() != true) {
     fail("Expected \"$actual\" to be empty.")
   }
+}
+
+public fun StringMatcher.toBeBlank() {
+  actual?.let {
+    if (it.isNotBlank()) fail("Expected $it to be blank")
+  } ?: fail("Expected actual to be blank but was null")
 }

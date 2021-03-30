@@ -27,4 +27,33 @@ public class QueryTest {
     val query = Query("title" to "Hey Joe", "artist" to "Jimi Hendrix")
     expect(query.toString()).toBe("""title:"Hey Joe" artist:"Jimi Hendrix"""")
   }
+
+  @Test
+  public fun `test query replace `() {
+    val titleField = Field("title", Term("Hey Joe"))
+    val artistField = Field("artist", Term("Jimi Hendrix"))
+    val titleAndArtist = titleField and artistField
+    Query(titleField).apply {
+      expect(toString()).toBe("title:\"Hey Joe\"")
+      replaceOrAdd(titleField, titleAndArtist)
+      expect(toString()).toBe("(title:\"Hey Joe\" AND artist:\"Jimi Hendrix\")")
+    }
+
+    val unused = Field("no", Term("no"))
+    Query().apply {
+      replaceOrAdd(unused, titleField)
+      expect(toString()).toBe("title:\"Hey Joe\"")
+      replaceOrAdd(titleField, titleAndArtist)
+      expect(toString()).toBe("(title:\"Hey Joe\" AND artist:\"Jimi Hendrix\")")
+    }
+
+    Query().apply {
+      replaceOrAdd(unused, titleField)
+      expect(toString()).toBe("title:\"Hey Joe\"")
+      replaceOrAdd(unused, artistField)
+      expect(toString()).toBe("title:\"Hey Joe\" artist:\"Jimi Hendrix\"")
+    }
+  }
 }
+
+private infix fun Field.and(other: Field): Field = AndExp(listOf(this, other))

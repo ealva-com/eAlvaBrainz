@@ -23,11 +23,11 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 public class BrowseArtistList(
   @Json(name = "artist-count")
-  public var artistCount: Int = 0,
+  public val artistCount: Int = 0,
   @Json(name = "artist-offset")
-  public var artistOffset: Int = 0,
+  public val artistOffset: Int = 0,
   @Json(name = "artists")
-  public var artists: List<Artist> = emptyList()
+  public val artists: List<Artist> = emptyList()
 ) {
   override fun toString(): String = toJson()
 }

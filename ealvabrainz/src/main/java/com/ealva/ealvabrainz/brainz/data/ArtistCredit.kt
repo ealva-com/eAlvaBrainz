@@ -21,9 +21,9 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 public class ArtistCredit(
-  public var name: String = "",
-  public var joinphrase: String = "",
-  @field:FallbackOnNull public var artist: Artist = Artist.NullArtist
+  public val name: String = "",
+  public val joinphrase: String = "",
+  @field:FallbackOnNull public val artist: Artist = Artist.NullArtist
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

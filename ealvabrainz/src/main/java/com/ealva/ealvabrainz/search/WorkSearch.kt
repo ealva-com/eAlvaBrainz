@@ -20,36 +20,31 @@
 package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Work.SearchField
+import com.ealva.ealvabrainz.brainz.data.Work.SearchField.Alias
+import com.ealva.ealvabrainz.brainz.data.Work.SearchField.Work
 import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.common.Iswc
 import com.ealva.ealvabrainz.common.RecordingMbid
 import com.ealva.ealvabrainz.common.RecordingTitle
 import com.ealva.ealvabrainz.common.WorkMbid
 import com.ealva.ealvabrainz.common.WorkName
-import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.lucene.Field
+import com.ealva.ealvabrainz.lucene.Query
 import com.ealva.ealvabrainz.lucene.Term
 import kotlin.experimental.ExperimentalTypeInference
 
 @OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
-public class WorkSearch : BaseSearch<SearchField>() {
+public class WorkSearch(query: Query = Query()) : BaseSearch<SearchField>(query) {
   @JvmName("aliasTerm")
   @OverloadResolutionByLambdaReturnType
   /** alias	(part of) any alias attached to the work (diacritics are ignored) */
-  public inline fun alias(term: () -> Term): Field = add(SearchField.Alias, term())
+  public inline fun alias(term: () -> Term): Field = add(Alias, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun alias(term: () -> String): Field = alias { Term(term()) }
-
-  @JvmName("artistIdTerm")
-  @OverloadResolutionByLambdaReturnType
-  /** the MBID of an artist related to the work (e.g. a composer or lyricist) */
-  public inline fun artistId(term: () -> Term): Field = add(SearchField.ArtistId, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun artistId(term: () -> ArtistMbid): Field = artistId { Term(term()) }
 
   @JvmName("artistTerm")
   @OverloadResolutionByLambdaReturnType
@@ -58,6 +53,14 @@ public class WorkSearch : BaseSearch<SearchField>() {
 
   @OverloadResolutionByLambdaReturnType
   public inline fun artist(term: () -> ArtistName): Field = artist { Term(term()) }
+
+  @JvmName("artistIdTerm")
+  @OverloadResolutionByLambdaReturnType
+  /** the MBID of an artist related to the work (e.g. a composer or lyricist) */
+  public inline fun artistId(term: () -> Term): Field = add(SearchField.ArtistId, term())
+
+  @OverloadResolutionByLambdaReturnType
+  public inline fun artistId(term: () -> ArtistMbid): Field = artistId { Term(term()) }
 
   @JvmName("commentTerm")
   @OverloadResolutionByLambdaReturnType
@@ -69,13 +72,15 @@ public class WorkSearch : BaseSearch<SearchField>() {
 
   @JvmName("defaultTerm")
   @OverloadResolutionByLambdaReturnType
-  /**
-   * (part of) the default's title (diacritics are ignored)
-   */
+  /** Default searches for [Alias] and [Work] */
   public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun default(term: () -> WorkName): Field = default { Term(term()) }
+
+  @JvmName("defaultString")
+  @OverloadResolutionByLambdaReturnType
+  public inline fun default(term: () -> String): Field = default { Term(term()) }
 
   @JvmName("iswcTerm")
   @OverloadResolutionByLambdaReturnType
@@ -83,7 +88,7 @@ public class WorkSearch : BaseSearch<SearchField>() {
   public inline fun iswc(term: () -> Term): Field = add(SearchField.Iswc, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun iswc(term: () -> Iswc): Field = iswc { Term(term().value) }
+  public inline fun iswc(term: () -> Iswc): Field = iswc { Term(term()) }
 
   @JvmName("languageTerm")
   @OverloadResolutionByLambdaReturnType
@@ -96,7 +101,7 @@ public class WorkSearch : BaseSearch<SearchField>() {
   @JvmName("recordingTerm")
   @OverloadResolutionByLambdaReturnType
   /**
-   * recording	(part of) the title of a recording related to the work (diacritics are ignored)
+   * (part of) the title of a recording related to the work (diacritics are ignored)
    */
   public inline fun recording(term: () -> Term): Field = add(SearchField.Recording, term())
 
@@ -137,6 +142,16 @@ public class WorkSearch : BaseSearch<SearchField>() {
   @OverloadResolutionByLambdaReturnType
   public inline fun type(term: () -> String): Field = type { Term(term()) }
 
+  @JvmName("workTerm")
+  @OverloadResolutionByLambdaReturnType
+  /**
+   * (part of) the work's title (diacritics are ignored)
+   */
+  public inline fun work(term: () -> Term): Field = add(Work, term())
+
+  @OverloadResolutionByLambdaReturnType
+  public inline fun work(term: () -> WorkName): Field = work { Term(term()) }
+
   @JvmName("workAccentTerm")
   @OverloadResolutionByLambdaReturnType
   /** (part of) the work's title (with the specified diacritics) */
@@ -144,16 +159,6 @@ public class WorkSearch : BaseSearch<SearchField>() {
 
   @OverloadResolutionByLambdaReturnType
   public inline fun workAccent(term: () -> String): Field = workAccent { Term(term()) }
-
-  @JvmName("workTerm")
-  @OverloadResolutionByLambdaReturnType
-  /**
-   * (part of) the work's title (diacritics are ignored)
-   */
-  public inline fun work(term: () -> Term): Field = add(SearchField.Work, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun work(term: () -> WorkName): Field = work { Term(term()) }
 
   @JvmName("workIdTerm")
   @OverloadResolutionByLambdaReturnType

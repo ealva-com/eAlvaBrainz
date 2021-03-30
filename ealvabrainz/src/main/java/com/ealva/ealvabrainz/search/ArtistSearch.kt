@@ -15,12 +15,14 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-@file:Suppress("unused")
-
 package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Artist.SearchField
+import com.ealva.ealvabrainz.brainz.data.Artist.SearchField.Alias
+import com.ealva.ealvabrainz.brainz.data.Artist.SearchField.Artist
+import com.ealva.ealvabrainz.brainz.data.Artist.SearchField.SortName
 import com.ealva.ealvabrainz.brainz.data.ArtistType
+import com.ealva.ealvabrainz.common.AreaName
 import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.BrainzMarker
@@ -30,13 +32,14 @@ import java.time.LocalDate
 import java.util.Date
 import kotlin.experimental.ExperimentalTypeInference
 
+@Suppress("unused")
 @OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
 public class ArtistSearch : BaseSearch<SearchField>() {
   @JvmName("aliasTerm")
   @OverloadResolutionByLambdaReturnType
   /** (part of) any alias attached to the artist (diacritics are ignored) */
-  public inline fun alias(term: () -> Term): Field = add(SearchField.Alias, term())
+  public inline fun alias(term: () -> Term): Field = add(Alias, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun alias(term: () -> String): Field = alias { Term(term()) }
@@ -55,7 +58,15 @@ public class ArtistSearch : BaseSearch<SearchField>() {
   public inline fun area(term: () -> Term): Field = add(SearchField.Area, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun area(term: () -> String): Field = area { Term(term()) }
+  public inline fun area(term: () -> AreaName): Field = area { Term(term()) }
+
+  @JvmName("artistTerm")
+  @OverloadResolutionByLambdaReturnType
+  /** the artist's name (diacritics are ignored) */
+  public inline fun artist(term: () -> Term): Field = add(Artist, term())
+
+  @OverloadResolutionByLambdaReturnType
+  public inline fun artist(name: () -> ArtistName): Field = artist { Term(name()) }
 
   @JvmName("artistAccentTerm")
   @OverloadResolutionByLambdaReturnType
@@ -73,17 +84,9 @@ public class ArtistSearch : BaseSearch<SearchField>() {
   @OverloadResolutionByLambdaReturnType
   public inline fun artistId(mbid: () -> ArtistMbid): Field = artistId { Term(mbid()) }
 
-  @JvmName("artistTerm")
-  @OverloadResolutionByLambdaReturnType
-  /** the artist's name (diacritics are ignored) */
-  public inline fun artist(term: () -> Term): Field = add(SearchField.Artist, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun artist(name: () -> ArtistName): Field = artist { Term(name()) }
-
   @JvmName("beginAreaTerm")
   @OverloadResolutionByLambdaReturnType
-  /** the artist's begin area */
+  /** (part of) the name of the artist's begin area */
   public inline fun beginArea(term: () -> Term): Field = add(SearchField.BeginArea, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -91,6 +94,7 @@ public class ArtistSearch : BaseSearch<SearchField>() {
 
   @JvmName("beginDateTerm")
   @OverloadResolutionByLambdaReturnType
+  /** the artist's begin date (e.g. "1980-01-22")  */
   public inline fun beginDate(term: () -> Term): Field = add(SearchField.Begin, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -102,7 +106,7 @@ public class ArtistSearch : BaseSearch<SearchField>() {
 
   @JvmName("commentTerm")
   @OverloadResolutionByLambdaReturnType
-  /** the artist's disambiguation comment */
+  /** (part of) the artist's disambiguation comment  */
   public inline fun comment(term: () -> Term): Field = add(SearchField.Comment, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -110,6 +114,9 @@ public class ArtistSearch : BaseSearch<SearchField>() {
 
   @JvmName("countryTerm")
   @OverloadResolutionByLambdaReturnType
+  /**
+   * the 2-letter code (ISO 3166-1 alpha-2) for the artist's main associated country, or “unknown”
+   */
   public inline fun country(term: () -> Term): Field = add(SearchField.Country, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -117,15 +124,16 @@ public class ArtistSearch : BaseSearch<SearchField>() {
 
   @JvmName("defaultTerm")
   @OverloadResolutionByLambdaReturnType
-  /** the artist's name (diacritics are ignored) */
-  public fun default(term: () -> Term): Field = add(SearchField.Default, term())
+  /** Default searches [Alias], [Artist], and [SortName] */
+  public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
 
   @JvmName("defaultName")
   @OverloadResolutionByLambdaReturnType
-  public fun default(name: () -> ArtistName): Field = default { Term(name()) }
+  public inline fun default(name: () -> String): Field = default { Term(name()) }
 
   @JvmName("endAreaTerm")
   @OverloadResolutionByLambdaReturnType
+  /** 	(part of) the name of the artist's end area  */
   public inline fun endArea(term: () -> Term): Field = add(SearchField.EndArea, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -133,6 +141,7 @@ public class ArtistSearch : BaseSearch<SearchField>() {
 
   @JvmName("endDateTerm")
   @OverloadResolutionByLambdaReturnType
+  /** the artist's end date (e.g. "1980-01-22")  */
   public inline fun endDate(term: () -> Term): Field = add(SearchField.End, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -144,7 +153,10 @@ public class ArtistSearch : BaseSearch<SearchField>() {
 
   @JvmName("endedTerm")
   @OverloadResolutionByLambdaReturnType
-  /** a flag indicating whether or not the artist has ended */
+  /**
+   * 	a boolean flag (true/false) indicating whether or not the artist has ended (is
+   * dissolved/deceased)
+   */
   public inline fun ended(term: () -> Term): Field = add(SearchField.Ended, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -152,6 +164,7 @@ public class ArtistSearch : BaseSearch<SearchField>() {
 
   @JvmName("genderTerm")
   @OverloadResolutionByLambdaReturnType
+  /** the artist's gender (“male”, “female”, “other” or “not applicable”)  */
   public inline fun gender(term: () -> Term): Field = add(SearchField.Gender, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -159,7 +172,7 @@ public class ArtistSearch : BaseSearch<SearchField>() {
 
   @JvmName("ipiTerm")
   @OverloadResolutionByLambdaReturnType
-  /** A number identifying persons connected to ISWC registered works (authors, composers, etc.) */
+  /** an IPI code associated with the artist */
   public inline fun ipi(term: () -> Term): Field = add(SearchField.Ipi, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -167,6 +180,7 @@ public class ArtistSearch : BaseSearch<SearchField>() {
 
   @JvmName("isniTerm")
   @OverloadResolutionByLambdaReturnType
+  /** an ISNI code associated with the artist */
   public inline fun isni(term: () -> Term): Field = add(SearchField.Isni, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -174,15 +188,19 @@ public class ArtistSearch : BaseSearch<SearchField>() {
 
   @JvmName("sortNameTerm")
   @OverloadResolutionByLambdaReturnType
-  /** Used to sort the artist */
-  public inline fun sortName(term: () -> Term): Field = add(SearchField.SortName, term())
+  /**
+   * (part of) the artist's [sort name](https://musicbrainz.org/doc/Artist#Sort_name)
+   *
+   * Sort name [style](https://musicbrainz.org/doc/Style/Artist/Sort_Name)
+   */
+  public inline fun sortName(term: () -> Term): Field = add(SortName, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun sortName(term: () -> String): Field = sortName { Term(term()) }
 
   @JvmName("tagTerm")
   @OverloadResolutionByLambdaReturnType
-  /** a tag attached to the artist */
+  /** (part of) a tag attached to the artist */
   public inline fun tag(term: () -> Term): Field = add(SearchField.Tag, term())
 
   @OverloadResolutionByLambdaReturnType
@@ -190,7 +208,7 @@ public class ArtistSearch : BaseSearch<SearchField>() {
 
   @JvmName("typeTerm")
   @OverloadResolutionByLambdaReturnType
-  /** The [artist type][ArtistType] */
+  /** the artist's [type](https://musicbrainz.org/doc/Artist#Type) (“person”, “group”, etc.) */
   public inline fun type(term: () -> Term): Field = add(SearchField.Type, term())
 
   @OverloadResolutionByLambdaReturnType

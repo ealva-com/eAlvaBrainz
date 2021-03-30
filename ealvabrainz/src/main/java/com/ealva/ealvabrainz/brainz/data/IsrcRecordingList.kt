@@ -21,6 +21,6 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 public class IsrcRecordingList(
-  public var isrc: String? = null,
-  public var recordings: List<Recording> = emptyList()
+  public val isrc: String? = null,
+  public val recordings: List<Recording> = emptyList()
 )

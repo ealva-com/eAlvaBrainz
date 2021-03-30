@@ -33,21 +33,23 @@ object Versions {
   const val ESPRESSO_CORE = "3.2.0"
   const val EXPECT = "1.0.1"
   const val FASTUTIL = "7.2.1"
-  const val JUNIT = "4.13"
+  const val JUNIT = "4.13.2"
   const val KOIN = "2.2.2"
-  const val KOTLIN = "1.4.30"
+  const val KOTLIN = "1.4.32"
   const val KOTLIN_RESULT = "1.1.11"
   const val LIFECYCLE = "2.2.0"
   const val MOSHI = "1.11.0"
-  const val ROBOLECTRIC = "4.4"
+  const val OKHTTP = "4.9.1"
+  const val OKHTTP_LOGGING = "4.9.1"
+  const val ROBOLECTRIC = "4.5.1"
 }
 
 object BuildPluginsVersion {
   const val AGP = "7.0.0-alpha08"
-  const val DETEKT = "1.14.1"
+  const val DETEKT = "1.16.0"
   const val DOKKA = "1.4.30"
-  const val KOTLIN = "1.4.30"
-  const val VANNIKTECH_PUBLISH = "0.13.0"
+  const val KOTLIN = "1.4.32"
+  const val VANNIKTECH_PUBLISH = "0.14.2"
   const val VERSIONS = "0.33.0"
 }
 
@@ -72,9 +74,10 @@ object ThirdParty {
   const val KOIN_ANDROID = "org.koin:koin-android:${Versions.KOIN}"
   const val KOTLIN_RESULT = "com.michael-bull.kotlin-result:kotlin-result:${Versions.KOTLIN_RESULT}"
   const val MOSHI = "com.squareup.moshi:moshi:${Versions.MOSHI}"
+  const val MOSHI_CODEGEN = "com.squareup.moshi:moshi-kotlin-codegen:${Versions.MOSHI}"
   const val MOSHI_RETROFIT = "com.squareup.retrofit2:converter-moshi:2.9.0"
-  const val OKHTTP = "com.squareup.okhttp3:okhttp:4.9.0"
-  const val OKHTTP_LOGGING = "com.squareup.okhttp3:logging-interceptor:4.9.0"
+  const val OKHTTP = "com.squareup.okhttp3:okhttp:${Versions.OKHTTP}"
+  const val OKHTTP_LOGGING = "com.squareup.okhttp3:logging-interceptor:${Versions.OKHTTP_LOGGING}"
   const val RETROFIT = "com.squareup.retrofit2:retrofit:2.9.0"
   const val SPLITTIES_SYSTEM_SERVICES =
     "com.louiscad.splitties:splitties-systemservices:3.0.0-alpha06"
