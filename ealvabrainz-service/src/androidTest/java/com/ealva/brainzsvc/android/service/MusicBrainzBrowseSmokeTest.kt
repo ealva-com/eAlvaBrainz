@@ -22,7 +22,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.ealva.brainzsvc.service.BrainzErrorMessage
-import com.ealva.brainzsvc.service.BrainzMessage
 import com.ealva.brainzsvc.service.BuildConfig
 import com.ealva.brainzsvc.service.ContextResourceFetcher
 import com.ealva.brainzsvc.service.CoverArtService
@@ -32,6 +31,9 @@ import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.Password
 import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.brainzsvc.service.UserName
+import com.ealva.ealvabrainz.brainz.data.Collection
+import com.ealva.ealvabrainz.brainz.data.EventCollection
+import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.browse.ArtistBrowse
 import com.ealva.ealvabrainz.browse.CollectionBrowse
 import com.ealva.ealvabrainz.browse.EventBrowse
@@ -41,11 +43,6 @@ import com.ealva.ealvabrainz.browse.RecordingBrowse
 import com.ealva.ealvabrainz.browse.ReleaseBrowse
 import com.ealva.ealvabrainz.browse.ReleaseGroupBrowse.BrowseOn
 import com.ealva.ealvabrainz.browse.WorkBrowse
-import com.ealva.brainzsvc.service.getErrorString
-import com.ealva.ealvabrainz.brainz.data.BrowseReleaseGroupList
-import com.ealva.ealvabrainz.brainz.data.Collection
-import com.ealva.ealvabrainz.brainz.data.EventCollection
-import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.common.AreaMbid
 import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.EditorName
@@ -56,8 +53,8 @@ import com.ealva.ealvabrainz.test.shared.MainCoroutineRule
 import com.ealva.ealvabrainz.test.shared.runBlockingTest
 import com.ealva.ealvabrainz.test.shared.toHaveAny
 import com.ealva.ealvabrainz.test.shared.toNotBeEmpty
-import com.github.michaelbull.result.Err
-import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.onFailure
+import com.github.michaelbull.result.onSuccess
 import com.nhaarman.expect.expect
 import com.nhaarman.expect.fail
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -141,32 +138,24 @@ public class MusicBrainzBrowseSmokeTest {
   }
 
   @Test
-  public fun browseArtistsBeatlesRevolver(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      when (val result = browseArtists(ArtistBrowse.BrowseOn.ReleaseGroup(THE_BEATLES_REVOLVER))) {
-        is Ok -> result.value.let { browseArtistList ->
-          expect(browseArtistList.artists).toHaveSize(1)
-          expect(browseArtistList.artists[0].name).toBe("The Beatles")
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
+  public fun browseArtistsBeatlesRevolver(): Unit = brainz {
+    browseArtists(ArtistBrowse.BrowseOn.ReleaseGroup(THE_BEATLES_REVOLVER))
+      .onSuccess { browseArtistList ->
+        expect(browseArtistList.artists).toHaveSize(1)
+        expect(browseArtistList.artists[0].name).toBe("The Beatles")
       }
-    }
+      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun browseArtistsWithStatusBeatlesRevolver(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      when (
-        val result = browseArtists(ArtistBrowse.BrowseOn.ReleaseGroup(THE_BEATLES_REVOLVER)) {
-          status(Release.Status.Official)
-        }
-      ) {
-        is Ok -> fail("Expected an error from the server")
-        is Err -> {
-          expect(result.error).toBeInstanceOf<BrainzErrorMessage> { errorMessage ->
-            expect(errorMessage.error.error).toContain("status is not a valid parameter")
-          }
-        }
+  public fun browseArtistsWithStatusBeatlesRevolver(): Unit = brainz {
+    browseArtists(ArtistBrowse.BrowseOn.ReleaseGroup(THE_BEATLES_REVOLVER)) {
+      status(Release.Status.Official)
+    }.onSuccess {
+      fail("Expected Err result")
+    }.onFailure { brainzMessage ->
+      expect(brainzMessage).toBeInstanceOf<BrainzErrorMessage> { errorMessage ->
+        expect(errorMessage.error.error).toContain("status is not a valid parameter")
       }
     }
   }
@@ -175,249 +164,181 @@ public class MusicBrainzBrowseSmokeTest {
   /**
    * This test requires authentication as it includes Collection.Browse.UserCollections
    */
-  public fun browseCollectionsForEditor(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      when (
-        val result = browseCollections(
-          CollectionBrowse.BrowseOn.Editor(EditorName(BuildConfig.BRAINZ_USERNAME))
-        ) {
-          include(Collection.Browse.UserCollections)
-        }
+  public fun browseCollectionsForEditor(): Unit = brainz {
+    browseCollections(
+      CollectionBrowse.BrowseOn.Editor(EditorName(BuildConfig.BRAINZ_USERNAME))
+    ) {
+      include(Collection.Browse.UserCollections)
+    }.onSuccess { browseList ->
+      expect(browseList.collections).toNotBeEmpty { "Expected some collections" }
+      // Test for both default collections each MusicBrainz user has
+      expect(browseList.collections).toHaveAny(
+        { " Didn't contain Maybe attending of type EventCollection" }
+      ) { collection ->
+        collection.name == "Maybe attending" && collection is EventCollection
+      }
+      expect(browseList.collections).toHaveAny(
+        { " Didn't contain Attending of type EventCollection" }
+      ) { collection ->
+        collection.name == "Attending" && collection is EventCollection
+      }
+    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+  }
+
+  @Test
+  public fun browseEventsForMetallica(): Unit = brainz {
+    val limit = Limit(5)
+    browseEvents(
+      EventBrowse.BrowseOn.Artist(ArtistMbid("65f4f0c5-ef9e-490c-aee3-909e7ae6b2ab")),
+      limit
+    ).onSuccess { browseList ->
+      expect(browseList.eventCount).toBeGreaterThan(39) // 40 last checked
+      expect(browseList.events).toHaveSize(limit.value)
+      expect(browseList.events).toHaveAny({ "Metallica at UIC Pavilion" }) {
+        it.name == "Metallica at UIC Pavilion"
+      }
+      expect(browseList.events).toHaveAny(
+        { " Expected to contain Monsters of Rock Pforzheim 1987 Festival " }
       ) {
-        is Ok -> result.value.let { browseList ->
-          expect(browseList.collections).toNotBeEmpty { "Expected some collections" }
-          // Test for both default collections each MusicBrainz user has
-          expect(browseList.collections).toHaveAny(
-            { " Didn't contain Maybe attending of type EventCollection" }
-          ) { collection ->
-            collection.name == "Maybe attending" && collection is EventCollection
-          }
-          expect(browseList.collections).toHaveAny(
-            { " Didn't contain Attending of type EventCollection" }
-          ) { collection ->
-            collection.name == "Attending" && collection is EventCollection
-          }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
+        it.type == "Festival" && it.name == "Monsters of Rock Pforzheim 1987"
       }
-    }
+    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun browseEventsForMetallica(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val metallicaMbid = ArtistMbid("65f4f0c5-ef9e-490c-aee3-909e7ae6b2ab")
-      val limit = Limit(5)
-      when (
-        val result = browseEvents(
-          EventBrowse.BrowseOn.Artist(metallicaMbid),
-          limit
-        )
-      ) {
-        is Ok -> result.value.let { browseList ->
-          expect(browseList.eventCount).toBeGreaterThan(39) // 40 last checked
-          expect(browseList.events).toHaveSize(limit.value)
-          expect(browseList.events).toHaveAny({ "Metallica at UIC Pavilion" }) {
-            it.name == "Metallica at UIC Pavilion"
-          }
-          expect(browseList.events).toHaveAny(
-            { " Expected to contain Monsters of Rock Pforzheim 1987 Festival " }
-          ) {
-            it.type == "Festival" && it.name == "Monsters of Rock Pforzheim 1987"
-          }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
+  public fun browseLabelsForArea(): Unit = brainz {
+    val limit = Limit(24)
+    browseLabels(
+      LabelBrowse.BrowseOn.Area(AreaMbid("8a754a16-0027-3a29-b6d7-2b40ea0481ed")),
+      limit
+    ).onSuccess { browseList ->
+      expect(browseList.labelCount).toBeGreaterThan(15350) // last checked was 15359
+      expect(browseList.labels).toHaveSize(limit.value)
+      expect(browseList.labels).toHaveAny { it.name == "[Detail] Recordings" }
+      expect(browseList.labels).toHaveAny { it.name == "@10footclown" }
+    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun browseLabelsForArea(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val unitedKingdom = AreaMbid("8a754a16-0027-3a29-b6d7-2b40ea0481ed")
-      val limit = Limit(24)
-      when (
-        val result = browseLabels(LabelBrowse.BrowseOn.Area(unitedKingdom), limit)
-      ) {
-        is Ok -> result.value.let { browseList ->
-          expect(browseList.labelCount).toBeGreaterThan(15350) // last checked was 15359
-          expect(browseList.labels).toHaveSize(limit.value)
-          expect(browseList.labels).toHaveAny { it.name == "[Detail] Recordings" }
-          expect(browseList.labels).toHaveAny { it.name == "@10footclown" }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
+  public fun browsePlacesForAreaUnitedKingdom(): Unit = brainz {
+    val limit = Limit(25)
+    browsePlaces(
+      PlaceBrowse.BrowseOn.Area(AreaMbid("8a754a16-0027-3a29-b6d7-2b40ea0481ed")),
+      limit
+    ).onSuccess { browseList ->
+      expect(browseList.places).toHaveSize(limit.value)
+      expect(browseList.placeCount).toBeGreaterThan(4200) // 4206 last count
+      expect(browseList.places).toHaveAny {
+        it.name == "2khz Studio" && it.type == "Studio"
       }
-    }
+      expect(browseList.places).toHaveAny {
+        it.name == "13th Note Club" && it.type == "Venue"
+      }
+    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun browsePlacesForAreaUnitedKingdom(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val unitedKingdom = AreaMbid("8a754a16-0027-3a29-b6d7-2b40ea0481ed")
-      val limit = Limit(25)
-      when (
-        val result = browsePlaces(PlaceBrowse.BrowseOn.Area(unitedKingdom), limit)
-      ) {
-        is Ok -> result.value.let { browseList ->
-          expect(browseList.places).toHaveSize(limit.value)
-          expect(browseList.placeCount).toBeGreaterThan(4200) // 4206 last count
-          expect(browseList.places).toHaveAny {
-            it.name == "2khz Studio" && it.type == "Studio"
-          }
-          expect(browseList.places).toHaveAny {
-            it.name == "13th Note Club" && it.type == "Venue"
-          }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
+  public fun browseReleasesBeatles(): Unit = brainz {
+    val limit = Limit(5)
+    val offset = Offset(100)
+    browseReleases(
+      ReleaseBrowse.BrowseOn.Artist(THE_BEATLES_MBID),
+      limit,
+      offset
+    ).onSuccess { browseList ->
+      expect(browseList.releaseOffset).toBe(offset.value)
+      expect(browseList.releases).toHaveSize(5)
+    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun browseReleasesBeatles(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val limit = Limit(5)
-      val offset = Offset(100)
-      when (
-        val result = browseReleases(
-          ReleaseBrowse.BrowseOn.Artist(THE_BEATLES_MBID),
-          limit,
-          offset
-        )
-      ) {
-        is Ok -> result.value.let { browseList ->
-          expect(browseList.releaseOffset).toBe(offset.value)
-          expect(browseList.releases).toHaveSize(5)
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
+  public fun browseRecordingsOfNirvana(): Unit = brainz {
+    val limit = Limit(5)
+    browseRecordings(
+      RecordingBrowse.BrowseOn.Artist(ArtistMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")),
+      limit
+    ).onSuccess { browseList ->
+      expect(browseList.recordingCount).toBeGreaterThan(13620) // 13622 last check
+      expect(browseList.recordings).toHaveSize(limit.value)
+      expect(browseList.recordings).toHaveAny { it.title == "(New Wave) Polly" }
+    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun browseRecordingsOfNirvana(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val nirvana = ArtistMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
-      val limit = Limit(5)
-      when (val result = browseRecordings(RecordingBrowse.BrowseOn.Artist(nirvana), limit)) {
-        is Ok -> result.value.let { browseList ->
-          expect(browseList.recordingCount).toBeGreaterThan(13620) // 13622 last check
-          expect(browseList.recordings).toHaveSize(limit.value)
-          expect(browseList.recordings).toHaveAny { it.title == "(New Wave) Polly" }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
+  public fun browseReleasesWithTypeBeatles(): Unit = brainz {
+    val limit = Limit(5)
+    val offset = Offset(10)
+    browseReleases(
+      ReleaseBrowse.BrowseOn.Artist(THE_BEATLES_MBID),
+      limit,
+      offset
+    ) {
+      types(Release.Type.Album)
+    }.onSuccess { browseList ->
+      expect(browseList.releaseOffset).toBe(offset.value)
+      expect(browseList.releases).toHaveSize(5)
+    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun browseReleasesWithTypeBeatles(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val limit = Limit(5)
-      val offset = Offset(10)
-      when (
-        val result = browseReleases(
-          ReleaseBrowse.BrowseOn.Artist(THE_BEATLES_MBID),
-          limit,
-          offset
-        ) {
-          types(Release.Type.Album)
-        }
-      ) {
-        is Ok -> result.value.let { browseList ->
-          expect(browseList.releaseOffset).toBe(offset.value)
-          expect(browseList.releases).toHaveSize(5)
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
+  public fun browseReleasesWithStatusBeatles(): Unit = brainz {
+    val limit = Limit(5)
+    val offset = Offset(10)
+    browseReleases(
+      ReleaseBrowse.BrowseOn.Artist(THE_BEATLES_MBID),
+      limit,
+      offset
+    ) {
+      status(Release.Status.Official)
+    }.onSuccess { browseList ->
+      expect(browseList.releaseOffset).toBe(offset.value)
+      expect(browseList.releases).toHaveSize(5)
+    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun browseReleasesWithStatusBeatles(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val limit = Limit(5)
-      val offset = Offset(10)
-      when (
-        val result = browseReleases(
-          ReleaseBrowse.BrowseOn.Artist(THE_BEATLES_MBID),
-          limit,
-          offset
-        ) {
-          status(Release.Status.Official)
-        }
-      ) {
-        is Ok -> result.value.let { browseList ->
-          expect(browseList.releaseOffset).toBe(offset.value)
-          expect(browseList.releases).toHaveSize(5)
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
+  public fun browseReleaseGroupsJethroTull(): Unit = brainz {
+    val limit = Limit(5)
+    browseReleaseGroups(BrowseOn.Artist(JETHRO_TULL_MBID), limit)
+      .onSuccess { browseList ->
+        expect(browseList.releaseGroups).toHaveSize(limit.value)
+        expect(browseList.releaseGroups[0].title).toBe("Aqualung")
       }
-    }
+      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun browseReleaseGroupsJethroTull(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val limit = Limit(5)
-      when (val result = browseReleaseGroups(BrowseOn.Artist(JETHRO_TULL_MBID), limit)) {
-        is Ok -> result.value.let { browseList: BrowseReleaseGroupList ->
-          expect(browseList.releaseGroups).toHaveSize(limit.value)
-          expect(browseList.releaseGroups[0].title).toBe("Aqualung")
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
+  public fun browseReleaseGroupsWithTypeJethroTull(): Unit = brainz {
+    val limit = Limit(5)
+    browseReleaseGroups(BrowseOn.Artist(JETHRO_TULL_MBID), limit) {
+      types(Release.Type.Album)
+    }.onSuccess { browseList ->
+      expect(browseList.releaseGroups).toHaveSize(limit.value)
+    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun browseReleaseGroupsWithTypeJethroTull(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val limit = Limit(5)
-      when (
-        val result = browseReleaseGroups(BrowseOn.Artist(JETHRO_TULL_MBID), limit = limit) {
-          types(Release.Type.Album)
-        }
-      ) {
-        is Ok -> result.value.let { browseList: BrowseReleaseGroupList ->
-          expect(browseList.releaseGroups).toHaveSize(limit.value)
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
+  public fun browseWorksOfTheBeatles(): Unit = brainz {
+    val limit = Limit(20)
+    val offset = Offset(100)
+    browseWorks(
+      WorkBrowse.BrowseOn.Artist(THE_BEATLES_MBID),
+      limit,
+      offset
+    ).onSuccess { browseList ->
+      expect(browseList.workCount).toBeGreaterThan(340) // 343 last checked
+      expect(browseList.workOffset).toBe(offset.value)
+      expect(browseList.works).toHaveSize(limit.value)
+      expect(browseList.works).toHaveAny({ "Didn't have title Help!" }) { it.title == "Help!" }
+    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
-  @Test
-  public fun browseWorksOfTheBeatles(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val limit = Limit(5)
-      val offset = Offset(100)
-      when (
-        val result = browseWorks(
-          WorkBrowse.BrowseOn.Artist(THE_BEATLES_MBID),
-          limit,
-          offset
-        )
-      ) {
-        is Ok -> result.value.let { browseList ->
-          expect(browseList.workCount).toBeGreaterThan(340) // 343 last checked
-          expect(browseList.workOffset).toBe(offset.value)
-          expect(browseList.works).toHaveSize(limit.value)
-          expect(browseList.works).toHaveAny { it.title == "Her Majesty" }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
-  }
-
-  private suspend fun withBrainz(block: suspend MusicBrainzService.() -> Unit) {
+  private fun brainz(block: suspend MusicBrainzService.() -> Unit) = coroutineRule.runBlockingTest {
     @Suppress("BlockingMethodInNonBlockingContext")
     runBlocking {
       musicBrainzService.block()
     }
   }
-
-  private fun failReason(result: Err<BrainzMessage>): String = result.getErrorString(fetcher)
 }
 
 private val JETHRO_TULL_MBID = ArtistMbid("ece57992-dc2e-4f67-a269-fa43626c1a3d")

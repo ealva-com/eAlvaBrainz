@@ -21,7 +21,6 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import com.ealva.brainzsvc.service.BrainzMessage
 import com.ealva.brainzsvc.service.BuildConfig
 import com.ealva.brainzsvc.service.ContextResourceFetcher
 import com.ealva.brainzsvc.service.CoverArtService
@@ -31,7 +30,6 @@ import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.Password
 import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.brainzsvc.service.UserName
-import com.ealva.brainzsvc.service.getErrorString
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.common.AlbumTitle
 import com.ealva.ealvabrainz.common.AreaName
@@ -42,15 +40,14 @@ import com.ealva.ealvabrainz.common.Limit
 import com.ealva.ealvabrainz.common.ReleaseMbid
 import com.ealva.ealvabrainz.common.WorkName
 import com.ealva.ealvabrainz.common.toAlbumTitle
-import com.ealva.ealvabrainz.common.toArtistName
 import com.ealva.ealvabrainz.lucene.Term
 import com.ealva.ealvabrainz.lucene.inclusive
 import com.ealva.ealvabrainz.lucene.or
 import com.ealva.ealvabrainz.test.shared.MainCoroutineRule
 import com.ealva.ealvabrainz.test.shared.runBlockingTest
 import com.ealva.ealvabrainz.test.shared.toHaveAny
-import com.github.michaelbull.result.Err
-import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.onFailure
+import com.github.michaelbull.result.onSuccess
 import com.nhaarman.expect.expect
 import com.nhaarman.expect.fail
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -134,286 +131,205 @@ public class MusicBrainzFindSmokeTest {
   }
 
   @Test
-  public fun findAnnotation(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      when (
-        val result = findAnnotation {
-          entity { ReleaseMbid("bdb24cb5-404b-4f60-bba4-7b730325ae47") }
-        }
-      ) {
-        is Ok -> result.value.let { annotationList ->
-          expect(annotationList.count).toBeGreaterThan(0)
-          expect(annotationList.annotations).toHaveAny { it.type == "release" }
-          expect(annotationList.annotations).toHaveAny { it.name == "Pieds nus sur la braise" }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
+  public fun findAnnotation(): Unit = brainz {
+    findAnnotation {
+      entity { ReleaseMbid("bdb24cb5-404b-4f60-bba4-7b730325ae47") }
+    }.onSuccess { annotationList ->
+      expect(annotationList.count).toBeGreaterThan(0)
+      expect(annotationList.annotations).toHaveAny { it.type == "release" }
+      expect(annotationList.annotations).toHaveAny { it.name == "Pieds nus sur la braise" }
+    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun findAreaIledeFrance(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      when (val result = findArea { default { AreaName("Île-de-France") } }) {
-        is Ok -> result.value.let { areaList ->
-          expect(areaList.count).toBeGreaterThan(0)
-          expect(areaList.areas).toHaveAny { it.name == "Île-de-France" }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
+  public fun findAreaIledeFrance(): Unit = brainz {
+    findArea { default { AreaName("Île-de-France") } }
+      .onSuccess { areaList ->
+        expect(areaList.count).toBeGreaterThan(0)
+        expect(areaList.areas).toHaveAny { it.name == "Île-de-France" }
       }
-    }
+      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun findArtistJethroTullSearch(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      when (val result = findArtist(limit = Limit(4)) { artist { JETHRO_TULL } }) {
-        is Ok -> result.value.let { artistList ->
-          expect(artistList.count).toBeGreaterThan(0)
-          result.value.artists.let { artists ->
-            expect(artists).toHaveSize(1)
-            val artist = artists[0]
-            expect(ArtistMbid(artist.id)).toBe(JETHRO_TULL_MBID)
-          }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
+  public fun findArtistJethroTullSearch(): Unit = brainz {
+    findArtist(limit = Limit(4)) { artist { JETHRO_TULL } }
+      .onSuccess { artistList ->
+        expect(artistList.artists).toHaveSize(1)
+        val artist = artistList.artists[0]
+        expect(ArtistMbid(artist.id)).toBe(JETHRO_TULL_MBID)
       }
-    }
+      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun findCdStubWithTitleDoo(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      when (val result = findCdStub { title { AlbumTitle("Doo") } }) {
-        is Ok -> result.value.let { stubList ->
-          expect(stubList.count).toBeGreaterThan(50) // 56 last check
-          expect(stubList.cdStubs).toHaveAny { it.title == "Doo- Be - Doo" }
-          expect(stubList.cdStubs).toHaveAny { it.title == "Doo-lang Doo-lang" }
-          expect(stubList.cdStubs).toHaveAny { it.title == "Doo-Bop" }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
+  public fun findCdStubWithTitleDoo(): Unit = brainz {
+    findCdStub { title { AlbumTitle("Doo") } }
+      .onSuccess { stubList ->
+        expect(stubList.count).toBeGreaterThan(50) // 56 last check
+        expect(stubList.cdStubs).toHaveAny { it.title == "Doo- Be - Doo" }
+        expect(stubList.cdStubs).toHaveAny { it.title == "Doo-lang Doo-lang" }
+        expect(stubList.cdStubs).toHaveAny { it.title == "Doo-Bop" }
       }
-    }
+      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun findEvent(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      when (val result = findEvent { default { "unique" } }) {
-        is Ok -> result.value.let { eventList ->
-          expect(eventList.count).toBeGreaterThan(6) // 8 last checked
-          expect(eventList.events).toHaveAny {
-            it.name == "Dominique A at Le Lieu Unique, April 2012"
-          }
-          expect(eventList.events).toHaveAny {
-            it.name == "Joung & Junique at Maybe's"
-          }
+  public fun findEvent(): Unit = brainz {
+    findEvent { default { "unique" } }
+      .onSuccess { eventList ->
+        expect(eventList.count).toBeGreaterThan(6) // 8 last checked
+        expect(eventList.events).toHaveAny {
+          it.name == "Dominique A at Le Lieu Unique, April 2012"
         }
-        is Err -> fail("Brainz call failed") { failReason(result) }
+        expect(eventList.events).toHaveAny {
+          it.name == "Joung & Junique at Maybe's"
+        }
       }
-    }
+      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun findInstrument(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      when (val result = findInstrument { default { "Nose" } }) {
-        is Ok -> result.value.let { instrumentList ->
-          expect(instrumentList.count).toBeGreaterThan(3)
-          expect(instrumentList.instruments).toHaveAny { it.name == "nose whistle" }
-          expect(instrumentList.instruments).toHaveAny { it.name == "nose flute" }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
+  public fun findInstrument(): Unit = brainz {
+    findInstrument { default { "Nose" } }
+      .onSuccess { instrumentList ->
+        expect(instrumentList.count).toBeGreaterThan(3)
+        expect(instrumentList.instruments).toHaveAny { it.name == "nose whistle" }
+        expect(instrumentList.instruments).toHaveAny { it.name == "nose flute" }
       }
-    }
+      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun findLabelDevilsRecords(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val labelName = LabelName("Devil's Records")
-      when (val result = findLabel(limit = Limit(4)) { default { labelName } }) {
-        is Ok -> result.value.let { labelList ->
-          expect(labelList.count).toBeGreaterThan(27)
-          expect(labelList.labels[0].name).toBe(labelName.value)
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
+  public fun findLabelDevilsRecords(): Unit = brainz {
+    val labelName = LabelName("Devil's Records")
+    findLabel(limit = Limit(4)) { default { labelName } }
+      .onSuccess { labelList ->
+        expect(labelList.count).toBeGreaterThan(27)
+        expect(labelList.labels[0].name).toBe(labelName.value)
       }
-    }
+      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun findPlaceChipping(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      when (val result = findPlace { default { "chipping" } }) {
-        is Ok -> result.value.let { placeList ->
-          expect(placeList.count).toBeGreaterThan(0)
-          expect(placeList.places).toHaveAny { it.name == "Chipping Norton Recording Studios" }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
+  public fun findPlaceChipping(): Unit = brainz {
+    findPlace { default { "chipping" } }
+      .onSuccess { placeList ->
+        expect(placeList.count).toBeGreaterThan(0)
+        expect(placeList.places).toHaveAny { it.name == "Chipping Norton Recording Studios" }
       }
-    }
+      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun findRecording(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      when (val result = findRecording { isrc { "GBAHT1600302" } }) {
-        is Ok -> result.value.let { recordingList ->
-          expect(recordingList.count).toBeGreaterThan(0)
-          expect(recordingList.recordings).toHaveAny { it.title == "Blow Your Mind (Mwah)" }
-        }
+  public fun findRecording(): Unit = brainz {
+    findRecording { isrc { "GBAHT1600302" } }
+      .onSuccess { recordingList ->
+        expect(recordingList.count).toBeGreaterThan(0)
+        expect(recordingList.recordings).toHaveAny { it.title == "Blow Your Mind (Mwah)" }
       }
-    }
+      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun findReleaseJethroTullAqualung(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val aqualung = "Aqualung".toAlbumTitle()
-      when (
-        val result = findRelease(Limit(4)) { artist { JETHRO_TULL } and release { aqualung } }
-      ) {
-        is Ok -> result.value.let { releaseList ->
-          expect(releaseList.releases).toHaveSize(4)
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
+  public fun findReleaseJethroTullAqualung(): Unit = brainz {
+    val aqualung = "Aqualung".toAlbumTitle()
+    findRelease(Limit(4)) { artist { JETHRO_TULL } and release { aqualung } }
+      .onSuccess { releaseList -> expect(releaseList.releases).toHaveSize(4) }
+      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun findReleaseJethroTullNotFound(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      when (
-        val result = findRelease(Limit(4)) {
-          artist { JETHRO_TULL } and release { "not found".toAlbumTitle() }
-        }
-      ) {
-        is Ok -> result.value.let { releaseList ->
-          expect(releaseList.count).toBe(0) // expect nothing found
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
+  public fun findReleaseJethroTullNotFound(): Unit = brainz {
+    findRelease(Limit(4)) {
+      artist { JETHRO_TULL } and release { "not found".toAlbumTitle() }
+    }.onSuccess { releaseList ->
+      expect(releaseList.count).toBe(0)
+    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun findBeatlesAlbums67Through69(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      when (
-        val result = findReleaseGroup {
-
-          artist { ArtistName("The Beatles") } and
-            firstReleaseDate { Term("1967") inclusive Term("1969") } and
-            primaryType { Release.Type.Album } and
-            !secondaryType { Term(Release.Type.Compilation) or Term(Release.Type.Interview) } and
-            status { Release.Status.Official }
-        }
-      ) {
-        is Ok -> result.value.let { releaseList ->
-          expect(releaseList.count).toBe(5)
-          expect(releaseList.releaseGroups).toHaveAny { it.title == "Magical Mystery Tour" }
-          expect(releaseList.releaseGroups).toHaveAny {
-            it.title == "Sgt. Pepper’s Lonely Hearts Club Band"
-          }
-          expect(releaseList.releaseGroups).toHaveAny { it.title == "Yellow Submarine" }
-          expect(releaseList.releaseGroups).toHaveAny { it.title == "Abbey Road" }
-          expect(releaseList.releaseGroups).toHaveAny { it.title == "The Beatles" }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
+  public fun findBeatlesAlbums67Through69(): Unit = brainz {
+    findReleaseGroup {
+      artist { ArtistName("The Beatles") } and
+        firstReleaseDate { Term("1967") inclusive Term("1969") } and
+        primaryType { Release.Type.Album } and
+        !secondaryType { Term(Release.Type.Compilation) or Term(Release.Type.Interview) } and
+        status { Release.Status.Official }
+    }.onSuccess { releaseList ->
+      expect(releaseList.count).toBe(5)
+      expect(releaseList.releaseGroups).toHaveAny { it.title == "Magical Mystery Tour" }
+      expect(releaseList.releaseGroups).toHaveAny {
+        it.title == "Sgt. Pepper’s Lonely Hearts Club Band"
       }
-    }
+      expect(releaseList.releaseGroups).toHaveAny { it.title == "Yellow Submarine" }
+      expect(releaseList.releaseGroups).toHaveAny { it.title == "Abbey Road" }
+      expect(releaseList.releaseGroups).toHaveAny { it.title == "The Beatles" }
+    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun findReleaseGroupZeppelinHousesOfTheHoly(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val ledZeppelin = "Led Zeppelin".toArtistName()
-      val housesOfTheHoly = "Houses of the Holy".toAlbumTitle()
-      when (
-        val result = findReleaseGroup {
-          artist { ledZeppelin } and releaseGroup { housesOfTheHoly }
-        }
-      ) {
-        is Ok -> result.value.let { groupList ->
-          expect(groupList.count).toBe(2)
-          expect(groupList.releaseGroups).toHaveSize(2)
-          expect(groupList.releaseGroups[0].title).toBe(housesOfTheHoly.value)
-          expect(groupList.releaseGroups[0].artistCredit[0].name).toBe(ledZeppelin.value)
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
+  public fun findReleaseGroupZeppelinHousesOfTheHoly(): Unit = brainz {
+    val ledZeppelin = ArtistName("Led Zeppelin")
+    val housesOfTheHoly = AlbumTitle("Houses of the Holy")
+    findReleaseGroup {
+      artist { ledZeppelin } and releaseGroup { housesOfTheHoly }
+    }.onSuccess { groupList ->
+      expect(groupList.count).toBe(2)
+      expect(groupList.releaseGroups).toHaveSize(2)
+      expect(groupList.releaseGroups[0].title).toBe(housesOfTheHoly.value)
+      expect(groupList.releaseGroups[0].artistCredit[0].name).toBe(ledZeppelin.value)
+    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun findSeries(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      when (val result = findSeries { default { "Studio Brussel" } }) {
-        is Ok -> result.value.let { seriesList ->
-          expect(seriesList.count).toBeGreaterThan(1)
-          expect(seriesList.series).toHaveAny { it.name == "Studio Brussel: De Maxx" }
-          expect(seriesList.series).toHaveAny { it.name == "Studio Brussel: Life Is Music" }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
+  public fun findSeries(): Unit = brainz {
+    findSeries { default { "Studio Brussel" } }
+      .onSuccess { seriesList ->
+        expect(seriesList.count).toBeGreaterThan(1)
+        expect(seriesList.series).toHaveAny { it.name == "Studio Brussel: De Maxx" }
+        expect(seriesList.series).toHaveAny { it.name == "Studio Brussel: Life Is Music" }
+      }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun findTagShoegazeAndIndie(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      when (val result = findTag { default { "shoegaze" } }) {
-        is Ok -> result.value.let { tagList ->
-          expect(tagList.count).toBeGreaterThan(25) // 28 last checked
-          expect(tagList.tags).toHaveSize(25)
-          expect(tagList.tags).toHaveAny {
-            it.score == 100 && it.name == "rock shoegaze"
-          }
-          expect(tagList.tags).toHaveAny {
-            it.score == 100 && it.name == "indie shoegaze"
-          }
+  public fun findTagShoegazeAndIndie(): Unit = brainz {
+    findTag { default { "shoegaze" } }
+      .onSuccess { tagList ->
+        expect(tagList.count).toBeGreaterThan(25) // 28 last checked
+        expect(tagList.tags).toHaveSize(25)
+        expect(tagList.tags).toHaveAny {
+          it.score == 100 && it.name == "rock shoegaze"
         }
-        is Err -> fail("Brainz call failed") { failReason(result) }
+        expect(tagList.tags).toHaveAny {
+          it.score == 100 && it.name == "indie shoegaze"
+        }
       }
+      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
 
-      when (val result = findTag { default { "indie" } }) {
-        is Ok -> result.value.let { tagList ->
-          expect(tagList.tags).toHaveAny { it.name.contains("indie") }
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
+    findTag { default { "indie" } }
+      .onSuccess { tagList -> expect(tagList.tags).toHaveAny { it.name.contains("indie") } }
+      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
-  public fun findWorkFrozenFred(): Unit = coroutineRule.runBlockingTest {
-    withBrainz {
-      val michielPetersMbid = ArtistMbid("4c006444-ccbf-425e-b3e7-03a98bab5997")
-      when (
-        val result = findWork(limit = Limit(1)) {
-          work { WorkName("Frozen") } and artistId { michielPetersMbid }
-        }
-      ) {
-        is Ok -> result.value.let { workList ->
-          expect(workList.works).toHaveSize(1)
-          expect(workList.works[0].id).toBe("10c1a66a-8166-32ec-a00f-540f111ce7a3")
-          expect(workList.works[0].title).toBe("Frozen Fred")
-        }
-        is Err -> fail("Brainz call failed") { failReason(result) }
-      }
-    }
+  public fun findWorkFrozenFred(): Unit = brainz {
+    val michielPetersMbid = ArtistMbid("4c006444-ccbf-425e-b3e7-03a98bab5997")
+    findWork(limit = Limit(1)) {
+      work { WorkName("Frozen") } and artistId { michielPetersMbid }
+    }.onSuccess { workList ->
+      expect(workList.works).toHaveSize(1)
+      expect(workList.works[0].id).toBe("10c1a66a-8166-32ec-a00f-540f111ce7a3")
+      expect(workList.works[0].title).toBe("Frozen Fred")
+    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
-  private suspend fun withBrainz(block: suspend MusicBrainzService.() -> Unit) {
+  private fun brainz(block: suspend MusicBrainzService.() -> Unit) = coroutineRule.runBlockingTest {
     @Suppress("BlockingMethodInNonBlockingContext")
     runBlocking {
       musicBrainzService.block()
     }
   }
-
-  private fun failReason(result: Err<BrainzMessage>): String = result.getErrorString(fetcher)
 }
 
 private val JETHRO_TULL = ArtistName("Jethro Tull")

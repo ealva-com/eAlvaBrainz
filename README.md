@@ -2,7 +2,59 @@ eAlvaBrainz
 ===========
 Kotlin [MusicBrainz][brainz]/[CoverArtArchive][coverart] [Retrofit][retrofit] libraries for Android
 
-**Currently in an beta state**.
+**Currently in an beta state, mostly stable API**.
+
+A few small examples to start:
+
+```kotlin
+// Get the artist represented by the ArtistMbid and include all Misc info
+brainzSvc.lookupArtist(mbid) { include(*Artist.Include.values()) }
+  .onSuccess { artist -> handleArtist(result.value, mbid) }
+  .onFailure { displayError(result.error.asString(resourceFetcher)) }
+
+// Get the artist Nirvana's info and include aliases
+val nirvana = ArtistMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da") // maybe obtained via find
+lookupArtist(nirvana) { misc(Artist.Misc.Aliases) }
+  .onSuccess {}
+  .onFailure {}
+
+// Find releases for the artist name and release title
+val jethroTull = ArtistName("Jethro Tull")
+val aqualung = AlbumTitle("Aqualung")
+findRelease(Limit(4)) { artist { jethroTull } and release { aqualung } }
+
+// Browse events for the given artist and limit the results to 15
+val metallicaMbid = ArtistMbid("65f4f0c5-ef9e-490c-aee3-909e7ae6b2ab") // maybe obtained via find
+val limit = Limit(15)
+browseEvents(EventBrowse.BrowseOn.Artist(metallicaMbid), limit)
+
+// Browse Releases by an artist and limit the results to official, album releases (no bootlegs or
+// promos and no singles, compilations, etc)
+val theBeatles = ArtistMbid("b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d") // maybe obtained via find
+browseReleases(ReleaseBrowse.BrowseOn.Artist(theBeatles)) {
+  types(Release.Type.Album)
+  status(Release.Status.Official)
+}.onSuccess {
+  // handle browse
+}.onFailure {
+  // handle error path
+}
+
+// Find all ReleaseGroups by The Beatles whose first release date was between 1967 and 1969
+// inclusively, where the release was an album, but not a compilation or interview, and was an
+// official release (not bootleg or promotion)
+findReleaseGroup {
+  artist { ArtistName("The Beatles") } and
+    firstReleaseDate { Term("1967") inclusive Term("1969") } and
+    primaryType { Release.Type.Album } and
+    !secondaryType { Term(Release.Type.Compilation) or Term(Release.Type.Interview) } and
+    status { Release.Status.Official }
+}.onSuccess {
+  // handle group list
+}.onFailure {
+  // handle error path
+}
+```
 
 # Design philosophy
 The design philosophy is to provide a type safe interface to the MusicBrainz server, dispatching
@@ -32,49 +84,6 @@ internally. There are currently no write capabilities (can't set ratings or crea
 
 This is a Kotlin library and not much thought was given to possible Java clients. Input and pull
 requests are welcome.
-
-A few small examples:
-
-```kotlin
-// Get the artist represented by the ArtistMbid and include all Misc info
-when (val result = brainzSvc.lookupArtist(mbid) { include(*Artist.Include.values()) }) {
-  is Ok -> handleArtist(result.value, mbid)
-  is Err -> displayError(result.error.asString(resourceFetcher))
-}
-
-// Get the artist Nirvana's info and include aliases
-val nirvana = ArtistMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da") // maybe obtained via find
-val result = lookupArtist(nirvana) { misc(Artist.Misc.Aliases) }
-
-// Find releases for the artist name and release title
-val jethroTull = ArtistName("Jethro Tull")
-val aqualung = AlbumTitle("Aqualung")
-val result = findRelease(Limit(4)) { artist { jethroTull } and release { aqualung } }
-
-// Browse events for the given artist and limit the results to 15
-val metallicaMbid = ArtistMbid("65f4f0c5-ef9e-490c-aee3-909e7ae6b2ab") // maybe obtained via find
-val limit = Limit(15)
-val result = browseEvents(EventBrowse.BrowseOn.Artist(metallicaMbid), limit)
-
-// Browse Releases by an artist and limit the results to official, album releases (no bootlegs or
-// promos and no singles, compilations, etc)
-val theBeatles = ArtistMbid("b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d") // maybe obtained via find
-val result = browseReleases(ReleaseBrowse.BrowseOn.Artist(theBeatles)) {
-  types(Release.Type.Album)
-  status(Release.Status.Official)
-}
-
-// Find all ReleaseGroups by The Beatles whose first release date was between 1967 and 1969
-// inclusively, where the release was an album, but not a compilation or interview, and was an
-// official release (not bootleg or promotion)
-val result = findReleaseGroup {
-  artist { ArtistName("The Beatles") } and
-    firstReleaseDate { Term("1967") inclusive Term("1969") } and
-    primaryType { Release.Type.Album } and
-    !secondaryType { Term(Release.Type.Compilation) or Term(Release.Type.Interview) } and
-    status { Release.Status.Official }
-}
-```
 
 This repository consists of 3 parts:
   * **ealvabrainz** - A library which consists of 2 Retrofit interfaces, MusicBrainz and CoverArt,
@@ -313,17 +322,17 @@ It's expected the app will be ported to Compose some time in the future.
 Of Note
 =======
 This library contains classes others may find useful in a different context. While not necessarily
-canonical, these
-may be used as examples or a starting point:
+canonical, these may be used as examples or a starting point:
 * Moshi annotated data classes for codegen and json adapter generation
 * Moshi combination of data class style, annotations, and adapters to support the Null Object
   Pattern 
 * Moshi annotation and adapter to support a fallback strategy for items missing from json
   (part of Null Object pattern)
 * Moshi adapter that peeks names to determine which subtype to instantiate in relationships
-* Retrofit interfaces defined with suspend or returning a flow 
+* Retrofit interfaces defined with suspend
 * Retrofit, OkHttp, and Moshi builders to fully support the Rest client
-* Sealed class MusicBrainzResult from MusicBrainzService as opposed to exceptions
+* Sealed class Result monad return from service calls avoiding exceptions across coroutine
+  boundaries and providing transform/mapping/chaining style of result handling.
 * Coroutine test strategy with a JUnit rule and a test dispatcher (test concurrent code)
 * App uses Kotlin Views DSL for UI ([Splitties][splitties]) - no XML layout files 
 * App defines some event callback flows to automate listener register/unregister based on lifecycle
