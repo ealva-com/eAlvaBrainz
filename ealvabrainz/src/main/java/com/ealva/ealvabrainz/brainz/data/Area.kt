@@ -26,7 +26,7 @@ import com.squareup.moshi.JsonClass
  * Areas are geographic regions or settlements. Areas are usually kept in sync with their
  * [Wikidata](https://musicbrainz.org/doc/Wikidata) entries. To request that an area be added to
  * Musicbrainz submit a bug request under the AREQ category. See the list of
- * [current AREQ issues](https://tickets.metabrainz.org/projects/AREQ/issues/AREQ-1840?filter=allopenissues%7Clist)
+ * [current AREQ issues](https://tickets.metabrainz.org/browse/AREQ)
  * for more information.
  */
 @JsonClass(generateAdapter = true)
@@ -75,6 +75,11 @@ public class Area(
   /** The aliases are used to store alternate names or misspellings. */
   public val aliases: List<Alias> = emptyList(),
 
+  public val tags: List<Tag> = emptyList(),
+  @field:Json(name = "user-tags") public val userTags: List<Tag> = emptyList(),
+  public val genres: List<Genre> = emptyList(),
+  @field:Json(name = "user-genres") public val userGenres: List<Genre> = emptyList(),
+
   /** The ISO 3166 codes are the codes assigned by ISO to countries and subdivisions. */
   @field:Json(name = "iso-3166-1-codes") public val iso31661Codes: List<String> = emptyList(),
   @field:Json(name = "iso-3166-2-codes") public val iso31662Codes: List<String> = emptyList(),
@@ -109,8 +114,11 @@ public class Area(
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
+    UserTags("user-tags"),
     Ratings("ratings"),
-    Genres("genres")
+    UserRatings("user-ratings"),
+    Genres("genres"),
+    UserGenres("user-genres")
   }
 
   public enum class Browse(override val value: String) : Inc {
@@ -179,10 +187,16 @@ public class Area(
   }
 
   public companion object {
-    public val NullArea: Area = Area()
+    public val NullArea: Area = Area(name = NullObject.NAME)
     public val fallbackMapping: Pair<String, Any> = Area::class.java.name to NullArea
   }
 }
 
 public inline val Area.isNullObject: Boolean
   get() = this === Area.NullArea
+
+@JvmInline
+public value class AreaMbid(override val value: String) : Mbid
+
+public inline val Area.mbid: AreaMbid
+  get() = AreaMbid(id)

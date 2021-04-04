@@ -18,22 +18,23 @@
 package com.ealva.ealvabrainz.lucene
 
 import com.ealva.ealvabrainz.brainz.data.Release
-import com.ealva.ealvabrainz.common.AreaMbid
-import com.ealva.ealvabrainz.common.ArtistMbid
-import com.ealva.ealvabrainz.common.EventMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.EventMbid
 import com.ealva.ealvabrainz.common.Formatting
-import com.ealva.ealvabrainz.common.GenreMbid
-import com.ealva.ealvabrainz.common.InstrumentMbid
-import com.ealva.ealvabrainz.common.LabelMbid
-import com.ealva.ealvabrainz.common.PackagingMbid
-import com.ealva.ealvabrainz.common.PlaceMbid
-import com.ealva.ealvabrainz.common.RecordingMbid
-import com.ealva.ealvabrainz.common.ReleaseGroupMbid
-import com.ealva.ealvabrainz.common.ReleaseMbid
-import com.ealva.ealvabrainz.common.SeriesMbid
-import com.ealva.ealvabrainz.common.TrackMbid
-import com.ealva.ealvabrainz.common.UrlMbid
-import com.ealva.ealvabrainz.common.WorkMbid
+import com.ealva.ealvabrainz.brainz.data.GenreMbid
+import com.ealva.ealvabrainz.brainz.data.InstrumentMbid
+import com.ealva.ealvabrainz.brainz.data.LabelMbid
+import com.ealva.ealvabrainz.brainz.data.PackagingMbid
+import com.ealva.ealvabrainz.brainz.data.PlaceMbid
+import com.ealva.ealvabrainz.brainz.data.RecordingMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.brainz.data.SeriesMbid
+import com.ealva.ealvabrainz.brainz.data.TrackMbid
+import com.ealva.ealvabrainz.brainz.data.UrlMbid
+import com.ealva.ealvabrainz.brainz.data.WorkMbid
 import com.ealva.ealvabrainz.common.toAlbumTitle
 import com.ealva.ealvabrainz.common.toArtistName
 import com.ealva.ealvabrainz.common.toLabelName
@@ -173,22 +174,21 @@ public class TermTest {
   @Test
   public fun `test type to Term functions`() {
     val aMbid = "5b11f4ce-a62d-471e-81fc-a69a8278c7da"
-    val escapedMbid = aMbid
-    expect(Term(AreaMbid(aMbid)).toString()).toBe(escapedMbid)
-    expect(Term(ArtistMbid(aMbid)).toString()).toBe(escapedMbid)
-    expect(Term(EventMbid(aMbid)).toString()).toBe(escapedMbid)
-    expect(Term(GenreMbid(aMbid)).toString()).toBe(escapedMbid)
-    expect(Term(InstrumentMbid(aMbid)).toString()).toBe(escapedMbid)
-    expect(Term(LabelMbid(aMbid)).toString()).toBe(escapedMbid)
-    expect(Term(PlaceMbid(aMbid)).toString()).toBe(escapedMbid)
-    expect(Term(RecordingMbid(aMbid)).toString()).toBe(escapedMbid)
-    expect(Term(ReleaseMbid(aMbid)).toString()).toBe(escapedMbid)
-    expect(Term(ReleaseGroupMbid(aMbid)).toString()).toBe(escapedMbid)
-    expect(Term(SeriesMbid(aMbid)).toString()).toBe(escapedMbid)
-    expect(Term(WorkMbid(aMbid)).toString()).toBe(escapedMbid)
-    expect(Term(UrlMbid(aMbid)).toString()).toBe(escapedMbid)
-    expect(Term(TrackMbid(aMbid)).toString()).toBe(escapedMbid)
-    expect(Term(PackagingMbid(aMbid)).toString()).toBe(escapedMbid)
+    expect(Term(AreaMbid(aMbid)).toString()).toBe(aMbid)
+    expect(Term(ArtistMbid(aMbid)).toString()).toBe(aMbid)
+    expect(Term(EventMbid(aMbid)).toString()).toBe(aMbid)
+    expect(Term(GenreMbid(aMbid)).toString()).toBe(aMbid)
+    expect(Term(InstrumentMbid(aMbid)).toString()).toBe(aMbid)
+    expect(Term(LabelMbid(aMbid)).toString()).toBe(aMbid)
+    expect(Term(PlaceMbid(aMbid)).toString()).toBe(aMbid)
+    expect(Term(RecordingMbid(aMbid)).toString()).toBe(aMbid)
+    expect(Term(ReleaseMbid(aMbid)).toString()).toBe(aMbid)
+    expect(Term(ReleaseGroupMbid(aMbid)).toString()).toBe(aMbid)
+    expect(Term(SeriesMbid(aMbid)).toString()).toBe(aMbid)
+    expect(Term(WorkMbid(aMbid)).toString()).toBe(aMbid)
+    expect(Term(UrlMbid(aMbid)).toString()).toBe(aMbid)
+    expect(Term(TrackMbid(aMbid)).toString()).toBe(aMbid)
+    expect(Term(PackagingMbid(aMbid)).toString()).toBe(aMbid)
 
     val aTitle = "Short (Subtitle)"
     val escapedTitle = """"$aTitle""""
@@ -197,23 +197,23 @@ public class TermTest {
     expect(Term(aTitle.toLabelName()).toString()).toBe(escapedTitle)
     expect(Term(aTitle.toRecordingTitle()).toString()).toBe(escapedTitle)
 
-    expect(Term(Release.Type.Album).toString()).toBe(Release.Type.Album.value)
+    expect(Term(ReleaseGroup.Type.Album).toString()).toBe(ReleaseGroup.Type.Album.value)
     expect(Term(Release.Status.Official).toString()).toBe(Release.Status.Official.value)
 
     expect(Term(100).toString()).toBe("100")
-    expect(Term(-100).toString()).toBe("\\-100")
+    expect(Term(-100).toString()).toBe("\"-100\"")
     expect(Term(200L).toString()).toBe("200")
-    expect(Term(-200L).toString()).toBe("\\-200")
+    expect(Term(-200L).toString()).toBe("\"-200\"")
     expect(Term(true).toString()).toBe("true")
     expect(Term(false).toString()).toBe("false")
 
     val formatter = Formatting.date
     val dateStr = "1963-10-04"
     val localDate = LocalDate.parse(dateStr, formatter)
-    expect(Term(localDate).toString()).toBe(dateStr.luceneEscape())
+    expect(Term(localDate).toString()).toBe("\"$dateStr\"")
 
     val simple = SimpleDateFormat("yyyy-MM-dd")
-    val date = simple.parse(dateStr)!!
-    expect(Term(date).toString()).toBe(dateStr.luceneEscape())
+    val date = requireNotNull(simple.parse(dateStr))
+    expect(Term(date).toString()).toBe("\"$dateStr\"")
   }
 }

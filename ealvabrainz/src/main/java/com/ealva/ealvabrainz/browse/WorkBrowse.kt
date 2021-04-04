@@ -25,8 +25,8 @@ import com.ealva.ealvabrainz.common.QueryMap
 import com.ealva.ealvabrainz.common.QueryMapItem
 import com.ealva.ealvabrainz.browse.WorkBrowse.BrowseOn
 import com.ealva.ealvabrainz.brainz.data.Work.Browse
-import com.ealva.ealvabrainz.common.ArtistMbid
-import com.ealva.ealvabrainz.common.CollectionMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.CollectionMbid
 
 /**
  * Builds the release browsing call based on [BrowseOn] type, [include], [relationships], [types],

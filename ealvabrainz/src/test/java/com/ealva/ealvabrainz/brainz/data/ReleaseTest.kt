@@ -23,6 +23,7 @@ import com.nhaarman.expect.fail
 import com.squareup.moshi.Moshi
 import org.junit.Before
 import org.junit.Test
+import com.ealva.ealvabrainz.brainz.data.toReleaseStatus as toStatus
 
 internal class ReleaseTest {
   private lateinit var moshi: Moshi
@@ -30,6 +31,21 @@ internal class ReleaseTest {
   @Before
   fun setup() {
     moshi = theMoshi
+  }
+
+  @Test
+  fun `test reify Release Status`() {
+    expect("official".toStatus()).toBe(Release.Status.Official)
+    expect("promotion".toStatus()).toBe(Release.Status.Promotion)
+    expect("bootleg".toStatus()).toBe(Release.Status.Bootleg)
+    expect("pseudo-release".toStatus()).toBe(Release.Status.PseudoRelease)
+
+    expect("Official".toStatus()).toBe(Release.Status.Official)
+    expect("BOOTLEG".toStatus()).toBe(Release.Status.Bootleg)
+
+    expect("dummy".toStatus()).toBeInstanceOf<Release.Status.Unrecognized> { status ->
+      expect("dummy".toStatus()).toBeTheSameAs(status)
+    }
   }
 
   /**

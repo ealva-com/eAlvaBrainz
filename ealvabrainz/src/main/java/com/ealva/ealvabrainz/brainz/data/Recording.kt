@@ -62,13 +62,17 @@ public class Recording(
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
   public val annotation: String = "",
-  public val genres: List<Genre> = emptyList(),
   /** The International Standard Recording Code assigned to the recording. */
   public val isrcs: List<String> = emptyList(),
-  public val rating: Rating = Rating.NullRating,
   public val relations: List<Relation> = emptyList(),
   public val releases: List<Release> = emptyList(),
+  @field:FallbackOnNull public val rating: Rating = Rating.NullRating,
+  @field:FallbackOnNull @field:Json(name = "user-rating") public val userRating: Rating =
+    Rating.NullRating,
   public val tags: List<Tag> = emptyList(),
+  @field:Json(name = "user-tags") public val userTags: List<Tag> = emptyList(),
+  public val genres: List<Genre> = emptyList(),
+  @field:Json(name = "user-genres") public val userGenres: List<Genre> = emptyList(),
   /** If this recording is video */
   public val video: Boolean = false,
   /** used with queries */
@@ -94,16 +98,20 @@ public class Recording(
     Artists("artists"),
     Releases("releases"),
     Isrcs("isrcs"),
-    ArtistCredits("artist-credits"),
 
     /** DiscIds requires [Releases] also be specified and inc params can (currently) repeat */
-    DiscIds("releases+discids"),
+    DiscIds("discids"),
     Media("media"),
+    ArtistCredits("artist-credits"),
+
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
+    UserTags("user-tags"),
     Ratings("ratings"),
-    Genres("genres")
+    UserRatings("user-ratings"),
+    Genres("genres"),
+    UserGenres("user-genres")
   }
 
   @Suppress("unused")
@@ -254,3 +262,9 @@ public class Recording(
 
 public val Recording.isNullObject: Boolean
   get() = this === NullRecording
+
+@JvmInline
+public value class RecordingMbid(override val value: String) : Mbid
+
+public inline val Recording.mbid: RecordingMbid
+  get() = RecordingMbid(id)

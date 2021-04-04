@@ -17,6 +17,18 @@
 
 package com.ealva.ealvabrainz.common
 
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.CollectionMbid
+import com.ealva.ealvabrainz.brainz.data.EventMbid
+import com.ealva.ealvabrainz.brainz.data.LabelMbid
+import com.ealva.ealvabrainz.brainz.data.PlaceMbid
+import com.ealva.ealvabrainz.brainz.data.RecordingMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.brainz.data.TrackMbid
+import com.ealva.ealvabrainz.brainz.data.WorkMbid
+
 public interface QueryMapItem {
   public fun put(map: QueryMap): QueryMap
 }

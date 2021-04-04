@@ -20,10 +20,10 @@ package com.ealva.ealvabrainz.search
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.common.AlbumTitle
-import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
-import com.ealva.ealvabrainz.common.ReleaseGroupMbid
-import com.ealva.ealvabrainz.common.ReleaseMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.expect
 import com.ealva.ealvabrainz.matchers.toBeAsString
@@ -130,8 +130,8 @@ public class ReleaseGroupSearchTest {
     expect(ReleaseGroupSearch().creditName { ArtistName(value) }).toBeAsString("creditname:$value")
     expect(ReleaseGroupSearch().default { AlbumTitle(value) }).toBeAsString(value)
     expect(ReleaseGroupSearch().firstReleaseDate { Date(0) })
-      .toBeAsString("firstreleasedate:1969\\-12\\-31")
-    expect(ReleaseGroupSearch().primaryType { Release.Type.Ep }).toBeAsString("primarytype:ep")
+      .toBeAsString("firstreleasedate:\"1969-12-31\"")
+    expect(ReleaseGroupSearch().primaryType { ReleaseGroup.Type.Ep }).toBeAsString("primarytype:ep")
     expect(ReleaseGroupSearch().release { AlbumTitle(value) }).toBeAsString("release:$value")
     expect(ReleaseGroupSearch().releaseCount { 69 }).toBeAsString("releases:69")
     expect(ReleaseGroupSearch().releaseId { releaseMbid }).toBeAsString("reid:${releaseMbid.value}")
@@ -141,7 +141,7 @@ public class ReleaseGroupSearchTest {
       .toBeAsString("releasegroupaccent:$value")
     expect(ReleaseGroupSearch().releaseGroupId { releaseGroupMbid })
       .toBeAsString("rgid:${releaseGroupMbid.value}")
-    expect(ReleaseGroupSearch().secondaryType { Release.Type.Album })
+    expect(ReleaseGroupSearch().secondaryType { ReleaseGroup.Type.Album })
       .toBeAsString("secondarytype:album")
     expect(ReleaseGroupSearch().status { Release.Status.Bootleg }).toBeAsString("status:bootleg")
     expect(ReleaseGroupSearch().tag { value }).toBeAsString("tag:$value")

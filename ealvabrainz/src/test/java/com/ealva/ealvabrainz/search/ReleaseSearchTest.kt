@@ -19,12 +19,12 @@ package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.common.AlbumTitle
-import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
-import com.ealva.ealvabrainz.common.LabelMbid
+import com.ealva.ealvabrainz.brainz.data.LabelMbid
 import com.ealva.ealvabrainz.common.LabelName
-import com.ealva.ealvabrainz.common.ReleaseGroupMbid
-import com.ealva.ealvabrainz.common.ReleaseMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.toBeAsString
 import com.nhaarman.expect.expect

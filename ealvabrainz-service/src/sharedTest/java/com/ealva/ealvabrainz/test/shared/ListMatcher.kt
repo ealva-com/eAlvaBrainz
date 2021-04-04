@@ -39,6 +39,32 @@ public fun <T> ListMatcher<T>.toHaveAny(
   }
 
   if (actual?.any(predicate) != true) {
-    fail("Expected $actual to not be empty.", message)
+    fail("Expected $actual to have any.", message)
+  }
+}
+
+public fun <T> ListMatcher<T>.toHaveAll(
+  message: (() -> Any?)? = null,
+  predicate: (T) -> Boolean
+) {
+  if (actual == null) {
+    fail("Expected value to be empty, but the actual value was null.", message)
+  }
+
+  if (actual?.all(predicate) != true) {
+    fail("Expected $actual to have all.", message)
+  }
+}
+
+public fun <T> ListMatcher<T>.toHaveNone(
+  message: (() -> Any?)? = null,
+  predicate: (T) -> Boolean
+) {
+  if (actual == null) {
+    fail("Expected value to be empty, but the actual value was null.", message)
+  }
+
+  if (actual?.none(predicate) != true) {
+    fail("Expected $actual to have all.", message)
   }
 }

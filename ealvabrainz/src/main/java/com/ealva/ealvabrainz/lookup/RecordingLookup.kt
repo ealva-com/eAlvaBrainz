@@ -17,9 +17,9 @@
 
 package com.ealva.ealvabrainz.lookup
 
+import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.common.QueryMap
 import com.ealva.ealvabrainz.common.buildQueryMap
-import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.common.include
 import com.ealva.ealvabrainz.common.status
 import com.ealva.ealvabrainz.common.types
@@ -32,7 +32,13 @@ public interface RecordingLookup : EntitySubqueryLookup<Recording.Include> {
 }
 
 private class RecordingLookupOp : BaseSubqueryLookup<Recording.Include>(), RecordingLookup {
+  override fun validateInclude(set: Set<Recording.Include>) {
+    set.ifContainsThenRequires(Recording.Include.DiscIds, Recording.Include.Releases)
+    set.ifContainsThenRequires(Recording.Include.Media, Recording.Include.Releases)
+  }
+
   fun queryMap(): QueryMap = buildQueryMap {
+    val incSet = allIncludes
     include(incSet)
     types(typeSet?.ensureValidType(incSet))
     status(statusSet?.ensureValidStatus(incSet))

@@ -65,3 +65,9 @@ public data class Url(
 
 public inline val Url.isNullObject: Boolean
   get() = this === NullUrl
+
+@JvmInline
+public value class UrlMbid(override val value: String) : Mbid
+
+public inline val Url.mbid: UrlMbid
+  get() = UrlMbid(id)

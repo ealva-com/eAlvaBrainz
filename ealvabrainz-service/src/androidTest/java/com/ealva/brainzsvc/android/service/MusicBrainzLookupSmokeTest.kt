@@ -41,27 +41,27 @@ import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.Release.Include
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.browse.CollectionBrowse
-import com.ealva.ealvabrainz.common.AreaMbid
-import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.BrainzInvalidStatusException
 import com.ealva.ealvabrainz.common.BrainzInvalidTypeException
 import com.ealva.ealvabrainz.common.DiscId
 import com.ealva.ealvabrainz.common.EditorName
-import com.ealva.ealvabrainz.common.EventMbid
-import com.ealva.ealvabrainz.common.GenreMbid
-import com.ealva.ealvabrainz.common.InstrumentMbid
+import com.ealva.ealvabrainz.brainz.data.EventMbid
+import com.ealva.ealvabrainz.brainz.data.GenreMbid
+import com.ealva.ealvabrainz.brainz.data.InstrumentMbid
 import com.ealva.ealvabrainz.common.Isrc
 import com.ealva.ealvabrainz.common.Iswc
-import com.ealva.ealvabrainz.common.LabelMbid
-import com.ealva.ealvabrainz.common.PlaceMbid
-import com.ealva.ealvabrainz.common.RecordingMbid
-import com.ealva.ealvabrainz.common.ReleaseGroupMbid
-import com.ealva.ealvabrainz.common.ReleaseMbid
-import com.ealva.ealvabrainz.common.SeriesMbid
+import com.ealva.ealvabrainz.brainz.data.LabelMbid
+import com.ealva.ealvabrainz.brainz.data.PlaceMbid
+import com.ealva.ealvabrainz.brainz.data.RecordingMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.brainz.data.SeriesMbid
 import com.ealva.ealvabrainz.common.TocParam
-import com.ealva.ealvabrainz.common.UrlMbid
-import com.ealva.ealvabrainz.common.WorkMbid
-import com.ealva.ealvabrainz.common.mbid
+import com.ealva.ealvabrainz.brainz.data.UrlMbid
+import com.ealva.ealvabrainz.brainz.data.WorkMbid
+import com.ealva.ealvabrainz.brainz.data.mbid
 import com.ealva.ealvabrainz.test.shared.MainCoroutineRule
 import com.ealva.ealvabrainz.test.shared.runBlockingTest
 import com.ealva.ealvabrainz.test.shared.toHaveAny
@@ -163,17 +163,25 @@ public class MusicBrainzLookupSmokeTest {
 
   @Test
   public fun lookupArtistNirvana(): Unit = brainz {
-    lookupArtist(NIRVANA_MBID) { include(Artist.Include.Aliases) }
-      .onSuccess { artist ->
-        expect(artist.name).toBe("Nirvana")
-        expect(artist.aliases).toNotBeEmpty()
-      }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    lookupArtist(NIRVANA_MBID) {
+      include(
+        Artist.Include.Aliases,
+        Artist.Include.Ratings,
+        Artist.Include.UserRatings,
+        Artist.Include.Tags,
+        Artist.Include.UserTags,
+        Artist.Include.Genres,
+        Artist.Include.UserGenres
+      )
+    }.onSuccess { artist ->
+      expect(artist.name).toBe("Nirvana")
+      expect(artist.aliases).toNotBeEmpty()
+    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
 
   @Test
   public fun lookupArtistWithTypeNirvana(): Unit = brainz {
-    lookupArtist(NIRVANA_MBID) { types(Release.Type.Album) }
+    lookupArtist(NIRVANA_MBID) { types(ReleaseGroup.Type.Album) }
       .onSuccess { fail("Expected Err result") }
       .onFailure { brainzMessage ->
         expect(brainzMessage).toBeInstanceOf<BrainzMessage.BrainzExceptionMessage> { msg ->
@@ -304,7 +312,7 @@ public class MusicBrainzLookupSmokeTest {
 
   @Test
   public fun lookupReleaseWithTypeHaflerTrio(): Unit = brainz {
-    lookupRelease(THE_HAFLER_TRIO_RELEASE) { types(Release.Type.Album) }
+    lookupRelease(THE_HAFLER_TRIO_RELEASE) { types(ReleaseGroup.Type.Album) }
       .onSuccess { release ->
         expect(release.title).toBe("æ³o & h³æ")
         expect(release.releaseEvents).toHaveSize(1)
@@ -324,7 +332,7 @@ public class MusicBrainzLookupSmokeTest {
 
   @Test
   public fun lookupReleaseGroupWithType50CentLostTape(): Unit = brainz {
-    lookupReleaseGroup(FITY_CENT_LOST_TAPE_GROUP_MBID) { types(Release.Type.Album) }
+    lookupReleaseGroup(FITY_CENT_LOST_TAPE_GROUP_MBID) { types(ReleaseGroup.Type.Album) }
       .onSuccess { group -> expect(group.title).toBe("The Lost Tape") }
       .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }

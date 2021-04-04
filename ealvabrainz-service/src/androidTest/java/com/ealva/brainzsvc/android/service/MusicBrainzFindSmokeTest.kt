@@ -30,14 +30,18 @@ import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.Password
 import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.brainzsvc.service.UserName
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.Release
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.brainz.data.primaryReleaseGroupType
+import com.ealva.ealvabrainz.brainz.data.primaryTypeMbid
+import com.ealva.ealvabrainz.brainz.data.secondaryReleaseGroupTypes
 import com.ealva.ealvabrainz.common.AlbumTitle
 import com.ealva.ealvabrainz.common.AreaName
-import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.LabelName
 import com.ealva.ealvabrainz.common.Limit
-import com.ealva.ealvabrainz.common.ReleaseMbid
 import com.ealva.ealvabrainz.common.WorkName
 import com.ealva.ealvabrainz.common.toAlbumTitle
 import com.ealva.ealvabrainz.lucene.Term
@@ -45,7 +49,9 @@ import com.ealva.ealvabrainz.lucene.inclusive
 import com.ealva.ealvabrainz.lucene.or
 import com.ealva.ealvabrainz.test.shared.MainCoroutineRule
 import com.ealva.ealvabrainz.test.shared.runBlockingTest
+import com.ealva.ealvabrainz.test.shared.toHaveAll
 import com.ealva.ealvabrainz.test.shared.toHaveAny
+import com.ealva.ealvabrainz.test.shared.toHaveNone
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import com.nhaarman.expect.expect
@@ -252,12 +258,26 @@ public class MusicBrainzFindSmokeTest {
   public fun findBeatlesAlbums67Through69(): Unit = brainz {
     findReleaseGroup {
       artist { ArtistName("The Beatles") } and
-        firstReleaseDate { Term("1967") inclusive Term("1969") } and
-        primaryType { Release.Type.Album } and
-        !secondaryType { Term(Release.Type.Compilation) or Term(Release.Type.Interview) } and
+        firstReleaseDate { Term(1967) inclusive Term(1969) } and
+        primaryType { ReleaseGroup.Type.Album } and
+        !secondaryType {
+          Term(ReleaseGroup.Type.Compilation) or Term(ReleaseGroup.Type.Interview)
+        } and
         status { Release.Status.Official }
     }.onSuccess { releaseList ->
       expect(releaseList.count).toBe(5)
+      expect(releaseList.releaseGroups).toHaveAll {
+        it.primaryReleaseGroupType == ReleaseGroup.Type.Album
+      }
+      expect(releaseList.releaseGroups).toHaveAll {
+        it.primaryTypeMbid == ReleaseGroup.Type.Album.mbid
+      }
+      expect(releaseList.releaseGroups).toHaveNone { releaseGroup ->
+        releaseGroup.secondaryReleaseGroupTypes.any { type ->
+          println(type.value)
+          type == ReleaseGroup.Type.Compilation || type == ReleaseGroup.Type.Interview
+        }
+      }
       expect(releaseList.releaseGroups).toHaveAny { it.title == "Magical Mystery Tour" }
       expect(releaseList.releaseGroups).toHaveAny {
         it.title == "Sgt. Pepper’s Lonely Hearts Club Band"

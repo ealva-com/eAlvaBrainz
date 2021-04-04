@@ -22,13 +22,13 @@ package com.ealva.ealvabrainz.search
 import com.ealva.ealvabrainz.brainz.data.Work.SearchField
 import com.ealva.ealvabrainz.brainz.data.Work.SearchField.Alias
 import com.ealva.ealvabrainz.brainz.data.Work.SearchField.Work
-import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.common.Iswc
-import com.ealva.ealvabrainz.common.RecordingMbid
+import com.ealva.ealvabrainz.brainz.data.RecordingMbid
 import com.ealva.ealvabrainz.common.RecordingTitle
-import com.ealva.ealvabrainz.common.WorkMbid
+import com.ealva.ealvabrainz.brainz.data.WorkMbid
 import com.ealva.ealvabrainz.common.WorkName
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Query

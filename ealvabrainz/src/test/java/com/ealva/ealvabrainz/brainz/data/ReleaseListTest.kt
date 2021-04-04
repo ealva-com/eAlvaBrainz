@@ -55,7 +55,6 @@ internal class ReleaseListTest {
           expect(artist.name).toBe("The Black Crowes")
           expect(artist.sortName).toBe("Black Crowes, The")
         }
-        expect(releaseGroup.thePrimaryTypeId).toBe("f529b476-6e62-324f-b0aa-1f3e33d313fc")
         expect(releaseGroup.primaryType).toBe("Album")
         expect(country).toBe("CA")
         expect(date).toBe("2001-05-08")

@@ -22,15 +22,16 @@ package com.ealva.ealvabrainz.search
 import com.ealva.ealvabrainz.brainz.data.Recording.SearchField
 import com.ealva.ealvabrainz.brainz.data.Recording.SearchField.Recording
 import com.ealva.ealvabrainz.brainz.data.Release
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.common.AlbumTitle
-import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.BrainzMarker
-import com.ealva.ealvabrainz.common.RecordingMbid
+import com.ealva.ealvabrainz.brainz.data.RecordingMbid
 import com.ealva.ealvabrainz.common.RecordingTitle
-import com.ealva.ealvabrainz.common.ReleaseGroupMbid
-import com.ealva.ealvabrainz.common.ReleaseMbid
-import com.ealva.ealvabrainz.common.TrackMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.brainz.data.TrackMbid
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Query
 import com.ealva.ealvabrainz.lucene.Term
@@ -188,11 +189,11 @@ public class RecordingSearch(query: Query = Query()) : BaseSearch<SearchField>(q
 
   @JvmName("primaryTypeTerm")
   @OverloadResolutionByLambdaReturnType
-  /** [Primary type][Release.Type] of the release group (album, single, ep, other) */
+  /** [Primary type][ReleaseGroup.Type] of the release group (album, single, ep, other) */
   public inline fun primaryType(term: () -> Term): Field = add(SearchField.PrimaryType, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun primaryType(term: () -> Release.Type): Field = primaryType { Term(term()) }
+  public inline fun primaryType(term: () -> ReleaseGroup.Type): Field = primaryType { Term(term()) }
 
   @JvmName("quantizedDurationTerm")
   @OverloadResolutionByLambdaReturnType
@@ -269,7 +270,8 @@ public class RecordingSearch(query: Query = Query()) : BaseSearch<SearchField>(q
   public inline fun secondaryType(term: () -> Term): Field = add(SearchField.SecondaryType, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun secondaryType(term: () -> Release.Type): Field = secondaryType { Term(term()) }
+  public inline fun secondaryType(term: () -> ReleaseGroup.Type): Field =
+    secondaryType { Term(term()) }
 
   @JvmName("statusTerm")
   @OverloadResolutionByLambdaReturnType

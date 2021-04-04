@@ -51,6 +51,10 @@ public class Series(
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
   public val annotation: String = "",
+  public val tags: List<Tag> = emptyList(),
+  @field:Json(name = "user-tags") public val userTags: List<Tag> = emptyList(),
+  public val genres: List<Genre> = emptyList(),
+  @field:Json(name = "user-genres") public val userGenres: List<Genre> = emptyList(),
   public val relations: List<Relation> = emptyList()
 ) {
 
@@ -59,7 +63,9 @@ public class Series(
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
-    Genres("genres")
+    UserTags("user-tags"),
+    Genres("genres"),
+    UserGenres("user-genres")
   }
 
   override fun equals(other: Any?): Boolean {
@@ -123,3 +129,9 @@ public class Series(
 
 public inline val Series.isNullObject: Boolean
   get() = this === Series.NullSeries
+
+@JvmInline
+public value class SeriesMbid(override val value: String) : Mbid
+
+public inline val Series.mbid: SeriesMbid
+  get() = SeriesMbid(id)

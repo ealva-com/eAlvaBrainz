@@ -17,15 +17,15 @@
 
 package com.ealva.ealvabrainz.lookup
 
+import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.common.QueryMap
 import com.ealva.ealvabrainz.common.TocParam
 import com.ealva.ealvabrainz.common.buildQueryMap
 import com.ealva.ealvabrainz.common.cdstubs
-import com.ealva.ealvabrainz.common.mediaFormat
-import com.ealva.ealvabrainz.common.toc
-import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.common.include
+import com.ealva.ealvabrainz.common.mediaFormat
 import com.ealva.ealvabrainz.common.status
+import com.ealva.ealvabrainz.common.toc
 import com.ealva.ealvabrainz.common.types
 
 public interface ReleaseLookup : EntitySubqueryLookup<Release.Include> {
@@ -43,13 +43,19 @@ public interface ReleaseLookup : EntitySubqueryLookup<Release.Include> {
 }
 
 private class ReleaseLookupOp : BaseSubqueryLookup<Release.Include>(), ReleaseLookup {
+  override fun validateInclude(set: Set<Release.Include>) {
+    set.ifContainsThenRequires(Release.Include.Isrcs, Release.Include.Recordings)
+  }
+
   fun queryMap(): QueryMap = buildQueryMap {
+    val incSet = allIncludes
     include(incSet)
     types(typeSet)
     status(statusSet)
   }
 
   fun queryMap(toc: TocParam?, excludeCDStubs: Boolean, allMediumFormats: Boolean) = buildQueryMap {
+    val incSet = allIncludes
     include(incSet)
     toc(toc)
     cdstubs(excludeCDStubs)

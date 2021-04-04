@@ -17,6 +17,7 @@
 
 package com.ealva.ealvabrainz.common
 
+import com.ealva.ealvabrainz.brainz.data.PackagingMbid
 import com.ealva.ealvabrainz.brainz.data.Release
 
 public class PackagingInfo(public val id: PackagingMbid, public val name: String) {

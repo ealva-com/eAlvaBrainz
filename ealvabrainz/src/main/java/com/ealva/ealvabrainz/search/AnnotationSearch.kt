@@ -22,7 +22,7 @@ import com.ealva.ealvabrainz.brainz.data.Annotation.SearchField.EntityName
 import com.ealva.ealvabrainz.brainz.data.Annotation.SearchField.EntityType
 import com.ealva.ealvabrainz.brainz.data.Annotation.SearchField.Text
 import com.ealva.ealvabrainz.common.BrainzMarker
-import com.ealva.ealvabrainz.common.Mbid
+import com.ealva.ealvabrainz.brainz.data.Mbid
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Term
 import kotlin.experimental.ExperimentalTypeInference

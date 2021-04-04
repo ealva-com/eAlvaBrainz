@@ -82,7 +82,7 @@ public class CdStubSearchTest {
   @Test
   public fun `test all non-term functions add expected field`() {
     val value = "a"
-    expect(CdStubSearch().added { Date(0) }).toBeAsString("added:1969\\-12\\-31")
+    expect(CdStubSearch().added { Date(0) }).toBeAsString("added:\"1969-12-31\"")
     expect(CdStubSearch().artist { ArtistName(value) }).toBeAsString("artist:$value")
     expect(CdStubSearch().barcode { value }).toBeAsString("barcode:$value")
     expect(CdStubSearch().comment { value }).toBeAsString("comment:$value")

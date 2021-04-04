@@ -19,11 +19,11 @@ package com.ealva.ealvabrainz.lookup
 
 import com.ealva.ealvabrainz.brainz.data.Collection
 
-public interface CollectionLookup : EntityLookup<Collection.Misc> {
+public interface CollectionLookup : EntityLookup<Collection.Include> {
   public companion object {
     public operator fun invoke(lookup: CollectionLookup.() -> Unit): String? =
       CollectionLookupOp().apply(lookup).include
   }
 }
 
-private class CollectionLookupOp : BaseEntityLookup<Collection.Misc>(), CollectionLookup
+private class CollectionLookupOp : BaseEntityLookup<Collection.Include>(), CollectionLookup

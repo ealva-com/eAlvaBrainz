@@ -20,9 +20,11 @@ package com.ealva.ealvabrainz.brainz.data
 import com.ealva.ealvabrainz.matchers.expect
 import com.ealva.ealvabrainz.matchers.toBeEmpty
 import com.nhaarman.expect.expect
+import com.nhaarman.expect.fail
 import com.squareup.moshi.Moshi
 import org.junit.Before
 import org.junit.Test
+import com.ealva.ealvabrainz.brainz.data.toReleaseGroupType as toType
 
 public class ReleaseGroupTest {
   private lateinit var moshi: Moshi
@@ -30,6 +32,79 @@ public class ReleaseGroupTest {
   @Before
   public fun setup() {
     moshi = theMoshi
+  }
+
+  @Test
+  public fun `test reify ReleaseGroup Type from string`() {
+    expect("album".toType()).toBe(ReleaseGroup.Type.Album)
+    expect("single".toType()).toBe(ReleaseGroup.Type.Single)
+    expect("ep".toType()).toBe(ReleaseGroup.Type.Ep)
+    expect("other".toType()).toBe(ReleaseGroup.Type.Other)
+    expect("broadcast".toType()).toBe(ReleaseGroup.Type.Broadcast)
+    expect("compilation".toType()).toBe(ReleaseGroup.Type.Compilation)
+    expect("soundtrack".toType()).toBe(ReleaseGroup.Type.Soundtrack)
+    expect("spokenword".toType()).toBe(ReleaseGroup.Type.SpokenWord)
+    expect("interview".toType()).toBe(ReleaseGroup.Type.Interview)
+    expect("audiobook".toType()).toBe(ReleaseGroup.Type.Audiobook)
+    expect("live".toType()).toBe(ReleaseGroup.Type.Live)
+    expect("remix".toType()).toBe(ReleaseGroup.Type.Remix)
+    expect("dj-mix".toType()).toBe(ReleaseGroup.Type.DjMix)
+    expect("mixtape/street".toType()).toBe(ReleaseGroup.Type.MixTapeStreet)
+    expect("demo".toType()).toBe(ReleaseGroup.Type.Demo)
+    expect("audio drama".toType()).toBe(ReleaseGroup.Type.AudioDrama)
+
+    expect("Album".toType()).toBe(ReleaseGroup.Type.Album)
+    expect("SINGLE".toType()).toBe(ReleaseGroup.Type.Single)
+    expect("EP".toType()).toBe(ReleaseGroup.Type.Ep)
+    expect("mixtape".toType()).toBe(ReleaseGroup.Type.MixTapeStreet)
+    expect("Mixtape".toType()).toBe(ReleaseGroup.Type.MixTapeStreet)
+
+    expect("dummy".toType()).toBeInstanceOf<ReleaseGroup.Type.Unrecognized> { type ->
+      expect(type.value).toBe("dummy")
+      expect("dummy".toType()).toBeTheSameAs(type)
+    }
+  }
+
+  @Test
+  public fun `test ReleaseGroup Type mbids`() {
+    expect(ReleaseGroup.Type.values().toSet()).toHaveSize(16)
+    ReleaseGroup.Type.values().toSet().forEach { type ->
+      when (type) {
+        ReleaseGroup.Type.Album ->
+          expect(type.mbid).toBe(ReleaseGroupTypeMbid("f529b476-6e62-324f-b0aa-1f3e33d313fc"))
+        ReleaseGroup.Type.Single ->
+          expect(type.mbid).toBe(ReleaseGroupTypeMbid("d6038452-8ee0-3f68-affc-2de9a1ede0b9"))
+        ReleaseGroup.Type.Ep ->
+          expect(type.mbid).toBe(ReleaseGroupTypeMbid("6d0c5bf6-7a33-3420-a519-44fc63eedebf"))
+        ReleaseGroup.Type.Other ->
+          expect(type.mbid).toBe(ReleaseGroupTypeMbid("4fc3be2b-de1e-396b-a933-beb8f1607a22"))
+        ReleaseGroup.Type.Broadcast ->
+          expect(type.mbid).toBe(ReleaseGroupTypeMbid("3b2e49e1-2875-37b8-9fa9-1f7cf3f49900"))
+        ReleaseGroup.Type.Compilation ->
+          expect(type.mbid).toBe(ReleaseGroupTypeMbid("dd2a21e1-0c00-3729-a7a0-de60b84eb5d1"))
+        ReleaseGroup.Type.Soundtrack ->
+          expect(type.mbid).toBe(ReleaseGroupTypeMbid("22a628ad-c082-3c4f-b1b6-d41665107b88"))
+        ReleaseGroup.Type.SpokenWord ->
+          expect(type.mbid).toBe(ReleaseGroupTypeMbid("66b8a13e-43ff-3ac0-ac6c-73659d3817c6"))
+        ReleaseGroup.Type.Interview ->
+          expect(type.mbid).toBe(ReleaseGroupTypeMbid("12af3f5e-ce2a-3941-8b93-d482884031e5"))
+        ReleaseGroup.Type.Audiobook ->
+          expect(type.mbid).toBe(ReleaseGroupTypeMbid("499a387e-6195-333e-91c0-9592bfec535e"))
+        ReleaseGroup.Type.Live ->
+          expect(type.mbid).toBe(ReleaseGroupTypeMbid("6fd474e2-6b58-3102-9d17-d6f7eb7da0a0"))
+        ReleaseGroup.Type.Remix ->
+          expect(type.mbid).toBe(ReleaseGroupTypeMbid("0c60f497-ff81-3818-befd-abfc84a4858b"))
+        ReleaseGroup.Type.DjMix ->
+          expect(type.mbid).toBe(ReleaseGroupTypeMbid("0d47f47a-3fe5-3d69-ac9d-d566c23968bf"))
+        ReleaseGroup.Type.MixTapeStreet ->
+          expect(type.mbid).toBe(ReleaseGroupTypeMbid("15c1b1f5-d893-3375-a1db-e180c5ae15ed"))
+        ReleaseGroup.Type.Demo ->
+          expect(type.mbid).toBe(ReleaseGroupTypeMbid("81598169-0d6c-3bce-b4be-866fa658eda3"))
+        ReleaseGroup.Type.AudioDrama ->
+          expect(type.mbid).toBe(ReleaseGroupTypeMbid("0eb547c2-8783-43e4-8f81-751c680e7b04"))
+        else -> fail("Unrecognized ReleaseGroupType $type")
+      }
+    }
   }
 
   /**

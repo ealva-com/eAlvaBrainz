@@ -18,12 +18,12 @@
 package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Work
-import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.Iswc
-import com.ealva.ealvabrainz.common.RecordingMbid
+import com.ealva.ealvabrainz.brainz.data.RecordingMbid
 import com.ealva.ealvabrainz.common.RecordingTitle
-import com.ealva.ealvabrainz.common.WorkMbid
+import com.ealva.ealvabrainz.brainz.data.WorkMbid
 import com.ealva.ealvabrainz.common.WorkName
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.expect

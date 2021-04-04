@@ -18,7 +18,7 @@
 package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Series
-import com.ealva.ealvabrainz.common.SeriesMbid
+import com.ealva.ealvabrainz.brainz.data.SeriesMbid
 import com.ealva.ealvabrainz.common.SeriesName
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.expect

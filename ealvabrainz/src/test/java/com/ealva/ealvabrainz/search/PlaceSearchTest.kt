@@ -18,7 +18,7 @@
 package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Place
-import com.ealva.ealvabrainz.common.PlaceMbid
+import com.ealva.ealvabrainz.brainz.data.PlaceMbid
 import com.ealva.ealvabrainz.common.PlaceName
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.expect
@@ -103,13 +103,13 @@ public class PlaceSearchTest {
     expect(PlaceSearch().address { value }).toBeAsString("address:$value")
     expect(PlaceSearch().alias { value }).toBeAsString("alias:$value")
     expect(PlaceSearch().area { value }).toBeAsString("area:$value")
-    expect(PlaceSearch().beginDate { Date(0) }).toBeAsString("begin:1969\\-12\\-31")
+    expect(PlaceSearch().beginDate { Date(0) }).toBeAsString("begin:\"1969-12-31\"")
     expect(PlaceSearch().comment { value }).toBeAsString("comment:$value")
     expect(PlaceSearch().default { value }).toBeAsString(value)
-    expect(PlaceSearch().endDate { Date(0) }).toBeAsString("end:1969\\-12\\-31")
+    expect(PlaceSearch().endDate { Date(0) }).toBeAsString("end:\"1969-12-31\"")
     expect(PlaceSearch().ended { false }).toBeAsString("ended:false")
-    expect(PlaceSearch().latitude { value }).toBeAsString("lat:$value")
-    expect(PlaceSearch().longitude { value }).toBeAsString("long:$value")
+    expect(PlaceSearch().latitude { 25.0 }).toBeAsString("lat:\"25.0\"")
+    expect(PlaceSearch().longitude { -122.419416 }).toBeAsString("long:\"-122.419416\"")
     expect(PlaceSearch().place { PlaceName(value) }).toBeAsString("place:$value")
     expect(PlaceSearch().placeAccent { PlaceName(value) }).toBeAsString("placeaccent:$value")
     expect(PlaceSearch().placeId { mbid }).toBeAsString("pid:${mbid.value}")

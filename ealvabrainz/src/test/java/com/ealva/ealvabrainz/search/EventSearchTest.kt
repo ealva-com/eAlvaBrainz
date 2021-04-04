@@ -18,13 +18,13 @@
 package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Event
-import com.ealva.ealvabrainz.common.AreaMbid
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
 import com.ealva.ealvabrainz.common.AreaName
-import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
-import com.ealva.ealvabrainz.common.EventMbid
+import com.ealva.ealvabrainz.brainz.data.EventMbid
 import com.ealva.ealvabrainz.common.EventName
-import com.ealva.ealvabrainz.common.PlaceMbid
+import com.ealva.ealvabrainz.brainz.data.PlaceMbid
 import com.ealva.ealvabrainz.common.PlaceName
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.expect
@@ -123,10 +123,10 @@ public class EventSearchTest {
     expect(EventSearch().areaId { areaMbid }).toBeAsString("aid:${areaMbid.value}")
     expect(EventSearch().artist { ArtistName(value) }).toBeAsString("artist:$value")
     expect(EventSearch().artistId { artistMbid }).toBeAsString("arid:${artistMbid.value}")
-    expect(EventSearch().beginDate { Date(0) }).toBeAsString("begin:1969\\-12\\-31")
+    expect(EventSearch().beginDate { Date(0) }).toBeAsString("begin:\"1969-12-31\"")
     expect(EventSearch().comment { value }).toBeAsString("comment:$value")
     expect(EventSearch().default { value }).toBeAsString(value)
-    expect(EventSearch().endDate { Date(0) }).toBeAsString("end:1969\\-12\\-31")
+    expect(EventSearch().endDate { Date(0) }).toBeAsString("end:\"1969-12-31\"")
     expect(EventSearch().ended { true }).toBeAsString("ended:true")
     expect(EventSearch().event { EventName(value) }).toBeAsString("event:$value")
     expect(EventSearch().eventAccent { EventName(value) }).toBeAsString("eventaccent:$value")

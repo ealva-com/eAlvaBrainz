@@ -23,7 +23,7 @@ import com.ealva.ealvabrainz.brainz.data.Artist.SearchField.Artist
 import com.ealva.ealvabrainz.brainz.data.Artist.SearchField.SortName
 import com.ealva.ealvabrainz.brainz.data.ArtistType
 import com.ealva.ealvabrainz.common.AreaName
-import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.lucene.Field

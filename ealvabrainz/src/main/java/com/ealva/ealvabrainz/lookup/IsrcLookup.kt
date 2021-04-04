@@ -33,6 +33,7 @@ public interface IsrcLookup : RecordingLookup {
 
 private class IsrcLookupOp : BaseSubqueryLookup<Recording.Include>(), IsrcLookup {
   fun queryMap(): QueryMap = buildQueryMap {
+    val incSet = allIncludes
     include(incSet)
     types(typeSet?.ensureValidType(incSet))
     status(statusSet?.ensureValidStatus(incSet))

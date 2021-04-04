@@ -83,7 +83,6 @@ public class Label(
   public val area: Area = Area.NullArea,
   /** The country of origin for the label. */
   public val country: String = "",
-  public val genres: List<Genre> = emptyList(),
   /**
    * An IPI (interested party information) code is an identifying number assigned by the CISAC
    * database for musical rights management. See IPI for more information, including how to find
@@ -114,10 +113,15 @@ public class Label(
    * release, unless one has more accurate information.
    */
   @Json(name = "life-span") public val lifeSpan: LifeSpan = LifeSpan.NullLifeSpan,
-  public val rating: Rating = Rating.NullRating,
+  @field:FallbackOnNull public val rating: Rating = Rating.NullRating,
+  @field:FallbackOnNull @field:Json(name = "user-rating") public val userRating: Rating =
+    Rating.NullRating,
   public val releases: List<Release> = emptyList(),
   public val relations: List<Relation> = emptyList(),
   public val tags: List<Tag> = emptyList(),
+  @field:Json(name = "user-tags") public val userTags: List<Tag> = emptyList(),
+  public val genres: List<Genre> = emptyList(),
+  @field:Json(name = "user-genres") public val userGenres: List<Genre> = emptyList(),
   /**
    * The [type](https://musicbrainz.org/doc/Label/Type) describes the main activity of the label.
    *
@@ -163,15 +167,19 @@ public class Label(
   override fun toString(): String = toJson()
 
   public enum class Include(override val value: String) : Inc {
-    /**
-     * include artist, label, area or work aliases; treat these as a set, as they are not
-     * deliberately ordered
-     */
     Releases("releases"),
+
+    DiscIds("discids"),
+    Media("media"),
+    ArtistCredits("artist-credits"), // include artists credits for all releases and recordings
+
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
+    UserTags("user-tags"),
     Ratings("ratings"),
+    UserRatings("user-ratings"),
+    UserGenres("user-genres"),
     Genres("genres")
   }
 
@@ -256,3 +264,9 @@ public class Label(
 
 public inline val Label.isNullObject: Boolean
   get() = this === Label.NullLabel
+
+@JvmInline
+public value class LabelMbid(override val value: String) : Mbid
+
+public inline val Label.mbid: LabelMbid
+  get() = LabelMbid(id)

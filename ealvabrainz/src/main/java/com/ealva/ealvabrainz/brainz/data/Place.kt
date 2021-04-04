@@ -77,6 +77,10 @@ public class Place(
    */
   public val aliases: List<Alias> = emptyList(),
   public val relations: List<Relation> = emptyList(),
+  public val tags: List<Tag> = emptyList(),
+  @field:Json(name = "user-tags") public val userTags: List<Tag> = emptyList(),
+  public val genres: List<Genre> = emptyList(),
+  @field:Json(name = "user-genres") public val userGenres: List<Genre> = emptyList(),
   /**
    * See the
    * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
@@ -108,7 +112,9 @@ public class Place(
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
-    Genres("genres")
+    UserTags("user-tags"),
+    Genres("genres"),
+    UserGenres("user-genres")
   }
 
   public enum class Browse(override val value: String) : Inc {
@@ -181,3 +187,9 @@ public class Place(
 
 public inline val Place.isNullObject: Boolean
   get() = this === NullPlace
+
+@JvmInline
+public value class PlaceMbid(override val value: String) : Mbid
+
+public inline val Place.mbid: PlaceMbid
+  get() = PlaceMbid(id)

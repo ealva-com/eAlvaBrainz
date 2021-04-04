@@ -18,7 +18,7 @@
 package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Label
-import com.ealva.ealvabrainz.common.LabelMbid
+import com.ealva.ealvabrainz.brainz.data.LabelMbid
 import com.ealva.ealvabrainz.common.LabelName
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.expect
@@ -112,11 +112,11 @@ public class LabelSearchTest {
     val mbid = LabelMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
     expect(LabelSearch().alias { value }).toBeAsString("alias:$value")
     expect(LabelSearch().area { value }).toBeAsString("area:$value")
-    expect(LabelSearch().beginDate { Date(0) }).toBeAsString("begin:1969\\-12\\-31")
+    expect(LabelSearch().beginDate { Date(0) }).toBeAsString("begin:\"1969-12-31\"")
     expect(LabelSearch().comment { value }).toBeAsString("comment:$value")
     expect(LabelSearch().country { value }).toBeAsString("country:$value")
     expect(LabelSearch().default { value }).toBeAsString(value)
-    expect(LabelSearch().endDate { Date(0) }).toBeAsString("end:1969\\-12\\-31")
+    expect(LabelSearch().endDate { Date(0) }).toBeAsString("end:\"1969-12-31\"")
     expect(LabelSearch().ended { false }).toBeAsString("ended:false")
     expect(LabelSearch().ipi { value }).toBeAsString("ipi:$value")
     expect(LabelSearch().isni { value }).toBeAsString("isni:$value")

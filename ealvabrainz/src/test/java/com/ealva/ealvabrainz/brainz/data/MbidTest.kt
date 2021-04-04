@@ -15,7 +15,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.common
+package com.ealva.ealvabrainz.brainz.data
 
 import com.nhaarman.expect.Matcher
 import com.nhaarman.expect.expect
@@ -27,22 +27,6 @@ public class MbidTest {
   @Test
   public fun `test mbid appears valid`() {
     expect(TestMbid("ca2866c0-e204-4b0e-8fd2-00823863e2b2")).toBeValid()
-    expect(TestMbid("ece57992-dc2e-4f67-a269-fa43626c1a3d")).toBeValid()
-    expect(TestMbid("59211ea4-ffd2-4ad9-9a4e-941d3148024a")).toBeValid()
-    expect(TestMbid("c9fdb94c-4975-4ed6-a96f-ef6d80bb7738")).toBeValid()
-    expect(TestMbid("b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d")).toBeValid()
-    expect(TestMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")).toBeValid()
-    expect(TestMbid("72d15666-99a7-321e-b1f3-a3f8c09dff9f")).toBeValid()
-    expect(TestMbid("46f0f4cd-8aab-4b33-b698-f459faf64190")).toBeValid()
-    expect(TestMbid("b9ad642e-b012-41c7-b72a-42cf4911f9ff")).toBeValid()
-    expect(TestMbid("8a754a16-0027-3a29-b6d7-2b40ea0481ed")).toBeValid()
-    expect(TestMbid("f66d7266-eb3d-4ef3-b4d8-b7cd992f918b")).toBeValid()
-    expect(TestMbid("fe39727a-3d21-4066-9345-3970cbd6cca4")).toBeValid()
-    expect(TestMbid("dd430e7f-36ba-49a5-825b-80a525e69190")).toBeValid()
-    expect(TestMbid("b1df2cf3-69a9-3bc0-be44-f71e79b27a22")).toBeValid()
-    expect(TestMbid("46d8f693-52e4-4d03-936f-7ca8459019a7")).toBeValid()
-    expect(TestMbid("300676c6-6e63-4d4d-9084-089efcd0113f")).toBeValid()
-    expect(TestMbid("478558f9-a951-4067-ad91-e83f6ba63e74")).toBeValid()
 
     expect(TestMbid("ca2866c00-e204-4b0e-8fd2-00823863e2b2")).toBeInvalid()
     expect(TestMbid("ca2866c-e204-4b0e-8fd2-00823863e2b2")).toBeInvalid()

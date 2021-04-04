@@ -33,16 +33,16 @@ import com.ealva.ealvabrainz.common.ReleaseQueryMapItem
 import com.ealva.ealvabrainz.common.WorkQueryMapItem
 import com.ealva.ealvabrainz.browse.CollectionBrowse.BrowseOn
 import com.ealva.ealvabrainz.brainz.data.Collection.Browse
-import com.ealva.ealvabrainz.common.AreaMbid
-import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.EditorName
-import com.ealva.ealvabrainz.common.EventMbid
-import com.ealva.ealvabrainz.common.LabelMbid
-import com.ealva.ealvabrainz.common.PlaceMbid
-import com.ealva.ealvabrainz.common.RecordingMbid
-import com.ealva.ealvabrainz.common.ReleaseGroupMbid
-import com.ealva.ealvabrainz.common.ReleaseMbid
-import com.ealva.ealvabrainz.common.WorkMbid
+import com.ealva.ealvabrainz.brainz.data.EventMbid
+import com.ealva.ealvabrainz.brainz.data.LabelMbid
+import com.ealva.ealvabrainz.brainz.data.PlaceMbid
+import com.ealva.ealvabrainz.brainz.data.RecordingMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.brainz.data.WorkMbid
 
 /**
  * Builds the release browsing call based on [BrowseOn] type, [include], [relationships], [types],

@@ -17,8 +17,20 @@
 
 package com.ealva.ealvabrainz.common
 
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.CollectionMbid
+import com.ealva.ealvabrainz.brainz.data.EventMbid
 import com.ealva.ealvabrainz.brainz.data.Inc
+import com.ealva.ealvabrainz.brainz.data.LabelMbid
+import com.ealva.ealvabrainz.brainz.data.PlaceMbid
+import com.ealva.ealvabrainz.brainz.data.RecordingMbid
 import com.ealva.ealvabrainz.brainz.data.Release
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.brainz.data.TrackMbid
+import com.ealva.ealvabrainz.brainz.data.WorkMbid
 import com.ealva.ealvabrainz.brainz.data.joinToString
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -43,7 +55,7 @@ public fun QueryMap.include(inc: Set<Inc>?): QueryMap = apply {
   }
 }
 
-public fun QueryMap.types(typeSet: Set<Release.Type>?): QueryMap = apply {
+public fun QueryMap.types(typeSet: Set<ReleaseGroup.Type>?): QueryMap = apply {
   if (typeSet.neitherNullNorEmpty()) {
     this["type"] = typeSet.joinToString()
   }

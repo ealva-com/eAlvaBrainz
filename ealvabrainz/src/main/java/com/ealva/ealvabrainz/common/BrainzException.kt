@@ -27,3 +27,7 @@ public class BrainzInvalidTypeException : BrainzException(
 public class BrainzInvalidStatusException : BrainzException(
   "Status is not a valid parameter unless 'include' contains releases"
 )
+
+public class BrainzInvalidIncludesException(
+  message: String
+) : BrainzException(message)

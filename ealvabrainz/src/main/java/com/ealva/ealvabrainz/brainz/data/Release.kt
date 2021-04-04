@@ -21,6 +21,7 @@ import com.ealva.ealvabrainz.brainz.data.CoverArtArchive.Companion.NullCoverArtA
 import com.ealva.ealvabrainz.brainz.data.Release.Companion.NullRelease
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import java.util.Locale
 
 /**
  * A MusicBrainz release represents the unique release (i.e. issuing) of a product on a specific
@@ -132,16 +133,18 @@ public class Release(
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
   public val annotation: String = "",
-  public val genres: List<Genre> = emptyList(),
+
   public val tags: List<Tag> = emptyList(),
+  @field:Json(name = "user-tags") public val userTags: List<Tag> = emptyList(),
+  public val genres: List<Genre> = emptyList(),
+  @field:Json(name = "user-genres") public val userGenres: List<Genre> = emptyList(),
+
   @field:Json(name = "primary-type-id") public val primaryTypeId: String = "",
   @field:Json(name = "secondary-types") public val secondaryTypes: List<String> = emptyList(),
   @field:Json(name = "secondary-type-ids") public val secondaryTypeIds: List<String> = emptyList(),
   @field:Json(name = "first-release-date") public val firstReleaseDate: String = "",
-  @field:FallbackOnNull public val rating: Rating = Rating.NullRating,
   /**
    * Types may be
-   * * "nat"
    * * "album"
    * * "single"
    * * "ep"
@@ -197,8 +200,11 @@ public class Release(
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
+    UserTags("user-tags"),
     Ratings("ratings"),
-    Genres("genres");
+    UserRatings("user-ratings"),
+    Genres("genres"),
+    UserGenres("user-genres");
 
     public companion object {
       /** Doesn't create a values() array and/or list every time */
@@ -356,72 +362,76 @@ public class Release(
   }
 
   /**
-   * Used for any lookup which includes a [ReleaseGroup] or [Release] to limit results to
-   * the that particular type of Release.
-   */
-  @Suppress("unused")
-  public sealed class Type(override val value: String) : Piped {
-    public object Nat : Type("nat")
-    public object Album : Type("album")
-    public object Single : Type("single")
-    public object Ep : Type("ep")
-    public object Compilation : Type("compilation")
-    public object Soundtrack : Type("soundtrack")
-    public object SpokenWord : Type("spokenword")
-    public object Interview : Type("interview")
-    public object Audiobook : Type("audiobook")
-    public object Live : Type("live")
-    public object Remix : Type("remix")
-    public object Other : Type("other")
-    public class Unrecognized(value: String) : Type(value)
-
-    public companion object {
-      public fun values(): Array<Type> = arrayOf(
-        Nat,
-        Album,
-        Single,
-        Ep,
-        Compilation,
-        Soundtrack,
-        SpokenWord,
-        Interview,
-        Audiobook,
-        Live,
-        Remix,
-        Other
-      )
-
-      public val values: Set<Type> = values().toSet()
-    }
-  }
-
-  /**
    * Used for any lookup which includes a [Release] to limit results to that particular
    * [status][Release.status]
    */
-  @Suppress("unused")
-  public sealed class Status(override val value: String) : Piped {
-    public object Official : Status("official")
-    public object Promotion : Status("promotion")
-    public object Bootleg : Status("bootleg")
-    public object PseudoRelease : Status("pseudo-release")
+  public sealed class Status(
+    override val value: String,
+    public val mbid: StatusMbid
+  ) : Piped {
+    public object Official : Status("official", StatusMbid("4e304316-386d-3409-af2e-78857eec5cfe"))
+    public object Promotion :
+      Status("promotion", StatusMbid("518ffc83-5cde-34df-8627-81bff5093d92"))
 
-    /**
-     * If an Unrecognized is found, the type should probably be added to this group.
-     */
-    public class Unrecognized(value: String) : Status(value)
+    public object Bootleg : Status("bootleg", StatusMbid("1156806e-d06a-38bd-83f0-cf2284a808b9"))
+    public object PseudoRelease :
+      Status("pseudo-release", StatusMbid("41121bb9-3413-3818-8a9a-9742318349aa"))
+
+    public class Unrecognized(value: String) : Status(value, StatusMbid(""))
 
     public companion object {
       public fun values(): Array<Status> = arrayOf(Official, Promotion, Bootleg, PseudoRelease)
-      public val values: Set<Status> by lazy { values().toSet() }
     }
   }
 
   public companion object {
     public val NullRelease: Release = Release(id = NullObject.ID)
     public val fallbackMapping: Pair<String, Any> = Release::class.java.name to NullRelease
+
+    public fun stringToStatus(value: String): Status =
+      map.computeIfAbsent(value.trim().toLowerCase(Locale.ROOT)) { key -> Status.Unrecognized(key) }
+
+    private val map: MutableMap<String, Status> = mutableMapOf<String, Status>().apply {
+      Status.values().forEach { put(it.value, it) }
+    }
   }
 }
 
 public inline val Release.isNullObject: Boolean
   get() = this === NullRelease
+
+/**
+ * Returns one of the [Release.Status] subtype objects or [Release.Status.Unrecognized] if the
+ * status is not found
+ */
+public fun String.toReleaseStatus(): Release.Status = Release.stringToStatus(this)
+
+@JvmInline
+public value class StatusMbid(override val value: String) : Mbid
+
+public inline val Release.statusMbid: StatusMbid
+  get() = StatusMbid(statusId)
+
+public val StatusMbid.status: Release.Status
+  get() = when (value) {
+    Release.Status.Official.value -> Release.Status.Official
+    Release.Status.Promotion.value -> Release.Status.Promotion
+    Release.Status.Bootleg.value -> Release.Status.Bootleg
+    Release.Status.PseudoRelease.value -> Release.Status.PseudoRelease
+    else -> Release.Status.Unrecognized(value)
+  }
+
+@JvmInline
+public value class PackagingMbid(override val value: String) : Mbid
+
+public inline val Packaging.mbid: PackagingMbid
+  get() = PackagingMbid(id)
+
+public inline val Release.packagingMbid: PackagingMbid
+  get() = PackagingMbid(packagingId)
+
+@JvmInline
+public value class ReleaseMbid(override val value: String) : Mbid
+
+public inline val Release.mbid: ReleaseMbid
+  get() = ReleaseMbid(id)

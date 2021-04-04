@@ -38,31 +38,32 @@ import com.ealva.brainzapp.data.toSecondaryReleaseGroupList
 import com.ealva.brainzapp.data.toStarRating
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.ResourceFetcher
-import com.ealva.ealvabrainz.browse.ReleaseBrowse.BrowseOn
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistCredit
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.ArtistType
 import com.ealva.ealvabrainz.brainz.data.LabelInfo
 import com.ealva.ealvabrainz.brainz.data.Medium
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.ReleaseEvent
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.brainz.data.artistType
 import com.ealva.ealvabrainz.brainz.data.isNullObject
-import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.isValid
+import com.ealva.ealvabrainz.brainz.data.mbid
+import com.ealva.ealvabrainz.browse.ReleaseBrowse.BrowseOn
 import com.ealva.ealvabrainz.common.ArtistName
-import com.ealva.ealvabrainz.common.ReleaseGroupMbid
-import com.ealva.ealvabrainz.common.ReleaseMbid
-import com.ealva.ealvabrainz.common.isValid
-import com.ealva.ealvabrainz.common.mbid
 import com.ealva.ealvabrainz.common.toAlbumTitle
 import com.ealva.ealvabrainz.common.toArtistName
 import com.ealva.ealvabrainz.common.toLabelName
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke
 import com.ealva.ealvalog.lazyLogger
-import com.github.michaelbull.result.Err
-import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.andThen
+import com.github.michaelbull.result.onFailure
+import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -189,9 +190,9 @@ internal class ArtistViewModelImpl(
         val releaseMap = mutableMapOf<ReleaseMbid, ReleaseItem>()
         val displayMap = HashMap<ReleaseGroupMbid, ReleaseGroupItem>(RELEASE_HASHMAP_MAX_SIZE)
         busy(isBusy) {
-          if (doArtistLookup(mbid)) {
-            when (
-              val result = brainz.browseReleases(BrowseOn.Artist(mbid)) {
+          doArtistLookup(mbid)
+            .andThen { artist ->
+              brainz.browseReleases(BrowseOn.Artist(artist.mbid)) {
                 include(
                   Release.Browse.ArtistCredits,
                   Release.Browse.ReleaseGroups,
@@ -201,13 +202,11 @@ internal class ArtistViewModelImpl(
                 )
                 status(Release.Status.Official)
               }
-            ) {
-              is Ok -> {
-                handleReleases(result.value.releases, groupToReleaseMap, displayMap, releaseMap)
-              }
-              is Err -> unsuccessful.postValue(result.error.asString(resourceFetcher))
             }
-          }
+            .onSuccess { releaseList ->
+              handleReleases(releaseList.releases, groupToReleaseMap, displayMap, releaseMap)
+            }
+            .onFailure { unsuccessful.postValue(it.asString(resourceFetcher)) }
         }
       }
     }
@@ -287,22 +286,8 @@ internal class ArtistViewModelImpl(
     )
   }
 
-  private suspend fun doArtistLookup(mbid: ArtistMbid): Boolean {
-    return when (
-      val result = brainz.lookupArtist(mbid) {
-        include(*Artist.Include.values())
-      }
-    ) {
-      is Ok -> {
-        handleArtist(result.value, mbid)
-        true
-      }
-      is Err -> {
-        unsuccessful.postValue(result.error.asString(resourceFetcher))
-        false
-      }
-    }
-  }
+  private suspend fun doArtistLookup(mbid: ArtistMbid) = brainz.lookupArtist(mbid)
+    .onSuccess { artist -> handleArtist(artist, artist.mbid) }
 
   private fun handleArtist(
     brainzArtist: Artist,

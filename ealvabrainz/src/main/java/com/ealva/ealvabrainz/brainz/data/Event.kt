@@ -117,6 +117,16 @@ public class Event(
    * See the [page about annotations](https://musicbrainz.org/doc/Annotation) for more information.
    */
   public val annotation: String = "",
+
+  @field:FallbackOnNull public val rating: Rating = Rating.NullRating,
+  @field:FallbackOnNull @field:Json(name = "user-rating") public val userRating: Rating =
+    Rating.NullRating,
+
+  public val tags: List<Tag> = emptyList(),
+  @field:Json(name = "user-tags") public val userTags: List<Tag> = emptyList(),
+  public val genres: List<Genre> = emptyList(),
+  @field:Json(name = "user-genres") public val userGenres: List<Genre> = emptyList(),
+
   /** score ranking used in query results */
   public val score: Int = 0
 ) {
@@ -124,8 +134,12 @@ public class Event(
   public enum class Include(override val value: String) : Inc {
     Aliases("aliases"),
     Annotation("annotation"),
+    Ratings("ratings"),
+    UserRatings("user-ratings"),
     Tags("tags"),
-    Genres("genres")
+    UserTags("user-tags"),
+    Genres("genres"),
+    UserGenres("user-genres"),
   }
 
   public enum class Browse(override val value: String) : Inc {
@@ -218,3 +232,9 @@ public class Event(
 
 public inline val Event.isNullObject: Boolean
   get() = this === Event.NullEvent
+
+@JvmInline
+public value class EventMbid(override val value: String) : Mbid
+
+public inline val Event.mbid: EventMbid
+  get() = EventMbid(id)

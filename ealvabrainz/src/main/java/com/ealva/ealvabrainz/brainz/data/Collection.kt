@@ -66,7 +66,7 @@ public sealed class Collection(
     return id.hashCode()
   }
 
-  public enum class Misc(override val value: String) : Inc {
+  public enum class Include(override val value: String) : Inc {
     UserCollections("user-collections")
   }
 
@@ -256,3 +256,9 @@ public class WorkCollection(
 
 public val WorkCollection.isNullObject: Boolean
   get() = this === WorkCollection.NullWorkCollection
+
+@JvmInline
+public value class CollectionMbid(override val value: String) : Mbid
+
+public inline val Collection.mbid: CollectionMbid
+  get() = CollectionMbid(id)

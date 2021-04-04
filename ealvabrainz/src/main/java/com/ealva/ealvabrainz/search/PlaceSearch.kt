@@ -23,7 +23,7 @@ import com.ealva.ealvabrainz.brainz.data.Place.SearchField.Alias
 import com.ealva.ealvabrainz.brainz.data.Place.SearchField.Area
 import com.ealva.ealvabrainz.brainz.data.Place.SearchField.Place
 import com.ealva.ealvabrainz.common.BrainzMarker
-import com.ealva.ealvabrainz.common.PlaceMbid
+import com.ealva.ealvabrainz.brainz.data.PlaceMbid
 import com.ealva.ealvabrainz.common.PlaceName
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Query
@@ -120,7 +120,7 @@ public class PlaceSearch(query: Query = Query()) : BaseSearch<SearchField>(query
   public inline fun latitude(term: () -> Term): Field = add(SearchField.Latitude, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun latitude(crossinline term: () -> String): Field = latitude { Term(term()) }
+  public inline fun latitude(crossinline term: () -> Double): Field = latitude { Term(term()) }
 
   @JvmName("longitudeTerm")
   @OverloadResolutionByLambdaReturnType
@@ -131,7 +131,7 @@ public class PlaceSearch(query: Query = Query()) : BaseSearch<SearchField>(query
   public inline fun longitude(term: () -> Term): Field = add(SearchField.Longitude, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun longitude(crossinline term: () -> String): Field = longitude { Term(term()) }
+  public inline fun longitude(crossinline term: () -> Double): Field = longitude { Term(term()) }
 
   @JvmName("placeTerm")
   @OverloadResolutionByLambdaReturnType

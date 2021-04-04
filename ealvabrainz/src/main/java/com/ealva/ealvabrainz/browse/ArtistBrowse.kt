@@ -17,23 +17,23 @@
 
 package com.ealva.ealvabrainz.browse
 
-import com.ealva.ealvabrainz.browse.ArtistBrowse.BrowseOn
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
 import com.ealva.ealvabrainz.brainz.data.Artist.Browse
-import com.ealva.ealvabrainz.common.AreaMbid
+import com.ealva.ealvabrainz.brainz.data.CollectionMbid
+import com.ealva.ealvabrainz.brainz.data.RecordingMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.brainz.data.WorkMbid
+import com.ealva.ealvabrainz.browse.ArtistBrowse.BrowseOn
 import com.ealva.ealvabrainz.common.AreaQueryMapItem
-import com.ealva.ealvabrainz.common.CollectionMbid
 import com.ealva.ealvabrainz.common.CollectionQueryMapItem
 import com.ealva.ealvabrainz.common.Limit
 import com.ealva.ealvabrainz.common.Offset
 import com.ealva.ealvabrainz.common.QueryMap
 import com.ealva.ealvabrainz.common.QueryMapItem
-import com.ealva.ealvabrainz.common.RecordingMbid
 import com.ealva.ealvabrainz.common.RecordingQueryMapItem
-import com.ealva.ealvabrainz.common.ReleaseGroupMbid
 import com.ealva.ealvabrainz.common.ReleaseGroupQueryMapItem
-import com.ealva.ealvabrainz.common.ReleaseMbid
 import com.ealva.ealvabrainz.common.ReleaseQueryMapItem
-import com.ealva.ealvabrainz.common.WorkMbid
 import com.ealva.ealvabrainz.common.WorkQueryMapItem
 
 /**

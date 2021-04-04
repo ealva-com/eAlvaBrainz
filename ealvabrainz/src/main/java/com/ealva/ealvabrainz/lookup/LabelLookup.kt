@@ -17,9 +17,9 @@
 
 package com.ealva.ealvabrainz.lookup
 
+import com.ealva.ealvabrainz.brainz.data.Label
 import com.ealva.ealvabrainz.common.QueryMap
 import com.ealva.ealvabrainz.common.buildQueryMap
-import com.ealva.ealvabrainz.brainz.data.Label
 import com.ealva.ealvabrainz.common.include
 import com.ealva.ealvabrainz.common.status
 import com.ealva.ealvabrainz.common.types
@@ -32,7 +32,14 @@ public interface LabelLookup : EntitySubqueryLookup<Label.Include> {
 }
 
 private class LabelLookupOp : BaseSubqueryLookup<Label.Include>(), LabelLookup {
+  override fun validateInclude(set: Set<Label.Include>) {
+    set.ifContainsThenRequires(Label.Include.DiscIds, Label.Include.Releases)
+    set.ifContainsThenRequires(Label.Include.Media, Label.Include.Releases)
+    set.ifContainsThenRequires(Label.Include.ArtistCredits, Label.Include.Releases)
+  }
+
   fun queryMap(): QueryMap = buildQueryMap {
+    val incSet = allIncludes
     include(incSet)
     types(typeSet?.ensureValidType(incSet))
     status(statusSet?.ensureValidStatus(incSet))

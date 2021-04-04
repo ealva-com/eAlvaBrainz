@@ -22,8 +22,10 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /**
- * The rating system allows users to rate MusicBrainz entities (artists, labels, releases and
- * tracks).
+ * The rating system allows users to rate MusicBrainz entities artist, event, genre, instrument,
+ * label, recording, release-group, work, url
+ *
+ * All entities except area, place, release, and series
  */
 @JsonClass(generateAdapter = true)
 public data class Rating(

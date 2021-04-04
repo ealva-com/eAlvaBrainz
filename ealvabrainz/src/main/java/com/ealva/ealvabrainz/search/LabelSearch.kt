@@ -20,7 +20,7 @@ package com.ealva.ealvabrainz.search
 import com.ealva.ealvabrainz.brainz.data.Label.SearchField
 import com.ealva.ealvabrainz.brainz.data.Label.SearchField.Alias
 import com.ealva.ealvabrainz.brainz.data.Label.SearchField.Label
-import com.ealva.ealvabrainz.common.LabelMbid
+import com.ealva.ealvabrainz.brainz.data.LabelMbid
 import com.ealva.ealvabrainz.common.LabelName
 import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.lucene.Field

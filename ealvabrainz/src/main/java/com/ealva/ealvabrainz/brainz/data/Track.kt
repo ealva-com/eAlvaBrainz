@@ -61,3 +61,9 @@ public class Track(
 
 public val Track.isNullObject: Boolean
   get() = this === NullTrack
+
+@JvmInline
+public value class TrackMbid(override val value: String) : Mbid
+
+public inline val Track.mbid: TrackMbid
+  get() = TrackMbid(id)

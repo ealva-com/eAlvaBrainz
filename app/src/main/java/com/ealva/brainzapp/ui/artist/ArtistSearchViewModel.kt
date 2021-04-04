@@ -27,15 +27,15 @@ import com.ealva.brainzapp.data.Country
 import com.ealva.brainzapp.data.toCountry
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.ResourceFetcher
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.ArtistType
 import com.ealva.ealvabrainz.brainz.data.artistType
-import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke
 import com.ealva.ealvalog.lazyLogger
-import com.github.michaelbull.result.Err
-import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.onFailure
+import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -130,13 +130,9 @@ internal class ArtistSearchViewModelImpl(
       val theJob = coroutineContext[Job] as Job
       loadJob = theJob
       busy(isBusy) {
-        when (
-          val result = brainz.findArtist {
-            artist { ArtistName(query) }
-          }
-        ) {
-          is Ok -> {
-            val list = result.value.artists.map { artist ->
+        brainz.findArtist { artist { ArtistName(query) } }
+          .onSuccess { artistList ->
+            artistList.artists.map { artist ->
               ArtistSearchResult(
                 ArtistMbid(artist.id),
                 artist.artistType,
@@ -145,11 +141,9 @@ internal class ArtistSearchViewModelImpl(
                 artist.disambiguation,
                 artist.score
               )
-            }
-            itemList.postValue(list)
+            }.apply { itemList.postValue(this) }
           }
-          is Err -> unsuccessful.postValue(result.error.asString(resourceFetcher))
-        }
+          .onFailure { unsuccessful.postValue(it.asString(resourceFetcher)) }
       }
       loadJob = null
     }

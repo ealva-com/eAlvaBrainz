@@ -18,8 +18,10 @@
 package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup.Companion.NullReleaseGroup
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup.Type.Unrecognized
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import java.util.Locale
 
 /**
  * A release group, just as the name suggests, is used to group several different [Release]s into a
@@ -56,8 +58,6 @@ public class ReleaseGroup(
   @field:Json(name = "artist-credit") public val artistCredit: List<ArtistCredit> = emptyList(),
   /** The releases in this Release Group */
   public val releases: List<Release> = emptyList(),
-  /** Genres associated with the releases in this group */
-  public val genres: List<Genre> = emptyList(),
   /**
    * See the
    * [page about disambiguation comments](https://musicbrainz.org/doc/Disambiguation_Comment)
@@ -69,27 +69,18 @@ public class ReleaseGroup(
    */
   public val annotation: String = "",
   public val tags: List<Tag> = emptyList(),
-  /**
-   * Types may be
-   * * "nat"
-   * * "album"
-   * * "single"
-   * * "ep"
-   * * "compilation"
-   * * "soundtrack"
-   * * "spokenword"
-   * * "interview"
-   * * "audiobook"
-   * * "live"
-   * * "remix"
-   * * "other"
-   */
+  @field:Json(name = "user-tags") public val userTags: List<Tag> = emptyList(),
+  /** Genres associated with the releases in this group */
+  public val genres: List<Genre> = emptyList(),
+  @field:Json(name = "user-genres") public val userGenres: List<Genre> = emptyList(),
   @field:Json(name = "primary-type") public val primaryType: String = "",
   @field:Json(name = "primary-type-id") public val primaryTypeId: String = "",
+  @field:Json(name = "secondary-types") public val secondaryTypes: List<String> = emptyList(),
+  @field:Json(name = "secondary-type-ids") public val secondaryTypeIds: List<String> = emptyList(),
   @field:Json(name = "type-id") public val typeId: String = "",
   @field:FallbackOnNull public val rating: Rating = Rating.NullRating,
-  @field:Json(name = "secondary-type-ids") public val secondaryTypeIds: List<String> = emptyList(),
-  @field:Json(name = "secondary-types") public val secondaryTypes: List<String> = emptyList(),
+  @field:FallbackOnNull @field:Json(name = "user-rating") public val userRating: Rating =
+    Rating.NullRating,
   @field:Json(name = "first-release-date") public val firstReleaseDate: String = "",
   public val aliases: List<Alias> = emptyList(),
   public val relations: List<Relation> = emptyList(),
@@ -118,12 +109,16 @@ public class ReleaseGroup(
     /** An ID calculated from the TOC of a CD */
     DiscIds("discids"),
     Media("media"),
-    ArtistCredits("artist-credits"), // include artists credits for all releases and recordings
+    ArtistCredits("artist-credits"),
+
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
+    UserTags("user-tags"),
     Ratings("ratings"),
-    Genres("genres");
+    UserRatings("user-ratings"),
+    Genres("genres"),
+    UserGenres("user-genres");
 
     public companion object {
       /** Doesn't create a values() array and/or list every time */
@@ -216,22 +211,157 @@ public class ReleaseGroup(
     Tag("tag")
   }
 
+  /**
+   * Used for any lookup which includes a [ReleaseGroup] or [Release] to limit results to
+   * the that particular type of Release.
+   */
+  public sealed class Type(
+    override val value: String,
+    public val mbid: ReleaseGroupTypeMbid,
+    public val primary: Boolean = false
+  ) : Piped {
+    public object Album :
+      Type("album", ReleaseGroupTypeMbid("f529b476-6e62-324f-b0aa-1f3e33d313fc"), primary = true)
+
+    public object Single :
+      Type("single", ReleaseGroupTypeMbid("d6038452-8ee0-3f68-affc-2de9a1ede0b9"), primary = true)
+
+    public object Ep :
+      Type("ep", ReleaseGroupTypeMbid("6d0c5bf6-7a33-3420-a519-44fc63eedebf"), primary = true)
+
+    public object Other :
+      Type("other", ReleaseGroupTypeMbid("4fc3be2b-de1e-396b-a933-beb8f1607a22"), primary = true)
+
+    public object Broadcast :
+      Type(
+        "broadcast",
+        ReleaseGroupTypeMbid("3b2e49e1-2875-37b8-9fa9-1f7cf3f49900"),
+        primary = true
+      )
+
+    public object Compilation :
+      Type("compilation", ReleaseGroupTypeMbid("dd2a21e1-0c00-3729-a7a0-de60b84eb5d1"))
+
+    public object Soundtrack :
+      Type("soundtrack", ReleaseGroupTypeMbid("22a628ad-c082-3c4f-b1b6-d41665107b88"))
+
+    public object SpokenWord :
+      Type("spokenword", ReleaseGroupTypeMbid("66b8a13e-43ff-3ac0-ac6c-73659d3817c6"))
+
+    public object Interview :
+      Type("interview", ReleaseGroupTypeMbid("12af3f5e-ce2a-3941-8b93-d482884031e5"))
+
+    public object Audiobook :
+      Type("audiobook", ReleaseGroupTypeMbid("499a387e-6195-333e-91c0-9592bfec535e"))
+
+    public object Live : Type("live", ReleaseGroupTypeMbid("6fd474e2-6b58-3102-9d17-d6f7eb7da0a0"))
+    public object Remix :
+      Type("remix", ReleaseGroupTypeMbid("0c60f497-ff81-3818-befd-abfc84a4858b"))
+
+    public object DjMix :
+      Type("dj-mix", ReleaseGroupTypeMbid("0d47f47a-3fe5-3d69-ac9d-d566c23968bf"))
+
+    public object MixTapeStreet :
+      Type("mixtape/street", ReleaseGroupTypeMbid("15c1b1f5-d893-3375-a1db-e180c5ae15ed"))
+
+    public object Demo : Type("demo", ReleaseGroupTypeMbid("81598169-0d6c-3bce-b4be-866fa658eda3"))
+    public object AudioDrama :
+      Type("audio drama", ReleaseGroupTypeMbid("0eb547c2-8783-43e4-8f81-751c680e7b04"))
+
+    public class Unrecognized(value: String) : Type(value, ReleaseGroupTypeMbid(""))
+
+    public companion object {
+      public fun values(): Array<Type> = arrayOf(
+        Album,
+        Single,
+        Ep,
+        Other,
+        Broadcast,
+        Compilation,
+        Soundtrack,
+        SpokenWord,
+        Interview,
+        Audiobook,
+        Live,
+        Remix,
+        DjMix,
+        MixTapeStreet,
+        Demo,
+        AudioDrama,
+      )
+    }
+  }
+
   public companion object {
     public val NullReleaseGroup: ReleaseGroup =
       ReleaseGroup(id = NullObject.ID, title = NullObject.NAME)
     public val fallbackMapping: Pair<String, Any> =
       ReleaseGroup::class.java.name to NullReleaseGroup
+
+    /**
+     * Returns one of the [Type] subtype objects or [Unrecognized]
+     */
+    public fun stringToType(value: String): Type =
+      typeMap.computeIfAbsent(value.trim().toLowerCase(Locale.ROOT)) { key -> Unrecognized(key) }
+
+    private val typeMap: MutableMap<String, Type> = mutableMapOf<String, Type>().apply {
+      Type.values().forEach { put(it.value, it) }
+      put("mixtape", Type.MixTapeStreet)
+    }
   }
 }
 
 public inline val ReleaseGroup.isNullObject: Boolean
   get() = this === NullReleaseGroup
 
+@JvmInline
+public value class ReleaseGroupMbid(override val value: String) : Mbid
+
+public inline val ReleaseGroup.mbid: ReleaseGroupMbid
+  get() = ReleaseGroupMbid(id)
+
 /**
- * Appears as primary-type-id in some places and type-id in others. Handle like this for now. Moshi
- * should have aliases, but they recommend something similar this.
- *
- * [Moshi Issue](https://github.com/square/moshi/issues/1012)
+ * Returns one of the [ReleaseGroup.Type] subtype objects, or [ReleaseGroup.Type.Unrecognized] if
+ * the type is not found.
  */
-public val ReleaseGroup.thePrimaryTypeId: String
-  get() = if (primaryTypeId.isNotEmpty()) primaryTypeId else typeId
+public fun String.toReleaseGroupType(): ReleaseGroup.Type =
+  ReleaseGroup.stringToType(this)
+
+@JvmInline
+public value class ReleaseGroupTypeMbid(override val value: String) : Mbid
+
+public val ReleaseGroupTypeMbid.type: ReleaseGroup.Type
+  get() = when (value) {
+    ReleaseGroup.Type.Album.value -> ReleaseGroup.Type.Album
+    ReleaseGroup.Type.Single.value -> ReleaseGroup.Type.Single
+    ReleaseGroup.Type.Ep.value -> ReleaseGroup.Type.Ep
+    ReleaseGroup.Type.Other.value -> ReleaseGroup.Type.Other
+    ReleaseGroup.Type.Broadcast.value -> ReleaseGroup.Type.Broadcast
+    ReleaseGroup.Type.Compilation.value -> ReleaseGroup.Type.Compilation
+    ReleaseGroup.Type.Soundtrack.value -> ReleaseGroup.Type.Soundtrack
+    ReleaseGroup.Type.SpokenWord.value -> ReleaseGroup.Type.SpokenWord
+    ReleaseGroup.Type.Interview.value -> ReleaseGroup.Type.Interview
+    ReleaseGroup.Type.Audiobook.value -> ReleaseGroup.Type.Audiobook
+    ReleaseGroup.Type.Live.value -> ReleaseGroup.Type.Live
+    ReleaseGroup.Type.Remix.value -> ReleaseGroup.Type.Remix
+    ReleaseGroup.Type.DjMix.value -> ReleaseGroup.Type.DjMix
+    ReleaseGroup.Type.MixTapeStreet.value -> ReleaseGroup.Type.MixTapeStreet
+    ReleaseGroup.Type.Demo.value -> ReleaseGroup.Type.Demo
+    ReleaseGroup.Type.AudioDrama.value -> ReleaseGroup.Type.AudioDrama
+    else -> Unrecognized(value)
+  }
+
+public inline val ReleaseGroup.typeMbid: ReleaseGroupTypeMbid
+  get() = ReleaseGroupTypeMbid(typeId)
+
+public inline val ReleaseGroup.primaryReleaseGroupType: ReleaseGroup.Type
+  get() = primaryType.toReleaseGroupType()
+
+public inline val ReleaseGroup.secondaryReleaseGroupTypes: List<ReleaseGroup.Type>
+  get() = secondaryTypes.map { it.toReleaseGroupType() }
+
+public inline val ReleaseGroup.primaryTypeMbid: ReleaseGroupTypeMbid
+  get() = ReleaseGroupTypeMbid(primaryTypeId)
+
+public inline val ReleaseGroup.secondaryTypeMbids: List<ReleaseGroupTypeMbid>
+  get() = secondaryTypeIds.map { ReleaseGroupTypeMbid(it) }

@@ -108,3 +108,38 @@ public class Annotation(
 
 public inline val Annotation.isNullObject: Boolean
   get() = this === Annotation.NullAnnotation
+public inline val Annotation.areaMbid: AreaMbid
+  get() = AreaMbid(entity)
+public inline val Annotation.artistMbid: ArtistMbid
+  get() = ArtistMbid(entity)
+public inline val Annotation.eventMbid: EventMbid
+  get() = EventMbid(entity)
+public inline val Annotation.labelMbid: LabelMbid
+  get() = LabelMbid(entity)
+public inline val Annotation.placeMbid: PlaceMbid
+  get() = PlaceMbid(entity)
+public inline val Annotation.recordingMbid: RecordingMbid
+  get() = RecordingMbid(entity)
+public inline val Annotation.releaseMbid: ReleaseMbid
+  get() = ReleaseMbid(entity)
+public inline val Annotation.releaseGroupMbid: ReleaseGroupMbid
+  get() = ReleaseGroupMbid(entity)
+public inline val Annotation.seriesMbid: SeriesMbid
+  get() = SeriesMbid(entity)
+public inline val Annotation.workMbid: WorkMbid
+  get() = WorkMbid(entity)
+
+@Suppress("unused")
+public fun Annotation.entityMbid(): Mbid = when (type) {
+  "area" -> areaMbid
+  "artist" -> artistMbid
+  "event" -> eventMbid
+  "label" -> labelMbid
+  "place" -> placeMbid
+  "recording" -> recordingMbid
+  "release" -> releaseMbid
+  "release-group" -> releaseGroupMbid
+  "series" -> seriesMbid
+  "work" -> workMbid
+  else -> UnknownEntityMbid(entity)
+}

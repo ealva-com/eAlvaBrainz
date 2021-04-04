@@ -32,7 +32,7 @@ browseEvents(EventBrowse.BrowseOn.Artist(metallicaMbid), limit)
 // promos and no singles, compilations, etc)
 val theBeatles = ArtistMbid("b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d") // maybe obtained via find
 browseReleases(ReleaseBrowse.BrowseOn.Artist(theBeatles)) {
-  types(Release.Type.Album)
+  types(ReleaseGroup.Type.Album)
   status(Release.Status.Official)
 }.onSuccess {
   // handle browse
@@ -46,8 +46,8 @@ browseReleases(ReleaseBrowse.BrowseOn.Artist(theBeatles)) {
 findReleaseGroup {
   artist { ArtistName("The Beatles") } and
     firstReleaseDate { Term("1967") inclusive Term("1969") } and
-    primaryType { Release.Type.Album } and
-    !secondaryType { Term(Release.Type.Compilation) or Term(Release.Type.Interview) } and
+    primaryType { ReleaseGroup.Type.Album } and
+    !secondaryType { Term(ReleaseGroup.Type.Compilation) or Term(ReleaseGroup.Type.Interview) } and
     status { Release.Status.Official }
 }.onSuccess {
   // handle group list
@@ -142,7 +142,7 @@ note the AreaMbid value class. Since a MusicBrainz identifier (MBID) is just a s
 classes are meant to differentiate types of MBID to facilitate compile time type checking.
 
 The MusicBrainz and CoverArt interfaces are defined with suspend functions, so are only callable
-from aa coroutine. It is expected that the service module will be used to handle constructing and
+from a coroutine. It is expected that the service module will be used to handle constructing and
 calling the generated Retrofit classes.
 ```kotlin
 interface CoverArt {

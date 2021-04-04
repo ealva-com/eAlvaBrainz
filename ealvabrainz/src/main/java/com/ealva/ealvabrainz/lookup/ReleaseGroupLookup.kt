@@ -17,9 +17,9 @@
 
 package com.ealva.ealvabrainz.lookup
 
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup.Include
 import com.ealva.ealvabrainz.common.QueryMap
 import com.ealva.ealvabrainz.common.buildQueryMap
-import com.ealva.ealvabrainz.brainz.data.ReleaseGroup.Include
 import com.ealva.ealvabrainz.common.include
 import com.ealva.ealvabrainz.common.status
 import com.ealva.ealvabrainz.common.types
@@ -32,7 +32,13 @@ public interface ReleaseGroupLookup : EntitySubqueryLookup<Include> {
 }
 
 private class ReleaseGroupLookupOp : BaseSubqueryLookup<Include>(), ReleaseGroupLookup {
+  override fun validateInclude(set: Set<Include>) {
+    set.ifContainsThenRequires(Include.DiscIds, Include.Releases)
+    set.ifContainsThenRequires(Include.Media, Include.Releases)
+  }
+
   fun queryMap(): QueryMap = buildQueryMap {
+    val incSet = allIncludes
     include(incSet)
     types(typeSet)
     status(statusSet?.ensureValidStatus(incSet))

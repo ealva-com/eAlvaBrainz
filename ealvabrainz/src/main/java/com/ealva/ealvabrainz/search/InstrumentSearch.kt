@@ -22,7 +22,7 @@ import com.ealva.ealvabrainz.brainz.data.Instrument.SearchField
 import com.ealva.ealvabrainz.brainz.data.Instrument.SearchField.Alias
 import com.ealva.ealvabrainz.brainz.data.Instrument.SearchField.Description
 import com.ealva.ealvabrainz.common.BrainzMarker
-import com.ealva.ealvabrainz.common.InstrumentMbid
+import com.ealva.ealvabrainz.brainz.data.InstrumentMbid
 import com.ealva.ealvabrainz.common.InstrumentName
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Query

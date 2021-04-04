@@ -17,18 +17,19 @@
 
 package com.ealva.ealvabrainz.browse
 
+import com.ealva.ealvabrainz.brainz.data.Inc
+import com.ealva.ealvabrainz.brainz.data.Relationships
+import com.ealva.ealvabrainz.brainz.data.Release
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.common.Limit
 import com.ealva.ealvabrainz.common.Offset
 import com.ealva.ealvabrainz.common.QueryMap
 import com.ealva.ealvabrainz.common.QueryMapItem
 import com.ealva.ealvabrainz.common.buildQueryMap
+import com.ealva.ealvabrainz.common.include
 import com.ealva.ealvabrainz.common.limit
 import com.ealva.ealvabrainz.common.offset
 import com.ealva.ealvabrainz.common.putItem
-import com.ealva.ealvabrainz.brainz.data.Inc
-import com.ealva.ealvabrainz.brainz.data.Relationships
-import com.ealva.ealvabrainz.brainz.data.Release
-import com.ealva.ealvabrainz.common.include
 import com.ealva.ealvabrainz.common.status
 import com.ealva.ealvabrainz.common.types
 
@@ -40,7 +41,7 @@ public interface EntityBrowse<B : Inc> {
   public fun relationships(vararg rels: Relationships)
 
   /** If Releases or Release.Groups are returned, narrow the type */
-  public fun types(vararg types: Release.Type)
+  public fun types(vararg types: ReleaseGroup.Type)
 
   /** If Releases are returned, narrow the status */
   public fun status(vararg status: Release.Status)
@@ -50,7 +51,7 @@ internal abstract class BaseBrowse<B : Inc>(
   private val browseOn: QueryMapItem
 ) : EntityBrowse<B> {
   private var incSet: MutableSet<Inc> = mutableSetOf()
-  private var typeSet: Set<Release.Type>? = null
+  private var typeSet: Set<ReleaseGroup.Type>? = null
   private var statusSet: Set<Release.Status>? = null
 
   override fun include(vararg browse: B) {
@@ -61,7 +62,7 @@ internal abstract class BaseBrowse<B : Inc>(
     incSet.addAll(rels)
   }
 
-  override fun types(vararg types: Release.Type) {
+  override fun types(vararg types: ReleaseGroup.Type) {
     typeSet = types.toSet()
   }
 
@@ -70,7 +71,11 @@ internal abstract class BaseBrowse<B : Inc>(
   }
 
   protected open fun Set<Inc>.verifyIncludes(): Set<Inc> = apply {}
-  protected open fun Set<Release.Type>.verifyTypes(includes: Set<Inc>): Set<Release.Type> = apply {}
+
+  protected open fun Set<ReleaseGroup.Type>.verifyTypes(
+    includes: Set<Inc>
+  ): Set<ReleaseGroup.Type> = apply {}
+
   protected open fun Set<Release.Status>.verifyStatus(includes: Set<Inc>): Set<Release.Status> =
     apply {}
 

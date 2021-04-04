@@ -34,6 +34,7 @@ import com.ealva.brainzsvc.service.UserName
 import com.ealva.ealvabrainz.brainz.data.Collection
 import com.ealva.ealvabrainz.brainz.data.EventCollection
 import com.ealva.ealvabrainz.brainz.data.Release
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.browse.ArtistBrowse
 import com.ealva.ealvabrainz.browse.CollectionBrowse
 import com.ealva.ealvabrainz.browse.EventBrowse
@@ -43,12 +44,12 @@ import com.ealva.ealvabrainz.browse.RecordingBrowse
 import com.ealva.ealvabrainz.browse.ReleaseBrowse
 import com.ealva.ealvabrainz.browse.ReleaseGroupBrowse.BrowseOn
 import com.ealva.ealvabrainz.browse.WorkBrowse
-import com.ealva.ealvabrainz.common.AreaMbid
-import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.EditorName
 import com.ealva.ealvabrainz.common.Limit
 import com.ealva.ealvabrainz.common.Offset
-import com.ealva.ealvabrainz.common.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.test.shared.MainCoroutineRule
 import com.ealva.ealvabrainz.test.shared.runBlockingTest
 import com.ealva.ealvabrainz.test.shared.toHaveAny
@@ -273,7 +274,7 @@ public class MusicBrainzBrowseSmokeTest {
       limit,
       offset
     ) {
-      types(Release.Type.Album)
+      types(ReleaseGroup.Type.Album)
     }.onSuccess { browseList ->
       expect(browseList.releaseOffset).toBe(offset.value)
       expect(browseList.releases).toHaveSize(5)
@@ -311,7 +312,7 @@ public class MusicBrainzBrowseSmokeTest {
   public fun browseReleaseGroupsWithTypeJethroTull(): Unit = brainz {
     val limit = Limit(5)
     browseReleaseGroups(BrowseOn.Artist(JETHRO_TULL_MBID), limit) {
-      types(Release.Type.Album)
+      types(ReleaseGroup.Type.Album)
     }.onSuccess { browseList ->
       expect(browseList.releaseGroups).toHaveSize(limit.value)
     }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }

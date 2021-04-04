@@ -37,8 +37,8 @@ import com.ealva.ealvabrainz.common.BrainzException
 import com.ealva.ealvabrainz.common.BrainzInvalidStatusException
 import com.ealva.ealvabrainz.common.Limit
 import com.ealva.ealvabrainz.common.Offset
-import com.ealva.ealvabrainz.common.ReleaseGroupMbid
-import com.ealva.ealvabrainz.common.ReleaseMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.common.buildQueryMap
 import com.ealva.ealvabrainz.common.toAlbumTitle
 import com.ealva.ealvabrainz.common.toArtistName
@@ -149,8 +149,8 @@ public class MusicBrainzServiceTest {
   public fun `test lookupReleaseGroup status used`(): Unit = coroutineRule.runBlockingTest {
     val dummy = ReleaseGroup(title = "dummy")
     val mbid = ReleaseGroupMbid("938cef50-de9a-3ced-a1fe-bdfbd3bc4315")
-    val allStatus = Release.Status.values
-    val status = allStatus.joinToString()
+    val allStatus = Release.Status.values()
+    val status = allStatus.toSet().joinToString()
     val mockBrainz = mock<MusicBrainz> {
       onBlocking {
         lookupReleaseGroup(

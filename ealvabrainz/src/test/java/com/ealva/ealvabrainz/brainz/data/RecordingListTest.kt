@@ -67,12 +67,11 @@ public class RecordingListTest {
           expect(id).toBe("1a343c09-e2e5-497f-a6d0-3ca62a17fc4f")
           expect(disambiguation).toBe("complete edition")
           expect(releaseGroup.id).toBe("93747376-b698-4610-a023-d256de075460")
-          expect(releaseGroup.thePrimaryTypeId).toBe("f529b476-6e62-324f-b0aa-1f3e33d313fc")
+          expect(releaseGroup.typeId).toBe("f529b476-6e62-324f-b0aa-1f3e33d313fc")
           expect(releaseGroup.primaryType).toBe("Album")
         }
         releases[8].run {
           expect(id).toBe("0806229a-8598-404d-812b-0267e956b9e5")
-          expect(releaseGroup.thePrimaryTypeId).toBe("f529b476-6e62-324f-b0aa-1f3e33d313fc")
           expect(releaseGroup.primaryType).toBe("Album")
           expect(releaseEvents).toHaveSize(1)
           releaseEvents[0].run {

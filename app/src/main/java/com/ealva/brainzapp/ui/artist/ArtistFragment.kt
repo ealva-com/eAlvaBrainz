@@ -33,9 +33,9 @@ import com.ealva.brainzapp.ui.main.MainPresenter
 import com.ealva.brainzapp.ui.main.instantiate
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.ResourceFetcher
-import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.isValid
 import com.ealva.ealvabrainz.common.ArtistName
-import com.ealva.ealvabrainz.common.isValid
 import com.ealva.ealvabrainz.common.toArtistName
 
 private const val KEY_MBID = "ArtistMbid_ArtistFragment"

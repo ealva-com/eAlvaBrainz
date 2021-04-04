@@ -19,14 +19,15 @@ package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.Release
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.common.AlbumTitle
-import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
-import com.ealva.ealvabrainz.common.RecordingMbid
+import com.ealva.ealvabrainz.brainz.data.RecordingMbid
 import com.ealva.ealvabrainz.common.RecordingTitle
-import com.ealva.ealvabrainz.common.ReleaseGroupMbid
-import com.ealva.ealvabrainz.common.ReleaseMbid
-import com.ealva.ealvabrainz.common.TrackMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.brainz.data.TrackMbid
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.expect
 import com.ealva.ealvabrainz.matchers.toBeAsString
@@ -182,12 +183,12 @@ public class RecordingSearchTest {
     expect(RecordingSearch().default { RecordingTitle(value) }).toBeAsString(value)
     expect(RecordingSearch().duration { 999100 }).toBeAsString("dur:999100")
     expect(RecordingSearch().firstReleaseDate { Date(0) })
-      .toBeAsString("firstreleasedate:1969\\-12\\-31")
+      .toBeAsString("firstreleasedate:\"1969-12-31\"")
     expect(RecordingSearch().format { value }).toBeAsString("format:$value")
     expect(RecordingSearch().isrc { value }).toBeAsString("isrc:$value")
     expect(RecordingSearch().number { value }).toBeAsString("number:$value")
     expect(RecordingSearch().position { 5 }).toBeAsString("position:5")
-    expect(RecordingSearch().primaryType { Release.Type.Interview })
+    expect(RecordingSearch().primaryType { ReleaseGroup.Type.Interview })
       .toBeAsString("primarytype:interview")
     expect(RecordingSearch().quantizedDuration { 888555 }).toBeAsString("qdur:888555")
     expect(RecordingSearch().recording { RecordingTitle(value) }).toBeAsString("recording:$value")
@@ -197,7 +198,6 @@ public class RecordingSearchTest {
     expect(RecordingSearch().releaseId { releaseId }).toBeAsString("reid:${releaseId.value}")
     expect(RecordingSearch().releaseGroupId { releaseGroupId })
       .toBeAsString("rgid:${releaseGroupId.value}")
-    expect(RecordingSearch().secondaryType { Release.Type.Nat }).toBeAsString("secondarytype:nat")
     expect(RecordingSearch().status { Release.Status.Official }).toBeAsString("status:official")
     expect(RecordingSearch().tag { value }).toBeAsString("tag:$value")
     expect(RecordingSearch().trackId { trackId }).toBeAsString("tid:${trackId.value}")

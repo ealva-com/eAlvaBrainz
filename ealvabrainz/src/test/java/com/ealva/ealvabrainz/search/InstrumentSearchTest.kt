@@ -18,7 +18,7 @@
 package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Instrument
-import com.ealva.ealvabrainz.common.InstrumentMbid
+import com.ealva.ealvabrainz.brainz.data.InstrumentMbid
 import com.ealva.ealvabrainz.common.InstrumentName
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.expect

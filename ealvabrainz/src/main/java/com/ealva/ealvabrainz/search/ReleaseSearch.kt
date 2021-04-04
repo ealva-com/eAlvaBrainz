@@ -19,16 +19,17 @@
 
 package com.ealva.ealvabrainz.search
 
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.LabelMbid
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.Release.SearchField
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.common.AlbumTitle
-import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.BrainzMarker
-import com.ealva.ealvabrainz.common.LabelMbid
 import com.ealva.ealvabrainz.common.LabelName
-import com.ealva.ealvabrainz.common.ReleaseGroupMbid
-import com.ealva.ealvabrainz.common.ReleaseMbid
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Query
 import com.ealva.ealvabrainz.lucene.Term
@@ -244,7 +245,7 @@ public class ReleaseSearch(query: Query = Query()) : BaseSearch<SearchField>(que
   public inline fun primaryType(term: () -> Term): Field = add(SearchField.PrimaryType, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun primaryType(term: () -> Release.Type): Field = primaryType { Term(term()) }
+  public inline fun primaryType(term: () -> ReleaseGroup.Type): Field = primaryType { Term(term()) }
 
   @JvmName("primaryTypeString")
   @OverloadResolutionByLambdaReturnType
@@ -317,7 +318,8 @@ public class ReleaseSearch(query: Query = Query()) : BaseSearch<SearchField>(que
   public inline fun secondaryType(term: () -> Term): Field = add(SearchField.SecondaryType, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun secondaryType(type: () -> Release.Type): Field = secondaryType { Term(type()) }
+  public inline fun secondaryType(type: () -> ReleaseGroup.Type): Field =
+    secondaryType { Term(type()) }
 
   @JvmName("secondaryTypeString")
   @OverloadResolutionByLambdaReturnType

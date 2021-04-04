@@ -20,7 +20,7 @@ package com.ealva.ealvabrainz.search
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistType
 import com.ealva.ealvabrainz.common.AreaName
-import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.expect
@@ -128,12 +128,12 @@ public class ArtistSearchTest {
     expect(ArtistSearch().artistAccent { value }).toBeAsString("artistaccent:$value")
     expect(ArtistSearch().artistId { mbid }).toBeAsString("arid:${mbid.value}")
     expect(ArtistSearch().beginArea { value }).toBeAsString("beginarea:$value")
-    expect(ArtistSearch().beginDate { Date(0) }).toBeAsString("begin:1969\\-12\\-31")
+    expect(ArtistSearch().beginDate { Date(0) }).toBeAsString("begin:\"1969-12-31\"")
     expect(ArtistSearch().comment { value }).toBeAsString("comment:$value")
     expect(ArtistSearch().country { value }).toBeAsString("country:$value")
     expect(ArtistSearch().default { value }).toBeAsString(value)
     expect(ArtistSearch().endArea { value }).toBeAsString("endarea:$value")
-    expect(ArtistSearch().endDate { Date(0) }).toBeAsString("end:1969\\-12\\-31")
+    expect(ArtistSearch().endDate { Date(0) }).toBeAsString("end:\"1969-12-31\"")
     expect(ArtistSearch().ended { true }).toBeAsString("ended:true")
     expect(ArtistSearch().gender { value }).toBeAsString("gender:$value")
     expect(ArtistSearch().ipi { value }).toBeAsString("ipi:$value")

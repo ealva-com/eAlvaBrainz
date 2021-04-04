@@ -19,35 +19,36 @@
 
 package com.ealva.ealvabrainz.lucene
 
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.ArtistType
+import com.ealva.ealvabrainz.brainz.data.EventMbid
+import com.ealva.ealvabrainz.brainz.data.GenreMbid
+import com.ealva.ealvabrainz.brainz.data.InstrumentMbid
+import com.ealva.ealvabrainz.brainz.data.LabelMbid
+import com.ealva.ealvabrainz.brainz.data.PackagingMbid
+import com.ealva.ealvabrainz.brainz.data.PlaceMbid
+import com.ealva.ealvabrainz.brainz.data.RecordingMbid
 import com.ealva.ealvabrainz.brainz.data.Release
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.brainz.data.SeriesMbid
+import com.ealva.ealvabrainz.brainz.data.TrackMbid
+import com.ealva.ealvabrainz.brainz.data.UrlMbid
+import com.ealva.ealvabrainz.brainz.data.WorkMbid
 import com.ealva.ealvabrainz.common.AlbumTitle
-import com.ealva.ealvabrainz.common.AreaMbid
 import com.ealva.ealvabrainz.common.AreaName
-import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.common.DiscId
-import com.ealva.ealvabrainz.common.EventMbid
 import com.ealva.ealvabrainz.common.EventName
-import com.ealva.ealvabrainz.common.GenreMbid
-import com.ealva.ealvabrainz.common.InstrumentMbid
 import com.ealva.ealvabrainz.common.InstrumentName
 import com.ealva.ealvabrainz.common.Iswc
-import com.ealva.ealvabrainz.common.LabelMbid
 import com.ealva.ealvabrainz.common.LabelName
-import com.ealva.ealvabrainz.common.PackagingMbid
-import com.ealva.ealvabrainz.common.PlaceMbid
 import com.ealva.ealvabrainz.common.PlaceName
-import com.ealva.ealvabrainz.common.RecordingMbid
 import com.ealva.ealvabrainz.common.RecordingTitle
-import com.ealva.ealvabrainz.common.ReleaseGroupMbid
-import com.ealva.ealvabrainz.common.ReleaseMbid
-import com.ealva.ealvabrainz.common.SeriesMbid
 import com.ealva.ealvabrainz.common.SeriesName
-import com.ealva.ealvabrainz.common.TrackMbid
-import com.ealva.ealvabrainz.common.UrlMbid
-import com.ealva.ealvabrainz.common.WorkMbid
 import com.ealva.ealvabrainz.common.WorkName
 import com.ealva.ealvabrainz.common.brainzFormat
 import java.time.LocalDate
@@ -126,22 +127,27 @@ public sealed class Term : BaseExpression() {
     public inline operator fun invoke(title: RecordingTitle): Term = Term(title.value)
     public inline operator fun invoke(name: SeriesName): Term = Term(name.value)
     public inline operator fun invoke(name: WorkName): Term = Term(name.value)
-
-    public inline operator fun invoke(type: Release.Type): Term = SingleTerm(type.value)
-    public inline operator fun invoke(status: Release.Status): Term = SingleTerm(status.value)
+    public inline operator fun invoke(type: ReleaseGroup.Type): Term = Term(type.value)
+    public inline operator fun invoke(status: Release.Status): Term = Term(status.value)
 
     public inline operator fun invoke(value: Int): Term =
-      SingleTerm(value.toString(), escape = true)
+      if (value < 0) Phrase(value.toString()) else SingleTerm(value.toString())
+
     public inline operator fun invoke(value: Long): Term =
-      SingleTerm(value.toString(), escape = true)
+      if (value < 0) Phrase(value.toString()) else SingleTerm(value.toString())
+
+    public inline operator fun invoke(value: Double): Term = Phrase(value.toString())
+
     public inline operator fun invoke(value: Boolean): Term = SingleTerm(value.toString())
-    public inline operator fun invoke(date: LocalDate): Term =
-      SingleTerm(date.brainzFormat(), escape = true)
-    public inline operator fun invoke(date: Date): Term =
-      SingleTerm(date.brainzFormat(), escape = true)
+    public inline operator fun invoke(date: LocalDate): Term = Phrase(date.brainzFormat())
+    public inline operator fun invoke(date: Date): Term = Phrase(date.brainzFormat())
   }
 }
 
+/**
+ * Use SingleTerm when it's known that the [value] String won't contain whitespace or any special
+ * characters. Certain character's may need to be [escape]d or a [Phrase] may be more appropriate.
+ */
 public open class SingleTerm(
   private val value: String,
   private val escape: Boolean = false
@@ -151,7 +157,12 @@ public open class SingleTerm(
   }
 }
 
-public class Phrase internal constructor(
+/**
+ * Phrase will surround [value] with double quote '"' characters. Chose [Phrase] over [SingleTerm]
+ * if [value] may contain whitespace or characters that would otherwise need to be escaped. Some
+ * characters may still need to be [escape]d so that is possibility.
+ */
+public class Phrase(
   private val value: String,
   private val escape: Boolean = false
 ) : Term() {

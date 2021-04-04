@@ -19,7 +19,7 @@ package com.ealva.ealvabrainz.browse
 
 import com.ealva.ealvabrainz.browse.AreaBrowse.BrowseOn
 import com.ealva.ealvabrainz.brainz.data.Area.Browse
-import com.ealva.ealvabrainz.common.CollectionMbid
+import com.ealva.ealvabrainz.brainz.data.CollectionMbid
 import com.ealva.ealvabrainz.common.CollectionQueryMapItem
 import com.ealva.ealvabrainz.common.Limit
 import com.ealva.ealvabrainz.common.Offset

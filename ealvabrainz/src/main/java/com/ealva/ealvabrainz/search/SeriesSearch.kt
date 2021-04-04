@@ -21,7 +21,7 @@ import com.ealva.ealvabrainz.brainz.data.Series.SearchField
 import com.ealva.ealvabrainz.brainz.data.Series.SearchField.Alias
 import com.ealva.ealvabrainz.brainz.data.Series.SearchField.Series
 import com.ealva.ealvabrainz.common.BrainzMarker
-import com.ealva.ealvabrainz.common.SeriesMbid
+import com.ealva.ealvabrainz.brainz.data.SeriesMbid
 import com.ealva.ealvabrainz.common.SeriesName
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Query

@@ -81,7 +81,13 @@ public class Work(
    */
   public val aliases: List<Alias> = emptyList(),
   public val relations: List<Relation> = emptyList(),
+  @field:FallbackOnNull public val rating: Rating = Rating.NullRating,
+  @field:FallbackOnNull @field:Json(name = "user-rating") public val userRating: Rating =
+    Rating.NullRating,
   public val tags: List<Tag> = emptyList(),
+  @field:Json(name = "user-tags") public val userTags: List<Tag> = emptyList(),
+  public val genres: List<Genre> = emptyList(),
+  @field:Json(name = "user-genres") public val userGenres: List<Genre> = emptyList(),
   /** score ranking used in query results */
   public val score: Int = 0
 ) {
@@ -103,8 +109,12 @@ public class Work(
   public enum class Include(override val value: String) : Inc {
     Aliases("aliases"),
     Annotation("annotation"),
+    Ratings("ratings"),
+    UserRatings("user-ratings"),
     Tags("tags"),
-    Genres("genres")
+    UserTags("user-rags"),
+    Genres("genres"),
+    UserGenres("user-genres")
   }
 
   public enum class Browse(override val value: String) : Inc {
@@ -175,3 +185,9 @@ public class Work(
 
 public inline val Work.isNullObject: Boolean
   get() = this === Work.NullWork
+
+@JvmInline
+public value class WorkMbid(override val value: String) : Mbid
+
+public inline val Work.mbid: WorkMbid
+  get() = WorkMbid(id)

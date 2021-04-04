@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  Eric A. Snell
+ * Copyright (c) 2021  Eric A. Snell
  *
  * This file is part of eAlvaBrainz
  *
@@ -17,7 +17,15 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-public object NullObject {
-  public const val ID: String = ""
-  public const val NAME: String = ""
+import com.ealva.ealvabrainz.brainz.data.Genre.Companion.ALL_GENRES
+import com.nhaarman.expect.expect
+import org.junit.Test
+
+public class GenreTest {
+  @Test
+  public fun `check genre list size`() {
+    // This test will fail if the genre list changes, which is an indication the library's minor
+    // version number should change
+    expect(ALL_GENRES.size).toBe(556)
+  }
 }

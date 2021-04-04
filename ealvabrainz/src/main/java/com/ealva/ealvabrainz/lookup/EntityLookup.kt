@@ -17,12 +17,14 @@
 
 package com.ealva.ealvabrainz.lookup
 
-import com.ealva.ealvabrainz.common.BrainzInvalidStatusException
-import com.ealva.ealvabrainz.common.BrainzInvalidTypeException
 import com.ealva.ealvabrainz.brainz.data.Inc
 import com.ealva.ealvabrainz.brainz.data.Relationships
 import com.ealva.ealvabrainz.brainz.data.Release
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.joinOrNull
+import com.ealva.ealvabrainz.common.BrainzInvalidIncludesException
+import com.ealva.ealvabrainz.common.BrainzInvalidStatusException
+import com.ealva.ealvabrainz.common.BrainzInvalidTypeException
 
 /**
  * All entity lookups have these basic parameters
@@ -41,9 +43,9 @@ public interface EntityLookup<M : Inc> {
 public interface EntitySubqueryLookup<M : Inc> : EntityLookup<M> {
   /**
    * If entities include Releases or ReleaseGroups the
-   * [Release.Type] can be specified to further narrow results
+   * [ReleaseGroup.Type] can be specified to further narrow results
    */
-  public fun types(vararg types: Release.Type)
+  public fun types(vararg types: ReleaseGroup.Type)
 
   /**
    * If entities includes Releases a [Release.Status] can be specified to
@@ -55,31 +57,59 @@ public interface EntitySubqueryLookup<M : Inc> : EntityLookup<M> {
 /**
  * Base class just implements the collection of various includes
  */
-internal abstract class BaseEntityLookup<M : Inc> : EntityLookup<M> {
-  protected val incSet: MutableSet<Inc> = mutableSetOf()
+internal abstract class BaseEntityLookup<M> : EntityLookup<M> where M : Enum<M>, M : Inc {
+  private val incSet: MutableSet<M> = mutableSetOf()
+  private val relSet: MutableSet<Inc> = mutableSetOf()
+
+  protected val allIncludes: Set<Inc>
+    get() {
+      validateInclude(incSet)
+      return incSet + relSet
+    }
 
   override fun include(vararg misc: M) {
     incSet.addAll(misc)
   }
 
+  protected open fun validateInclude(set: Set<M>) {}
+
+  protected fun Set<M>.ifContainsThenRequires(
+    whenIncluded: Inc,
+    mustInclude: Inc,
+    vararg orThese: Inc
+  ) {
+    if (contains(whenIncluded)) {
+      if (!contains(mustInclude)) {
+        if (orThese.isNotEmpty()) {
+          if (!any(orThese::contains)) {
+            val oneOf = mutableSetOf(mustInclude).apply { addAll(orThese) }
+            throw BrainzInvalidIncludesException("$whenIncluded requires one of $oneOf")
+          }
+        } else {
+          throw BrainzInvalidIncludesException("$whenIncluded requires $mustInclude")
+        }
+      }
+    }
+  }
+
   override fun relationships(vararg rels: Relationships) {
-    incSet.addAll(rels)
+    relSet.addAll(rels)
   }
 
   val include: String?
-    get() = incSet.joinOrNull()
+    get() = allIncludes.joinOrNull()
 }
 
 /**
  * Adds subquery to base entity lookups
  */
-internal abstract class BaseSubqueryLookup<M : Inc> :
-  BaseEntityLookup<M>(), EntitySubqueryLookup<M> {
+internal abstract class BaseSubqueryLookup<M> :
+  BaseEntityLookup<M>(), EntitySubqueryLookup<M> where M : Enum<M>, M : Inc {
 
-  protected var typeSet: Set<Release.Type>? = null
+  protected var typeSet: Set<ReleaseGroup.Type>? = null
   protected var statusSet: Set<Release.Status>? = null
 
-  override fun types(vararg types: Release.Type) {
+  override fun types(vararg types: ReleaseGroup.Type) {
     typeSet = types.toSet()
   }
 
@@ -88,9 +118,9 @@ internal abstract class BaseSubqueryLookup<M : Inc> :
   }
 }
 
-internal fun Set<Release.Type>.ensureValidType(
+internal fun Set<ReleaseGroup.Type>.ensureValidType(
   incSet: Set<Inc>
-): Set<Release.Type> = apply {
+): Set<ReleaseGroup.Type> = apply {
   if (isNotEmpty() && incSet.doesNotContainReleasesOrGroups()) throw BrainzInvalidTypeException()
 }
 

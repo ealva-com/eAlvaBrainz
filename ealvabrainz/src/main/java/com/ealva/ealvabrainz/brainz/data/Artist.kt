@@ -108,7 +108,6 @@ public class Artist(
    * identified with. It is often, but not always, its birth/formation country.
    */
   @field:FallbackOnNull public val area: Area = Area.NullArea,
-  public val genres: List<Genre> = emptyList(),
   /**
    * Aliases are used to store alternate names or misspellings. For more information and examples,
    * see the [page about aliases](https://musicbrainz.org/doc/Aliases).
@@ -127,7 +126,13 @@ public class Artist(
   public val isnis: List<String> = emptyList(),
 
   @field:FallbackOnNull public val rating: Rating = Rating.NullRating,
+  @field:FallbackOnNull @field:Json(name = "user-rating") public val userRating: Rating =
+    Rating.NullRating,
   public val tags: List<Tag> = emptyList(),
+  @field:Json(name = "user-tags") public val userTags: List<Tag> = emptyList(),
+  public val genres: List<Genre> = emptyList(),
+  @field:Json(name = "user-genres") public val userGenres: List<Genre> = emptyList(),
+
   @field:Json(name = "release-groups") public val releaseGroups: List<ReleaseGroup> = emptyList(),
   public val recordings: List<Recording> = emptyList(),
   public val releases: List<Release> = emptyList(),
@@ -167,11 +172,15 @@ public class Artist(
     Isrcs("isrcs"),
     ArtistCredits("artist-credits"), // include artists credits for all releases and recordings
     VariousArtists("various-artists"),
+
     Aliases("aliases"),
     Annotation("annotation"),
     Tags("tags"),
+    UserTags("user-tags"),
     Ratings("ratings"),
-    Genres("genres");
+    UserRatings("user-ratings"),
+    Genres("genres"),
+    UserGenres("user-genres");
 
     public companion object {
       /** Doesn't create a values() array and/or list every time */
@@ -269,3 +278,32 @@ public class Artist(
 
 public inline val Artist.isNullObject: Boolean
   get() = this === Artist.NullArtist
+
+@JvmInline
+public value class ArtistMbid(override val value: String) : Mbid {
+  @Suppress("unused")
+  public companion object {
+
+    // https://musicbrainz.org/doc/Style/Unknown_and_untitled/Special_purpose_artist
+    public val ANONYMOUS: ArtistMbid = ArtistMbid("f731ccc4-e22a-43af-a747-64213329e088")
+    public val DATA: ArtistMbid = ArtistMbid("33cf029c-63b0-41a0-9855-be2a3665fb3b")
+    public val DIALOGUE: ArtistMbid = ArtistMbid("314e1c25-dde7-4e4d-b2f4-0a7b9f7c56dc")
+    public val NO_ARTIST: ArtistMbid = ArtistMbid("eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61")
+    public val TRADITIONAL: ArtistMbid = ArtistMbid("9be7f096-97ec-4615-8957-8d40b5dcbc41")
+    public val UNKNOWN: ArtistMbid = ArtistMbid("125ec42a-7229-4250-afc5-e057484327fe")
+    public val VARIOUS_ARTISTS: ArtistMbid = ArtistMbid("89ad4ac3-39f7-470e-963a-56509c546377")
+    public val CHRISTMAS_MUSIC: ArtistMbid = ArtistMbid("0187fe48-c87d-4dd8-beca-9c07ef535603")
+    public val DISNEY: ArtistMbid = ArtistMbid("66ea0139-149f-4a0c-8fbf-5ea9ec4a6e49")
+    public val MUSICAL_THEATER: ArtistMbid = ArtistMbid("a0ef7e1d-44ff-4039-9435-7d5fefdeecc9")
+    public val CLASSICAL_MUSIC: ArtistMbid = ArtistMbid("9e44f539-f3fc-4120-bce2-94c8716437fa")
+    public val SOUNDTRACK: ArtistMbid = ArtistMbid("d6bd72bc-b1e2-4525-92aa-0f853cbb41bf")
+    public val RELIGIOUS_MUSIC: ArtistMbid = ArtistMbid("ae636985-40e8-4010-ae02-0f35930f8017")
+    public val CHURCH_CHIMES: ArtistMbid = ArtistMbid("90068d37-bae7-4292-be4a-704c145bd616")
+    public val LANGUAGE_INSTRUCTION: ArtistMbid = ArtistMbid("80a8851f-444c-4539-892b-ad2a49292aa9")
+    public val NATURE_SOUNDS: ArtistMbid = ArtistMbid("51118c9d-965d-4f9f-89a1-0091837ccf54")
+    public val NEWS_REPORT: ArtistMbid = ArtistMbid("49e713ce-c3be-4697-8983-ee7cd0a11ea1")
+  }
+}
+
+public inline val Artist.mbid: ArtistMbid
+  get() = ArtistMbid(id)

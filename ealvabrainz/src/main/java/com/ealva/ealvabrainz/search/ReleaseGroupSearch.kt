@@ -19,15 +19,15 @@
 
 package com.ealva.ealvabrainz.search
 
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.Release
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup.SearchField
-import com.ealva.ealvabrainz.brainz.data.ReleaseGroup.SearchField.ReleaseGroup
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.common.AlbumTitle
-import com.ealva.ealvabrainz.common.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.BrainzMarker
-import com.ealva.ealvabrainz.common.ReleaseGroupMbid
-import com.ealva.ealvabrainz.common.ReleaseMbid
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Query
 import com.ealva.ealvabrainz.lucene.Term
@@ -127,7 +127,7 @@ public class ReleaseGroupSearch(query: Query = Query()) : BaseSearch<SearchField
   public inline fun primaryType(term: () -> Term): Field = add(SearchField.PrimaryType, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun primaryType(term: () -> Release.Type): Field = primaryType { Term(term()) }
+  public inline fun primaryType(term: () -> ReleaseGroup.Type): Field = primaryType { Term(term()) }
 
   @JvmName("releaseTerm")
   @OverloadResolutionByLambdaReturnType
@@ -156,7 +156,7 @@ public class ReleaseGroupSearch(query: Query = Query()) : BaseSearch<SearchField
   @JvmName("releaseGroupTerm")
   @OverloadResolutionByLambdaReturnType
   /**	(part of) the release group's title (diacritics are ignored) */
-  public inline fun releaseGroup(term: () -> Term): Field = add(ReleaseGroup, term())
+  public inline fun releaseGroup(term: () -> Term): Field = add(SearchField.ReleaseGroup, term())
 
   @OverloadResolutionByLambdaReturnType
   public inline fun releaseGroup(term: () -> AlbumTitle): Field = releaseGroup { Term(term()) }
@@ -189,7 +189,8 @@ public class ReleaseGroupSearch(query: Query = Query()) : BaseSearch<SearchField
   public inline fun secondaryType(term: () -> Term): Field = add(SearchField.SecondaryType, term())
 
   @OverloadResolutionByLambdaReturnType
-  public inline fun secondaryType(term: () -> Release.Type): Field = secondaryType { Term(term()) }
+  public inline fun secondaryType(term: () -> ReleaseGroup.Type): Field =
+    secondaryType { Term(term()) }
 
   @JvmName("statusTerm")
   @OverloadResolutionByLambdaReturnType

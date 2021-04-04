@@ -49,7 +49,7 @@ import com.ealva.brainzapp.ui.view.snackErrors
 import com.ealva.brainzapp.ui.view.tabSelectionFlow
 import com.ealva.brainzapp.ui.view.viewPager2
 import com.ealva.ealvabrainz.brainz.data.ensureExhaustive
-import com.ealva.ealvabrainz.common.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke

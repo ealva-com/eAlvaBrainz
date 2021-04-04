@@ -27,10 +27,10 @@ import com.ealva.ealvabrainz.common.ReleaseQueryMapItem
 import com.ealva.ealvabrainz.common.WorkQueryMapItem
 import com.ealva.ealvabrainz.browse.RecordingBrowse.BrowseOn
 import com.ealva.ealvabrainz.brainz.data.Recording.Browse
-import com.ealva.ealvabrainz.common.ArtistMbid
-import com.ealva.ealvabrainz.common.CollectionMbid
-import com.ealva.ealvabrainz.common.ReleaseMbid
-import com.ealva.ealvabrainz.common.WorkMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.CollectionMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.brainz.data.WorkMbid
 
 /**
  * Builds the recording browsing call based on [BrowseOn] type, [include], [relationships], [types],

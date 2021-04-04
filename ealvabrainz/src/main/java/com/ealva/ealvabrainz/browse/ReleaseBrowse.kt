@@ -32,13 +32,13 @@ import com.ealva.ealvabrainz.common.TrackQueryMapItem
 import com.ealva.ealvabrainz.browse.ReleaseBrowse.BrowseOn
 import com.ealva.ealvabrainz.brainz.data.Inc
 import com.ealva.ealvabrainz.brainz.data.Release.Browse
-import com.ealva.ealvabrainz.common.AreaMbid
-import com.ealva.ealvabrainz.common.ArtistMbid
-import com.ealva.ealvabrainz.common.CollectionMbid
-import com.ealva.ealvabrainz.common.LabelMbid
-import com.ealva.ealvabrainz.common.RecordingMbid
-import com.ealva.ealvabrainz.common.ReleaseGroupMbid
-import com.ealva.ealvabrainz.common.TrackMbid
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.CollectionMbid
+import com.ealva.ealvabrainz.brainz.data.LabelMbid
+import com.ealva.ealvabrainz.brainz.data.RecordingMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.TrackMbid
 
 /**
  * Builds the release browsing call based on [BrowseOn] type, [include], [relationships], [types],

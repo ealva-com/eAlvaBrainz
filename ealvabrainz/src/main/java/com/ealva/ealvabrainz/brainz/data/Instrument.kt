@@ -62,6 +62,9 @@ public class Instrument(
    */
   public val annotation: String = "",
   public val aliases: List<Alias> = emptyList(),
+  @field:FallbackOnNull public val rating: Rating = Rating.NullRating,
+  @field:FallbackOnNull @field:Json(name = "user-rating") public val userRating: Rating =
+    Rating.NullRating,
   public val tags: List<Tag> = emptyList(),
   public val relations: List<Relation> = emptyList(),
   /** score ranking used in query results */
@@ -143,3 +146,9 @@ public class Instrument(
 
 public inline val Instrument.isNullObject: Boolean
   get() = this === Instrument.NullInstrument
+
+@JvmInline
+public value class InstrumentMbid(override val value: String) : Mbid
+
+public inline val Instrument.mbid: InstrumentMbid
+  get() = InstrumentMbid(id)

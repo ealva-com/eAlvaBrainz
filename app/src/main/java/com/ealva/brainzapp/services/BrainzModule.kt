@@ -17,10 +17,15 @@
 
 package com.ealva.brainzapp.services
 
+import com.ealva.brainzsvc.service.BuildConfig
 import com.ealva.brainzsvc.service.ContextResourceFetcher
 import com.ealva.brainzsvc.service.CoverArtService
+import com.ealva.brainzsvc.service.Credentials
+import com.ealva.brainzsvc.service.CredentialsProvider
 import com.ealva.brainzsvc.service.MusicBrainzService
+import com.ealva.brainzsvc.service.Password
 import com.ealva.brainzsvc.service.ResourceFetcher
+import com.ealva.brainzsvc.service.UserName
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -38,7 +43,11 @@ val brainzModule: Module = module {
       appName = APP_NAME,
       appVersion = APP_VERSION,
       contact = CONTACT_EMAIL,
-      coverArt = get()
+      coverArt = get(),
+      credentialsProvider = object : CredentialsProvider {
+        override val credentials: Credentials =
+          Credentials(UserName(BuildConfig.BRAINZ_USERNAME), Password(BuildConfig.BRAINZ_PASSWORD))
+      },
     )
   }
 }

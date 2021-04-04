@@ -18,7 +18,7 @@
 package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Area.SearchField
-import com.ealva.ealvabrainz.common.AreaMbid
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
 import com.ealva.ealvabrainz.common.AreaName
 import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.lucene.Field
