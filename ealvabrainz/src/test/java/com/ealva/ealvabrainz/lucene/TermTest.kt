@@ -207,7 +207,7 @@ public class TermTest {
     expect(Term(true).toString()).toBe("true")
     expect(Term(false).toString()).toBe("false")
 
-    val formatter = Formatting.date
+    val formatter = Formatting.toIso
     val dateStr = "1963-10-04"
     val localDate = LocalDate.parse(dateStr, formatter)
     expect(Term(localDate).toString()).toBe("\"$dateStr\"")

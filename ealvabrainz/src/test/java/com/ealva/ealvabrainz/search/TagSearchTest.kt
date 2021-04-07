@@ -60,7 +60,7 @@ public class TagSearchTest {
   @Test
   public fun `test all non-term functions add expected field`() {
     val value = "a"
-    expect(TagSearch().default { value }).toBeAsString(value)
-    expect(TagSearch().tag { value }).toBeAsString("tag:$value")
+    expect(TagSearch().default(value)).toBeAsString(value)
+    expect(TagSearch().tag(value)).toBeAsString("tag:$value")
   }
 }

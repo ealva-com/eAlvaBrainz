@@ -50,6 +50,7 @@ import com.ealva.ealvabrainz.common.PlaceName
 import com.ealva.ealvabrainz.common.RecordingTitle
 import com.ealva.ealvabrainz.common.SeriesName
 import com.ealva.ealvabrainz.common.WorkName
+import com.ealva.ealvabrainz.common.Year
 import com.ealva.ealvabrainz.common.brainzFormat
 import java.time.LocalDate
 import java.util.Date
@@ -75,7 +76,7 @@ public inline fun String.toTerm(): Term = Term(this)
  * docs for details on the query string format.
  */
 @BrainzMarker
-public sealed class Term : BaseExpression() {
+public abstract class Term : BaseExpression() {
   public companion object {
     /**
      * Constructs a [SingleTerm] or [Phrase] depending on if the [text] contains any whitespace
@@ -141,6 +142,7 @@ public sealed class Term : BaseExpression() {
     public inline operator fun invoke(value: Boolean): Term = SingleTerm(value.toString())
     public inline operator fun invoke(date: LocalDate): Term = Phrase(date.brainzFormat())
     public inline operator fun invoke(date: Date): Term = Phrase(date.brainzFormat())
+    public inline operator fun invoke(year: Year): Term = SingleTerm(year.value)
   }
 }
 
@@ -162,7 +164,7 @@ public open class SingleTerm(
  * if [value] may contain whitespace or characters that would otherwise need to be escaped. Some
  * characters may still need to be [escape]d so that is possibility.
  */
-public class Phrase(
+public open class Phrase(
   private val value: String,
   private val escape: Boolean = false
 ) : Term() {

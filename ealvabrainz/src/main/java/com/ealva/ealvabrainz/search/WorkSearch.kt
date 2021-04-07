@@ -19,154 +19,102 @@
 
 package com.ealva.ealvabrainz.search
 
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.RecordingMbid
 import com.ealva.ealvabrainz.brainz.data.Work.SearchField
 import com.ealva.ealvabrainz.brainz.data.Work.SearchField.Alias
 import com.ealva.ealvabrainz.brainz.data.Work.SearchField.Work
-import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.WorkMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.common.Iswc
-import com.ealva.ealvabrainz.brainz.data.RecordingMbid
 import com.ealva.ealvabrainz.common.RecordingTitle
-import com.ealva.ealvabrainz.brainz.data.WorkMbid
 import com.ealva.ealvabrainz.common.WorkName
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Query
 import com.ealva.ealvabrainz.lucene.Term
-import kotlin.experimental.ExperimentalTypeInference
+import com.ealva.ealvabrainz.search.term.MbidTermBuilder
+import com.ealva.ealvabrainz.search.term.NumberTermBuilder
+import com.ealva.ealvabrainz.search.term.TermBuilder
 
-@OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
 public class WorkSearch(query: Query = Query()) : BaseSearch<SearchField>(query) {
-  @JvmName("aliasTerm")
-  @OverloadResolutionByLambdaReturnType
   /** alias	(part of) any alias attached to the work (diacritics are ignored) */
-  public inline fun alias(term: () -> Term): Field = add(Alias, term())
+  public fun alias(term: String): Field = alias { Term(term) }
+  public fun alias(build: TermBuilder.() -> Term): Field =
+    add(Alias, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun alias(term: () -> String): Field = alias { Term(term()) }
-
-  @JvmName("artistTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the name of an artist related to the work (e.g. a composer or lyricist) */
-  public inline fun artist(term: () -> Term): Field = add(SearchField.Artist, term())
+  public fun artist(term: ArtistName): Field = artist { Term(term) }
+  public fun artist(build: TermBuilder.() -> Term): Field =
+    add(SearchField.Artist, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun artist(term: () -> ArtistName): Field = artist { Term(term()) }
-
-  @JvmName("artistIdTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the MBID of an artist related to the work (e.g. a composer or lyricist) */
-  public inline fun artistId(term: () -> Term): Field = add(SearchField.ArtistId, term())
+  public fun artistId(term: ArtistMbid): Field = artistId { Term(term) }
+  public fun artistId(build: MbidTermBuilder<ArtistMbid>.() -> Term): Field =
+    add(SearchField.ArtistId, MbidTermBuilder<ArtistMbid>().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun artistId(term: () -> ArtistMbid): Field = artistId { Term(term()) }
-
-  @JvmName("commentTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the work's disambiguation comment */
-  public inline fun comment(term: () -> Term): Field = add(SearchField.Comment, term())
+  public fun comment(term: String): Field = comment { Term(term) }
+  public fun comment(build: TermBuilder.() -> Term): Field =
+    add(SearchField.Comment, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun comment(term: () -> String): Field = comment { Term(term()) }
-
-  @JvmName("defaultTerm")
-  @OverloadResolutionByLambdaReturnType
   /** Default searches for [Alias] and [Work] */
-  public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
+  public fun default(term: String): Field = default { Term(term) }
+  public fun default(build: TermBuilder.() -> Term): Field =
+    add(SearchField.Default, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun default(term: () -> WorkName): Field = default { Term(term()) }
-
-  @JvmName("defaultString")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun default(term: () -> String): Field = default { Term(term()) }
-
-  @JvmName("iswcTerm")
-  @OverloadResolutionByLambdaReturnType
   /** any ISWC associated to the work */
-  public inline fun iswc(term: () -> Term): Field = add(SearchField.Iswc, term())
+  public fun iswc(term: Iswc): Field = iswc { Term(term) }
+  public fun iswc(build: TermBuilder.() -> Term): Field =
+    add(SearchField.Iswc, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun iswc(term: () -> Iswc): Field = iswc { Term(term()) }
-
-  @JvmName("languageTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the ISO 639-3 code for any of the languages of the work's lyrics */
-  public inline fun language(term: () -> Term): Field = add(SearchField.Language, term())
+  public fun language(term: String): Field = language { Term(term) }
+  public fun language(build: TermBuilder.() -> Term): Field =
+    add(SearchField.Language, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun language(term: () -> String): Field = language { Term(term()) }
-
-  @JvmName("recordingTerm")
-  @OverloadResolutionByLambdaReturnType
   /**
    * (part of) the title of a recording related to the work (diacritics are ignored)
    */
-  public inline fun recording(term: () -> Term): Field = add(SearchField.Recording, term())
+  public fun recording(term: RecordingTitle): Field = recording { Term(term) }
+  public fun recording(build: TermBuilder.() -> Term): Field =
+    add(SearchField.Recording, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun recording(term: () -> RecordingTitle): Field = recording { Term(term()) }
-
-  @JvmName("recordingCountTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the number of recordings related to the work */
-  public inline fun recordingCount(term: () -> Term): Field =
-    add(SearchField.RecordingCount, term())
+  public fun recordingCount(term: Int): Field = recordingCount { Term(term) }
+  public fun recordingCount(build: NumberTermBuilder.() -> Term): Field =
+    add(SearchField.RecordingCount, NumberTermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun recordingCount(term: () -> Int): Field =
-    recordingCount { Term(term().toString()) }
-
-  @JvmName("recordingIdTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the MBID of a recording related to the work */
-  public inline fun recordingId(term: () -> Term): Field = add(SearchField.RecordingId, term())
+  public fun recordingId(term: RecordingMbid): Field = recordingId { Term(term) }
+  public fun recordingId(build: MbidTermBuilder<RecordingMbid>.() -> Term): Field =
+    add(SearchField.RecordingId, MbidTermBuilder<RecordingMbid>().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun recordingId(term: () -> RecordingMbid): Field = recordingId { Term(term()) }
-
-  @JvmName("tagTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) a tag attached to the work */
-  public inline fun tag(term: () -> Term): Field = add(SearchField.Tag, term())
+  public fun tag(build: TermBuilder.() -> Term): Field = add(SearchField.Tag, TermBuilder().build())
+  public fun tag(term: String): Field = tag { Term(term) }
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun tag(term: () -> String): Field = tag { Term(term()) }
-
-  @JvmName("typeTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the work's type (e.g. "opera", "song", "symphony") */
-  public inline fun type(term: () -> Term): Field = add(SearchField.Type, term())
+  public fun type(term: String): Field = type { Term(term) }
+  public fun type(build: TermBuilder.() -> Term): Field =
+    add(SearchField.Type, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun type(term: () -> String): Field = type { Term(term()) }
-
-  @JvmName("workTerm")
-  @OverloadResolutionByLambdaReturnType
   /**
    * (part of) the work's title (diacritics are ignored)
    */
-  public inline fun work(term: () -> Term): Field = add(Work, term())
+  public fun work(term: WorkName): Field = work { Term(term) }
+  public fun work(term: TermBuilder.() -> Term): Field = add(Work, TermBuilder().term())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun work(term: () -> WorkName): Field = work { Term(term()) }
-
-  @JvmName("workAccentTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the work's title (with the specified diacritics) */
-  public inline fun workAccent(term: () -> Term): Field = add(SearchField.WorkAccent, term())
+  public fun workAccent(term: String): Field = workAccent { Term(term) }
+  public fun workAccent(build: TermBuilder.() -> Term): Field =
+    add(SearchField.WorkAccent, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun workAccent(term: () -> String): Field = workAccent { Term(term()) }
-
-  @JvmName("workIdTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the work's MBID */
-  public inline fun workId(term: () -> Term): Field = add(SearchField.WorkId, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun workId(term: () -> WorkMbid): Field = workId { Term(term().value) }
+  public fun workId(term: WorkMbid): Field = workId { Term(term) }
+  public fun workId(build: MbidTermBuilder<WorkMbid>.() -> Term): Field =
+    add(SearchField.WorkId, MbidTermBuilder<WorkMbid>().build())
 
   public companion object {
     public inline operator fun invoke(search: WorkSearch.() -> Unit): String {

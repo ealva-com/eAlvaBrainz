@@ -130,7 +130,7 @@ internal class ArtistSearchViewModelImpl(
       val theJob = coroutineContext[Job] as Job
       loadJob = theJob
       busy(isBusy) {
-        brainz.findArtist { artist { ArtistName(query) } }
+        brainz.findArtist { artist(ArtistName(query)) }
           .onSuccess { artistList ->
             artistList.artists.map { artist ->
               ArtistSearchResult(

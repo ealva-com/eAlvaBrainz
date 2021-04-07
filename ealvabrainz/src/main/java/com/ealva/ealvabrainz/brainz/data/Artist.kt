@@ -203,9 +203,6 @@ public class Artist(
     /** (part of) any alias attached to the artist (diacritics are ignored) */
     Alias("alias"),
 
-    /** (part of) any primary alias attached to the artist (diacritics are ignored) */
-    PrimaryAlias("primary_alias"),
-
     /** (part of) the name of the artist's main associated area */
     Area("area"),
 
@@ -255,6 +252,9 @@ public class Artist(
 
     /** an ISNI code associated with the artist */
     Isni("isni"),
+
+    /** (part of) any primary alias attached to the artist (diacritics are ignored) */
+    PrimaryAlias("primary_alias"),
 
     /**
      * (part of) the artist's [sort name](https://musicbrainz.org/doc/Artist#Sort_name)

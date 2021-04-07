@@ -20,83 +20,55 @@ package com.ealva.ealvabrainz.search
 import com.ealva.ealvabrainz.brainz.data.Series.SearchField
 import com.ealva.ealvabrainz.brainz.data.Series.SearchField.Alias
 import com.ealva.ealvabrainz.brainz.data.Series.SearchField.Series
-import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.brainz.data.SeriesMbid
+import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.common.SeriesName
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Query
 import com.ealva.ealvabrainz.lucene.Term
-import kotlin.experimental.ExperimentalTypeInference
+import com.ealva.ealvabrainz.search.term.TermBuilder
 
-@OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
 public class SeriesSearch(query: Query = Query()) : BaseSearch<SearchField>(query) {
-  @JvmName("aliasTerm")
-  @OverloadResolutionByLambdaReturnType
   /**
    * (part of) any [alias](https://musicbrainz.org/doc/Aliases attached to the series (diacritics
      * are ignored)
    */
-  public inline fun alias(term: () -> Term): Field = add(Alias, term())
+  public fun alias(term: String): Field = alias { Term(term) }
+  public fun alias(build: TermBuilder.() -> Term): Field =
+    add(Alias, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun alias(term: () -> String): Field = alias { Term(term()) }
-
-  @JvmName("commentTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the series' disambiguation comment  */
-  public inline fun comment(term: () -> Term): Field = add(SearchField.Comment, term())
+  public fun comment(term: String): Field = comment { Term(term) }
+  public fun comment(build: TermBuilder.() -> Term): Field =
+    add(SearchField.Comment, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun comment(term: () -> String): Field = comment { Term(term()) }
-
-  @JvmName("defaultTerm")
-  @OverloadResolutionByLambdaReturnType
   /** Default searches [Alias] and [Series] */
-  public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
+  public fun default(term: String): Field = default { Term(term) }
+  public fun default(build: TermBuilder.() -> Term): Field =
+    add(SearchField.Default, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun default(term: () -> String): Field = default { Term(term()) }
-
-  @JvmName("seriesTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the series's name (diacritics are ignored) */
-  public inline fun series(term: () -> Term): Field = add(Series, term())
+  public fun series(term: SeriesName): Field = series { Term(term) }
+  public fun series(build: TermBuilder.() -> Term): Field = add(Series, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun series(term: () -> SeriesName): Field = series { Term(term()) }
-
-  @JvmName("seriesAccentTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the series's name (with the specified diacritics) */
-  public inline fun seriesAccent(term: () -> Term): Field = add(SearchField.SeriesAccent, term())
+  public fun seriesAccent(term: SeriesName): Field = seriesAccent { Term(term) }
+  public fun seriesAccent(build: TermBuilder.() -> Term): Field =
+    add(SearchField.SeriesAccent, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun seriesAccent(term: () -> SeriesName): Field = seriesAccent { Term(term()) }
-
-  @JvmName("seriesIdTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the MBID of an series related to the series */
-  public inline fun seriesId(term: () -> Term): Field = add(SearchField.SeriesId, term())
+  public fun seriesId(mbid: SeriesMbid): Field = seriesId { Term(mbid) }
+  public fun seriesId(term: () -> Term): Field = add(SearchField.SeriesId, term())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun seriesId(mbid: () -> SeriesMbid): Field = seriesId { Term(mbid()) }
-
-  @JvmName("tagTerm")
-  @OverloadResolutionByLambdaReturnType
   /** a tag attached to the series */
-  public inline fun tag(term: () -> Term): Field = add(SearchField.Tag, term())
+  public fun tag(build: TermBuilder.() -> Term): Field = add(SearchField.Tag, TermBuilder().build())
+  public fun tag(term: String): Field = tag { Term(term) }
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun tag(term: () -> String): Field = tag { Term(term()) }
-
-  @JvmName("typeTerm")
-  @OverloadResolutionByLambdaReturnType
-  /** the series's [type](https://musicbrainz.org/doc/Area#Type)  */
-  public inline fun type(term: () -> Term): Field = add(SearchField.Type, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun type(type: () -> String): Field = type { Term(type()) }
+  /** the series' [type](https://musicbrainz.org/doc/Series#Type) */
+  public fun type(type: String): Field = type { Term(type) }
+  public fun type(build: TermBuilder.() -> Term): Field =
+    add(SearchField.Type, TermBuilder().build())
 
   public companion object {
     public inline operator fun invoke(search: SeriesSearch.() -> Unit): String {

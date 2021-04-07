@@ -26,6 +26,7 @@ import com.ealva.ealvabrainz.brainz.data.EventMbid
 import com.ealva.ealvabrainz.common.EventName
 import com.ealva.ealvabrainz.brainz.data.PlaceMbid
 import com.ealva.ealvabrainz.common.PlaceName
+import com.ealva.ealvabrainz.common.toLocalDate
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.expect
 import com.ealva.ealvabrainz.matchers.toBeAsString
@@ -92,7 +93,6 @@ public class EventSearchTest {
     search.comment { term }
     search.default { term }
     search.endDate { term }
-    search.ended { term }
     search.event { term }
     search.eventAccent { term }
     search.eventId { term }
@@ -102,7 +102,7 @@ public class EventSearchTest {
     search.type { term }
     var result = search.toString()
     Event.SearchField.values()
-      .filterNot { it === Event.SearchField.Default }
+      .filterNot { it === Event.SearchField.Default || it === Event.SearchField.Ended }
       .forEach { searchField ->
         val expected = "${searchField.value}:$value"
         expect(result).toContain(expected)
@@ -118,22 +118,22 @@ public class EventSearchTest {
     val artistMbid = ArtistMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
     val eventMbid = EventMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
     val placeMbid = PlaceMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
-    expect(EventSearch().alias { value }).toBeAsString("alias:$value")
-    expect(EventSearch().area { AreaName(value) }).toBeAsString("area:$value")
-    expect(EventSearch().areaId { areaMbid }).toBeAsString("aid:${areaMbid.value}")
-    expect(EventSearch().artist { ArtistName(value) }).toBeAsString("artist:$value")
-    expect(EventSearch().artistId { artistMbid }).toBeAsString("arid:${artistMbid.value}")
-    expect(EventSearch().beginDate { Date(0) }).toBeAsString("begin:\"1969-12-31\"")
-    expect(EventSearch().comment { value }).toBeAsString("comment:$value")
-    expect(EventSearch().default { value }).toBeAsString(value)
-    expect(EventSearch().endDate { Date(0) }).toBeAsString("end:\"1969-12-31\"")
-    expect(EventSearch().ended { true }).toBeAsString("ended:true")
-    expect(EventSearch().event { EventName(value) }).toBeAsString("event:$value")
-    expect(EventSearch().eventAccent { EventName(value) }).toBeAsString("eventaccent:$value")
-    expect(EventSearch().eventId { eventMbid }).toBeAsString("eid:${eventMbid.value}")
-    expect(EventSearch().place { PlaceName(value) }).toBeAsString("place:$value")
-    expect(EventSearch().placeId { placeMbid }).toBeAsString("pid:${placeMbid.value}")
-    expect(EventSearch().tag { value }).toBeAsString("tag:$value")
-    expect(EventSearch().type { value }).toBeAsString("type:$value")
+    expect(EventSearch().alias(value)).toBeAsString("alias:$value")
+    expect(EventSearch().area(AreaName(value))).toBeAsString("area:$value")
+    expect(EventSearch().areaId(areaMbid)).toBeAsString("aid:${areaMbid.value}")
+    expect(EventSearch().artist(ArtistName(value))).toBeAsString("artist:$value")
+    expect(EventSearch().artistId(artistMbid)).toBeAsString("arid:${artistMbid.value}")
+    expect(EventSearch().beginDate(Date(0).toLocalDate())).toBeAsString("begin:\"1969-12-31\"")
+    expect(EventSearch().comment(value)).toBeAsString("comment:$value")
+    expect(EventSearch().default(value)).toBeAsString(value)
+    expect(EventSearch().endDate(Date(0).toLocalDate())).toBeAsString("end:\"1969-12-31\"")
+    expect(EventSearch().ended(true)).toBeAsString("ended:true")
+    expect(EventSearch().event(EventName(value))).toBeAsString("event:$value")
+    expect(EventSearch().eventAccent(EventName(value))).toBeAsString("eventaccent:$value")
+    expect(EventSearch().eventId(eventMbid)).toBeAsString("eid:${eventMbid.value}")
+    expect(EventSearch().place(PlaceName(value))).toBeAsString("place:$value")
+    expect(EventSearch().placeId(placeMbid)).toBeAsString("pid:${placeMbid.value}")
+    expect(EventSearch().tag(value)).toBeAsString("tag:$value")
+    expect(EventSearch().type(value)).toBeAsString("type:$value")
   }
 }

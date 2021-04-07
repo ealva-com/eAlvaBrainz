@@ -17,27 +17,19 @@
 
 package com.ealva.ealvabrainz.common
 
-import com.ealva.ealvabrainz.common.Formatting.toIso
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import com.nhaarman.expect.expect
+import org.junit.Test
 import java.util.Date
 
-public fun LocalDate.brainzFormat(): String = toIso.format(this)
+public class YearTest {
+  @Test
+  public fun `test convert from Date`() {
+    expect(Year(Date(0)).value).toBe("1969")
+  }
 
-public fun Date.brainzFormat(): String = toIso.format(
-  toInstant()
-    .atZone(ZoneId.systemDefault())
-    .toLocalDate()
-)
-
-public fun Date.toLocalDate(): LocalDate = toInstant()
-  .atZone(ZoneId.systemDefault())
-  .toLocalDate()
-
-public fun String.isoToLocalDate(): LocalDate = LocalDate.parse(this, toIso)
-
-public object Formatting {
-  public val toIso: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE
-  public val toYear: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy")
+  @Test
+  public fun `test convert from LocalDate`() {
+    val localDate = Date(0).toLocalDate()
+    expect(Year(localDate).value).toBe("1969")
+  }
 }

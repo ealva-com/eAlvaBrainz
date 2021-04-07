@@ -31,10 +31,7 @@ public fun refSetOf(field: Field): ReferenceSet<Field> = refSetOf<Field>().apply
 private fun Pair<String, String>.toField(): Field = Field(first, Term(second))
 
 public interface Query : Expression {
-  /**
-   * Add the field and return true if added. Set of fields, so if already exists returns false
-   */
-  public fun add(field: Field): Boolean
+  public fun add(fieldName: String, term: Term): Field
 
   /**
    * Remove the field and return true if it existed and was removed. If field not found, returns
@@ -67,7 +64,9 @@ private class QueryImpl(
   private var fields: ReferenceSet<Field> = refSetOf()
 ) : BaseExpression(), Query {
 
-  override fun add(field: Field): Boolean = fields.add(field)
+  override fun add(fieldName: String, term: Term): Field = Field(fieldName, term).also { field ->
+    fields.add(field)
+  }
 
   override fun remove(field: Field): Boolean = fields.remove(field)
 

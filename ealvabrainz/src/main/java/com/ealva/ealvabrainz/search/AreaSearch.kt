@@ -18,132 +18,87 @@
 package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Area.SearchField
+import com.ealva.ealvabrainz.brainz.data.Area.SearchField.Alias
+import com.ealva.ealvabrainz.brainz.data.Area.SearchField.AreaAccent
+import com.ealva.ealvabrainz.brainz.data.Area.SearchField.AreaId
+import com.ealva.ealvabrainz.brainz.data.Area.SearchField.Begin
+import com.ealva.ealvabrainz.brainz.data.Area.SearchField.Comment
+import com.ealva.ealvabrainz.brainz.data.Area.SearchField.Default
+import com.ealva.ealvabrainz.brainz.data.Area.SearchField.End
+import com.ealva.ealvabrainz.brainz.data.Area.SearchField.Iso
+import com.ealva.ealvabrainz.brainz.data.Area.SearchField.Tag
+import com.ealva.ealvabrainz.brainz.data.Area.SearchField.Type
 import com.ealva.ealvabrainz.brainz.data.AreaMbid
 import com.ealva.ealvabrainz.common.AreaName
 import com.ealva.ealvabrainz.common.BrainzMarker
+import com.ealva.ealvabrainz.common.Year
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Term
+import com.ealva.ealvabrainz.search.term.DateTermBuilder
+import com.ealva.ealvabrainz.search.term.MbidTermBuilder
+import com.ealva.ealvabrainz.search.term.TermBuilder
 import java.time.LocalDate
-import java.util.Date
-import kotlin.experimental.ExperimentalTypeInference
 
-@Suppress("unused")
-@OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
 public class AreaSearch : BaseSearch<SearchField>() {
-  @JvmName("aliasTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) any alias attached to the area (diacritics are ignored) */
-  public inline fun alias(term: () -> Term): Field = add(SearchField.Alias, term())
+  public fun alias(term: String): Field = alias { Term(term) }
+  public fun alias(build: TermBuilder.() -> Term): Field = add(Alias, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun alias(term: () -> String): Field = alias { Term(term()) }
-
-  @JvmName("areaIdTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the area's MBID */
-  public inline fun areaId(term: () -> Term): Field = add(SearchField.AreaId, term())
+  public fun areaId(mbid: AreaMbid): Field = areaId { Term(mbid) }
+  public fun areaId(build: MbidTermBuilder<AreaMbid>.() -> Term): Field =
+    add(AreaId, MbidTermBuilder<AreaMbid>().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun areaId(mbid: () -> AreaMbid): Field = areaId { Term(mbid()) }
-
-  @JvmName("areaTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the name of the artist's main associated area */
-  public inline fun area(term: () -> Term): Field = add(SearchField.AreaName, term())
+  public fun area(term: AreaName): Field = area { Term(term) }
+  public fun area(build: TermBuilder.() -> Term): Field =
+    add(SearchField.AreaName, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun area(term: () -> AreaName): Field = area { Term(term()) }
-
-  @JvmName("areaAccentTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the area's name (with the specified diacritics) */
-  public inline fun areaAccent(term: () -> Term): Field = add(SearchField.AreaAccent, term())
+  public fun areaAccent(term: String): Field = areaAccent { Term(term) }
+  public fun areaAccent(build: TermBuilder.() -> Term): Field =
+    add(AreaAccent, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun areaAccent(term: () -> String): Field = areaAccent { Term(term()) }
-
-  @JvmName("beginDateTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the area's begin date (e.g. "1980-01-22") */
-  public inline fun beginDate(term: () -> Term): Field = add(SearchField.Begin, term())
+  public fun beginDate(term: LocalDate): Field = beginDate { Term(term) }
+  public fun beginDate(term: Year): Field = beginDate { Term(term) }
+  public fun beginDate(build: DateTermBuilder.() -> Term): Field =
+    add(Begin, DateTermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun beginDate(term: () -> LocalDate): Field = beginDate { Term(term()) }
-
-  @JvmName("beginDateOld")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun beginDate(term: () -> Date): Field = beginDate { Term(term()) }
-
-  @JvmName("commentTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the area's disambiguation comment */
-  public inline fun comment(term: () -> Term): Field = add(SearchField.Comment, term())
+  public fun comment(term: String): Field = comment { Term(term) }
+  public fun comment(build: TermBuilder.() -> Term): Field = add(Comment, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun comment(term: () -> String): Field = comment { Term(term()) }
-
-  @JvmName("defaultTerm")
-  @OverloadResolutionByLambdaReturnType
   /** Default searches the [AreaName] */
-  public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
+  public fun default(name: AreaName): Field = default { Term(name) }
+  public fun default(build: TermBuilder.() -> Term): Field = add(Default, TermBuilder().build())
 
-  @JvmName("defaultString")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun default(default: () -> String): Field = default { Term(default()) }
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun default(default: () -> AreaName): Field = default { Term(default()) }
-
-  @JvmName("endDateTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the area's end date (e.g. "1980-01-22") */
-  public inline fun endDate(term: () -> Term): Field = add(SearchField.End, term())
+  public fun endDate(term: LocalDate): Field = endDate { Term(term) }
+  public fun endDate(term: Year): Field = endDate { Term(term) }
+  public fun endDate(build: DateTermBuilder.() -> Term): Field = add(End, DateTermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun endDate(term: () -> LocalDate): Field = endDate { Term(term()) }
-
-  @JvmName("endDateOld")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun endDate(term: () -> Date): Field = endDate { Term(term()) }
-
-  @JvmName("endedTerm")
-  @OverloadResolutionByLambdaReturnType
   /**
    * A boolean flag (true/false) indicating whether or not the area has ended (is no longer
    * current)
    */
-  public inline fun ended(term: () -> Term): Field = add(SearchField.Ended, term())
+  public fun ended(term: Boolean): Field = add(SearchField.Ended, Term(term))
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun ended(term: () -> Boolean): Field = ended { Term(term()) }
-
-  @JvmName("isoTerm")
-  @OverloadResolutionByLambdaReturnType
   /**
    * An [ISO 3166-1, 3166-2 or 3166-3](https://en.wikipedia.org/wiki/ISO_3166) code attached to the
    * area
    */
-  public inline fun iso(term: () -> Term): Field = add(SearchField.Iso, term())
+  public fun iso(term: String): Field = iso { Term(term) }
+  public fun iso(build: TermBuilder.() -> Term): Field = add(Iso, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun iso(term: () -> String): Field = iso { Term(term()) }
-
-  @JvmName("tagTerm")
-  @OverloadResolutionByLambdaReturnType
   /** a tag attached to the area */
-  public inline fun tag(term: () -> Term): Field = add(SearchField.Tag, term())
+  public fun tag(term: String): Field = tag { Term(term) }
+  public fun tag(build: TermBuilder.() -> Term): Field = add(Tag, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun tag(term: () -> String): Field = tag { Term(term()) }
-
-  @JvmName("typeTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the area's [type](https://musicbrainz.org/doc/Area#Type)  */
-  public inline fun type(term: () -> Term): Field = add(SearchField.Type, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun type(type: () -> String): Field = type { Term(type()) }
+  public fun type(type: String): Field = type { Term(type) }
+  public fun type(build: TermBuilder.() -> Term): Field = add(Type, TermBuilder().build())
 
   public companion object {
     public inline operator fun invoke(search: AreaSearch.() -> Unit): String {

@@ -81,13 +81,13 @@ public class SeriesSearchTest {
   public fun `test all non-term functions add expected field`() {
     val value = "a"
     val mbid = SeriesMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
-    expect(SeriesSearch().alias { value }).toBeAsString("alias:$value")
-    expect(SeriesSearch().comment { value }).toBeAsString("comment:$value")
-    expect(SeriesSearch().default { value }).toBeAsString(value)
-    expect(SeriesSearch().series { SeriesName(value) }).toBeAsString("series:$value")
-    expect(SeriesSearch().seriesId { mbid }).toBeAsString("sid:${mbid.value}")
-    expect(SeriesSearch().seriesAccent { SeriesName(value) }).toBeAsString("seriesaccent:$value")
-    expect(SeriesSearch().tag { value }).toBeAsString("tag:$value")
-    expect(SeriesSearch().type { value }).toBeAsString("type:$value")
+    expect(SeriesSearch().alias(value)).toBeAsString("alias:$value")
+    expect(SeriesSearch().comment(value)).toBeAsString("comment:$value")
+    expect(SeriesSearch().default(value)).toBeAsString(value)
+    expect(SeriesSearch().series(SeriesName(value))).toBeAsString("series:$value")
+    expect(SeriesSearch().seriesId(mbid)).toBeAsString("sid:${mbid.value}")
+    expect(SeriesSearch().seriesAccent(SeriesName(value))).toBeAsString("seriesaccent:$value")
+    expect(SeriesSearch().tag(value)).toBeAsString("tag:$value")
+    expect(SeriesSearch().type(value)).toBeAsString("type:$value")
   }
 }

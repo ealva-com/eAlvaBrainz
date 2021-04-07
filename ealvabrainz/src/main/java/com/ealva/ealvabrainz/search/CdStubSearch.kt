@@ -18,8 +18,14 @@
 package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.CdStub.SearchField
+import com.ealva.ealvabrainz.brainz.data.CdStub.SearchField.Added
 import com.ealva.ealvabrainz.brainz.data.CdStub.SearchField.Artist
+import com.ealva.ealvabrainz.brainz.data.CdStub.SearchField.Barcode
+import com.ealva.ealvabrainz.brainz.data.CdStub.SearchField.Comment
+import com.ealva.ealvabrainz.brainz.data.CdStub.SearchField.Default
+import com.ealva.ealvabrainz.brainz.data.CdStub.SearchField.Discid
 import com.ealva.ealvabrainz.brainz.data.CdStub.SearchField.Title
+import com.ealva.ealvabrainz.brainz.data.CdStub.SearchField.TrackCount
 import com.ealva.ealvabrainz.common.AlbumTitle
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.BrainzMarker
@@ -27,81 +33,46 @@ import com.ealva.ealvabrainz.common.DiscId
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Query
 import com.ealva.ealvabrainz.lucene.Term
+import com.ealva.ealvabrainz.search.term.DateTermBuilder
+import com.ealva.ealvabrainz.search.term.TermBuilder
 import java.time.LocalDate
-import java.util.Date
 import kotlin.experimental.ExperimentalTypeInference
+import com.ealva.ealvabrainz.search.term.NumberTermBuilder as NumBuilder
 
 @OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
 public class CdStubSearch(query: Query = Query()) : BaseSearch<SearchField>(query) {
-  @JvmName("addedTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the date the CD stub was added (e.g. "2020-01-22") */
-  public inline fun added(term: () -> Term): Field = add(SearchField.Added, term())
+  public fun added(term: LocalDate): Field = added { Term(term) }
+  public fun added(build: DateTermBuilder.() -> Term): Field = add(Added, DateTermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun added(term: () -> LocalDate): Field = added { Term(term()) }
-
-  @JvmName("addedOld")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun added(term: () -> Date): Field = added { Term(term()) }
-
-  @JvmName("artistTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the artist name set on the CD stub */
-  public inline fun artist(term: () -> Term): Field = add(Artist, term())
+  public fun artist(name: ArtistName): Field = artist { Term(name) }
+  public fun artist(build: TermBuilder.() -> Term): Field = add(Artist, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun artist(name: () -> ArtistName): Field = artist { Term(name()) }
-
-  @JvmName("barcodeTerm")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun barcode(term: () -> Term): Field = add(SearchField.Barcode, term())
-
-  @OverloadResolutionByLambdaReturnType
   /** the barcode set on the CD stub */
-  public inline fun barcode(term: () -> String): Field =
-    add(SearchField.Barcode, Term(term()))
+  public fun barcode(term: String): Field = add(Barcode, Term(term))
+  public fun barcode(build: TermBuilder.() -> Term): Field = add(Barcode, TermBuilder().build())
 
-  @JvmName("commentTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the comment set on the CD stub */
-  public inline fun comment(term: () -> Term): Field = add(SearchField.Comment, term())
+  public fun comment(term: String): Field = comment { Term(term) }
+  public fun comment(build: TermBuilder.() -> Term): Field = add(Comment, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun comment(term: () -> String): Field = comment { Term(term()) }
-
-  @JvmName("defaultTerm")
-  @OverloadResolutionByLambdaReturnType
   /** Default searches [Artist] and [Title] */
-  public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
+  public fun default(name: String): Field = default { Term(name) }
+  public fun default(build: TermBuilder.() -> Term): Field = add(Default, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun default(name: () -> String): Field = default { Term(name()) }
-
-  @JvmName("discIdTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the CD stub's [Disc ID](https://musicbrainz.org/doc/Disc_ID) */
-  public inline fun discId(term: () -> Term): Field = add(SearchField.Discid, term())
+  public fun discId(term: DiscId): Field = discId { Term(term) }
+  public fun discId(build: TermBuilder.() -> Term): Field = add(Discid, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun discId(term: () -> DiscId): Field = discId { Term(term()) }
-
-  @JvmName("titleTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the release title set on the CD stub */
-  public inline fun title(term: () -> Term): Field = add(Title, term())
+  public fun title(name: AlbumTitle): Field = title { Term(name) }
+  public fun title(term: TermBuilder.() -> Term): Field = add(Title, TermBuilder().term())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun title(name: () -> AlbumTitle): Field = title { Term(name()) }
-
-  @JvmName("tracksTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the number of tracks on the CD stub */
-  public inline fun trackCount(term: () -> Term): Field = add(SearchField.TrackCount, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun trackCount(term: () -> Int): Field = trackCount { Term(term()) }
+  public fun trackCount(term: Int): Field = trackCount { Term(term) }
+  public fun trackCount(build: NumBuilder.() -> Term): Field = add(TrackCount, NumBuilder().build())
 
   public companion object {
     public inline operator fun invoke(search: CdStubSearch.() -> Unit): String {

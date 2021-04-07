@@ -19,7 +19,9 @@ package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Label
 import com.ealva.ealvabrainz.brainz.data.LabelMbid
+import com.ealva.ealvabrainz.common.AreaName
 import com.ealva.ealvabrainz.common.LabelName
+import com.ealva.ealvabrainz.common.toLocalDate
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.expect
 import com.ealva.ealvabrainz.matchers.toBeAsString
@@ -85,7 +87,6 @@ public class LabelSearchTest {
     search.country { term }
     search.default { term }
     search.endDate { term }
-    search.ended { term }
     search.ipi { term }
     search.isni { term }
     search.label { term }
@@ -97,7 +98,7 @@ public class LabelSearchTest {
     search.type { term }
     var result = search.toString()
     Label.SearchField.values()
-      .filterNot { it === Label.SearchField.Default }
+      .filterNot { it === Label.SearchField.Default || it === Label.SearchField.Ended }
       .forEach { searchField ->
         val expected = "${searchField.value}:$value"
         expect(result).toContain(expected)
@@ -110,22 +111,22 @@ public class LabelSearchTest {
   public fun `test all non-term functions add expected field`() {
     val value = "a"
     val mbid = LabelMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
-    expect(LabelSearch().alias { value }).toBeAsString("alias:$value")
-    expect(LabelSearch().area { value }).toBeAsString("area:$value")
-    expect(LabelSearch().beginDate { Date(0) }).toBeAsString("begin:\"1969-12-31\"")
-    expect(LabelSearch().comment { value }).toBeAsString("comment:$value")
-    expect(LabelSearch().country { value }).toBeAsString("country:$value")
-    expect(LabelSearch().default { value }).toBeAsString(value)
-    expect(LabelSearch().endDate { Date(0) }).toBeAsString("end:\"1969-12-31\"")
-    expect(LabelSearch().ended { false }).toBeAsString("ended:false")
-    expect(LabelSearch().ipi { value }).toBeAsString("ipi:$value")
-    expect(LabelSearch().isni { value }).toBeAsString("isni:$value")
-    expect(LabelSearch().label { LabelName(value) }).toBeAsString("label:$value")
-    expect(LabelSearch().labelAccent { LabelName(value) }).toBeAsString("labelaccent:$value")
-    expect(LabelSearch().labelCode { value }).toBeAsString("code:$value")
-    expect(LabelSearch().labelId { mbid }).toBeAsString("laid:${mbid.value}")
-    expect(LabelSearch().releaseCount { 101 }).toBeAsString("release_count:101")
-    expect(LabelSearch().tag { value }).toBeAsString("tag:$value")
-    expect(LabelSearch().type { value }).toBeAsString("type:$value")
+    expect(LabelSearch().alias(value)).toBeAsString("alias:$value")
+    expect(LabelSearch().area(AreaName(value))).toBeAsString("area:$value")
+    expect(LabelSearch().beginDate(Date(0).toLocalDate())).toBeAsString("begin:\"1969-12-31\"")
+    expect(LabelSearch().comment(value)).toBeAsString("comment:$value")
+    expect(LabelSearch().country(value)).toBeAsString("country:$value")
+    expect(LabelSearch().default(LabelName(value))).toBeAsString(value)
+    expect(LabelSearch().endDate(Date(0).toLocalDate())).toBeAsString("end:\"1969-12-31\"")
+    expect(LabelSearch().ended(false)).toBeAsString("ended:false")
+    expect(LabelSearch().ipi(value)).toBeAsString("ipi:$value")
+    expect(LabelSearch().isni(value)).toBeAsString("isni:$value")
+    expect(LabelSearch().label(LabelName(value))).toBeAsString("label:$value")
+    expect(LabelSearch().labelAccent(LabelName(value))).toBeAsString("labelaccent:$value")
+    expect(LabelSearch().labelCode(value)).toBeAsString("code:$value")
+    expect(LabelSearch().labelId(mbid)).toBeAsString("laid:${mbid.value}")
+    expect(LabelSearch().releaseCount(101)).toBeAsString("release_count:101")
+    expect(LabelSearch().tag(value)).toBeAsString("tag:$value")
+    expect(LabelSearch().type(value)).toBeAsString("type:$value")
   }
 }

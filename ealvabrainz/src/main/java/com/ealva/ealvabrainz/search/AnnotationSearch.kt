@@ -18,68 +18,49 @@
 package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Annotation.SearchField
+import com.ealva.ealvabrainz.brainz.data.Annotation.SearchField.Default
+import com.ealva.ealvabrainz.brainz.data.Annotation.SearchField.Entity
 import com.ealva.ealvabrainz.brainz.data.Annotation.SearchField.EntityName
 import com.ealva.ealvabrainz.brainz.data.Annotation.SearchField.EntityType
+import com.ealva.ealvabrainz.brainz.data.Annotation.SearchField.Id
 import com.ealva.ealvabrainz.brainz.data.Annotation.SearchField.Text
-import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.brainz.data.Mbid
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Term
+import com.ealva.ealvabrainz.search.term.MbidTermBuilder
+import com.ealva.ealvabrainz.search.term.TermBuilder
 import kotlin.experimental.ExperimentalTypeInference
+import com.ealva.ealvabrainz.search.term.NumberTermBuilder as NumBuilder
 
 @OptIn(ExperimentalTypeInference::class)
-@BrainzMarker
 public class AnnotationSearch : BaseSearch<SearchField>() {
-  @JvmName("defaultTerm")
-  @OverloadResolutionByLambdaReturnType
   /** Default searches [EntityName], [Text] and [EntityType] */
-  public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
+  public fun default(name: String): Field = default { Term(name) }
+  public fun default(build: TermBuilder.() -> Term): Field = add(Default, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun default(default: () -> String): Field = default { Term(default()) }
-
-  @JvmName("entityTerm")
-  @OverloadResolutionByLambdaReturnType
   /** The annotated entity's MBID */
-  public inline fun entity(term: () -> Term): Field = add(SearchField.Entity, term())
+  public fun <T : Mbid> entity(entity: T): Field = entity<T> { Term(entity.value) }
+  public fun <T : Mbid> entity(build: MbidTermBuilder<T>.() -> Term): Field =
+    add(Entity, MbidTermBuilder<T>().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun entity(entity: () -> Mbid): Field = entity { Term(entity().value) }
-
-  @JvmName("idTerm")
-  @OverloadResolutionByLambdaReturnType
   /** The numeric ID of the annotation (e.g. 703027)  */
-  public inline fun id(term: () -> Term): Field = add(SearchField.Id, term())
+  public fun id(id: Long): Field = id { Term(id) }
+  public fun id(build: NumBuilder.() -> Term): Field = add(Id, NumBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun id(id: () -> Long): Field = id { Term(id()) }
-
-  @JvmName("nameTerm")
-  @OverloadResolutionByLambdaReturnType
   /** The annotated entity's name or title (diacritics are ignored) */
-  public inline fun name(term: () -> Term): Field = add(EntityName, term())
+  public fun name(name: String): Field = name { Term(name) }
+  public fun name(build: TermBuilder.() -> Term): Field = add(EntityName, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun name(name: () -> String): Field = name { Term(name()) }
-
-  @JvmName("textTerm")
-  @OverloadResolutionByLambdaReturnType
   /**
    * The annotation's content (includes
    * [wiki formatting](https://musicbrainz.org/doc/Annotation#Wiki_formatting))
    */
-  public inline fun text(term: () -> Term): Field = add(Text, term())
+  public fun text(text: String): Field = text { Term(text) }
+  public fun text(build: TermBuilder.() -> Term): Field = add(Text, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun text(text: () -> String): Field = text { Term(text()) }
-
-  @JvmName("typeTerm")
-  @OverloadResolutionByLambdaReturnType
   /** The annotated entity's entity type */
-  public inline fun type(term: () -> Term): Field = add(EntityType, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun type(type: () -> String): Field = add(EntityType, Term(type()))
+  public fun type(type: String): Field = type { Term(type) }
+  public fun type(build: TermBuilder.() -> Term): Field = add(EntityType, TermBuilder().build())
 
   public companion object {
     public inline operator fun invoke(search: AnnotationSearch.() -> Unit): String {

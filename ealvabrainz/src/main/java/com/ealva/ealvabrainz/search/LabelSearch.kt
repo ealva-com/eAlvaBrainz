@@ -19,173 +19,115 @@ package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Label.SearchField
 import com.ealva.ealvabrainz.brainz.data.Label.SearchField.Alias
+import com.ealva.ealvabrainz.brainz.data.Label.SearchField.Area
+import com.ealva.ealvabrainz.brainz.data.Label.SearchField.Begin
+import com.ealva.ealvabrainz.brainz.data.Label.SearchField.Code
+import com.ealva.ealvabrainz.brainz.data.Label.SearchField.Comment
+import com.ealva.ealvabrainz.brainz.data.Label.SearchField.Country
+import com.ealva.ealvabrainz.brainz.data.Label.SearchField.Default
+import com.ealva.ealvabrainz.brainz.data.Label.SearchField.End
+import com.ealva.ealvabrainz.brainz.data.Label.SearchField.Ended
+import com.ealva.ealvabrainz.brainz.data.Label.SearchField.Ipi
+import com.ealva.ealvabrainz.brainz.data.Label.SearchField.Isni
 import com.ealva.ealvabrainz.brainz.data.Label.SearchField.Label
+import com.ealva.ealvabrainz.brainz.data.Label.SearchField.LabelAccent
+import com.ealva.ealvabrainz.brainz.data.Label.SearchField.LabelId
+import com.ealva.ealvabrainz.brainz.data.Label.SearchField.ReleaseCount
+import com.ealva.ealvabrainz.brainz.data.Label.SearchField.Type
 import com.ealva.ealvabrainz.brainz.data.LabelMbid
-import com.ealva.ealvabrainz.common.LabelName
+import com.ealva.ealvabrainz.common.AreaName
 import com.ealva.ealvabrainz.common.BrainzMarker
+import com.ealva.ealvabrainz.common.LabelName
+import com.ealva.ealvabrainz.common.Year
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Query
 import com.ealva.ealvabrainz.lucene.Term
+import com.ealva.ealvabrainz.search.term.DateTermBuilder
+import com.ealva.ealvabrainz.search.term.MbidTermBuilder
+import com.ealva.ealvabrainz.search.term.NumberTermBuilder
+import com.ealva.ealvabrainz.search.term.TermBuilder
 import java.time.LocalDate
-import java.util.Date
-import kotlin.experimental.ExperimentalTypeInference
 
-@OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
 public class LabelSearch(query: Query = Query()) : BaseSearch<SearchField>(query) {
-  @JvmName("aliasTerm")
-  @OverloadResolutionByLambdaReturnType
   /**
    * (part of) any [alias](https://musicbrainz.org/doc/Aliases) attached to the label (diacritics
    * are ignored)
    */
-  public inline fun alias(term: () -> Term): Field = add(Alias, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun alias(term: () -> String): Field = alias { Term(term()) }
+  public fun alias(term: String): Field = alias { Term(term) }
+  public fun alias(build: TermBuilder.() -> Term): Field = add(Alias, TermBuilder().build())
 
   /** (part of) the name of the label's main associated area */
-  @JvmName("areaTerm")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun area(term: () -> Term): Field = add(SearchField.Area, term())
+  public fun area(term: AreaName): Field = area { Term(term) }
+  public fun area(build: TermBuilder.() -> Term): Field = add(Area, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun area(term: () -> String): Field = area { Term(term()) }
-
-  @JvmName("beginDateTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the label's begin date (e.g. "1980-01-22") */
-  public inline fun beginDate(term: () -> Term): Field = add(SearchField.Begin, term())
+  public fun beginDate(term: LocalDate): Field = beginDate { Term(term) }
+  public fun beginDate(term: Year): Field = beginDate { Term(term) }
+  public fun beginDate(build: DateTermBuilder.() -> Term): Field =
+    add(Begin, DateTermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun beginDate(term: () -> LocalDate): Field = beginDate { Term(term()) }
-
-  @JvmName("beginDateOld")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun beginDate(term: () -> Date): Field = beginDate { Term(term()) }
-
-  @JvmName("commentTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the label's disambiguation comment */
-  public inline fun comment(term: () -> Term): Field = add(SearchField.Comment, term())
+  public fun comment(term: String): Field = comment { Term(term) }
+  public fun comment(build: TermBuilder.() -> Term): Field = add(Comment, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun comment(term: () -> String): Field = comment { Term(term()) }
-
-  @JvmName("countryTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the 2-letter code (ISO 3166-1 alpha-2) for the label's associated country */
-  public inline fun country(term: () -> Term): Field = add(SearchField.Country, term())
+  public fun country(term: String): Field = country { Term(term) }
+  public fun country(build: TermBuilder.() -> Term): Field = add(Country, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun country(term: () -> String): Field = country { Term(term()) }
-
-  @JvmName("defaultTerm")
-  @OverloadResolutionByLambdaReturnType
   /** Default searches [Alias] and [Label] */
-  public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
+  public fun default(name: LabelName): Field = default { Term(name) }
+  public fun default(build: TermBuilder.() -> Term): Field = add(Default, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun default(term: () -> String): Field = default { Term(term()) }
-
-  @JvmName("defaultLabelName")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun default(term: () -> LabelName): Field = default { Term(term()) }
-
-  @JvmName("endDateTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the label's end date (e.g. "1980-01-22") */
-  public inline fun endDate(term: () -> Term): Field = add(SearchField.End, term())
+  public fun endDate(term: LocalDate): Field = endDate { Term(term) }
+  public fun endDate(term: Year): Field = endDate { Term(term) }
+  public fun endDate(build: DateTermBuilder.() -> Term): Field = add(End, DateTermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun endDate(term: () -> LocalDate): Field = endDate { Term(term()) }
-
-  @JvmName("endDateOld")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun endDate(term: () -> Date): Field = endDate { Term(term()) }
-
-  @JvmName("endedTerm")
-  @OverloadResolutionByLambdaReturnType
   /** a boolean flag (true/false) indicating whether or not the label has ended (is dissolved) */
-  public inline fun ended(term: () -> Term): Field = add(SearchField.Ended, term())
+  public fun ended(term: Boolean): Field = add(Ended, Term(term))
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun ended(term: () -> Boolean): Field = ended { Term(term()) }
-
-  @JvmName("ipiTerm")
-  @OverloadResolutionByLambdaReturnType
   /** an IPI code associated with the label */
-  public inline fun ipi(term: () -> Term): Field = add(SearchField.Ipi, term())
+  public fun ipi(term: String): Field = ipi { Term(term) }
+  public fun ipi(build: TermBuilder.() -> Term): Field = add(Ipi, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun ipi(term: () -> String): Field = ipi { Term(term()) }
-
-  @JvmName("isniTerm")
-  @OverloadResolutionByLambdaReturnType
   /** an ISNI code associated with the label */
-  public inline fun isni(term: () -> Term): Field = add(SearchField.Isni, term())
+  public fun isni(term: String): Field = isni { Term(term) }
+  public fun isni(build: TermBuilder.() -> Term): Field = add(Isni, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun isni(term: () -> String): Field = isni { Term(term()) }
-
-  @JvmName("labelTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the label's name (diacritics are ignored) */
-  public inline fun label(term: () -> Term): Field = add(Label, term())
+  public fun label(term: LabelName): Field = label { Term(term) }
+  public fun label(build: TermBuilder.() -> Term): Field = add(Label, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun label(term: () -> LabelName): Field = label { Term(term()) }
-
-  @JvmName("labelAccentTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the label's name (with the specified diacritics) */
-  public inline fun labelAccent(term: () -> Term): Field = add(SearchField.LabelAccent, term())
+  public fun labelAccent(term: LabelName): Field = labelAccent { Term(term) }
+  public fun labelAccent(build: TermBuilder.() -> Term): Field =
+    add(LabelAccent, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun labelAccent(term: () -> LabelName): Field = labelAccent { Term(term()) }
-
-  @JvmName("labelCodeTerm")
-  @OverloadResolutionByLambdaReturnType
   /**
    * the [label code](https://musicbrainz.org/doc/Label/Label_Code) for the label (only the
    * numbers, without "LC")
    */
-  public inline fun labelCode(term: () -> Term): Field = add(SearchField.Code, term())
+  public fun labelCode(term: String): Field = labelCode { Term(term) }
+  public fun labelCode(build: TermBuilder.() -> Term): Field = add(Code, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun labelCode(term: () -> String): Field = labelCode { Term(term()) }
-
-  @JvmName("labelIdTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the label's MBID */
-  public inline fun labelId(term: () -> Term): Field = add(SearchField.LabelId, term())
+  public fun labelId(term: LabelMbid): Field = labelId { Term(term) }
+  public fun labelId(build: MbidTermBuilder<LabelMbid>.() -> Term): Field =
+    add(LabelId, MbidTermBuilder<LabelMbid>().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun labelId(term: () -> LabelMbid): Field = labelId { Term(term()) }
-
-  @JvmName("releaseCountTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the number of releases related to the label */
-  public inline fun releaseCount(term: () -> Term): Field = add(SearchField.ReleaseCount, term())
+  public fun releaseCount(term: Int): Field = releaseCount { Term(term) }
+  public fun releaseCount(build: NumberTermBuilder.() -> Term): Field =
+    add(ReleaseCount, NumberTermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun releaseCount(term: () -> Int): Field = releaseCount { Term(term()) }
-
-  @JvmName("tagTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) a tag attached to the label */
-  public inline fun tag(term: () -> Term): Field = add(SearchField.Tag, term())
+  public fun tag(build: TermBuilder.() -> Term): Field = add(SearchField.Tag, TermBuilder().build())
+  public fun tag(term: String): Field = tag { Term(term) }
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun tag(term: () -> String): Field = tag { Term(term()) }
-
-  @JvmName("typeTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the label's [type](https://musicbrainz.org/doc/Label/Type) */
-  public inline fun type(term: () -> Term): Field = add(SearchField.Type, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun type(type: () -> String): Field = type { Term(type()) }
+  public fun type(type: String): Field = type { Term(type) }
+  public fun type(build: TermBuilder.() -> Term): Field = add(Type, TermBuilder().build())
 
   public companion object {
     public inline operator fun invoke(search: LabelSearch.() -> Unit): String {

@@ -84,16 +84,16 @@ public class InstrumentSearchTest {
   public fun `test all non-term functions add expected field`() {
     val value = "a"
     val instrumentId = InstrumentMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
-    expect(InstrumentSearch().alias { value }).toBeAsString("alias:$value")
-    expect(InstrumentSearch().comment { value }).toBeAsString("comment:$value")
-    expect(InstrumentSearch().default { value }).toBeAsString(value)
-    expect(InstrumentSearch().description { value }).toBeAsString("description:$value")
-    expect(InstrumentSearch().instrumentId { instrumentId })
+    expect(InstrumentSearch().alias(value)).toBeAsString("alias:$value")
+    expect(InstrumentSearch().comment(value)).toBeAsString("comment:$value")
+    expect(InstrumentSearch().default(value)).toBeAsString(value)
+    expect(InstrumentSearch().description(value)).toBeAsString("description:$value")
+    expect(InstrumentSearch().instrumentId(instrumentId))
       .toBeAsString("iid:${instrumentId.value}")
-    expect(InstrumentSearch().instrument { InstrumentName(value) })
+    expect(InstrumentSearch().instrument(InstrumentName(value)))
       .toBeAsString("instrument:$value")
-    expect(InstrumentSearch().instrumentAccent { value }).toBeAsString("instrumentaccent:$value")
-    expect(InstrumentSearch().tag { value }).toBeAsString("tag:$value")
-    expect(InstrumentSearch().type { value }).toBeAsString("type:$value")
+    expect(InstrumentSearch().instrumentAccent(value)).toBeAsString("instrumentaccent:$value")
+    expect(InstrumentSearch().tag(value)).toBeAsString("tag:$value")
+    expect(InstrumentSearch().type(value)).toBeAsString("type:$value")
   }
 }

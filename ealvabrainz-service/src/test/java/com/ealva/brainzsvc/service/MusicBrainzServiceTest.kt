@@ -29,7 +29,9 @@ import com.ealva.ealvabrainz.brainz.data.RecordingList
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.Release.Companion.NullRelease
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.ReleaseList
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.brainz.data.joinToString
 import com.ealva.ealvabrainz.common.AlbumTitle
 import com.ealva.ealvabrainz.common.ArtistName
@@ -37,8 +39,6 @@ import com.ealva.ealvabrainz.common.BrainzException
 import com.ealva.ealvabrainz.common.BrainzInvalidStatusException
 import com.ealva.ealvabrainz.common.Limit
 import com.ealva.ealvabrainz.common.Offset
-import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
-import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.common.buildQueryMap
 import com.ealva.ealvabrainz.common.toAlbumTitle
 import com.ealva.ealvabrainz.common.toArtistName
@@ -89,7 +89,7 @@ public class MusicBrainzServiceTest {
       } doThrow BrainzException("msg", dummyException)
     }
     val service = makeServiceForTest(mockBrainz)
-    expect(service.findRelease { artist { artistName } and release { albumName } })
+    expect(service.findRelease { artist(artistName) and release(albumName) })
       .toBeInstanceOf<Err<BrainzExceptionMessage>> { result ->
         expect(result.error).toBeInstanceOf<BrainzExceptionMessage> { msg ->
           expect(msg.ex).toBeInstanceOf<BrainzException> { ex ->
@@ -189,7 +189,7 @@ public class MusicBrainzServiceTest {
     val service = makeServiceForTest(mockBrainz)
     expect(
       service.findRecording {
-        recording { recordingName } and artist { artistName } and release { albumName }
+        recording(recordingName) and artist(artistName) and release(albumName)
       }
     ).toBeInstanceOf<Ok<RecordingList>> { result ->
       expect(result.value).toBeTheSameAs(dummy)
@@ -286,7 +286,7 @@ public class MusicBrainzServiceTest {
     val service = makeServiceForTest(mockBrainz)
     expect(
       service.findRelease(limit, offset) {
-        artist { artistName } and release { albumName }
+        artist(artistName) and release(albumName)
       }
     ).toBeInstanceOf<Ok<ReleaseList>> { result ->
       verify(mockBrainz, times(1)).findRelease(query, limit?.value, offset?.value)

@@ -21,7 +21,7 @@ lookupArtist(nirvana) { misc(Artist.Misc.Aliases) }
 // Find releases for the artist name and release title
 val jethroTull = ArtistName("Jethro Tull")
 val aqualung = AlbumTitle("Aqualung")
-findRelease(Limit(4)) { artist { jethroTull } and release { aqualung } }
+findRelease(Limit(4)) { artist(jethroTull) and release(aqualung) }
 
 // Browse events for the given artist and limit the results to 15
 val metallicaMbid = ArtistMbid("65f4f0c5-ef9e-490c-aee3-909e7ae6b2ab") // maybe obtained via find
@@ -44,11 +44,11 @@ browseReleases(ReleaseBrowse.BrowseOn.Artist(theBeatles)) {
 // inclusively, where the release was an album, but not a compilation or interview, and was an
 // official release (not bootleg or promotion)
 findReleaseGroup {
-  artist { ArtistName("The Beatles") } and
-    firstReleaseDate { Term("1967") inclusive Term("1969") } and
-    primaryType { ReleaseGroup.Type.Album } and
-    !secondaryType { Term(ReleaseGroup.Type.Compilation) or Term(ReleaseGroup.Type.Interview) } and
-    status { Release.Status.Official }
+  artist(ArtistName("The Beatles")) and
+    firstReleaseDate { Year("1967") inclusive Year("1969") } and
+    primaryType(ReleaseGroup.Type.Album) and
+    !secondaryType { ReleaseGroup.Type.Compilation or ReleaseGroup.Type.Interview } and
+    status(Release.Status.Official)
 }.onSuccess {
   // handle group list
 }.onFailure {

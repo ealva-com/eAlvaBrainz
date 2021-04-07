@@ -17,27 +17,34 @@
 
 package com.ealva.ealvabrainz.common
 
-import com.ealva.ealvabrainz.common.Formatting.toIso
+import com.ealva.ealvabrainz.common.Formatting.toYear
 import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.Date
 
-public fun LocalDate.brainzFormat(): String = toIso.format(this)
+/**
+ * Represents the year part of a date.
+ */
+@JvmInline
+public value class Year(public val value: String) {
+  public companion object {
+    /**
+     * Extracts year from [localDate]
+     */
+    public operator fun invoke(localDate: LocalDate): Year = Year(localDate.format(toYear))
 
-public fun Date.brainzFormat(): String = toIso.format(
-  toInstant()
-    .atZone(ZoneId.systemDefault())
-    .toLocalDate()
-)
+    /**
+     * Extracts year from [date]
+     */
+    public operator fun invoke(date: Date): Year = invoke(date.toLocalDate())
 
-public fun Date.toLocalDate(): LocalDate = toInstant()
-  .atZone(ZoneId.systemDefault())
-  .toLocalDate()
+    /**
+     * Treats [year] as year only and converts it to a string
+     */
+    public operator fun invoke(year: Long): Year = Year(year.toString())
 
-public fun String.isoToLocalDate(): LocalDate = LocalDate.parse(this, toIso)
-
-public object Formatting {
-  public val toIso: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE
-  public val toYear: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy")
+    /**
+     * Treats [year] as year only and converts it to a string
+     */
+    public operator fun invoke(year: Int): Year = Year(year.toString())
+  }
 }

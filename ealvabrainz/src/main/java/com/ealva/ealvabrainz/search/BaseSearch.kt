@@ -34,7 +34,7 @@ import com.ealva.ealvabrainz.lucene.appendExpression
 public abstract class BaseSearch<F : EntitySearchField>(
   private val query: Query = Query()
 ) : BaseExpression() {
-  public fun add(field: F, term: Term): Field = Field(field.value, term).also { query.add(it) }
+  public fun add(field: F, term: Term): Field = query.add(field.value, term)
 
   public operator fun Field.not(): Field {
     return query.replaceOrAdd(this, prohibit())

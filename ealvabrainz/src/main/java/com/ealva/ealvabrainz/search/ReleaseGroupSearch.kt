@@ -28,192 +28,130 @@ import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.common.AlbumTitle
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.BrainzMarker
+import com.ealva.ealvabrainz.common.Year
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Query
 import com.ealva.ealvabrainz.lucene.Term
+import com.ealva.ealvabrainz.search.term.DateTermBuilder
+import com.ealva.ealvabrainz.search.term.MbidTermBuilder
+import com.ealva.ealvabrainz.search.term.NumberTermBuilder
+import com.ealva.ealvabrainz.search.term.ReleaseGroupTypeTerm
+import com.ealva.ealvabrainz.search.term.ReleaseStatusTerm
+import com.ealva.ealvabrainz.search.term.TermBuilder
 import java.time.LocalDate
-import java.util.Date
-import kotlin.experimental.ExperimentalTypeInference
 
-@OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
 public class ReleaseGroupSearch(query: Query = Query()) : BaseSearch<SearchField>(query) {
-  @JvmName("aliasTerm")
-  @OverloadResolutionByLambdaReturnType
   /**
    * (part of) any [alias](https://musicbrainz.org/doc/Aliases) attached to the release group
    * (diacritics are ignored)
    */
-  public inline fun alias(term: () -> Term): Field = add(SearchField.Alias, term())
+  public fun alias(term: String): Field = alias { Term(term) }
+  public fun alias(build: TermBuilder.() -> Term): Field =
+    add(SearchField.Alias, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun alias(term: () -> String): Field = alias { Term(term()) }
-
-  @JvmName("artistTerm")
-  @OverloadResolutionByLambdaReturnType
   /**
    * (part of) the combined credited artist name for the release group, including join phrases
    * (e.g. "Artist X feat.")
    */
-  public inline fun artist(term: () -> Term): Field = add(SearchField.Artist, term())
+  public fun artist(term: ArtistName): Field = artist { Term(term) }
+  public fun artist(build: TermBuilder.() -> Term): Field =
+    add(SearchField.Artist, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun artist(term: () -> ArtistName): Field = artist { Term(term()) }
-
-  @JvmName("artistIdTerm")
-  @OverloadResolutionByLambdaReturnType
   /** MBID of the release group’s artist */
-  public inline fun artistId(term: () -> Term): Field = add(SearchField.ArtistId, term())
+  public fun artistId(term: ArtistMbid): Field = artistId { Term(term) }
+  public fun artistId(build: MbidTermBuilder<ArtistMbid>.() -> Term): Field =
+    add(SearchField.ArtistId, MbidTermBuilder<ArtistMbid>().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun artistId(term: () -> ArtistMbid): Field = artistId { Term(term()) }
-
-  @JvmName("artistNameTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the name of any of the release group artists   */
-  public inline fun artistName(term: () -> Term): Field = add(SearchField.ArtistName, term())
+  public fun artistName(term: ArtistName): Field = artistName { Term(term) }
+  public fun artistName(build: TermBuilder.() -> Term): Field =
+    add(SearchField.ArtistName, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun artistName(term: () -> ArtistName): Field = artistName { Term(term()) }
-
-  @JvmName("commentTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the release group's disambiguation comment */
-  public inline fun comment(term: () -> Term): Field = add(SearchField.Comment, term())
+  public fun comment(term: String): Field = comment { Term(term) }
+  public fun comment(build: TermBuilder.() -> Term): Field =
+    add(SearchField.Comment, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun comment(term: () -> String): Field = comment { Term(term()) }
-
-  @JvmName("creditNameTerm")
-  @OverloadResolutionByLambdaReturnType
   /**
    * (part of) the credited name of any of the release group artists on this particular release
    * group
    */
-  public inline fun creditName(term: () -> Term): Field = add(SearchField.CreditName, term())
+  public fun creditName(term: ArtistName): Field = creditName { Term(term) }
+  public fun creditName(build: TermBuilder.() -> Term): Field =
+    add(SearchField.CreditName, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun creditName(term: () -> ArtistName): Field = creditName { Term(term()) }
-
-  @JvmName("defaultTerm")
-  @OverloadResolutionByLambdaReturnType
   /** Default searches [ReleaseGroup] */
-  public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
+  public fun default(term: AlbumTitle): Field = default { Term(term) }
+  public fun default(build: TermBuilder.() -> Term): Field =
+    add(SearchField.Default, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun default(term: () -> AlbumTitle): Field = default { Term(term()) }
-
-  @JvmName("dateTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the release date of the earliest release in this release group (e.g. "1980-01-22") */
-  public inline fun firstReleaseDate(term: () -> Term): Field =
-    add(SearchField.FirstReleaseDate, term())
+  public fun firstReleaseDate(term: LocalDate): Field = firstReleaseDate { Term(term) }
+  public fun firstReleaseDate(term: Year): Field = firstReleaseDate { Term(term) }
+  public fun firstReleaseDate(build: DateTermBuilder.() -> Term): Field =
+    add(SearchField.FirstReleaseDate, DateTermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun firstReleaseDate(term: () -> LocalDate): Field =
-    firstReleaseDate { Term(term()) }
-
-  @JvmName("dateOldTerm")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun firstReleaseDate(term: () -> Date): Field =
-    firstReleaseDate { Term(term()) }
-
-  @JvmName("primaryTypeTerm")
-  @OverloadResolutionByLambdaReturnType
   /**
    * [primary type](https://musicbrainz.org/doc/Release_Group/Type#Primary_types) of the release
    * group
    */
-  public inline fun primaryType(term: () -> Term): Field = add(SearchField.PrimaryType, term())
+  public fun primaryType(type: ReleaseGroup.Type): Field = primaryType { Term(type) }
+  public fun primaryType(build: ReleaseGroupTypeTerm.Builder.() -> Term): Field =
+    add(SearchField.PrimaryType, ReleaseGroupTypeTerm.Builder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun primaryType(term: () -> ReleaseGroup.Type): Field = primaryType { Term(term()) }
-
-  @JvmName("releaseTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the title of any of the releases in the release group */
-  public inline fun release(term: () -> Term): Field = add(SearchField.Release, term())
+  public fun release(term: AlbumTitle): Field = release { Term(term) }
+  public fun release(build: TermBuilder.() -> Term): Field =
+    add(SearchField.Release, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun release(term: () -> AlbumTitle): Field = release { Term(term()) }
-
-  @JvmName("releaseCountTerm")
-  @OverloadResolutionByLambdaReturnType
   /** number of releases in this release group  */
-  public inline fun releaseCount(term: () -> Term): Field = add(SearchField.Releases, term())
+  public fun releaseCount(term: Int): Field = releaseCount { Term(term) }
+  public fun releaseCount(build: NumberTermBuilder.() -> Term): Field =
+    add(SearchField.Releases, NumberTermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun releaseCount(term: () -> Int): Field = releaseCount { Term(term()) }
-
-  @JvmName("releaseIdTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the MBID of any of the releases in the release group   */
-  public inline fun releaseId(term: () -> Term): Field = add(SearchField.ReleaseId, term())
+  public fun releaseId(term: ReleaseMbid): Field = releaseId { Term(term) }
+  public fun releaseId(build: MbidTermBuilder<ReleaseMbid>.() -> Term): Field =
+    add(SearchField.ReleaseId, MbidTermBuilder<ReleaseMbid>().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun releaseId(term: () -> ReleaseMbid): Field = releaseId { Term(term()) }
-
-  @JvmName("releaseGroupTerm")
-  @OverloadResolutionByLambdaReturnType
   /**	(part of) the release group's title (diacritics are ignored) */
-  public inline fun releaseGroup(term: () -> Term): Field = add(SearchField.ReleaseGroup, term())
+  public fun releaseGroup(term: AlbumTitle): Field = releaseGroup { Term(term) }
+  public fun releaseGroup(build: TermBuilder.() -> Term): Field =
+    add(SearchField.ReleaseGroup, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun releaseGroup(term: () -> AlbumTitle): Field = releaseGroup { Term(term()) }
+  /** (part of) the release group's title (with the specified diacritics) */
+  public fun releaseGroupAccentedName(term: String): Field = releaseGroupAccentedName { Term(term) }
+  public fun releaseGroupAccentedName(build: TermBuilder.() -> Term): Field =
+    add(SearchField.ReleaseGroupAccentedName, TermBuilder().build())
 
-  @JvmName("releaseGroupAccentedNameTerm")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun releaseGroupAccentedName(term: () -> Term): Field =
-    add(SearchField.ReleaseGroupAccentedName, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun releaseGroupAccentedName(term: () -> String): Field =
-    releaseGroupAccentedName { Term(term()) }
-
-  @JvmName("releaseGroupIdTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the release group's MBID  */
-  public inline fun releaseGroupId(term: () -> Term): Field =
-    add(SearchField.ReleaseGroupId, term())
+  public fun releaseGroupId(term: ReleaseGroupMbid): Field = releaseGroupId { Term(term) }
+  public fun releaseGroupId(term: MbidTermBuilder<ReleaseMbid>.() -> Term): Field =
+    add(SearchField.ReleaseGroupId, MbidTermBuilder<ReleaseMbid>().term())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun releaseGroupId(term: () -> ReleaseGroupMbid): Field =
-    releaseGroupId { Term(term()) }
-
-  @JvmName("secondaryTypeTerm")
-  @OverloadResolutionByLambdaReturnType
   /**
    * any of the [secondary types](https://musicbrainz.org/doc/Release_Group/Type#Secondary_types)
    * of the release group
    */
-  public inline fun secondaryType(term: () -> Term): Field = add(SearchField.SecondaryType, term())
+  public fun secondaryType(type: ReleaseGroup.Type): Field = secondaryType { Term(type) }
+  public fun secondaryType(build: ReleaseGroupTypeTerm.Builder.() -> Term): Field =
+    add(SearchField.SecondaryType, ReleaseGroupTypeTerm.Builder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun secondaryType(term: () -> ReleaseGroup.Type): Field =
-    secondaryType { Term(term()) }
-
-  @JvmName("statusTerm")
-  @OverloadResolutionByLambdaReturnType
   /**
-   * the [status][Release.Status] of any of the releases in the
+   * the [status][com.ealva.ealvabrainz.brainz.data.Release.Status] of any of the releases in the
    * release group
    */
-  public inline fun status(term: () -> Term): Field = add(SearchField.Status, term())
+  public fun status(type: Release.Status): Field = status { Term(type) }
+  public fun status(build: ReleaseStatusTerm.Builder.() -> Term): Field =
+    add(SearchField.Status, ReleaseStatusTerm.Builder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun status(term: () -> Release.Status): Field = status { Term(term()) }
-
-  @JvmName("tagTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) a tag attached to the release group */
-  public inline fun tag(term: () -> Term): Field = add(SearchField.Tag, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun tag(term: () -> String): Field = tag { Term(term()) }
+  public fun tag(build: TermBuilder.() -> Term): Field = add(SearchField.Tag, TermBuilder().build())
+  public fun tag(term: String): Field = tag { Term(term) }
 
   public companion object {
-    public inline operator fun invoke(search: ReleaseGroupSearch.() -> Unit): String {
-      return ReleaseGroupSearch().apply(search).toString()
-    }
+    public inline operator fun invoke(search: ReleaseGroupSearch.() -> Unit): String =
+      ReleaseGroupSearch().apply(search).toString()
   }
 }

@@ -18,7 +18,9 @@
 package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Area
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
 import com.ealva.ealvabrainz.common.AreaName
+import com.ealva.ealvabrainz.common.toLocalDate
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.expect
 import com.ealva.ealvabrainz.matchers.toBeAsString
@@ -78,13 +80,12 @@ public class AreaSearchTest {
     search.comment { term }
     search.default { term }
     search.endDate { term }
-    search.ended { term }
     search.iso { term }
     search.tag { term }
     search.type { term }
     var result = search.toString()
     Area.SearchField.values()
-      .filterNot { it === Area.SearchField.Default }
+      .filterNot { it === Area.SearchField.Default || it === Area.SearchField.Ended }
       .forEach { searchField ->
         val expected = "${searchField.value}:$value"
         expect(result).toContain(expected)
@@ -96,16 +97,18 @@ public class AreaSearchTest {
   @Test
   public fun `test all non-term functions add expected field`() {
     val value = "a"
-    expect(AreaSearch().alias { value }).toBeAsString("alias:$value")
-    expect(AreaSearch().area { AreaName(value) }).toBeAsString("area:$value")
-    expect(AreaSearch().areaAccent { value }).toBeAsString("areaaccent:$value")
-    expect(AreaSearch().beginDate { Date(0) }).toBeAsString("begin:\"1969-12-31\"")
-    expect(AreaSearch().comment { value }).toBeAsString("comment:$value")
-    expect(AreaSearch().default { value }).toBeAsString(value)
-    expect(AreaSearch().endDate { Date(0) }).toBeAsString("end:\"1969-12-31\"")
-    expect(AreaSearch().ended { true }).toBeAsString("ended:true")
-    expect(AreaSearch().iso { value }).toBeAsString("iso:$value")
-    expect(AreaSearch().tag { value }).toBeAsString("tag:$value")
-    expect(AreaSearch().type { value }).toBeAsString("type:$value")
+    val mbid = AreaMbid("f731ccc4-e22a-43af-a747-64213329e088")
+    expect(AreaSearch().alias(value)).toBeAsString("alias:$value")
+    expect(AreaSearch().areaId(mbid)).toBeAsString("aid:${mbid.value}")
+    expect(AreaSearch().area(AreaName(value))).toBeAsString("area:$value")
+    expect(AreaSearch().areaAccent(value)).toBeAsString("areaaccent:$value")
+    expect(AreaSearch().beginDate(Date(0).toLocalDate())).toBeAsString("begin:\"1969-12-31\"")
+    expect(AreaSearch().comment(value)).toBeAsString("comment:$value")
+    expect(AreaSearch().default(AreaName(value))).toBeAsString(value)
+    expect(AreaSearch().endDate(Date(0).toLocalDate())).toBeAsString("end:\"1969-12-31\"")
+    expect(AreaSearch().ended(true)).toBeAsString("ended:true")
+    expect(AreaSearch().iso(value)).toBeAsString("iso:$value")
+    expect(AreaSearch().tag(value)).toBeAsString("tag:$value")
+    expect(AreaSearch().type(value)).toBeAsString("type:$value")
   }
 }

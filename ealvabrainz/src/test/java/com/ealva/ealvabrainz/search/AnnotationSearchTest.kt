@@ -19,7 +19,9 @@ package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Annotation
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.Mbid
 import com.ealva.ealvabrainz.lucene.SingleTerm
+import com.ealva.ealvabrainz.lucene.Term
 import com.ealva.ealvabrainz.matchers.expect
 import com.ealva.ealvabrainz.matchers.toBeAsString
 import com.nhaarman.expect.expect
@@ -52,9 +54,10 @@ public class AnnotationSearchTest {
   public fun `test all term functions cover all fields`() {
     val value = "a"
     val term = SingleTerm(value)
+    val mbid = Term(EntityMbid(value).value)
     val search = AnnotationSearch()
     search.default { term }
-    search.entity { term }
+    search.entity<EntityMbid> { mbid }
     search.id { term }
     search.name { term }
     search.text { term }
@@ -73,12 +76,14 @@ public class AnnotationSearchTest {
   @Test
   public fun `test all non-term functions add expected field`() {
     val value = "a"
-    expect(AnnotationSearch().default { value }).toBeAsString(value)
+    expect(AnnotationSearch().default(value)).toBeAsString(value)
     val mbid = ArtistMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
-    expect(AnnotationSearch().entity { mbid }).toBeAsString("entity:${mbid.value}")
-    expect(AnnotationSearch().id { 1 }).toBeAsString("id:1")
-    expect(AnnotationSearch().name { value }).toBeAsString("name:$value")
-    expect(AnnotationSearch().text { value }).toBeAsString("text:$value")
-    expect(AnnotationSearch().type { value }).toBeAsString("type:$value")
+    expect(AnnotationSearch().entity(mbid)).toBeAsString("entity:${mbid.value}")
+    expect(AnnotationSearch().id(1)).toBeAsString("id:1")
+    expect(AnnotationSearch().name(value)).toBeAsString("name:$value")
+    expect(AnnotationSearch().text(value)).toBeAsString("text:$value")
+    expect(AnnotationSearch().type(value)).toBeAsString("type:$value")
   }
 }
+
+private class EntityMbid(override val value: String) : Mbid

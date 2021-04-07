@@ -17,175 +17,121 @@
 
 package com.ealva.ealvabrainz.search
 
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.Event
 import com.ealva.ealvabrainz.brainz.data.Event.SearchField
 import com.ealva.ealvabrainz.brainz.data.Event.SearchField.Alias
+import com.ealva.ealvabrainz.brainz.data.Event.SearchField.AreaId
 import com.ealva.ealvabrainz.brainz.data.Event.SearchField.Artist
-import com.ealva.ealvabrainz.brainz.data.AreaMbid
+import com.ealva.ealvabrainz.brainz.data.Event.SearchField.ArtistId
+import com.ealva.ealvabrainz.brainz.data.Event.SearchField.Begin
+import com.ealva.ealvabrainz.brainz.data.Event.SearchField.Comment
+import com.ealva.ealvabrainz.brainz.data.Event.SearchField.Default
+import com.ealva.ealvabrainz.brainz.data.Event.SearchField.End
+import com.ealva.ealvabrainz.brainz.data.Event.SearchField.Ended
+import com.ealva.ealvabrainz.brainz.data.Event.SearchField.EventAccent
+import com.ealva.ealvabrainz.brainz.data.Event.SearchField.EventId
+import com.ealva.ealvabrainz.brainz.data.Event.SearchField.Place
+import com.ealva.ealvabrainz.brainz.data.Event.SearchField.Tag
+import com.ealva.ealvabrainz.brainz.data.Event.SearchField.Type
+import com.ealva.ealvabrainz.brainz.data.EventMbid
+import com.ealva.ealvabrainz.brainz.data.PlaceMbid
 import com.ealva.ealvabrainz.common.AreaName
-import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.BrainzMarker
-import com.ealva.ealvabrainz.brainz.data.EventMbid
 import com.ealva.ealvabrainz.common.EventName
-import com.ealva.ealvabrainz.brainz.data.PlaceMbid
 import com.ealva.ealvabrainz.common.PlaceName
+import com.ealva.ealvabrainz.common.Year
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Query
 import com.ealva.ealvabrainz.lucene.Term
+import com.ealva.ealvabrainz.search.term.DateTermBuilder
+import com.ealva.ealvabrainz.search.term.MbidTermBuilder
+import com.ealva.ealvabrainz.search.term.TermBuilder
 import java.time.LocalDate
-import java.util.Date
-import kotlin.experimental.ExperimentalTypeInference
 
-@OptIn(ExperimentalTypeInference::class)
 @BrainzMarker
 public class EventSearch(query: Query = Query()) : BaseSearch<SearchField>(query) {
-  @JvmName("aliasTerm")
-  @OverloadResolutionByLambdaReturnType
   /**
    * (part of) any [alias](https://musicbrainz.org/doc/Aliases) attached to the artist (diacritics
    * are ignored)
    */
-  public inline fun alias(term: () -> Term): Field = add(Alias, term())
+  public fun alias(term: String): Field = alias { Term(term) }
+  public fun alias(build: TermBuilder.() -> Term): Field = add(Alias, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun alias(term: () -> String): Field = alias { Term(term()) }
-
-  @JvmName("areaTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the name of an area related to the event */
-  public inline fun area(term: () -> Term): Field = add(SearchField.AreaName, term())
+  public fun area(term: AreaName): Field = area { Term(term) }
+  public fun area(build: TermBuilder.() -> Term): Field =
+    add(SearchField.AreaName, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun area(term: () -> AreaName): Field = area { Term(term()) }
-
-  @JvmName("areaIdTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the MBID of an area related to the event */
-  public inline fun areaId(term: () -> Term): Field = add(SearchField.AreaId, term())
+  public fun areaId(mbid: AreaMbid): Field = areaId { Term(mbid) }
+  public fun areaId(build: MbidTermBuilder<AreaMbid>.() -> Term): Field =
+    add(AreaId, MbidTermBuilder<AreaMbid>().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun areaId(mbid: () -> AreaMbid): Field = areaId { Term(mbid()) }
-
-  @JvmName("artistTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the name of an artist related to the event */
-  public inline fun artist(term: () -> Term): Field = add(Artist, term())
+  public fun artist(name: ArtistName): Field = artist { Term(name) }
+  public fun artist(build: TermBuilder.() -> Term): Field = add(Artist, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun artist(name: () -> ArtistName): Field = artist { Term(name()) }
-
-  @JvmName("artistIdTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the MBID of an artist related to the event */
-  public inline fun artistId(term: () -> Term): Field = add(SearchField.ArtistId, term())
+  public fun artistId(mbid: ArtistMbid): Field = artistId { Term(mbid) }
+  public fun artistId(build: MbidTermBuilder<ArtistMbid>.() -> Term): Field =
+    add(ArtistId, MbidTermBuilder<ArtistMbid>().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun artistId(mbid: () -> ArtistMbid): Field = artistId { Term(mbid()) }
-
-  @JvmName("beginDateTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the event's begin date (e.g. "1980-01-22") */
-  public inline fun beginDate(term: () -> Term): Field = add(SearchField.Begin, term())
+  public fun beginDate(term: LocalDate): Field = beginDate { Term(term) }
+  public fun beginDate(term: Year): Field = beginDate { Term(term) }
+  public fun beginDate(build: DateTermBuilder.() -> Term): Field =
+    add(Begin, DateTermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun beginDate(term: () -> LocalDate): Field = beginDate { Term(term()) }
-
-  @JvmName("beginDateOld")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun beginDate(term: () -> Date): Field = beginDate { Term(term()) }
-
-  @JvmName("commentTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the event's disambiguation comment */
-  public inline fun comment(term: () -> Term): Field = add(SearchField.Comment, term())
+  public fun comment(term: String): Field = comment { Term(term) }
+  public fun comment(build: TermBuilder.() -> Term): Field = add(Comment, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun comment(term: () -> String): Field = comment { Term(term()) }
-
-  @JvmName("defaultTerm")
-  @OverloadResolutionByLambdaReturnType
   /** Default searches [Alias], [Artist], and [Event] */
-  public inline fun default(term: () -> Term): Field = add(SearchField.Default, term())
+  public fun default(name: String): Field = default { Term(name) }
+  public fun default(build: TermBuilder.() -> Term): Field = add(Default, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun default(term: () -> String): Field = default { Term(term()) }
-
-  @JvmName("endDateTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the event's end date (e.g. "1980-01-22") */
-  public inline fun endDate(term: () -> Term): Field = add(SearchField.End, term())
+  public fun endDate(term: LocalDate): Field = endDate { Term(term) }
+  public fun endDate(term: Year): Field = endDate { Term(term) }
+  public fun endDate(build: DateTermBuilder.() -> Term): Field = add(End, DateTermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun endDate(term: () -> LocalDate): Field = endDate { Term(term()) }
-
-  @JvmName("endDateOld")
-  @OverloadResolutionByLambdaReturnType
-  public inline fun endDate(term: () -> Date): Field = endDate { Term(term()) }
-
-  @JvmName("endedTerm")
-  @OverloadResolutionByLambdaReturnType
   /** A boolean flag (true/false) indicating whether or not the event has an end date set */
-  public inline fun ended(term: () -> Term): Field = add(SearchField.Ended, term())
+  public fun ended(term: Boolean): Field = add(Ended, Term(term))
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun ended(term: () -> Boolean): Field = ended { Term(term()) }
-
-  @JvmName("eventTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the name of the artist's main associated event */
-  public inline fun event(term: () -> Term): Field = add(SearchField.EventName, term())
+  public fun event(term: EventName): Field = event { Term(term) }
+  public fun event(build: TermBuilder.() -> Term): Field =
+    add(SearchField.EventName, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun event(term: () -> EventName): Field = event { Term(term()) }
-
-  @JvmName("eventAccentTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the name of the artist's main associated eventAccent */
-  public inline fun eventAccent(term: () -> Term): Field = add(SearchField.EventAccent, term())
+  public fun eventAccent(term: EventName): Field = eventAccent { Term(term) }
+  public fun eventAccent(term: TermBuilder.() -> Term): Field =
+    add(EventAccent, TermBuilder().term())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun eventAccent(term: () -> EventName): Field = eventAccent { Term(term()) }
-
-  @JvmName("eventIdTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the MBID of an event related to the event */
-  public inline fun eventId(term: () -> Term): Field = add(SearchField.EventId, term())
+  public fun eventId(mbid: EventMbid): Field = eventId { Term(mbid) }
+  public fun eventId(build: MbidTermBuilder<EventMbid>.() -> Term): Field =
+    add(EventId, MbidTermBuilder<EventMbid>().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun eventId(mbid: () -> EventMbid): Field = eventId { Term(mbid()) }
-
-  @JvmName("placeTerm")
-  @OverloadResolutionByLambdaReturnType
   /** (part of) the name of the artist's main associated place */
-  public inline fun place(term: () -> Term): Field = add(SearchField.Place, term())
+  public fun place(term: PlaceName): Field = place { Term(term) }
+  public fun place(term: TermBuilder.() -> Term): Field = add(Place, TermBuilder().term())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun place(term: () -> PlaceName): Field = place { Term(term()) }
-
-  @JvmName("placeIdTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the MBID of an place related to the place */
-  public inline fun placeId(term: () -> Term): Field = add(SearchField.PlaceId, term())
+  public fun placeId(mbid: PlaceMbid): Field = placeId { Term(mbid) }
+  public fun placeId(build: MbidTermBuilder<PlaceMbid>.() -> Term): Field =
+    add(SearchField.PlaceId, MbidTermBuilder<PlaceMbid>().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun placeId(mbid: () -> PlaceMbid): Field = placeId { Term(mbid()) }
-
-  @JvmName("tagTerm")
-  @OverloadResolutionByLambdaReturnType
   /** a tag attached to the area */
-  public inline fun tag(term: () -> Term): Field = add(SearchField.Tag, term())
+  public fun tag(term: String): Field = tag { Term(term) }
+  public fun tag(build: TermBuilder.() -> Term): Field = add(Tag, TermBuilder().build())
 
-  @OverloadResolutionByLambdaReturnType
-  public inline fun tag(term: () -> String): Field = tag { Term(term()) }
-
-  @JvmName("typeTerm")
-  @OverloadResolutionByLambdaReturnType
   /** the area's [type](https://musicbrainz.org/doc/Area#Type)  */
-  public inline fun type(term: () -> Term): Field = add(SearchField.Type, term())
-
-  @OverloadResolutionByLambdaReturnType
-  public inline fun type(type: () -> String): Field = type { Term(type()) }
+  public fun type(type: String): Field = type { Term(type) }
+  public fun type(build: TermBuilder.() -> Term): Field = add(Type, TermBuilder().build())
 
   public companion object {
     public inline operator fun invoke(search: EventSearch.() -> Unit): String {

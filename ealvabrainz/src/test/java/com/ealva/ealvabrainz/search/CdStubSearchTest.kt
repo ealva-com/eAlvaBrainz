@@ -21,6 +21,7 @@ import com.ealva.ealvabrainz.brainz.data.CdStub
 import com.ealva.ealvabrainz.common.AlbumTitle
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.DiscId
+import com.ealva.ealvabrainz.common.toLocalDate
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.expect
 import com.ealva.ealvabrainz.matchers.toBeAsString
@@ -82,13 +83,13 @@ public class CdStubSearchTest {
   @Test
   public fun `test all non-term functions add expected field`() {
     val value = "a"
-    expect(CdStubSearch().added { Date(0) }).toBeAsString("added:\"1969-12-31\"")
-    expect(CdStubSearch().artist { ArtistName(value) }).toBeAsString("artist:$value")
-    expect(CdStubSearch().barcode { value }).toBeAsString("barcode:$value")
-    expect(CdStubSearch().comment { value }).toBeAsString("comment:$value")
-    expect(CdStubSearch().default { value }).toBeAsString(value)
-    expect(CdStubSearch().discId { DiscId(value) }).toBeAsString("discid:$value")
-    expect(CdStubSearch().title { AlbumTitle(value) }).toBeAsString("title:$value")
-    expect(CdStubSearch().trackCount { 10 }).toBeAsString("tracks:10")
+    expect(CdStubSearch().added(Date(0).toLocalDate())).toBeAsString("added:\"1969-12-31\"")
+    expect(CdStubSearch().artist(ArtistName(value))).toBeAsString("artist:$value")
+    expect(CdStubSearch().barcode(value)).toBeAsString("barcode:$value")
+    expect(CdStubSearch().comment(value)).toBeAsString("comment:$value")
+    expect(CdStubSearch().default(value)).toBeAsString(value)
+    expect(CdStubSearch().discId(DiscId(value))).toBeAsString("discid:$value")
+    expect(CdStubSearch().title(AlbumTitle(value))).toBeAsString("title:$value")
+    expect(CdStubSearch().trackCount(10)).toBeAsString("tracks:10")
   }
 }

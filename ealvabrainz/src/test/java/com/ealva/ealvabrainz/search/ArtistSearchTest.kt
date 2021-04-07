@@ -22,7 +22,9 @@ import com.ealva.ealvabrainz.brainz.data.ArtistType
 import com.ealva.ealvabrainz.common.AreaName
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.toLocalDate
 import com.ealva.ealvabrainz.lucene.SingleTerm
+import com.ealva.ealvabrainz.lucene.Term
 import com.ealva.ealvabrainz.matchers.expect
 import com.ealva.ealvabrainz.matchers.toBeAsString
 import com.nhaarman.expect.expect
@@ -99,7 +101,6 @@ public class ArtistSearchTest {
     search.default { term }
     search.endArea { term }
     search.endDate { term }
-    search.ended { term }
     search.gender { term }
     search.ipi { term }
     search.isni { term }
@@ -108,7 +109,7 @@ public class ArtistSearchTest {
     search.type { term }
     var result = search.toString()
     Artist.SearchField.values()
-      .filterNot { it === Artist.SearchField.Default }
+      .filterNot { it === Artist.SearchField.Default || it === Artist.SearchField.Ended }
       .forEach { searchField ->
         val expected = "${searchField.value}:$value"
         expect(result).toContain(expected)
@@ -121,26 +122,26 @@ public class ArtistSearchTest {
   public fun `test all non-term functions add expected field`() {
     val value = "a"
     val mbid = ArtistMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
-    expect(ArtistSearch().alias { value }).toBeAsString("alias:$value")
-    expect(ArtistSearch().primaryAlias { value }).toBeAsString("primary_alias:$value")
-    expect(ArtistSearch().area { AreaName(value) }).toBeAsString("area:$value")
-    expect(ArtistSearch().artist { ArtistName(value) }).toBeAsString("artist:$value")
-    expect(ArtistSearch().artistAccent { value }).toBeAsString("artistaccent:$value")
-    expect(ArtistSearch().artistId { mbid }).toBeAsString("arid:${mbid.value}")
-    expect(ArtistSearch().beginArea { value }).toBeAsString("beginarea:$value")
-    expect(ArtistSearch().beginDate { Date(0) }).toBeAsString("begin:\"1969-12-31\"")
-    expect(ArtistSearch().comment { value }).toBeAsString("comment:$value")
-    expect(ArtistSearch().country { value }).toBeAsString("country:$value")
-    expect(ArtistSearch().default { value }).toBeAsString(value)
-    expect(ArtistSearch().endArea { value }).toBeAsString("endarea:$value")
-    expect(ArtistSearch().endDate { Date(0) }).toBeAsString("end:\"1969-12-31\"")
-    expect(ArtistSearch().ended { true }).toBeAsString("ended:true")
-    expect(ArtistSearch().gender { value }).toBeAsString("gender:$value")
-    expect(ArtistSearch().ipi { value }).toBeAsString("ipi:$value")
-    expect(ArtistSearch().isni { value }).toBeAsString("isni:$value")
-    expect(ArtistSearch().sortName { value }).toBeAsString("sortname:$value")
-    expect(ArtistSearch().tag { value }).toBeAsString("tag:$value")
-    expect(ArtistSearch().type { ArtistType.Person })
+    expect(ArtistSearch().alias(value)).toBeAsString("alias:$value")
+    expect(ArtistSearch().primaryAlias(value)).toBeAsString("primary_alias:$value")
+    expect(ArtistSearch().area(AreaName(value))).toBeAsString("area:$value")
+    expect(ArtistSearch().artist(ArtistName(value))).toBeAsString("artist:$value")
+    expect(ArtistSearch().artistAccent(value)).toBeAsString("artistaccent:$value")
+    expect(ArtistSearch().artistId(mbid)).toBeAsString("arid:${mbid.value}")
+    expect(ArtistSearch().beginArea { Term(value) }).toBeAsString("beginarea:$value")
+    expect(ArtistSearch().beginDate(Date(0).toLocalDate())).toBeAsString("begin:\"1969-12-31\"")
+    expect(ArtistSearch().comment(value)).toBeAsString("comment:$value")
+    expect(ArtistSearch().country(value)).toBeAsString("country:$value")
+    expect(ArtistSearch().default(value)).toBeAsString(value)
+    expect(ArtistSearch().endArea(value)).toBeAsString("endarea:$value")
+    expect(ArtistSearch().endDate(Date(0).toLocalDate())).toBeAsString("end:\"1969-12-31\"")
+    expect(ArtistSearch().ended(true)).toBeAsString("ended:true")
+    expect(ArtistSearch().gender(value)).toBeAsString("gender:$value")
+    expect(ArtistSearch().ipi(value)).toBeAsString("ipi:$value")
+    expect(ArtistSearch().isni(value)).toBeAsString("isni:$value")
+    expect(ArtistSearch().sortName(value)).toBeAsString("sortname:$value")
+    expect(ArtistSearch().tag(value)).toBeAsString("tag:$value")
+    expect(ArtistSearch().type(ArtistType.Person))
       .toBeAsString("type:${ArtistType.Person.value}")
   }
 }

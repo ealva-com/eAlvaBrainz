@@ -28,6 +28,7 @@ import com.ealva.ealvabrainz.common.RecordingTitle
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.brainz.data.TrackMbid
+import com.ealva.ealvabrainz.common.toLocalDate
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.expect
 import com.ealva.ealvabrainz.matchers.toBeAsString
@@ -152,10 +153,9 @@ public class RecordingSearchTest {
     search.trackNumber { term }
     search.trackCount { term }
     search.releaseTrackCount { term }
-    search.video { term }
     var result = search.toString()
     Recording.SearchField.values()
-      .filterNot { it === Recording.SearchField.Default }
+      .filterNot { it === Recording.SearchField.Default || it === Recording.SearchField.Video }
       .forEach { searchField ->
         val expected = "${searchField.value}:$value"
         expect(result).toContain(expected)
@@ -172,38 +172,38 @@ public class RecordingSearchTest {
     val recordingId = RecordingMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
     val releaseId = ReleaseMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
     val releaseGroupId = ReleaseGroupMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
-    expect(RecordingSearch().alias { value }).toBeAsString("alias:$value")
-    expect(RecordingSearch().artist { ArtistName(value) }).toBeAsString("artist:$value")
-    expect(RecordingSearch().artistId { artistId }).toBeAsString("arid:${artistId.value}")
-    expect(RecordingSearch().artistName { ArtistName(value) }).toBeAsString("artistname:$value")
-    expect(RecordingSearch().comment { value }).toBeAsString("comment:$value")
-    expect(RecordingSearch().country { value }).toBeAsString("country:$value")
-    expect(RecordingSearch().creditName { ArtistName(value) }).toBeAsString("creditname:$value")
-    expect(RecordingSearch().date { value }).toBeAsString("date:$value")
-    expect(RecordingSearch().default { RecordingTitle(value) }).toBeAsString(value)
-    expect(RecordingSearch().duration { 999100 }).toBeAsString("dur:999100")
-    expect(RecordingSearch().firstReleaseDate { Date(0) })
+    expect(RecordingSearch().alias(value)).toBeAsString("alias:$value")
+    expect(RecordingSearch().artist(ArtistName(value))).toBeAsString("artist:$value")
+    expect(RecordingSearch().artistId(artistId)).toBeAsString("arid:${artistId.value}")
+    expect(RecordingSearch().artistName(ArtistName(value))).toBeAsString("artistname:$value")
+    expect(RecordingSearch().comment(value)).toBeAsString("comment:$value")
+    expect(RecordingSearch().country(value)).toBeAsString("country:$value")
+    expect(RecordingSearch().creditName(ArtistName(value))).toBeAsString("creditname:$value")
+    expect(RecordingSearch().date(Date(0).toLocalDate())).toBeAsString("date:\"1969-12-31\"")
+    expect(RecordingSearch().default(RecordingTitle(value))).toBeAsString(value)
+    expect(RecordingSearch().duration(999100)).toBeAsString("dur:999100")
+    expect(RecordingSearch().firstReleaseDate(Date(0).toLocalDate()))
       .toBeAsString("firstreleasedate:\"1969-12-31\"")
-    expect(RecordingSearch().format { value }).toBeAsString("format:$value")
-    expect(RecordingSearch().isrc { value }).toBeAsString("isrc:$value")
-    expect(RecordingSearch().number { value }).toBeAsString("number:$value")
-    expect(RecordingSearch().position { 5 }).toBeAsString("position:5")
-    expect(RecordingSearch().primaryType { ReleaseGroup.Type.Interview })
+    expect(RecordingSearch().format(value)).toBeAsString("format:$value")
+    expect(RecordingSearch().isrc(value)).toBeAsString("isrc:$value")
+    expect(RecordingSearch().number(value)).toBeAsString("number:$value")
+    expect(RecordingSearch().position(5)).toBeAsString("position:5")
+    expect(RecordingSearch().primaryType(ReleaseGroup.Type.Interview))
       .toBeAsString("primarytype:interview")
-    expect(RecordingSearch().quantizedDuration { 888555 }).toBeAsString("qdur:888555")
-    expect(RecordingSearch().recording { RecordingTitle(value) }).toBeAsString("recording:$value")
-    expect(RecordingSearch().recordingAccent { value }).toBeAsString("recordingaccent:$value")
-    expect(RecordingSearch().recordingId { recordingId }).toBeAsString("rid:${recordingId.value}")
-    expect(RecordingSearch().release { AlbumTitle(value) }).toBeAsString("release:$value")
-    expect(RecordingSearch().releaseId { releaseId }).toBeAsString("reid:${releaseId.value}")
-    expect(RecordingSearch().releaseGroupId { releaseGroupId })
+    expect(RecordingSearch().quantizedDuration(888555)).toBeAsString("qdur:888555")
+    expect(RecordingSearch().recording(RecordingTitle(value))).toBeAsString("recording:$value")
+    expect(RecordingSearch().recordingAccent(value)).toBeAsString("recordingaccent:$value")
+    expect(RecordingSearch().recordingId(recordingId)).toBeAsString("rid:${recordingId.value}")
+    expect(RecordingSearch().release(AlbumTitle(value))).toBeAsString("release:$value")
+    expect(RecordingSearch().releaseId(releaseId)).toBeAsString("reid:${releaseId.value}")
+    expect(RecordingSearch().releaseGroupId(releaseGroupId))
       .toBeAsString("rgid:${releaseGroupId.value}")
-    expect(RecordingSearch().status { Release.Status.Official }).toBeAsString("status:official")
-    expect(RecordingSearch().tag { value }).toBeAsString("tag:$value")
-    expect(RecordingSearch().trackId { trackId }).toBeAsString("tid:${trackId.value}")
-    expect(RecordingSearch().trackNumber { 2 }).toBeAsString("tnum:2")
-    expect(RecordingSearch().trackCount { 10 }).toBeAsString("tracks:10")
-    expect(RecordingSearch().releaseTrackCount { 9 }).toBeAsString("tracksrelease:9")
-    expect(RecordingSearch().video { true }).toBeAsString("video:true")
+    expect(RecordingSearch().status(Release.Status.Official)).toBeAsString("status:official")
+    expect(RecordingSearch().tag(value)).toBeAsString("tag:$value")
+    expect(RecordingSearch().trackId(trackId)).toBeAsString("tid:${trackId.value}")
+    expect(RecordingSearch().trackNumber(2)).toBeAsString("tnum:2")
+    expect(RecordingSearch().trackCount(10)).toBeAsString("tracks:10")
+    expect(RecordingSearch().releaseTrackCount(9)).toBeAsString("tracksrelease:9")
+    expect(RecordingSearch().video(true)).toBeAsString("video:true")
   }
 }

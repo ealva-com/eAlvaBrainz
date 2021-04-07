@@ -43,10 +43,8 @@ import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.common.LabelName
 import com.ealva.ealvabrainz.common.Limit
 import com.ealva.ealvabrainz.common.WorkName
+import com.ealva.ealvabrainz.common.Year
 import com.ealva.ealvabrainz.common.toAlbumTitle
-import com.ealva.ealvabrainz.lucene.Term
-import com.ealva.ealvabrainz.lucene.inclusive
-import com.ealva.ealvabrainz.lucene.or
 import com.ealva.ealvabrainz.test.shared.MainCoroutineRule
 import com.ealva.ealvabrainz.test.shared.runBlockingTest
 import com.ealva.ealvabrainz.test.shared.toHaveAll
@@ -139,7 +137,7 @@ public class MusicBrainzFindSmokeTest {
   @Test
   public fun findAnnotation(): Unit = brainz {
     findAnnotation {
-      entity { ReleaseMbid("bdb24cb5-404b-4f60-bba4-7b730325ae47") }
+      entity(ReleaseMbid("bdb24cb5-404b-4f60-bba4-7b730325ae47"))
     }.onSuccess { annotationList ->
       expect(annotationList.count).toBeGreaterThan(0)
       expect(annotationList.annotations).toHaveAny { it.type == "release" }
@@ -149,7 +147,7 @@ public class MusicBrainzFindSmokeTest {
 
   @Test
   public fun findAreaIledeFrance(): Unit = brainz {
-    findArea { default { AreaName("Île-de-France") } }
+    findArea { default(AreaName("Île-de-France")) }
       .onSuccess { areaList ->
         expect(areaList.count).toBeGreaterThan(0)
         expect(areaList.areas).toHaveAny { it.name == "Île-de-France" }
@@ -159,7 +157,7 @@ public class MusicBrainzFindSmokeTest {
 
   @Test
   public fun findArtistJethroTullSearch(): Unit = brainz {
-    findArtist(limit = Limit(4)) { artist { JETHRO_TULL } }
+    findArtist(limit = Limit(4)) { artist(JETHRO_TULL) }
       .onSuccess { artistList ->
         expect(artistList.artists).toHaveSize(1)
         val artist = artistList.artists[0]
@@ -170,7 +168,7 @@ public class MusicBrainzFindSmokeTest {
 
   @Test
   public fun findCdStubWithTitleDoo(): Unit = brainz {
-    findCdStub { title { AlbumTitle("Doo") } }
+    findCdStub { title(AlbumTitle("Doo")) }
       .onSuccess { stubList ->
         expect(stubList.count).toBeGreaterThan(50) // 56 last check
         expect(stubList.cdStubs).toHaveAny { it.title == "Doo- Be - Doo" }
@@ -182,7 +180,7 @@ public class MusicBrainzFindSmokeTest {
 
   @Test
   public fun findEvent(): Unit = brainz {
-    findEvent { default { "unique" } }
+    findEvent { default("unique") }
       .onSuccess { eventList ->
         expect(eventList.count).toBeGreaterThan(6) // 8 last checked
         expect(eventList.events).toHaveAny {
@@ -197,7 +195,7 @@ public class MusicBrainzFindSmokeTest {
 
   @Test
   public fun findInstrument(): Unit = brainz {
-    findInstrument { default { "Nose" } }
+    findInstrument { default("Nose") }
       .onSuccess { instrumentList ->
         expect(instrumentList.count).toBeGreaterThan(3)
         expect(instrumentList.instruments).toHaveAny { it.name == "nose whistle" }
@@ -209,7 +207,7 @@ public class MusicBrainzFindSmokeTest {
   @Test
   public fun findLabelDevilsRecords(): Unit = brainz {
     val labelName = LabelName("Devil's Records")
-    findLabel(limit = Limit(4)) { default { labelName } }
+    findLabel(limit = Limit(4)) { default(labelName) }
       .onSuccess { labelList ->
         expect(labelList.count).toBeGreaterThan(27)
         expect(labelList.labels[0].name).toBe(labelName.value)
@@ -219,7 +217,7 @@ public class MusicBrainzFindSmokeTest {
 
   @Test
   public fun findPlaceChipping(): Unit = brainz {
-    findPlace { default { "chipping" } }
+    findPlace { default("chipping") }
       .onSuccess { placeList ->
         expect(placeList.count).toBeGreaterThan(0)
         expect(placeList.places).toHaveAny { it.name == "Chipping Norton Recording Studios" }
@@ -229,7 +227,7 @@ public class MusicBrainzFindSmokeTest {
 
   @Test
   public fun findRecording(): Unit = brainz {
-    findRecording { isrc { "GBAHT1600302" } }
+    findRecording { isrc("GBAHT1600302") }
       .onSuccess { recordingList ->
         expect(recordingList.count).toBeGreaterThan(0)
         expect(recordingList.recordings).toHaveAny { it.title == "Blow Your Mind (Mwah)" }
@@ -240,7 +238,7 @@ public class MusicBrainzFindSmokeTest {
   @Test
   public fun findReleaseJethroTullAqualung(): Unit = brainz {
     val aqualung = "Aqualung".toAlbumTitle()
-    findRelease(Limit(4)) { artist { JETHRO_TULL } and release { aqualung } }
+    findRelease(Limit(4)) { artist(JETHRO_TULL) and release(aqualung) }
       .onSuccess { releaseList -> expect(releaseList.releases).toHaveSize(4) }
       .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
@@ -248,7 +246,7 @@ public class MusicBrainzFindSmokeTest {
   @Test
   public fun findReleaseJethroTullNotFound(): Unit = brainz {
     findRelease(Limit(4)) {
-      artist { JETHRO_TULL } and release { "not found".toAlbumTitle() }
+      artist(JETHRO_TULL) and release("not found".toAlbumTitle())
     }.onSuccess { releaseList ->
       expect(releaseList.count).toBe(0)
     }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
@@ -257,13 +255,11 @@ public class MusicBrainzFindSmokeTest {
   @Test
   public fun findBeatlesAlbums67Through69(): Unit = brainz {
     findReleaseGroup {
-      artist { ArtistName("The Beatles") } and
-        firstReleaseDate { Term(1967) inclusive Term(1969) } and
-        primaryType { ReleaseGroup.Type.Album } and
-        !secondaryType {
-          Term(ReleaseGroup.Type.Compilation) or Term(ReleaseGroup.Type.Interview)
-        } and
-        status { Release.Status.Official }
+      artist(ArtistName("The Beatles")) and
+        firstReleaseDate { Year("1967") inclusive Year("1969") } and
+        primaryType(ReleaseGroup.Type.Album) and
+        !secondaryType { ReleaseGroup.Type.Compilation or ReleaseGroup.Type.Interview } and
+        status(Release.Status.Official)
     }.onSuccess { releaseList ->
       expect(releaseList.count).toBe(5)
       expect(releaseList.releaseGroups).toHaveAll {
@@ -293,7 +289,7 @@ public class MusicBrainzFindSmokeTest {
     val ledZeppelin = ArtistName("Led Zeppelin")
     val housesOfTheHoly = AlbumTitle("Houses of the Holy")
     findReleaseGroup {
-      artist { ledZeppelin } and releaseGroup { housesOfTheHoly }
+      artist(ledZeppelin) and releaseGroup(housesOfTheHoly)
     }.onSuccess { groupList ->
       expect(groupList.count).toBe(2)
       expect(groupList.releaseGroups).toHaveSize(2)
@@ -304,7 +300,7 @@ public class MusicBrainzFindSmokeTest {
 
   @Test
   public fun findSeries(): Unit = brainz {
-    findSeries { default { "Studio Brussel" } }
+    findSeries { default("Studio Brussel") }
       .onSuccess { seriesList ->
         expect(seriesList.count).toBeGreaterThan(1)
         expect(seriesList.series).toHaveAny { it.name == "Studio Brussel: De Maxx" }
@@ -314,7 +310,7 @@ public class MusicBrainzFindSmokeTest {
 
   @Test
   public fun findTagShoegazeAndIndie(): Unit = brainz {
-    findTag { default { "shoegaze" } }
+    findTag { default("shoegaze") }
       .onSuccess { tagList ->
         expect(tagList.count).toBeGreaterThan(25) // 28 last checked
         expect(tagList.tags).toHaveSize(25)
@@ -327,7 +323,7 @@ public class MusicBrainzFindSmokeTest {
       }
       .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
 
-    findTag { default { "indie" } }
+    findTag { default("indie") }
       .onSuccess { tagList -> expect(tagList.tags).toHaveAny { it.name.contains("indie") } }
       .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
   }
@@ -336,7 +332,7 @@ public class MusicBrainzFindSmokeTest {
   public fun findWorkFrozenFred(): Unit = brainz {
     val michielPetersMbid = ArtistMbid("4c006444-ccbf-425e-b3e7-03a98bab5997")
     findWork(limit = Limit(1)) {
-      work { WorkName("Frozen") } and artistId { michielPetersMbid }
+      work(WorkName("Frozen")) and artistId(michielPetersMbid)
     }.onSuccess { workList ->
       expect(workList.works).toHaveSize(1)
       expect(workList.works[0].id).toBe("10c1a66a-8166-32ec-a00f-540f111ce7a3")

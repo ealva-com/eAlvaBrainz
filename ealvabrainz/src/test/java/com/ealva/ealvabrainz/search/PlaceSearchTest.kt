@@ -19,7 +19,9 @@ package com.ealva.ealvabrainz.search
 
 import com.ealva.ealvabrainz.brainz.data.Place
 import com.ealva.ealvabrainz.brainz.data.PlaceMbid
+import com.ealva.ealvabrainz.common.AreaName
 import com.ealva.ealvabrainz.common.PlaceName
+import com.ealva.ealvabrainz.common.toLocalDate
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.expect
 import com.ealva.ealvabrainz.matchers.toBeAsString
@@ -78,7 +80,6 @@ public class PlaceSearchTest {
     search.comment { term }
     search.default { term }
     search.endDate { term }
-    search.ended { term }
     search.latitude { term }
     search.longitude { term }
     search.place { term }
@@ -87,7 +88,7 @@ public class PlaceSearchTest {
     search.type { term }
     var result = search.toString()
     Place.SearchField.values()
-      .filterNot { it === Place.SearchField.Default }
+      .filterNot { it === Place.SearchField.Default || it === Place.SearchField.Ended }
       .forEach { searchField ->
         val expected = "${searchField.value}:$value"
         expect(result).toContain(expected)
@@ -100,19 +101,19 @@ public class PlaceSearchTest {
   public fun `test all non-term functions add expected field`() {
     val value = "a"
     val mbid = PlaceMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
-    expect(PlaceSearch().address { value }).toBeAsString("address:$value")
-    expect(PlaceSearch().alias { value }).toBeAsString("alias:$value")
-    expect(PlaceSearch().area { value }).toBeAsString("area:$value")
-    expect(PlaceSearch().beginDate { Date(0) }).toBeAsString("begin:\"1969-12-31\"")
-    expect(PlaceSearch().comment { value }).toBeAsString("comment:$value")
-    expect(PlaceSearch().default { value }).toBeAsString(value)
-    expect(PlaceSearch().endDate { Date(0) }).toBeAsString("end:\"1969-12-31\"")
-    expect(PlaceSearch().ended { false }).toBeAsString("ended:false")
-    expect(PlaceSearch().latitude { 25.0 }).toBeAsString("lat:\"25.0\"")
-    expect(PlaceSearch().longitude { -122.419416 }).toBeAsString("long:\"-122.419416\"")
-    expect(PlaceSearch().place { PlaceName(value) }).toBeAsString("place:$value")
-    expect(PlaceSearch().placeAccent { PlaceName(value) }).toBeAsString("placeaccent:$value")
-    expect(PlaceSearch().placeId { mbid }).toBeAsString("pid:${mbid.value}")
-    expect(PlaceSearch().type { value }).toBeAsString("type:$value")
+    expect(PlaceSearch().address(value)).toBeAsString("address:$value")
+    expect(PlaceSearch().alias(value)).toBeAsString("alias:$value")
+    expect(PlaceSearch().area(AreaName(value))).toBeAsString("area:$value")
+    expect(PlaceSearch().beginDate(Date(0).toLocalDate())).toBeAsString("begin:\"1969-12-31\"")
+    expect(PlaceSearch().comment(value)).toBeAsString("comment:$value")
+    expect(PlaceSearch().default(value)).toBeAsString(value)
+    expect(PlaceSearch().endDate(Date(0).toLocalDate())).toBeAsString("end:\"1969-12-31\"")
+    expect(PlaceSearch().ended(false)).toBeAsString("ended:false")
+    expect(PlaceSearch().latitude(25.0)).toBeAsString("lat:\"25.0\"")
+    expect(PlaceSearch().longitude(-122.419416)).toBeAsString("long:\"-122.419416\"")
+    expect(PlaceSearch().place(PlaceName(value))).toBeAsString("place:$value")
+    expect(PlaceSearch().placeAccent(PlaceName(value))).toBeAsString("placeaccent:$value")
+    expect(PlaceSearch().placeId(mbid)).toBeAsString("pid:${mbid.value}")
+    expect(PlaceSearch().type(value)).toBeAsString("type:$value")
   }
 }

@@ -17,18 +17,21 @@
 
 package com.ealva.ealvabrainz.search
 
-import com.ealva.ealvabrainz.brainz.data.Release
-import com.ealva.ealvabrainz.common.AlbumTitle
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
-import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.brainz.data.LabelMbid
-import com.ealva.ealvabrainz.common.LabelName
+import com.ealva.ealvabrainz.brainz.data.Release
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.common.AlbumTitle
+import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.LabelName
+import com.ealva.ealvabrainz.common.toLocalDate
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.toBeAsString
 import com.nhaarman.expect.expect
 import org.junit.Test
+import java.util.Date
 
 public class ReleaseSearchTest {
   @Test
@@ -161,38 +164,39 @@ public class ReleaseSearchTest {
     val releaseGroupMbid = ReleaseGroupMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
     val labelMbid = LabelMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
     val artistMbid = ArtistMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
-    expect(ReleaseSearch().alias { value }).toBeAsString("alias:$value")
-    expect(ReleaseSearch().artist { ArtistName(value) }).toBeAsString("artist:$value")
-    expect(ReleaseSearch().artistId { artistMbid }).toBeAsString("arid:${artistMbid.value}")
-    expect(ReleaseSearch().artistName { ArtistName(value) }).toBeAsString("artistname:$value")
-    expect(ReleaseSearch().asin { value }).toBeAsString("asin:$value")
-    expect(ReleaseSearch().barcode { value }).toBeAsString("barcode:$value")
-    expect(ReleaseSearch().catalogNumber { value }).toBeAsString("catno:$value")
-    expect(ReleaseSearch().comment { value }).toBeAsString("comment:$value")
-    expect(ReleaseSearch().country { value }).toBeAsString("country:$value")
-    expect(ReleaseSearch().creditName { ArtistName(value) }).toBeAsString("creditname:$value")
-    expect(ReleaseSearch().date { value }).toBeAsString("date:$value")
-    expect(ReleaseSearch().default { AlbumTitle(value) }).toBeAsString(value)
-    expect(ReleaseSearch().discIdCount { 2 }).toBeAsString("discids:2")
-    expect(ReleaseSearch().format { value }).toBeAsString("format:$value")
-    expect(ReleaseSearch().label { LabelName(value) }).toBeAsString("label:$value")
-    expect(ReleaseSearch().labelId { labelMbid }).toBeAsString("laid:${labelMbid.value}")
-    expect(ReleaseSearch().language { value }).toBeAsString("lang:$value")
-    expect(ReleaseSearch().mediumCount { 5 }).toBeAsString("mediums:5")
-    expect(ReleaseSearch().mediumDiscCount { 6 }).toBeAsString("discidsmedium:6")
-    expect(ReleaseSearch().mediumTrackCount { 10 }).toBeAsString("tracksmedium:10")
-    expect(ReleaseSearch().packaging { value }).toBeAsString("packaging:$value")
-    expect(ReleaseSearch().primaryType { value }).toBeAsString("primarytype:$value")
-    expect(ReleaseSearch().quality { value }).toBeAsString("quality:$value")
-    expect(ReleaseSearch().release { AlbumTitle(value) }).toBeAsString("release:$value")
-    expect(ReleaseSearch().releaseAccentedName { value }).toBeAsString("releaseaccent:$value")
-    expect(ReleaseSearch().releaseId { releaseMbid }).toBeAsString("reid:${releaseMbid.value}")
-    expect(ReleaseSearch().releaseGroupId { releaseGroupMbid })
+    expect(ReleaseSearch().alias(value)).toBeAsString("alias:$value")
+    expect(ReleaseSearch().artist(ArtistName(value))).toBeAsString("artist:$value")
+    expect(ReleaseSearch().artistId(artistMbid)).toBeAsString("arid:${artistMbid.value}")
+    expect(ReleaseSearch().artistName(ArtistName(value))).toBeAsString("artistname:$value")
+    expect(ReleaseSearch().asin(value)).toBeAsString("asin:$value")
+    expect(ReleaseSearch().barcode(value)).toBeAsString("barcode:$value")
+    expect(ReleaseSearch().catalogNumber(value)).toBeAsString("catno:$value")
+    expect(ReleaseSearch().comment(value)).toBeAsString("comment:$value")
+    expect(ReleaseSearch().country(value)).toBeAsString("country:$value")
+    expect(ReleaseSearch().creditName(ArtistName(value))).toBeAsString("creditname:$value")
+    expect(ReleaseSearch().date(Date(0).toLocalDate())).toBeAsString("date:\"1969-12-31\"")
+    expect(ReleaseSearch().default(AlbumTitle(value))).toBeAsString(value)
+    expect(ReleaseSearch().discIdCount(2)).toBeAsString("discids:2")
+    expect(ReleaseSearch().format(value)).toBeAsString("format:$value")
+    expect(ReleaseSearch().label(LabelName(value))).toBeAsString("label:$value")
+    expect(ReleaseSearch().labelId(labelMbid)).toBeAsString("laid:${labelMbid.value}")
+    expect(ReleaseSearch().language(value)).toBeAsString("lang:$value")
+    expect(ReleaseSearch().mediumCount(5)).toBeAsString("mediums:5")
+    expect(ReleaseSearch().mediumDiscCount(6)).toBeAsString("discidsmedium:6")
+    expect(ReleaseSearch().mediumTrackCount(10)).toBeAsString("tracksmedium:10")
+    expect(ReleaseSearch().packaging(value)).toBeAsString("packaging:$value")
+    expect(ReleaseSearch().primaryType(ReleaseGroup.Type.Album))
+      .toBeAsString("primarytype:album")
+    expect(ReleaseSearch().quality(value)).toBeAsString("quality:$value")
+    expect(ReleaseSearch().release(AlbumTitle(value))).toBeAsString("release:$value")
+    expect(ReleaseSearch().releaseAccentedName(value)).toBeAsString("releaseaccent:$value")
+    expect(ReleaseSearch().releaseId(releaseMbid)).toBeAsString("reid:${releaseMbid.value}")
+    expect(ReleaseSearch().releaseGroupId(releaseGroupMbid))
       .toBeAsString("rgid:${releaseGroupMbid.value}")
-    expect(ReleaseSearch().script { value }).toBeAsString("script:$value")
-    expect(ReleaseSearch().secondaryType { value }).toBeAsString("secondarytype:$value")
-    expect(ReleaseSearch().status { Release.Status.Official }).toBeAsString("status:official")
-    expect(ReleaseSearch().tag { value }).toBeAsString("tag:$value")
-    expect(ReleaseSearch().trackCount { 11 }).toBeAsString("tracks:11")
+    expect(ReleaseSearch().script(value)).toBeAsString("script:$value")
+    expect(ReleaseSearch().secondaryType(ReleaseGroup.Type.Demo)).toBeAsString("secondarytype:demo")
+    expect(ReleaseSearch().status(Release.Status.Official)).toBeAsString("status:official")
+    expect(ReleaseSearch().tag(value)).toBeAsString("tag:$value")
+    expect(ReleaseSearch().trackCount(11)).toBeAsString("tracks:11")
   }
 }

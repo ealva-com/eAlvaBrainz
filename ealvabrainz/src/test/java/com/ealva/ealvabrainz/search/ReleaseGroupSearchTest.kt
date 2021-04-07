@@ -17,13 +17,15 @@
 
 package com.ealva.ealvabrainz.search
 
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
-import com.ealva.ealvabrainz.common.AlbumTitle
-import com.ealva.ealvabrainz.brainz.data.ArtistMbid
-import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.common.AlbumTitle
+import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.Year
+import com.ealva.ealvabrainz.common.toLocalDate
 import com.ealva.ealvabrainz.lucene.SingleTerm
 import com.ealva.ealvabrainz.matchers.expect
 import com.ealva.ealvabrainz.matchers.toBeAsString
@@ -122,28 +124,30 @@ public class ReleaseGroupSearchTest {
     val releaseMbid = ReleaseMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
     val releaseGroupMbid = ReleaseGroupMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
     val artistMbid = ArtistMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da")
-    expect(ReleaseGroupSearch().alias { value }).toBeAsString("alias:$value")
-    expect(ReleaseGroupSearch().artist { ArtistName(value) }).toBeAsString("artist:$value")
-    expect(ReleaseGroupSearch().artistId { artistMbid }).toBeAsString("arid:${artistMbid.value}")
-    expect(ReleaseGroupSearch().artistName { ArtistName(value) }).toBeAsString("artistname:$value")
-    expect(ReleaseGroupSearch().comment { value }).toBeAsString("comment:$value")
-    expect(ReleaseGroupSearch().creditName { ArtistName(value) }).toBeAsString("creditname:$value")
-    expect(ReleaseGroupSearch().default { AlbumTitle(value) }).toBeAsString(value)
-    expect(ReleaseGroupSearch().firstReleaseDate { Date(0) })
+    expect(ReleaseGroupSearch().alias(value)).toBeAsString("alias:$value")
+    expect(ReleaseGroupSearch().artist(ArtistName(value))).toBeAsString("artist:$value")
+    expect(ReleaseGroupSearch().artistId(artistMbid)).toBeAsString("arid:${artistMbid.value}")
+    expect(ReleaseGroupSearch().artistName(ArtistName(value))).toBeAsString("artistname:$value")
+    expect(ReleaseGroupSearch().comment(value)).toBeAsString("comment:$value")
+    expect(ReleaseGroupSearch().creditName(ArtistName(value))).toBeAsString("creditname:$value")
+    expect(ReleaseGroupSearch().default(AlbumTitle(value))).toBeAsString(value)
+    expect(ReleaseGroupSearch().firstReleaseDate(Date(0).toLocalDate()))
       .toBeAsString("firstreleasedate:\"1969-12-31\"")
-    expect(ReleaseGroupSearch().primaryType { ReleaseGroup.Type.Ep }).toBeAsString("primarytype:ep")
-    expect(ReleaseGroupSearch().release { AlbumTitle(value) }).toBeAsString("release:$value")
-    expect(ReleaseGroupSearch().releaseCount { 69 }).toBeAsString("releases:69")
-    expect(ReleaseGroupSearch().releaseId { releaseMbid }).toBeAsString("reid:${releaseMbid.value}")
-    expect(ReleaseGroupSearch().releaseGroup { AlbumTitle(value) })
+    expect(ReleaseGroupSearch().firstReleaseDate(Year("2011")))
+      .toBeAsString("firstreleasedate:2011")
+    expect(ReleaseGroupSearch().primaryType(ReleaseGroup.Type.Ep)).toBeAsString("primarytype:ep")
+    expect(ReleaseGroupSearch().release(AlbumTitle(value))).toBeAsString("release:$value")
+    expect(ReleaseGroupSearch().releaseCount(69)).toBeAsString("releases:69")
+    expect(ReleaseGroupSearch().releaseId(releaseMbid)).toBeAsString("reid:${releaseMbid.value}")
+    expect(ReleaseGroupSearch().releaseGroup(AlbumTitle(value)))
       .toBeAsString("releasegroup:$value")
-    expect(ReleaseGroupSearch().releaseGroupAccentedName { value })
+    expect(ReleaseGroupSearch().releaseGroupAccentedName(value))
       .toBeAsString("releasegroupaccent:$value")
-    expect(ReleaseGroupSearch().releaseGroupId { releaseGroupMbid })
+    expect(ReleaseGroupSearch().releaseGroupId(releaseGroupMbid))
       .toBeAsString("rgid:${releaseGroupMbid.value}")
-    expect(ReleaseGroupSearch().secondaryType { ReleaseGroup.Type.Album })
+    expect(ReleaseGroupSearch().secondaryType(ReleaseGroup.Type.Album))
       .toBeAsString("secondarytype:album")
-    expect(ReleaseGroupSearch().status { Release.Status.Bootleg }).toBeAsString("status:bootleg")
-    expect(ReleaseGroupSearch().tag { value }).toBeAsString("tag:$value")
+    expect(ReleaseGroupSearch().status(Release.Status.Bootleg)).toBeAsString("status:bootleg")
+    expect(ReleaseGroupSearch().tag(value)).toBeAsString("tag:$value")
   }
 }
