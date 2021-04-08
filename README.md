@@ -94,7 +94,8 @@ This repository consists of 3 parts:
     using main-safe suspend functions.
   * **app** - Demonstrates search and lookup
   
-As of now only SNAPSHOT libraries are being published. **Pull requests welcome.** 
+Check [here][maven-ealvabrainz] and [here][maven-ealvabrainz-service] for the latest published
+releases. **Pull requests welcome.** 
 
 For the latest SNAPSHOT check [here][ealvabrainz-snapshot] and [here][ealvabrainz-service-snapshot]
   
@@ -358,5 +359,7 @@ Related
 [splitties]: https://github.com/LouisCAD/Splitties
 [kotlin-result]: https://github.com/michaelbull/kotlin-result
 [railway]: https://fsharpforfunandprofit.com/rop/
+[maven-ealvabrainz]: https://search.maven.org/search?q=g:com.ealva%20AND%20a:ealvabrainz
+[maven-ealvabrainz-service] https://search.maven.org/search?q=g:com.ealva%20AND%20a:ealvabrainz-service
 [ealvabrainz-snapshot]: https://oss.sonatype.org/content/repositories/snapshots/com/ealva/ealvabrainz-service/
 [ealvabrainz-service-snapshot]: https://oss.sonatype.org/content/repositories/snapshots/com/ealva/ealvabrainz-service/

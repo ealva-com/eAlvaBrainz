@@ -29,7 +29,7 @@ object Versions {
   const val COROUTINES = "1.4.3"
   const val COROUTINES_TEST = "1.4.3"
   const val DESUGAR = "1.0.10"
-  const val EALVALOG = "0.5.4"
+  const val EALVALOG = "0.5.6-SNAPSHOT"
   const val ESPRESSO_CORE = "3.2.0"
   const val EXPECT = "1.0.1"
   const val FASTUTIL = "7.2.1"
