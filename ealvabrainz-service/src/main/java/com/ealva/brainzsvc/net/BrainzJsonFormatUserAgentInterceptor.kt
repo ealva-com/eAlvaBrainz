@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  Eric A. Snell
+ * Copyright (c) 2021  Eric A. Snell
  *
  * This file is part of eAlvaBrainz
  *
@@ -15,45 +15,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-@file:Suppress("UnstableApiUsage")
-
 package com.ealva.brainzsvc.net
 
-import com.ealva.brainzsvc.log._i
-import com.ealva.ealvabrainz.log.BrainzLog
-import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.lazyLogger
-import engineering.clientside.throttle.Throttle
 import okhttp3.Interceptor
 import okhttp3.Response
-
-private val LOG by lazyLogger(ThrottlingInterceptor::class, BrainzLog.marker)
-
-@Suppress("MaxLineLength")
-/**
- * Interceptor that throttles requests to the server
- *
- * Be sure to read
- * [MusicBrainz requirements](https://musicbrainz.org/doc/MusicBrainz_API/Rate_Limiting)
- * for querying their servers.
- */
-internal class ThrottlingInterceptor(
-  maxCallsPerSecond: Double,
-  private val serviceName: String
-) : Interceptor {
-  private val throttle = Throttle.create(maxCallsPerSecond)
-
-  override fun intercept(chain: Interceptor.Chain): Response {
-    val request = chain.request()
-
-    // Only throttle GETs
-    if ("GET" == request.method) {
-      val throttleSlept = throttle.acquire()
-      LOG._i { it("intercept throttle service=%s slept=%f", serviceName, throttleSlept) }
-    }
-    return chain.proceed(request)
-  }
-}
 
 @Suppress("MaxLineLength")
 /**

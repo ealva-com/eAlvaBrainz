@@ -15,27 +15,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-include(":ealvabrainz")
-include(":ealvabrainz-service")
-include("app")
+package com.ealva.brainzsvc.init
 
-pluginManagement {
-  resolutionStrategy {
-    eachPlugin {
-      if (requested.id.id == "com.android.library") {
-        useModule("com.android.tools.build:gradle:${requested.version}")
-      }
-      if (requested.id.id == "com.android.application") {
-        useModule("com.android.tools.build:gradle:${requested.version}")
-      }
-    }
-  }
-  repositories {
-    jcenter()
-    gradlePluginPortal()
-    google()
-    mavenCentral()
-  }
+import android.content.Context
+import androidx.startup.Initializer
+
+public class EalvaBrainzInitializer : Initializer<EalvaBrainz> {
+  override fun create(context: Context): EalvaBrainz = EalvaBrainz.init(context)
+  override fun dependencies(): List<Class<out Initializer<*>>> = emptyList()
 }
-
-rootProject.name = ("eAlva Brainz")

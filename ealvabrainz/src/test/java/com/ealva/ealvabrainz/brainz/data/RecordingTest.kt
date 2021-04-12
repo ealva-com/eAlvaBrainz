@@ -29,7 +29,7 @@ public class RecordingTest {
 
   @Before
   public fun setup() {
-    moshi = theMoshi
+    moshi = theBrainzMoshi
   }
 
   @Test

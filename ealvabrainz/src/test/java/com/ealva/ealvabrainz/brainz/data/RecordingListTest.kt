@@ -39,7 +39,7 @@ public class RecordingListTest {
 
   @Before
   public fun setup() {
-    moshi = theMoshi
+    moshi = theBrainzMoshi
   }
 
   @Test

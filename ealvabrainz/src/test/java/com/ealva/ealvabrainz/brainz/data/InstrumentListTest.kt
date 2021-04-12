@@ -27,7 +27,7 @@ public class InstrumentListTest {
 
   @Before
   public fun setup() {
-    moshi = theMoshi
+    moshi = theBrainzMoshi
   }
 
   @Test

@@ -30,7 +30,7 @@ internal class ReleaseListTest {
 
   @Before
   fun setup() {
-    moshi = theMoshi
+    moshi = theBrainzMoshi
   }
 
   @Test

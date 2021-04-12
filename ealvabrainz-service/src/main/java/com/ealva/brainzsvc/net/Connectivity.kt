@@ -18,7 +18,10 @@
 package com.ealva.brainzsvc.net
 
 import android.net.ConnectivityManager
-import splitties.systemservices.connectivityManager
+import com.ealva.brainzsvc.init.requireSystemService
+
+private inline val connectivityManager: ConnectivityManager
+  get() = requireSystemService()
 
 @Suppress("DEPRECATION")
 internal fun ConnectivityManager.networkIsAvailable() = activeNetworkInfo != null

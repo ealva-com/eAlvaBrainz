@@ -30,19 +30,23 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
-private const val APP_NAME = "My App"
-private const val APP_VERSION = "0.1"
-private const val CONTACT_EMAIL = "YourName@YourAddress.com"
-
 val brainzModule: Module = module {
   single<ResourceFetcher> { ContextResourceFetcher(androidContext()) }
-  single { CoverArtService(androidContext(), APP_NAME, APP_VERSION, CONTACT_EMAIL, get()) }
+  single {
+    CoverArtService(
+      androidContext(),
+      appName = BuildConfig.BRAINZ_APP_NAME,
+      appVersion = BuildConfig.BRAINZ_APP_VERSION,
+      contactEmail = BuildConfig.BRAINZ_CONTACT_EMAIL,
+      get()
+    )
+  }
   single {
     MusicBrainzService(
       ctx = androidContext(),
-      appName = APP_NAME,
-      appVersion = APP_VERSION,
-      contact = CONTACT_EMAIL,
+      appName = BuildConfig.BRAINZ_APP_NAME,
+      appVersion = BuildConfig.BRAINZ_APP_VERSION,
+      contactEmail = BuildConfig.BRAINZ_CONTACT_EMAIL,
       coverArt = get(),
       credentialsProvider = object : CredentialsProvider {
         override val credentials: Credentials =

@@ -19,19 +19,18 @@ package com.ealva.ealvabrainz.brainz.data
 
 import com.squareup.moshi.Moshi
 
-internal fun Moshi.Builder.addRequired(): Moshi.Builder {
+internal fun Moshi.Builder.addRequired(): Moshi.Builder = apply {
   add(RelationAdapter.ADAPTER_FACTORY)
   add(CollectionAdapter.ADAPTER_FACTORY)
   add(FallbackOnNull.ADAPTER_FACTORY)
   add(NullPrimitiveAdapter())
   add(StringJsonAdapter())
-  return this
 }
 
-public val theMoshi: Moshi = Moshi.Builder().addRequired().build()
+public val theBrainzMoshi: Moshi = Moshi.Builder().addRequired().build()
 
-public fun <T : Any> T.toJson(): String {
-  return theMoshi
+internal fun <T : Any> T.toJson(): String {
+  return theBrainzMoshi
     .adapter<T>(this::class.java)
     .indent("  ")
     .toJson(this)

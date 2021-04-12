@@ -15,27 +15,27 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-include(":ealvabrainz")
-include(":ealvabrainz-service")
-include("app")
+package com.ealva.brainzsvc.init
 
-pluginManagement {
-  resolutionStrategy {
-    eachPlugin {
-      if (requested.id.id == "com.android.library") {
-        useModule("com.android.tools.build:gradle:${requested.version}")
-      }
-      if (requested.id.id == "com.android.application") {
-        useModule("com.android.tools.build:gradle:${requested.version}")
-      }
-    }
-  }
-  repositories {
-    jcenter()
-    gradlePluginPortal()
-    google()
-    mavenCentral()
+import android.annotation.SuppressLint
+import android.content.Context
+import androidx.core.content.getSystemService
+
+@SuppressLint("StaticFieldLeak")
+public object EalvaBrainz {
+  internal lateinit var appCtx: Context
+
+  public fun init(context: Context): EalvaBrainz = apply {
+    appCtx = context.applicationContext
   }
 }
 
-rootProject.name = ("eAlva Brainz")
+internal inline fun <reified T : Any> Context.requireSystemService(): T {
+  return requireNotNull(getSystemService()) {
+    "Failed to get system service ${T::class.java.simpleName}"
+  }
+}
+
+@Suppress("UNCHECKED_CAST")
+internal inline fun <reified T : Any> requireSystemService(): T =
+  EalvaBrainz.appCtx.requireSystemService()

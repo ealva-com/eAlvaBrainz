@@ -28,7 +28,7 @@ public class ArtistTest {
 
   @Before
   public fun setup() {
-    moshi = theMoshi
+    moshi = theBrainzMoshi
   }
 
   /**

@@ -28,7 +28,7 @@ public class EventListTest {
 
   @Before
   public fun setup() {
-    moshi = theMoshi
+    moshi = theBrainzMoshi
   }
 
   @Test

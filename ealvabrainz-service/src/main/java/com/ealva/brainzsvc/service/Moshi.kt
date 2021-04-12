@@ -17,11 +17,11 @@
 
 package com.ealva.brainzsvc.service
 
-import com.ealva.ealvabrainz.brainz.data.theMoshi
+import com.ealva.ealvabrainz.brainz.data.theBrainzMoshi
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 internal fun Retrofit.Builder.addMoshiConverterFactory(): Retrofit.Builder {
-  addConverterFactory(MoshiConverterFactory.create(theMoshi))
+  addConverterFactory(MoshiConverterFactory.create(theBrainzMoshi))
   return this
 }

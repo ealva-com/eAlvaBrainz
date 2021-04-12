@@ -31,7 +31,7 @@ public class ReleaseGroupTest {
 
   @Before
   public fun setup() {
-    moshi = theMoshi
+    moshi = theBrainzMoshi
   }
 
   @Test

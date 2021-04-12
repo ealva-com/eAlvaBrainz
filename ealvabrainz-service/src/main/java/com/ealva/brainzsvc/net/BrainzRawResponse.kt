@@ -20,11 +20,11 @@ package com.ealva.brainzsvc.net
 import retrofit2.Response
 
 @Suppress("unused")
-public class RawResponse(
+public class BrainzRawResponse(
   public val httpStatusCode: Int,
   public val httpStatus: String,
   public val errorBody: String
 )
 
-public fun Response<*>.toRawResponse(): RawResponse =
-  RawResponse(code(), message(), errorBody()?.string() ?: "null")
+public fun Response<*>.toBrainzRawResponse(): BrainzRawResponse =
+  BrainzRawResponse(code(), message(), errorBody()?.string() ?: "null")

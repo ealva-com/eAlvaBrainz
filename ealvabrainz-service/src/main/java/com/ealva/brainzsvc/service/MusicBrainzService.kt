@@ -622,14 +622,14 @@ public interface MusicBrainzService {
       ctx: Context,
       appName: String,
       appVersion: String,
-      contact: String,
+      contactEmail: String,
       coverArt: CoverArtService,
       credentialsProvider: CredentialsProvider? = null,
       dispatcher: CoroutineDispatcher = Dispatchers.IO
     ): MusicBrainzService = makeMusicBrainzService(
       appName,
       appVersion,
-      contact,
+      contactEmail,
       credentialsProvider,
       ctx,
       coverArt,

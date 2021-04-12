@@ -20,7 +20,7 @@ package com.ealva.brainzsvc.service
 import android.content.Context
 import androidx.annotation.StringRes
 
-public interface ResourceFetcher {
+public fun interface ResourceFetcher {
   public fun fetch(@StringRes stringRes: Int, vararg formatArgs: Any): String
 }
 

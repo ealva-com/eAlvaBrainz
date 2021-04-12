@@ -126,18 +126,18 @@ public class MusicBrainzLookupSmokeTest {
     println("make CoverArt")
     coverArtService = CoverArtService(
       ctx = appCtx,
-      appName = appName,
-      appVersion = appVersion,
-      contactEmail = contactEmail,
+      appName = BuildConfig.BRAINZ_APP_NAME,
+      appVersion = BuildConfig.BRAINZ_APP_VERSION,
+      contactEmail = BuildConfig.BRAINZ_CONTACT_EMAIL,
       resourceFetcher = fetcher,
       dispatcher = coroutineRule.testDispatcher
     )
     println("make musicbrainz")
     musicBrainzService = MusicBrainzService(
       ctx = appCtx,
-      appName = appName,
-      appVersion = appVersion,
-      contact = contactEmail,
+      appName = BuildConfig.BRAINZ_APP_NAME,
+      appVersion = BuildConfig.BRAINZ_APP_VERSION,
+      contactEmail = BuildConfig.BRAINZ_CONTACT_EMAIL,
       coverArt = coverArtService,
       credentialsProvider = object : CredentialsProvider {
         override val credentials: Credentials =

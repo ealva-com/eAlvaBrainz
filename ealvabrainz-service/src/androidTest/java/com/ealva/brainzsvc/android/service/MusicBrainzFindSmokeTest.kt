@@ -61,10 +61,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-private const val appName = "eAlvaBrainz_test"
-private const val appVersion = "0.1"
-private const val contactEmail = "musicbrainz@ealva.com"
-
 /**
  * An integration test with MusicBrainz servers. This test suite purposefully sleeps 2 seconds
  * between calls to stay far away from rate limiting and not tax the MusicBrainz FREE (to us, an
@@ -110,18 +106,18 @@ public class MusicBrainzFindSmokeTest {
     println("make CoverArt")
     coverArtService = CoverArtService(
       ctx = appCtx,
-      appName = appName,
-      appVersion = appVersion,
-      contactEmail = contactEmail,
+      appName = BuildConfig.BRAINZ_APP_NAME,
+      appVersion = BuildConfig.BRAINZ_APP_VERSION,
+      contactEmail = BuildConfig.BRAINZ_CONTACT_EMAIL,
       resourceFetcher = fetcher,
       dispatcher = coroutineRule.testDispatcher
     )
     println("make musicbrainz")
     musicBrainzService = MusicBrainzService(
       ctx = appCtx,
-      appName = appName,
-      appVersion = appVersion,
-      contact = contactEmail,
+      appName = BuildConfig.BRAINZ_APP_NAME,
+      appVersion = BuildConfig.BRAINZ_APP_VERSION,
+      contactEmail = BuildConfig.BRAINZ_CONTACT_EMAIL,
       coverArt = coverArtService,
       credentialsProvider = object : CredentialsProvider {
         override val credentials: Credentials =

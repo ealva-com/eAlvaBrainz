@@ -17,13 +17,13 @@
 
 package com.ealva.brainzsvc.service
 
-import com.ealva.brainzsvc.net.RawResponse
-import com.ealva.brainzsvc.net.toRawResponse
+import com.ealva.brainzsvc.net.BrainzRawResponse
+import com.ealva.brainzsvc.net.toBrainzRawResponse
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzExceptionMessage
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzErrorCodeMessage
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzNullReturn
 import com.ealva.ealvabrainz.brainz.data.BrainzError
-import com.ealva.ealvabrainz.brainz.data.theMoshi
+import com.ealva.ealvabrainz.brainz.data.theBrainzMoshi
 import com.ealva.ealvabrainz.log.BrainzLog
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke
@@ -62,8 +62,8 @@ public sealed class BrainzMessage {
       }
 
       @Suppress("unused")
-      public val rawResponse: RawResponse
-        get() = response.toRawResponse()
+      public val rawResponse: BrainzRawResponse
+        get() = response.toBrainzRawResponse()
     }
   }
 
@@ -135,7 +135,7 @@ private fun String.makeBrainzErrorMessage(statusCode: Int): BrainzErrorMessage? 
 }
 
 private val errorAdapter: JsonAdapter<BrainzError> by lazy {
-  theMoshi.adapter(BrainzError::class.java)
+  theBrainzMoshi.adapter(BrainzError::class.java)
 }
 
 private fun String.htmlToBrainzError(): BrainzError? {

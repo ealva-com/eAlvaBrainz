@@ -1,17 +1,18 @@
 /*
- * Copyright 2020 eAlva.com
+ * Copyright (c) 2021  Eric A. Snell
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This file is part of eAlvaBrainz
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * eAlvaBrainz is free software: you can redistribute it and/or modify it under the terms of the GNU
+ * Lesser General Public License as published by the Free Software Foundation, either version 3 of
+ *  the License, or (at your option) any later version.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * eAlvaBrainz is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with eAlvaBrainz.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 object Sdk {
@@ -21,6 +22,7 @@ object Sdk {
 }
 
 object Versions {
+  const val ANDROIDX_STARTUP = "1.0.0"
   const val ANDROIDX_TEST = "1.4.0-alpha04"
   const val ANDROIDX_TEST_EXT = "1.1.3-alpha04"
   const val APPCOMPAT = "1.2.0"
@@ -41,6 +43,7 @@ object Versions {
   const val MOSHI = "1.11.0"
   const val OKHTTP = "4.9.1"
   const val OKHTTP_LOGGING = "4.9.1"
+  const val RETROFIT = "2.9.0"
   const val ROBOLECTRIC = "4.5.1"
 }
 
@@ -60,6 +63,7 @@ object SupportLibs {
   const val ANDROIDX_CORE_KTX = "androidx.core:core-ktx:${Versions.CORE_KTX}"
   const val ANDROIDX_LIFECYCLE_RUNTIME_KTX =
     "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.LIFECYCLE}"
+  const val ANDROIDX_STARTUP = "androidx.startup:startup-runtime:${Versions.ANDROIDX_STARTUP}"
 }
 
 object ThirdParty {
@@ -78,9 +82,7 @@ object ThirdParty {
   const val MOSHI_RETROFIT = "com.squareup.retrofit2:converter-moshi:2.9.0"
   const val OKHTTP = "com.squareup.okhttp3:okhttp:${Versions.OKHTTP}"
   const val OKHTTP_LOGGING = "com.squareup.okhttp3:logging-interceptor:${Versions.OKHTTP_LOGGING}"
-  const val RETROFIT = "com.squareup.retrofit2:retrofit:2.9.0"
-  const val SPLITTIES_SYSTEM_SERVICES =
-    "com.louiscad.splitties:splitties-systemservices:3.0.0-alpha06"
+  const val RETROFIT = "com.squareup.retrofit2:retrofit:${Versions.RETROFIT}"
 }
 
 object TestingLib {
@@ -88,7 +90,6 @@ object TestingLib {
     "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.COROUTINES_TEST}"
   const val EXPECT = "com.nhaarman:expect.kt:${Versions.EXPECT}"
   const val JUNIT = "junit:junit:${Versions.JUNIT}"
-  const val KOIN_TEST = "org.koin:koin-test:${Versions.KOIN}"
   const val MOCKITO_INLINE = "org.mockito:mockito-inline:3.2.4"
   const val MOCKITO_KOTLIN = "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
   const val ROBOLECTRIC = "org.robolectric:robolectric:${Versions.ROBOLECTRIC}"

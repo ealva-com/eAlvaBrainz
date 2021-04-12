@@ -9,7 +9,7 @@ A few small examples to start:
 ```kotlin
 // Get the artist represented by the ArtistMbid and include all Misc info
 brainzSvc.lookupArtist(mbid) { include(*Artist.Include.values()) }
-  .onSuccess { artist -> handleArtist(result.value, mbid) }
+  .onSuccess { artist -> handleArtist(artist, mbid) }
   .onFailure { brainzMsg -> displayError(brainzMsg.asString(resourceFetcher)) }
 
 // Get the artist Nirvana's info and include aliases
@@ -34,7 +34,7 @@ val theBeatles = ArtistMbid("b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d") // maybe obt
 browseReleases(ReleaseBrowse.BrowseOn.Artist(theBeatles)) {
   types(ReleaseGroup.Type.Album)
   status(Release.Status.Official)
-}.onSuccess {
+}.onSuccess { browseReleaseList ->
   // handle browse
 }.onFailure {
   // handle error path
@@ -49,7 +49,7 @@ findReleaseGroup {
     primaryType(ReleaseGroup.Type.Album) and
     !secondaryType { ReleaseGroup.Type.Compilation or ReleaseGroup.Type.Interview } and
     status(Release.Status.Official)
-}.onSuccess {
+}.onSuccess { releaseGroupList ->
   // handle group list
 }.onFailure {
   // handle error path
@@ -263,7 +263,7 @@ suspend fun getReleaseGroupArtwork(mbid: ReleaseGroupMbid): Uri
 A small find release group example showing the query DSL:
 ```kotlin
 val result = findReleaseGroup {
-  artist { LED_ZEPPELIN } and releaseGroup { HOUSES_OF_THE_HOLY }
+  artist(LED_ZEPPELIN) and releaseGroup(HOUSES_OF_THE_HOLY)
 }
 ```
 The ReleaseGroupSearch supports all 17 possible query fields and the term DSL support: required,
@@ -284,13 +284,22 @@ subtype of BrainzMessage which indicates the type of error. Result is from the
 [kotlin-result] library and provides a nice implementation for
 [Railway Oriented Programming][railway].
 
-### Integration Tests
+### Building and Executing Integration Tests and App
+Several items must be defined in the local.properties file in the root folder of this project to
+successfully build and run the app and integration tests. If the file doesn't exist, create it and
+add the following (substituting your valid information):
+```text
+BRAINZ_APP_NAME="YourAppName"
+BRAINZ_APP_VERSION="0.0.1"
+BRAINZ_CONTACT_EMAIL="your@email.com"
+```
+The fields will be combined into a user agent passed to the servers.
+
 One or more integration tests require authentication with the MusicBrainz server. The required
 username and password must be defined in the local.properties file in the root folder of this
-project. This file is not committed to version control as it's contents are private (obviously). If
-the file doesn't exist, create it. It would typically look something like:
+project. This file is not committed to version control as it's contents are private (obviously).
+It would typically look something like:
 ```text
-sdk.dir=/home/user/Android/Sdk
 BRAINZ_USERNAME="my_username"
 BRAINZ_PASSWORD="my_password"
 ```
@@ -302,9 +311,8 @@ Applications which call functions requiring authentication must implement the Cr
 interface and use it when constructing a MusicBrainzService implementation.
 
 ## app
-The application demonstrates searching, browsing, and display of various MusicBrainz entities.
-Currently the user needs to know how to build a MusicBrainz 
-[query](https://musicbrainz.org/doc/Development/XML_Web_Service/Version_2/Search).
+The application demonstrates searching, browsing, and display of various MusicBrainz entities. Only
+a few APIs are called - look at the integration tests for more examples.
 
 Given Kotlin coroutines, flows, and lifecycle scope, it is easy to define flows that properly
 set and remove listeners based on component lifecycle, to conflate events, and to possibly emit

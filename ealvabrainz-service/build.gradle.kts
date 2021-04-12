@@ -28,6 +28,9 @@ plugins {
 val localProperties = gradleLocalProperties(rootDir)
 val brainzUserName: String = localProperties.getProperty("BRAINZ_USERNAME", "\"\"")
 val brainzPassword: String = localProperties.getProperty("BRAINZ_PASSWORD", "\"\"")
+val brainzAppName: String = localProperties.getProperty("BRAINZ_APP_NAME", "\"\"")
+val brainzAppVersion: String = localProperties.getProperty("BRAINZ_APP_VERSION", "\"\"")
+val brainzEmail: String = localProperties.getProperty("BRAINZ_CONTACT_EMAIL", "\"\"")
 
 android {
   compileSdkVersion(Sdk.COMPILE_SDK_VERSION)
@@ -53,6 +56,9 @@ android {
     getByName("debug") {
       buildConfigField("String", "BRAINZ_USERNAME", brainzUserName)
       buildConfigField("String", "BRAINZ_PASSWORD", brainzPassword)
+      buildConfigField("String", "BRAINZ_APP_NAME", brainzAppName)
+      buildConfigField("String", "BRAINZ_APP_VERSION", brainzAppVersion)
+      buildConfigField("String", "BRAINZ_CONTACT_EMAIL", brainzEmail)
     }
 
     getByName("release") {
@@ -106,6 +112,8 @@ dependencies {
   implementation(kotlin("stdlib-jdk8"))
   implementation(SupportLibs.ANDROIDX_APPCOMPAT)
   implementation(SupportLibs.ANDROIDX_CORE_KTX)
+  implementation(SupportLibs.ANDROIDX_STARTUP)
+
   implementation(ThirdParty.EALVALOG)
   implementation(ThirdParty.EALVALOG_CORE)
   implementation(ThirdParty.FASTUTIL)
@@ -117,7 +125,6 @@ dependencies {
   implementation(ThirdParty.MOSHI_RETROFIT)
   implementation(ThirdParty.OKHTTP)
   implementation(ThirdParty.OKHTTP_LOGGING)
-  implementation(ThirdParty.SPLITTIES_SYSTEM_SERVICES)
 
   implementation(ThirdParty.KOTLIN_RESULT)
   implementation("io.github.rburgst:okhttp-digest:2.5")
