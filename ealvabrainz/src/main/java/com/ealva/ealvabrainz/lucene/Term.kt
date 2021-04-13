@@ -368,6 +368,11 @@ public infix fun Term.inclusive(other: Term): InclusiveRange = InclusiveRange(th
 public fun Pair<Term, Term>.inclusive(): InclusiveRange = InclusiveRange(first, second)
 
 /**
+ * Range term is $[prefix]$[from]$[separator]$[to]$[suffix] where defaults are:
+ * * prefix = "["
+ * * separator = " TO "
+ * * suffix = "]"
+ *
  * Range Queries allow one to match documents whose field(s) values are between the lower and upper
  * bound specified by the Range Query. Range Queries can be inclusive or exclusive of the upper and
  * lower bounds. Sorting is done lexicographically.
@@ -380,9 +385,15 @@ public fun Pair<Term, Term>.inclusive(): InclusiveRange = InclusiveRange(first, 
  *
  * Inclusive range queries are denoted by square brackets.
  */
-public class InclusiveRange(private val from: Term, private val to: Term) : Term() {
+public class InclusiveRange(
+  private val from: Term,
+  private val to: Term,
+  private val prefix: String = "[",
+  private val separator: String = " TO ",
+  private val suffix: String = "]"
+) : Term() {
   override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {
-    append("[").appendExpression(from).append(" TO ").appendExpression(to).append("]")
+    append(prefix).appendExpression(from).append(separator).appendExpression(to).append(suffix)
   }
 }
 
