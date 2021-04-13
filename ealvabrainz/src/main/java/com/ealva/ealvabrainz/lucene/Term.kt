@@ -209,15 +209,21 @@ public class RequireTerm(private val term: Term) : Term() {
 }
 
 /**
+ * A !term indicates the term must not appear in the result of the query. The actual string will
+ * be "NOT $term" with term being a single term or phrase
+ */
+public operator fun Term.not(): NotTerm = NotTerm(this)
+
+public class NotTerm(private val term: Term) : Term() {
+  override fun appendTo(builder: StringBuilder): StringBuilder = builder.apply {
+    builder.append("NOT ").appendExpression(term)
+  }
+}
+
+/**
  * A -term indicates the term must not appear in the result of the query
  */
 public operator fun Term.unaryMinus(): ProhibitTerm = prohibit()
-
-/**
- * A !term indicates the term must not appear in the result of the query. The actual string will
- * be prefixed with a '-' character as that is canonical for lucene
- */
-public operator fun Term.not(): ProhibitTerm = prohibit()
 
 public fun Term.prohibit(): ProhibitTerm = ProhibitTerm(this)
 

@@ -17,24 +17,24 @@
 
 package com.ealva.ealvabrainz.lucene
 
-import com.ealva.ealvabrainz.brainz.data.Release
-import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.AreaMbid
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.EventMbid
-import com.ealva.ealvabrainz.common.Formatting
 import com.ealva.ealvabrainz.brainz.data.GenreMbid
 import com.ealva.ealvabrainz.brainz.data.InstrumentMbid
 import com.ealva.ealvabrainz.brainz.data.LabelMbid
 import com.ealva.ealvabrainz.brainz.data.PackagingMbid
 import com.ealva.ealvabrainz.brainz.data.PlaceMbid
 import com.ealva.ealvabrainz.brainz.data.RecordingMbid
+import com.ealva.ealvabrainz.brainz.data.Release
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.brainz.data.SeriesMbid
 import com.ealva.ealvabrainz.brainz.data.TrackMbid
 import com.ealva.ealvabrainz.brainz.data.UrlMbid
 import com.ealva.ealvabrainz.brainz.data.WorkMbid
+import com.ealva.ealvabrainz.common.Formatting
 import com.ealva.ealvabrainz.common.toAlbumTitle
 import com.ealva.ealvabrainz.common.toArtistName
 import com.ealva.ealvabrainz.common.toLabelName
@@ -105,13 +105,19 @@ public class TermTest {
   }
 
   @Test
+  public fun `test not term`() {
+    val term = Term("Alice")
+    expect((!term).toString()).toBe("""NOT Alice""")
+    val phrase = Term("One more")
+    expect((!phrase).toString()).toBe("""NOT "One more"""")
+  }
+
+  @Test
   public fun `test prohibit term`() {
     val term = Term("Alice")
     expect((-term).toString()).toBe("""-Alice""")
-    expect((!term).toString()).toBe("""-Alice""")
     val phrase = Term("One more")
     expect((-phrase).toString()).toBe("""-"One more"""")
-    expect((!phrase).toString()).toBe("""-"One more"""")
   }
 
   @Test

@@ -254,7 +254,7 @@ public class MusicBrainzFindSmokeTest {
       artist(ArtistName("The Beatles")) and
         firstReleaseDate { Year("1967") inclusive Year("1969") } and
         primaryType(ReleaseGroup.Type.Album) and
-        !secondaryType { ReleaseGroup.Type.Compilation or ReleaseGroup.Type.Interview } and
+        -secondaryType { ReleaseGroup.Type.Compilation or ReleaseGroup.Type.Interview } and
         status(Release.Status.Official)
     }.onSuccess { releaseList ->
       expect(releaseList.count).toBe(5)
