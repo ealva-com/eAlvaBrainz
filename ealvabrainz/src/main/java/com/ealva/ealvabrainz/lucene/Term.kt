@@ -49,6 +49,7 @@ import com.ealva.ealvabrainz.common.LabelName
 import com.ealva.ealvabrainz.common.PlaceName
 import com.ealva.ealvabrainz.common.RecordingTitle
 import com.ealva.ealvabrainz.common.SeriesName
+import com.ealva.ealvabrainz.common.TrackTitle
 import com.ealva.ealvabrainz.common.WorkName
 import com.ealva.ealvabrainz.common.Year
 import com.ealva.ealvabrainz.common.brainzFormat
@@ -105,31 +106,32 @@ public abstract class Term : BaseExpression() {
     public inline operator fun invoke(mbid: GenreMbid): Term = SingleTerm(mbid.value)
     public inline operator fun invoke(mbid: InstrumentMbid): Term = SingleTerm(mbid.value)
     public inline operator fun invoke(mbid: LabelMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: PackagingMbid): Term = SingleTerm(mbid.value)
     public inline operator fun invoke(mbid: PlaceMbid): Term = SingleTerm(mbid.value)
     public inline operator fun invoke(mbid: RecordingMbid): Term = SingleTerm(mbid.value)
-    public inline operator fun invoke(mbid: ReleaseMbid): Term = SingleTerm(mbid.value)
     public inline operator fun invoke(mbid: ReleaseGroupMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: ReleaseMbid): Term = SingleTerm(mbid.value)
     public inline operator fun invoke(mbid: SeriesMbid): Term = SingleTerm(mbid.value)
-    public inline operator fun invoke(mbid: WorkMbid): Term = SingleTerm(mbid.value)
-    public inline operator fun invoke(mbid: UrlMbid): Term = SingleTerm(mbid.value)
     public inline operator fun invoke(mbid: TrackMbid): Term = SingleTerm(mbid.value)
-    public inline operator fun invoke(mbid: PackagingMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: UrlMbid): Term = SingleTerm(mbid.value)
+    public inline operator fun invoke(mbid: WorkMbid): Term = SingleTerm(mbid.value)
 
-    public inline operator fun invoke(title: AlbumTitle): Term = Term(title.value)
-    public inline operator fun invoke(type: ArtistType): Term = Term(type.value)
+    public inline operator fun invoke(name: AlbumTitle): Term = Term(name.value)
+    public inline operator fun invoke(name: ArtistType): Term = Term(name.value)
     public inline operator fun invoke(name: AreaName): Term = Term(name.value)
     public inline operator fun invoke(name: ArtistName): Term = Term(name.value)
-    public inline operator fun invoke(discId: DiscId): Term = Term(discId.value)
+    public inline operator fun invoke(name: DiscId): Term = Term(name.value)
     public inline operator fun invoke(name: EventName): Term = Term(name.value)
     public inline operator fun invoke(name: InstrumentName): Term = Term(name.value)
     public inline operator fun invoke(name: Iswc): Term = Term(name.value)
     public inline operator fun invoke(name: LabelName): Term = Term(name.value)
     public inline operator fun invoke(name: PlaceName): Term = Term(name.value)
-    public inline operator fun invoke(title: RecordingTitle): Term = Term(title.value)
+    public inline operator fun invoke(name: RecordingTitle): Term = Term(name.value)
     public inline operator fun invoke(name: SeriesName): Term = Term(name.value)
+    public inline operator fun invoke(name: TrackTitle): Term = Term(name.value)
     public inline operator fun invoke(name: WorkName): Term = Term(name.value)
-    public inline operator fun invoke(type: ReleaseGroup.Type): Term = Term(type.value)
-    public inline operator fun invoke(status: Release.Status): Term = Term(status.value)
+    public inline operator fun invoke(name: ReleaseGroup.Type): Term = Term(name.value)
+    public inline operator fun invoke(name: Release.Status): Term = Term(name.value)
 
     public inline operator fun invoke(value: Int): Term =
       if (value < 0) Phrase(value.toString()) else SingleTerm(value.toString())

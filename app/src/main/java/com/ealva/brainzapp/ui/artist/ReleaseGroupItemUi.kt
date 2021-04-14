@@ -36,7 +36,6 @@ import com.ealva.brainzapp.data.toDisplayString
 import com.ealva.brainzapp.ui.fragment.FragmentUiContext
 import com.ealva.brainzapp.ui.view.clickFlow
 import com.ealva.brainzapp.ui.view.setStarRatingDrawable
-import com.ealva.brainzsvc.net.isEmpty
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.google.android.material.card.MaterialCardView
 import com.mikepenz.iconics.IconicsDrawable
@@ -225,3 +224,5 @@ class ReleaseGroupItemUi(
     releaseCount.text = ctx.getString(R.string.ReleaseCount, releaseGroup.releaseCount)
   }
 }
+
+private fun Uri.isEmpty(): Boolean = this === Uri.EMPTY || this == Uri.EMPTY

@@ -17,12 +17,6 @@
 
 <resources>
     <string name="empty" />
-
-    <string name="Original">Original</string>
-    <string name="ExtraLarge">Extra Large</string>
-    <string name="Large">Large</string>
-    <string name="Medium">Medium</string>
-    <string name="Small">Small</string>
     <string name="Unknown">Unknown</string>
     <string name="ResultStatusCode">Result HTTP status code=%d</string>
 </resources>

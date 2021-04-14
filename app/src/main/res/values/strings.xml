@@ -25,7 +25,6 @@
   <string name="artist_search_hint">Artist query</string>
   <string name="query_field_empty">Query field is empty</string>
 
-
   <string-array name="search_types_array">
     <item>Artist</item>
     <item>Release Group</item>
