@@ -23,45 +23,43 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.ealva.brainzsvc.service.BrainzMessage
 import com.ealva.brainzsvc.service.BuildConfig
-import com.ealva.brainzsvc.service.ContextResourceFetcher
 import com.ealva.brainzsvc.service.CoverArtService
 import com.ealva.brainzsvc.service.Credentials
 import com.ealva.brainzsvc.service.CredentialsProvider
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.Password
-import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.brainzsvc.service.UserName
 import com.ealva.ealvabrainz.brainz.data.Area
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
 import com.ealva.ealvabrainz.brainz.data.Artist
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.Collection
+import com.ealva.ealvabrainz.brainz.data.EventMbid
+import com.ealva.ealvabrainz.brainz.data.GenreMbid
+import com.ealva.ealvabrainz.brainz.data.InstrumentMbid
 import com.ealva.ealvabrainz.brainz.data.Label
+import com.ealva.ealvabrainz.brainz.data.LabelMbid
 import com.ealva.ealvabrainz.brainz.data.Place
+import com.ealva.ealvabrainz.brainz.data.PlaceMbid
 import com.ealva.ealvabrainz.brainz.data.Recording
+import com.ealva.ealvabrainz.brainz.data.RecordingMbid
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.Release.Include
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.brainz.data.SeriesMbid
+import com.ealva.ealvabrainz.brainz.data.UrlMbid
+import com.ealva.ealvabrainz.brainz.data.WorkMbid
+import com.ealva.ealvabrainz.brainz.data.mbid
 import com.ealva.ealvabrainz.browse.CollectionBrowse
-import com.ealva.ealvabrainz.brainz.data.AreaMbid
-import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.BrainzInvalidStatusException
 import com.ealva.ealvabrainz.common.BrainzInvalidTypeException
 import com.ealva.ealvabrainz.common.DiscId
 import com.ealva.ealvabrainz.common.EditorName
-import com.ealva.ealvabrainz.brainz.data.EventMbid
-import com.ealva.ealvabrainz.brainz.data.GenreMbid
-import com.ealva.ealvabrainz.brainz.data.InstrumentMbid
 import com.ealva.ealvabrainz.common.Isrc
 import com.ealva.ealvabrainz.common.Iswc
-import com.ealva.ealvabrainz.brainz.data.LabelMbid
-import com.ealva.ealvabrainz.brainz.data.PlaceMbid
-import com.ealva.ealvabrainz.brainz.data.RecordingMbid
-import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
-import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
-import com.ealva.ealvabrainz.brainz.data.SeriesMbid
 import com.ealva.ealvabrainz.common.TocParam
-import com.ealva.ealvabrainz.brainz.data.UrlMbid
-import com.ealva.ealvabrainz.brainz.data.WorkMbid
-import com.ealva.ealvabrainz.brainz.data.mbid
 import com.ealva.ealvabrainz.test.shared.MainCoroutineRule
 import com.ealva.ealvabrainz.test.shared.runBlockingTest
 import com.ealva.ealvabrainz.test.shared.toHaveAny
@@ -117,19 +115,16 @@ public class MusicBrainzLookupSmokeTest {
   private lateinit var appCtx: Context
   private lateinit var coverArtService: CoverArtService
   private lateinit var musicBrainzService: MusicBrainzService
-  private lateinit var fetcher: ResourceFetcher
 
   @Before
   public fun setup() {
     appCtx = ApplicationProvider.getApplicationContext()
-    fetcher = ContextResourceFetcher(appCtx)
     println("make CoverArt")
     coverArtService = CoverArtService(
       ctx = appCtx,
       appName = BuildConfig.BRAINZ_APP_NAME,
       appVersion = BuildConfig.BRAINZ_APP_VERSION,
       contactEmail = BuildConfig.BRAINZ_CONTACT_EMAIL,
-      resourceFetcher = fetcher,
       dispatcher = coroutineRule.testDispatcher
     )
     println("make musicbrainz")
@@ -158,7 +153,7 @@ public class MusicBrainzLookupSmokeTest {
         expect(area.type).toBe("Country")
         expect(area.iso31661Codes[0]).toBe("GB")
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -176,7 +171,7 @@ public class MusicBrainzLookupSmokeTest {
     }.onSuccess { artist ->
       expect(artist.name).toBe("Nirvana")
       expect(artist.aliases).toNotBeEmpty()
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -214,9 +209,9 @@ public class MusicBrainzLookupSmokeTest {
       browseList.collections[0].let { foundCollection ->
         lookupCollection(foundCollection.mbid)
           .onSuccess { expect(it.editor).toBe(BuildConfig.BRAINZ_USERNAME) }
-          .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+          .onFailure { fail("Brainz call failed") { it.toString() } }
       }
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -228,14 +223,14 @@ public class MusicBrainzLookupSmokeTest {
         expect(event.lifeSpan.begin).toBe("2014-05-06")
         expect(event.lifeSpan.end).toBe("2014-05-06")
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
   public fun lookupGenreCrustPunk(): Unit = brainz {
     lookupGenre(GenreMbid("f66d7266-eb3d-4ef3-b4d8-b7cd992f918b"))
       .onSuccess { genre -> expect(genre.name).toBe("crust punk") }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -245,7 +240,7 @@ public class MusicBrainzLookupSmokeTest {
         expect(instrument.name).toBe("kemanak")
         expect(instrument.type).toBe("Percussion instrument")
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -256,7 +251,7 @@ public class MusicBrainzLookupSmokeTest {
       expect(label.name).toBe("Warp")
       expect(label.country).toBe("GB")
       expect(label.aliases[0].name).toBe("Warp Records")
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -271,7 +266,7 @@ public class MusicBrainzLookupSmokeTest {
       expect(place.aliases[0].name).toBe("Arena Riga")
       expect(place.coordinates.longitude).toBe(24.121403)
       expect(place.coordinates.latitude).toBe(56.967989)
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -286,7 +281,7 @@ public class MusicBrainzLookupSmokeTest {
     }.onSuccess { recording ->
       expect(recording.title).toBe("LAST ANGEL")
       expect(recording.firstReleaseDate).toBe("2007-11-07")
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -297,7 +292,7 @@ public class MusicBrainzLookupSmokeTest {
       expect(release.title).toBe("æ³o & h³æ")
       expect(release.releaseEvents).toHaveSize(1)
       expect(release.media).toHaveSize(2)
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -307,7 +302,7 @@ public class MusicBrainzLookupSmokeTest {
         expect(release.title).toBe("æ³o & h³æ")
         expect(release.releaseEvents).toHaveSize(1)
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -317,7 +312,7 @@ public class MusicBrainzLookupSmokeTest {
         expect(release.title).toBe("æ³o & h³æ")
         expect(release.releaseEvents).toHaveSize(1)
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -327,14 +322,14 @@ public class MusicBrainzLookupSmokeTest {
     }.onSuccess { group ->
       expect(group.title).toBe("The Lost Tape")
       expect(group.artistCredit[0].name).toBe("50 Cent")
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
   public fun lookupReleaseGroupWithType50CentLostTape(): Unit = brainz {
     lookupReleaseGroup(FITY_CENT_LOST_TAPE_GROUP_MBID) { types(ReleaseGroup.Type.Album) }
       .onSuccess { group -> expect(group.title).toBe("The Lost Tape") }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -356,14 +351,14 @@ public class MusicBrainzLookupSmokeTest {
         expect(series.type).toBe("Tour")
         expect(series.typeId).toBe("8ff6df0e-3dce-3bdf-bd57-d386c51b0060")
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
   public fun lookupUrlArvoPart(): Unit = brainz {
     lookupUrl(UrlMbid("46d8f693-52e4-4d03-936f-7ca8459019a7"))
       .onSuccess { url -> expect(url.resource).toBe("https://www.arvopart.ee/") }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -374,7 +369,7 @@ public class MusicBrainzLookupSmokeTest {
         expect(work.title).toBe("HELLO! また会おうね")
         expect(work.type).toBe("Song")
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -382,7 +377,7 @@ public class MusicBrainzLookupSmokeTest {
     val nevermindDiscId = DiscId("I5l9cCSFccLKFEKS.7wqSZAorPU-")
     lookupDisc(nevermindDiscId)
       .onSuccess { discLookupList -> expect(discLookupList.id).toBe(nevermindDiscId.value) }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -398,7 +393,7 @@ public class MusicBrainzLookupSmokeTest {
       expect(browseReleaseList.releases).toHaveAny {
         it.id == "1afdb0ff-25d1-4966-90ee-b1133f8243fb"
       }
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -416,7 +411,7 @@ public class MusicBrainzLookupSmokeTest {
       expect(browseReleaseList.releases).toHaveAny {
         it.id == "1afdb0ff-25d1-4966-90ee-b1133f8243fb"
       }
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -427,7 +422,7 @@ public class MusicBrainzLookupSmokeTest {
         expect(list.isrc).toBe(lastAngelIsrc.value)
         expect(list.recordings[0].title).toBe("LAST ANGEL")
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -438,7 +433,7 @@ public class MusicBrainzLookupSmokeTest {
         expect(list.workCount).toBe(1)
         expect(list.works[0].title).toBe("HELLO! また会おうね")
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   private fun brainz(block: suspend MusicBrainzService.() -> Unit) = coroutineRule.runBlockingTest {

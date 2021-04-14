@@ -21,20 +21,17 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.ealva.brainzapp.ui.fragment.Navigation
-import com.ealva.brainzsvc.service.ResourceFetcher
-import org.koin.android.ext.android.inject
 import kotlin.time.ExperimentalTime
 import com.ealva.brainzapp.R.id.main_ui_fragment_container as ID_FRAGMENT_CONTAINER
 
 class MainActivity : AppCompatActivity(), MainPresenter {
-  private val resourceFetcher: ResourceFetcher by inject()
   private lateinit var ui: MainActivityUi
   private lateinit var navigation: Navigation
 
   @ExperimentalTime
   override fun onCreate(savedInstanceState: Bundle?) {
     navigation = Navigation.make(supportFragmentManager, ID_FRAGMENT_CONTAINER)
-    supportFragmentManager.fragmentFactory = AppFragmentFactory(navigation, this, resourceFetcher)
+    supportFragmentManager.fragmentFactory = AppFragmentFactory(navigation, this)
     super.onCreate(savedInstanceState)
     ui = MainActivityUi(makeUiContext(), navigation)
   }

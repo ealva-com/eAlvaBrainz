@@ -154,9 +154,6 @@ private class MusicBrainzServiceImpl(
   private val coverArtService: CoverArtService,
   private val dispatcher: CoroutineDispatcher
 ) : MusicBrainzService {
-  private val resourceFetcher: ResourceFetcher
-    get() = coverArtService.resourceFetcher
-
   override suspend fun lookupArea(
     mbid: AreaMbid,
     lookup: AreaLookup.() -> Unit
@@ -496,7 +493,7 @@ private class MusicBrainzServiceImpl(
         .firstOrNull()
         .toSecureUri()
     is Err -> {
-      LOG.e { it("Error: %s", result.getErrorString(resourceFetcher)) }
+      LOG.e { it("Error: %s", result.getErrorString()) }
       Uri.EMPTY
     }
   }
@@ -514,7 +511,7 @@ private class MusicBrainzServiceImpl(
         .firstOrNull()
         .toSecureUri()
     is Err -> {
-      LOG.e { it("Error: %s", result.getErrorString(resourceFetcher)) }
+      LOG.e { it("Error: %s", result.getErrorString()) }
       Uri.EMPTY
     }
   }

@@ -27,7 +27,6 @@ import com.ealva.brainzapp.ui.fragment.Navigation
 import com.ealva.brainzapp.ui.release.ReleaseSearchFragment
 import com.ealva.brainzapp.ui.rgroup.ReleaseGroupSearchFragment
 import com.ealva.brainzsvc.service.MusicBrainzService
-import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.ealvalog.invoke
 import com.ealva.ealvalog.lazyLogger
 import com.ealva.ealvalog.w
@@ -42,22 +41,20 @@ typealias FragmentFactoryFn = () -> Fragment
 @OptIn(KoinApiExtension::class)
 class AppFragmentFactory(
   navigation: Navigation,
-  mainPresenter: MainPresenter,
-  resourceFetcher: ResourceFetcher
+  mainPresenter: MainPresenter
 ) : FragmentFactory(), KoinComponent {
   private val brainz: MusicBrainzService by inject()
 
   private val factories: MutableMap<String, FragmentFactoryFn> = mutableMapOf(
     MainSearchFragment.NAME to { MainSearchFragment.make(mainPresenter) },
-    ArtistSearchFragment.NAME to { ArtistSearchFragment.make(brainz, navigation, resourceFetcher) },
+    ArtistSearchFragment.NAME to { ArtistSearchFragment.make(brainz, navigation) },
     ReleaseGroupSearchFragment.NAME to { ReleaseGroupSearchFragment.make(brainz, navigation) },
     ReleaseSearchFragment.NAME to { ReleaseSearchFragment.make(brainz, navigation) },
     ArtistFragment.NAME to {
       ArtistFragment.make(
         brainz,
         navigation,
-        mainPresenter,
-        resourceFetcher
+        mainPresenter
       )
     }
   )

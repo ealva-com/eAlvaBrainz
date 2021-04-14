@@ -26,7 +26,6 @@ import androidx.lifecycle.viewModelScope
 import com.ealva.brainzapp.data.Country
 import com.ealva.brainzapp.data.toCountry
 import com.ealva.brainzsvc.service.MusicBrainzService
-import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.ArtistType
 import com.ealva.ealvabrainz.brainz.data.artistType
@@ -80,29 +79,26 @@ interface ArtistSearchViewModel {
 }
 
 fun Fragment.getArtistSearchViewModel(
-  brainz: MusicBrainzService,
-  resourceFetcher: ResourceFetcher
+  brainz: MusicBrainzService
 ): ArtistSearchViewModel {
   return ViewModelProvider(
     this,
-    ArtistSearchViewModelFactory(brainz, resourceFetcher)
+    ArtistSearchViewModelFactory(brainz)
   )[ArtistSearchViewModelImpl::class.java]
 }
 
 private class ArtistSearchViewModelFactory(
-  private val brainz: MusicBrainzService,
-  private val resourceFetcher: ResourceFetcher
+  private val brainz: MusicBrainzService
 ) : ViewModelProvider.Factory {
   override fun <T : ViewModel?> create(modelClass: Class<T>): T {
     require(modelClass.isAssignableFrom(ArtistSearchViewModelImpl::class.java))
     @Suppress("UNCHECKED_CAST")
-    return ArtistSearchViewModelImpl(brainz, resourceFetcher) as T
+    return ArtistSearchViewModelImpl(brainz) as T
   }
 }
 
 internal class ArtistSearchViewModelImpl(
-  private val brainz: MusicBrainzService,
-  private val resourceFetcher: ResourceFetcher
+  private val brainz: MusicBrainzService
 ) : ViewModel(), ArtistSearchViewModel {
   override val itemList: MutableLiveData<List<ArtistSearchResult>> = MutableLiveData(emptyList())
   override val lastQuery: MutableLiveData<String> = MutableLiveData("")
@@ -143,7 +139,7 @@ internal class ArtistSearchViewModelImpl(
               )
             }.apply { itemList.postValue(this) }
           }
-          .onFailure { unsuccessful.postValue(it.asString(resourceFetcher)) }
+          .onFailure { unsuccessful.postValue(it.toString()) }
       }
       loadJob = null
     }

@@ -47,8 +47,6 @@ public interface CoverArtService {
 
   public suspend fun getReleaseGroupArt(mbid: ReleaseGroupMbid): CoverArtResult
 
-  public val resourceFetcher: ResourceFetcher
-
   public companion object {
     /**
      * Intent to view the MusicBrainz website
@@ -67,21 +65,18 @@ public interface CoverArtService {
       appName: String,
       appVersion: String,
       contactEmail: String,
-      resourceFetcher: ResourceFetcher,
       dispatcher: CoroutineDispatcher = Dispatchers.IO
     ): CoverArtService =
       make(
         buildCoverArt(appName, appVersion, contactEmail, File(ctx.cacheDir, CACHE_DIR)),
-        resourceFetcher,
         dispatcher
       )
 
     /** Internal for test, provides for injecting fakes/mocks/etc and test dispatcher. */
     internal fun make(
       coverArt: CoverArt,
-      resourceFetcher: ResourceFetcher,
       dispatcher: CoroutineDispatcher
-    ): CoverArtService = CoverArtServiceImpl(coverArt, resourceFetcher, dispatcher)
+    ): CoverArtService = CoverArtServiceImpl(coverArt, dispatcher)
   }
 }
 
@@ -94,7 +89,6 @@ private typealias CoverArtCall<T> = suspend CoverArt.() -> Response<T>
 
 private class CoverArtServiceImpl(
   private val coverArt: CoverArt,
-  override val resourceFetcher: ResourceFetcher,
   private val dispatcher: CoroutineDispatcher
 ) : CoverArtService {
   override suspend fun getReleaseArt(mbid: ReleaseMbid): CoverArtResult = coverArt {

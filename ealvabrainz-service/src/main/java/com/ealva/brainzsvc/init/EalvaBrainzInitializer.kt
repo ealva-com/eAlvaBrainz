@@ -20,6 +20,10 @@ package com.ealva.brainzsvc.init
 import android.content.Context
 import androidx.startup.Initializer
 
+/**
+ * An instance of [Initializer] loaded via a provider in AndroidManifest.xml. If the app removes
+ * this provider it must initialize this library by calling [EalvaBrainz.init]
+ */
 public class EalvaBrainzInitializer : Initializer<EalvaBrainz> {
   override fun create(context: Context): EalvaBrainz = EalvaBrainz.init(context)
   override fun dependencies(): List<Class<out Initializer<*>>> = emptyList()

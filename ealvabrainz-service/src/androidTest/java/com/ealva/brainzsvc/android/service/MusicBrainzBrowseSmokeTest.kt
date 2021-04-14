@@ -23,18 +23,19 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.ealva.brainzsvc.service.BrainzErrorMessage
 import com.ealva.brainzsvc.service.BuildConfig
-import com.ealva.brainzsvc.service.ContextResourceFetcher
 import com.ealva.brainzsvc.service.CoverArtService
 import com.ealva.brainzsvc.service.Credentials
 import com.ealva.brainzsvc.service.CredentialsProvider
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.Password
-import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.brainzsvc.service.UserName
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.Collection
 import com.ealva.ealvabrainz.brainz.data.EventCollection
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.browse.ArtistBrowse
 import com.ealva.ealvabrainz.browse.CollectionBrowse
 import com.ealva.ealvabrainz.browse.EventBrowse
@@ -44,12 +45,9 @@ import com.ealva.ealvabrainz.browse.RecordingBrowse
 import com.ealva.ealvabrainz.browse.ReleaseBrowse
 import com.ealva.ealvabrainz.browse.ReleaseGroupBrowse.BrowseOn
 import com.ealva.ealvabrainz.browse.WorkBrowse
-import com.ealva.ealvabrainz.brainz.data.AreaMbid
-import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.EditorName
 import com.ealva.ealvabrainz.common.Limit
 import com.ealva.ealvabrainz.common.Offset
-import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.test.shared.MainCoroutineRule
 import com.ealva.ealvabrainz.test.shared.runBlockingTest
 import com.ealva.ealvabrainz.test.shared.toHaveAny
@@ -105,19 +103,16 @@ public class MusicBrainzBrowseSmokeTest {
   private lateinit var appCtx: Context
   private lateinit var coverArtService: CoverArtService
   private lateinit var musicBrainzService: MusicBrainzService
-  private lateinit var fetcher: ResourceFetcher
 
   @Before
   public fun setup() {
     appCtx = ApplicationProvider.getApplicationContext()
-    fetcher = ContextResourceFetcher(appCtx)
     println("make CoverArt")
     coverArtService = CoverArtService(
       ctx = appCtx,
       appName = BuildConfig.BRAINZ_APP_NAME,
       appVersion = BuildConfig.BRAINZ_APP_VERSION,
       contactEmail = BuildConfig.BRAINZ_CONTACT_EMAIL,
-      resourceFetcher = fetcher,
       dispatcher = coroutineRule.testDispatcher
     )
     println("make musicbrainz")
@@ -145,7 +140,7 @@ public class MusicBrainzBrowseSmokeTest {
         expect(browseArtistList.artists).toHaveSize(1)
         expect(browseArtistList.artists[0].name).toBe("The Beatles")
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -183,7 +178,7 @@ public class MusicBrainzBrowseSmokeTest {
       ) { collection ->
         collection.name == "Attending" && collection is EventCollection
       }
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -203,7 +198,7 @@ public class MusicBrainzBrowseSmokeTest {
       ) {
         it.type == "Festival" && it.name == "Monsters of Rock Pforzheim 1987"
       }
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -217,7 +212,7 @@ public class MusicBrainzBrowseSmokeTest {
       expect(browseList.labels).toHaveSize(limit.value)
       expect(browseList.labels).toHaveAny { it.name == "[Detail] Recordings" }
       expect(browseList.labels).toHaveAny { it.name == "@10footclown" }
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -235,7 +230,7 @@ public class MusicBrainzBrowseSmokeTest {
       expect(browseList.places).toHaveAny {
         it.name == "13th Note Club" && it.type == "Venue"
       }
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -249,7 +244,7 @@ public class MusicBrainzBrowseSmokeTest {
     ).onSuccess { browseList ->
       expect(browseList.releaseOffset).toBe(offset.value)
       expect(browseList.releases).toHaveSize(5)
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -262,7 +257,7 @@ public class MusicBrainzBrowseSmokeTest {
       expect(browseList.recordingCount).toBeGreaterThan(13620) // 13622 last check
       expect(browseList.recordings).toHaveSize(limit.value)
       expect(browseList.recordings).toHaveAny { it.title == "(New Wave) Polly" }
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -278,7 +273,7 @@ public class MusicBrainzBrowseSmokeTest {
     }.onSuccess { browseList ->
       expect(browseList.releaseOffset).toBe(offset.value)
       expect(browseList.releases).toHaveSize(5)
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -294,7 +289,7 @@ public class MusicBrainzBrowseSmokeTest {
     }.onSuccess { browseList ->
       expect(browseList.releaseOffset).toBe(offset.value)
       expect(browseList.releases).toHaveSize(5)
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -305,7 +300,7 @@ public class MusicBrainzBrowseSmokeTest {
         expect(browseList.releaseGroups).toHaveSize(limit.value)
         expect(browseList.releaseGroups[0].title).toBe("Aqualung")
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -315,7 +310,7 @@ public class MusicBrainzBrowseSmokeTest {
       types(ReleaseGroup.Type.Album)
     }.onSuccess { browseList ->
       expect(browseList.releaseGroups).toHaveSize(limit.value)
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -331,7 +326,7 @@ public class MusicBrainzBrowseSmokeTest {
       expect(browseList.workOffset).toBe(offset.value)
       expect(browseList.works).toHaveSize(limit.value)
       expect(browseList.works).toHaveAny({ "Didn't have title Help!" }) { it.title == "Help!" }
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   private fun brainz(block: suspend MusicBrainzService.() -> Unit) = coroutineRule.runBlockingTest {

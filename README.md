@@ -10,7 +10,7 @@ A few small examples to start:
 // Get the artist represented by the ArtistMbid and include all Misc info
 brainzSvc.lookupArtist(mbid) { include(*Artist.Include.values()) }
   .onSuccess { artist -> handleArtist(artist, mbid) }
-  .onFailure { brainzMsg -> displayError(brainzMsg.asString(resourceFetcher)) }
+  .onFailure { brainzMsg -> displayError(brainzMsg.toString()) }
 
 // Get the artist Nirvana's info and include aliases
 val nirvana = ArtistMbid("5b11f4ce-a62d-471e-81fc-a69a8278c7da") // maybe obtained via find
@@ -193,7 +193,6 @@ interface CoverArtService {
       appName: String,
       appVersion: String,
       contactEmail: String,
-      resourceFetcher: ResourceFetcher,
       dispatcher: CoroutineDispatcher = Dispatchers.IO
     ): CoverArtService
   }

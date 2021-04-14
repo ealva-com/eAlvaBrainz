@@ -18,27 +18,23 @@
 package com.ealva.brainzapp.services
 
 import com.ealva.brainzsvc.service.BuildConfig
-import com.ealva.brainzsvc.service.ContextResourceFetcher
 import com.ealva.brainzsvc.service.CoverArtService
 import com.ealva.brainzsvc.service.Credentials
 import com.ealva.brainzsvc.service.CredentialsProvider
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.Password
-import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.brainzsvc.service.UserName
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
 val brainzModule: Module = module {
-  single<ResourceFetcher> { ContextResourceFetcher(androidContext()) }
   single {
     CoverArtService(
       androidContext(),
       appName = BuildConfig.BRAINZ_APP_NAME,
       appVersion = BuildConfig.BRAINZ_APP_VERSION,
       contactEmail = BuildConfig.BRAINZ_CONTACT_EMAIL,
-      get()
     )
   }
   single {

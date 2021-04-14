@@ -315,12 +315,6 @@ private object NullCoverArtService : CoverArtService {
   ): Result<CoverArtRelease, BrainzMessage> {
     return Err(BrainzNullReturn(0))
   }
-
-  override val resourceFetcher: ResourceFetcher = object : ResourceFetcher {
-    override fun fetch(stringRes: Int, vararg formatArgs: Any): String {
-      return ""
-    }
-  }
 }
 
 private const val notFoundBody =

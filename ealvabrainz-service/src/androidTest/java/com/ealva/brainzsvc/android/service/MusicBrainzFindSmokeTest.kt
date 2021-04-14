@@ -22,13 +22,11 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.ealva.brainzsvc.service.BuildConfig
-import com.ealva.brainzsvc.service.ContextResourceFetcher
 import com.ealva.brainzsvc.service.CoverArtService
 import com.ealva.brainzsvc.service.Credentials
 import com.ealva.brainzsvc.service.CredentialsProvider
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.Password
-import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.brainzsvc.service.UserName
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.Release
@@ -97,19 +95,16 @@ public class MusicBrainzFindSmokeTest {
   private lateinit var appCtx: Context
   private lateinit var coverArtService: CoverArtService
   private lateinit var musicBrainzService: MusicBrainzService
-  private lateinit var fetcher: ResourceFetcher
 
   @Before
   public fun setup() {
     appCtx = ApplicationProvider.getApplicationContext()
-    fetcher = ContextResourceFetcher(appCtx)
     println("make CoverArt")
     coverArtService = CoverArtService(
       ctx = appCtx,
       appName = BuildConfig.BRAINZ_APP_NAME,
       appVersion = BuildConfig.BRAINZ_APP_VERSION,
       contactEmail = BuildConfig.BRAINZ_CONTACT_EMAIL,
-      resourceFetcher = fetcher,
       dispatcher = coroutineRule.testDispatcher
     )
     println("make musicbrainz")
@@ -138,7 +133,7 @@ public class MusicBrainzFindSmokeTest {
       expect(annotationList.count).toBeGreaterThan(0)
       expect(annotationList.annotations).toHaveAny { it.type == "release" }
       expect(annotationList.annotations).toHaveAny { it.name == "Pieds nus sur la braise" }
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -148,7 +143,7 @@ public class MusicBrainzFindSmokeTest {
         expect(areaList.count).toBeGreaterThan(0)
         expect(areaList.areas).toHaveAny { it.name == "Île-de-France" }
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -159,7 +154,7 @@ public class MusicBrainzFindSmokeTest {
         val artist = artistList.artists[0]
         expect(ArtistMbid(artist.id)).toBe(JETHRO_TULL_MBID)
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -171,7 +166,7 @@ public class MusicBrainzFindSmokeTest {
         expect(stubList.cdStubs).toHaveAny { it.title == "Doo-lang Doo-lang" }
         expect(stubList.cdStubs).toHaveAny { it.title == "Doo-Bop" }
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -186,7 +181,7 @@ public class MusicBrainzFindSmokeTest {
           it.name == "Joung & Junique at Maybe's"
         }
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -197,7 +192,7 @@ public class MusicBrainzFindSmokeTest {
         expect(instrumentList.instruments).toHaveAny { it.name == "nose whistle" }
         expect(instrumentList.instruments).toHaveAny { it.name == "nose flute" }
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -208,7 +203,7 @@ public class MusicBrainzFindSmokeTest {
         expect(labelList.count).toBeGreaterThan(27)
         expect(labelList.labels[0].name).toBe(labelName.value)
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -218,7 +213,7 @@ public class MusicBrainzFindSmokeTest {
         expect(placeList.count).toBeGreaterThan(0)
         expect(placeList.places).toHaveAny { it.name == "Chipping Norton Recording Studios" }
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -228,7 +223,7 @@ public class MusicBrainzFindSmokeTest {
         expect(recordingList.count).toBeGreaterThan(0)
         expect(recordingList.recordings).toHaveAny { it.title == "Blow Your Mind (Mwah)" }
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -236,7 +231,7 @@ public class MusicBrainzFindSmokeTest {
     val aqualung = "Aqualung".toAlbumTitle()
     findRelease(Limit(4)) { artist(JETHRO_TULL) and release(aqualung) }
       .onSuccess { releaseList -> expect(releaseList.releases).toHaveSize(4) }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -245,7 +240,7 @@ public class MusicBrainzFindSmokeTest {
       artist(JETHRO_TULL) and release("not found".toAlbumTitle())
     }.onSuccess { releaseList ->
       expect(releaseList.count).toBe(0)
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -277,7 +272,7 @@ public class MusicBrainzFindSmokeTest {
       expect(releaseList.releaseGroups).toHaveAny { it.title == "Yellow Submarine" }
       expect(releaseList.releaseGroups).toHaveAny { it.title == "Abbey Road" }
       expect(releaseList.releaseGroups).toHaveAny { it.title == "The Beatles" }
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -291,7 +286,7 @@ public class MusicBrainzFindSmokeTest {
       expect(groupList.releaseGroups).toHaveSize(2)
       expect(groupList.releaseGroups[0].title).toBe(housesOfTheHoly.value)
       expect(groupList.releaseGroups[0].artistCredit[0].name).toBe(ledZeppelin.value)
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -301,7 +296,7 @@ public class MusicBrainzFindSmokeTest {
         expect(seriesList.count).toBeGreaterThan(1)
         expect(seriesList.series).toHaveAny { it.name == "Studio Brussel: De Maxx" }
         expect(seriesList.series).toHaveAny { it.name == "Studio Brussel: Life Is Music" }
-      }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -317,11 +312,11 @@ public class MusicBrainzFindSmokeTest {
           it.score == 100 && it.name == "indie shoegaze"
         }
       }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
 
     findTag { default("indie") }
       .onSuccess { tagList -> expect(tagList.tags).toHaveAny { it.name.contains("indie") } }
-      .onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+      .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   @Test
@@ -333,7 +328,7 @@ public class MusicBrainzFindSmokeTest {
       expect(workList.works).toHaveSize(1)
       expect(workList.works[0].id).toBe("10c1a66a-8166-32ec-a00f-540f111ce7a3")
       expect(workList.works[0].title).toBe("Frozen Fred")
-    }.onFailure { fail("Brainz call failed") { it.asString(fetcher) } }
+    }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 
   private fun brainz(block: suspend MusicBrainzService.() -> Unit) = coroutineRule.runBlockingTest {

@@ -17,6 +17,7 @@
 
 package com.ealva.brainzsvc.service
 
+import com.ealva.brainzsvc.init.EalvaBrainz
 import com.ealva.brainzsvc.net.BrainzRawResponse
 import com.ealva.brainzsvc.net.toBrainzRawResponse
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzExceptionMessage
@@ -40,11 +41,8 @@ import java.io.StringWriter
 private val LOG by lazyLogger(BrainzLog.BRAINZ_ERROR_TAG, BrainzLog.marker)
 
 public sealed class BrainzMessage {
-  public abstract fun asString(fetcher: ResourceFetcher): String
-
   public sealed class BrainzStatusMessage(public val statusCode: Int) : BrainzMessage() {
-    override fun asString(fetcher: ResourceFetcher): String =
-      fetcher.fetch(R.string.ResultStatusCode, statusCode)
+    override fun toString(): String = EalvaBrainz.fetch(R.string.ResultStatusCode, statusCode)
 
     public class BrainzNullReturn(statusCode: Int) : BrainzMessage.BrainzStatusMessage(statusCode) {
       init {
@@ -73,7 +71,7 @@ public sealed class BrainzMessage {
       if (BrainzLog.logBrainzErrors) LOG.e { it("Brainz exception message. %s", ex) }
     }
 
-    override fun asString(fetcher: ResourceFetcher): String = ex.message ?: ex.toString()
+    override fun toString(): String = ex.message ?: ex.toString()
 
     @Suppress("unused")
     public fun stackTraceToString(throwable: Throwable): String {
@@ -86,11 +84,9 @@ public sealed class BrainzMessage {
   }
 }
 
-public fun <V> Result<V, BrainzMessage>.getErrorString(
-  fetcher: ResourceFetcher
-): String = when (this) {
+public fun <V> Result<V, BrainzMessage>.getErrorString(): String = when (this) {
   is Ok -> "Not an Err"
-  is Err -> getError()?.asString(fetcher) ?: "No BrainzMessage Error"
+  is Err -> getError()?.toString() ?: "No BrainzMessage Error"
 }
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -102,8 +98,7 @@ public class BrainzErrorMessage(
     if (BrainzLog.logBrainzErrors) LOG.e { it("Status code=%d BrainzError=%s", statusCode, error) }
   }
 
-  override fun asString(fetcher: ResourceFetcher): String =
-    "Status code=$statusCode response=$error"
+  override fun toString(): String = "Status code=$statusCode response=$error"
 }
 
 public fun <V : Response<U>, U> Result<V, BrainzMessage>.mapResponse(): Result<U, BrainzMessage> =

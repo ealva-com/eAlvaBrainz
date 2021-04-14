@@ -34,7 +34,7 @@ internal class CoverArtServiceTest {
 //        getArtwork(entity.value, mbid)
 //      } doReturn Response.success(200, NullCoverArtRelease)
 //    }
-//    val service = CoverArtService.make(mock, NullResourceFetcher, coroutineRule.testDispatcher)
+//    val service = CoverArtService.make(mock, coroutineRule.testDispatcher)
 //    val release = service.getCoverArtRelease(entity, mbid)
 //    verify(mock).getArtwork(entity.value, mbid)
 //    expect(release).toBeTheSameAs(NullCoverArtRelease)
@@ -50,7 +50,7 @@ internal class CoverArtServiceTest {
 //        getArtwork(entity.value, mbid)
 //      } doReturn Response.error(404, notFoundBody.toResponseBody())
 //    }
-//    val service = CoverArtService.make(mock, NullResourceFetcher, coroutineRule.testDispatcher)
+//    val service = CoverArtService.make(mock, coroutineRule.testDispatcher)
 //    val release = service.getCoverArtRelease(entity, mbid)
 //    verify(mock).getArtwork(entity.value, mbid)
 //    expect(release).toBeNull { "404 should return null" }
@@ -66,7 +66,7 @@ internal class CoverArtServiceTest {
 //        getArtwork(entity.value, mbid)
 //      } doThrow (IllegalStateException("Bad Stuff"))
 //    }
-//    val service = CoverArtService.make(mock, NullResourceFetcher, coroutineRule.testDispatcher)
+//    val service = CoverArtService.make(mock, coroutineRule.testDispatcher)
 //    service.getCoverArtRelease(entity, mbid)?.let {
 //      fail("getCoverArtRelease() should have thrown")
 //    } ?: fail("Received null instead of exception being thrown")

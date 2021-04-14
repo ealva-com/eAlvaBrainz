@@ -37,7 +37,6 @@ import com.ealva.brainzapp.data.toPrimaryReleaseGroupType
 import com.ealva.brainzapp.data.toSecondaryReleaseGroupList
 import com.ealva.brainzapp.data.toStarRating
 import com.ealva.brainzsvc.service.MusicBrainzService
-import com.ealva.brainzsvc.service.ResourceFetcher
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistCredit
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
@@ -99,23 +98,21 @@ interface ArtistViewModel {
 }
 
 fun Fragment.getArtistViewModel(
-  brainz: MusicBrainzService,
-  resourceFetcher: ResourceFetcher
+  brainz: MusicBrainzService
 ): ArtistViewModel {
   return ViewModelProvider(
     this,
-    ArtistViewModelFactory(brainz, resourceFetcher)
+    ArtistViewModelFactory(brainz)
   )[ArtistViewModelImpl::class.java]
 }
 
 private class ArtistViewModelFactory(
-  private val brainz: MusicBrainzService,
-  private val resourceFetcher: ResourceFetcher
+  private val brainz: MusicBrainzService
 ) : ViewModelProvider.Factory {
   override fun <T : ViewModel?> create(modelClass: Class<T>): T {
     require(modelClass.isAssignableFrom(ArtistViewModelImpl::class.java))
     @Suppress("UNCHECKED_CAST")
-    return ArtistViewModelImpl(brainz, resourceFetcher) as T
+    return ArtistViewModelImpl(brainz) as T
   }
 }
 
@@ -172,8 +169,7 @@ inline fun <reified T> mutableDataEmptyList(): MutableLiveData<List<T>> {
 private const val RELEASE_HASHMAP_MAX_SIZE = 2048
 
 internal class ArtistViewModelImpl(
-  private val brainz: MusicBrainzService,
-  private val resourceFetcher: ResourceFetcher
+  private val brainz: MusicBrainzService
 ) : ViewModel(), ArtistViewModel {
   override val artist: MutableLiveData<DisplayArtist> = MutableLiveData()
   override val releaseGroups: MutableLiveData<List<ReleaseGroupItem>> = mutableDataEmptyList()
@@ -206,7 +202,7 @@ internal class ArtistViewModelImpl(
             .onSuccess { releaseList ->
               handleReleases(releaseList.releases, groupToReleaseMap, displayMap, releaseMap)
             }
-            .onFailure { unsuccessful.postValue(it.asString(resourceFetcher)) }
+            .onFailure { unsuccessful.postValue(it.toString()) }
         }
       }
     }

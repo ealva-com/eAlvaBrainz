@@ -19,12 +19,24 @@ package com.ealva.brainzsvc.init
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.annotation.StringRes
 import androidx.core.content.getSystemService
 
-@SuppressLint("StaticFieldLeak")
+@SuppressLint("StaticFieldLeak") // store the app context, not a leak
 public object EalvaBrainz {
+
+  internal fun fetch(@StringRes stringRes: Int, vararg formatArgs: Any): String {
+    return appCtx.getString(stringRes, *formatArgs)
+  }
+
   internal lateinit var appCtx: Context
 
+  /**
+   * Must be initialized with an application context, which should be done automatically via
+   * [EalvaBrainzInitializer], which is an instance of [androidx.startup.Initializer] loaded
+   * via a provider in AndroidManifest.xml. If the app removes this provider it must call this
+   * method first in app startup
+   */
   public fun init(context: Context): EalvaBrainz = apply {
     appCtx = context.applicationContext
   }
