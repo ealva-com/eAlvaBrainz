@@ -17,26 +17,28 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
-import com.ealva.ealvabrainz.log.BrainzLog
+import com.ealva.ealvabrainz.log.brainzLogger
 import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.lazyLogger
 import com.ealva.ealvalog.w
 
-private val LOG by lazyLogger(ArtistType::class, BrainzLog.marker)
+private val LOG by brainzLogger(ArtistType::class)
 
 public enum class ArtistType(public val value: String) {
   Person("Person"),
   Group("Group"),
   Orchestra("Orchestra"),
   Choir("Choir"),
+
   /**
    * Example: [Sam the Eagle](https://musicbrainz.org/artist/7321c1f0-20ef-4eb9-b271-c13dcb5712a5)
    */
   Character("Character"),
+
   /**
    * Example: [Various Artists](https://musicbrainz.org/artist/89ad4ac3-39f7-470e-963a-56509c546377)
    */
   Other("Other"),
+
   /**
    * Used when an artist type string is unrecognized or as a placeholder until real type is
    * determined

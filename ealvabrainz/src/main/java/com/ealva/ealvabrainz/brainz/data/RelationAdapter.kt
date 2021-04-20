@@ -17,9 +17,9 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
+import com.ealva.ealvabrainz.log.brainzLogger
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.lazyLogger
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonAdapter.Factory
 import com.squareup.moshi.JsonReader
@@ -27,7 +27,7 @@ import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 
-private val LOG by lazyLogger(RelationAdapter::class)
+private val LOG by brainzLogger(RelationAdapter::class)
 
 /** Associate the name found in Json with the adapter classes needed to parse */
 private val nameClassPairs = listOf(

@@ -18,6 +18,7 @@
 package com.ealva.brainzsvc.service
 
 import android.net.Uri
+import com.ealva.brainzsvc.log.brainzLogger
 import com.ealva.brainzsvc.net.toSecureUri
 import com.ealva.ealvabrainz.brainz.data.CoverArtImage
 import com.ealva.ealvabrainz.brainz.data.CoverArtImageSize
@@ -34,6 +35,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEmpty
+
+private val LOG by brainzLogger(CoverArtImageInfo::class)
 
 /**
  * Transform operator converts ReleaseMbid to a RemoteImage which points to the CoverArtImage
@@ -110,5 +113,7 @@ public val CoverArtRelease.allImages: Sequence<CoverArtImageInfo>
       yield(make(image.thumbnails.size1200.toSecureUri(), CoverArtImageSize.Size1200, image))
       yield(make(image.thumbnails.the500.toSecureUri(), CoverArtImageSize.Size500, image))
       yield(make(image.thumbnails.the250.toSecureUri(), CoverArtImageSize.Size250, image))
-    }.filterNot { it.location === Uri.EMPTY }
+    }.filterNot { imageInfo ->
+      imageInfo.location === Uri.EMPTY
+    }.distinctBy { imageInfo -> imageInfo.location }
   }

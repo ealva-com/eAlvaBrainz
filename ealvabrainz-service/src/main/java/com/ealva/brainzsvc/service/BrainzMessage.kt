@@ -18,6 +18,7 @@
 package com.ealva.brainzsvc.service
 
 import com.ealva.brainzsvc.init.EalvaBrainz
+import com.ealva.brainzsvc.log.brainzLogger
 import com.ealva.brainzsvc.net.BrainzRawResponse
 import com.ealva.brainzsvc.net.toBrainzRawResponse
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzExceptionMessage
@@ -28,7 +29,6 @@ import com.ealva.ealvabrainz.brainz.data.theBrainzMoshi
 import com.ealva.ealvabrainz.log.BrainzLog
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.lazyLogger
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
@@ -38,7 +38,7 @@ import retrofit2.Response
 import java.io.PrintWriter
 import java.io.StringWriter
 
-private val LOG by lazyLogger(BrainzLog.BRAINZ_ERROR_TAG, BrainzLog.marker)
+private val LOG by brainzLogger(BrainzMessage::class)
 
 public sealed class BrainzMessage {
   public sealed class BrainzStatusMessage(public val statusCode: Int) : BrainzMessage() {
@@ -109,8 +109,11 @@ public fun <V : Response<U>, U> Result<V, BrainzMessage>.mapResponse(): Result<U
 
 private fun <U, V : Response<U>> Ok<V>.handleResponse(): Result<U, BrainzMessage> = try {
   when {
-//    value == null -> Err(BrainzExceptionMessage(BrainzException("Null Response returned")))
-    value.isSuccessful -> value.body()?.let { Ok(it) } ?: Err(BrainzNullReturn(value.code()))
+    value.isSuccessful -> {
+      // value.raw().cacheResponse?.let { LOG.i { it("Response from cache") } }
+      // value.raw().networkResponse?.let { LOG.i { it("Response from network") } }
+      value.body()?.let { Ok(it) } ?: Err(BrainzNullReturn(value.code()))
+    }
     else -> value.toErrResult()
   }
 } catch (e: Exception) {

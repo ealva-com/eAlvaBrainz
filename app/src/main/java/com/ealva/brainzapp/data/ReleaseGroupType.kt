@@ -21,11 +21,11 @@ package com.ealva.brainzapp.data
 
 import androidx.annotation.StringRes
 import com.ealva.brainzapp.R
+import com.ealva.brainzapp.log.brainzLogger
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.lazyLogger
 
-private val LOG by lazyLogger(ReleaseGroupType::class)
+private val LOG by brainzLogger(ReleaseGroupType::class)
 
 /**
  * The type of a release group describes what kind of release group it is. It is divided in two:

@@ -15,25 +15,13 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.ealvabrainz.brainz.data
+package com.ealva.brainzapp.log
 
-import com.ealva.ealvabrainz.log.brainzLogger
-import com.ealva.ealvalog.e
-import com.ealva.ealvalog.invoke
-import com.squareup.moshi.FromJson
-import com.squareup.moshi.JsonReader
+import com.ealva.ealvabrainz.log.BrainzLog
+import com.ealva.ealvalog.Logger
+import com.ealva.ealvalog.lazyLogger
+import kotlin.reflect.KClass
 
-private val LOG by brainzLogger(StringJsonAdapter::class)
-
-internal class StringJsonAdapter {
-  @FromJson
-  fun fromJson(reader: JsonReader): String {
-    return when (val token = reader.peek()) {
-      JsonReader.Token.NULL -> "".also { reader.nextNull<String>() }
-      JsonReader.Token.STRING -> reader.nextString()
-      else -> "".also {
-        LOG.e { it("Unrecognized token ${token.name}, expecting null or string", token.name) }
-      }
-    }
-  }
-}
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <T : Any> brainzLogger(forClass: KClass<T>): Lazy<Logger> =
+  lazyLogger(forClass, BrainzLog.marker)

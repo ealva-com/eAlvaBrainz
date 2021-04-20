@@ -23,12 +23,11 @@ import com.burgstaller.okhttp.AuthenticationCacheInterceptor
 import com.burgstaller.okhttp.digest.CachingAuthenticator
 import com.burgstaller.okhttp.digest.Credentials
 import com.burgstaller.okhttp.digest.DigestAuthenticator
+import com.ealva.brainzsvc.log.brainzLogger
 import com.ealva.brainzsvc.net.BrainzJsonFormatUserAgentInterceptor
 import com.ealva.brainzsvc.net.CacheControlInterceptor
 import com.ealva.brainzsvc.net.ThrottlingInterceptor
-import com.ealva.ealvabrainz.log.BrainzLog
 import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.lazyLogger
 import com.ealva.ealvalog.w
 import okhttp3.Cache
 import okhttp3.OkHttpClient
@@ -43,7 +42,7 @@ private const val MUSICBRAINZ_MAX_CALLS_PER_SECOND = 1.0
 
 private const val TEN_MEG = 10 * 1024 * 1024
 
-private val LOG by lazyLogger("OkHttpClient.kt", BrainzLog.marker)
+private val LOG by brainzLogger("OkHttpClient.kt")
 
 internal fun makeOkHttpClient(
   serviceName: String,

@@ -24,14 +24,12 @@ import com.ealva.brainzsvc.service.CredentialsProvider
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.brainzsvc.service.Password
 import com.ealva.brainzsvc.service.UserName
-import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
 val brainzModule: Module = module {
   single {
     CoverArtService(
-      androidContext(),
       appName = BuildConfig.BRAINZ_APP_NAME,
       appVersion = BuildConfig.BRAINZ_APP_VERSION,
       contactEmail = BuildConfig.BRAINZ_CONTACT_EMAIL,
@@ -39,7 +37,6 @@ val brainzModule: Module = module {
   }
   single {
     MusicBrainzService(
-      ctx = androidContext(),
       appName = BuildConfig.BRAINZ_APP_NAME,
       appVersion = BuildConfig.BRAINZ_APP_VERSION,
       contactEmail = BuildConfig.BRAINZ_CONTACT_EMAIL,

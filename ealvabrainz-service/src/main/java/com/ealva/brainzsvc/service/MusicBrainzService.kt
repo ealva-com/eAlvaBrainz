@@ -17,17 +17,20 @@
 
 package com.ealva.brainzsvc.service
 
-import android.content.Context
 import android.net.Uri
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzExceptionMessage
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzErrorCodeMessage
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzNullReturn
+import com.ealva.brainzsvc.service.CoverArtService.Companion.CACHE_DIR_NAME
+import com.ealva.brainzsvc.service.MusicBrainzService.Companion.CACHE_DIR_NAME
 import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.AnnotationList
 import com.ealva.ealvabrainz.brainz.data.Area
 import com.ealva.ealvabrainz.brainz.data.AreaList
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistList
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.BrowseAreaList
 import com.ealva.ealvabrainz.brainz.data.BrowseArtistList
 import com.ealva.ealvabrainz.brainz.data.BrowseCollectionList
@@ -42,29 +45,41 @@ import com.ealva.ealvabrainz.brainz.data.BrowseSeriesList
 import com.ealva.ealvabrainz.brainz.data.BrowseWorkList
 import com.ealva.ealvabrainz.brainz.data.CdStubList
 import com.ealva.ealvabrainz.brainz.data.Collection
+import com.ealva.ealvabrainz.brainz.data.CollectionMbid
 import com.ealva.ealvabrainz.brainz.data.DiscLookupList
 import com.ealva.ealvabrainz.brainz.data.Event
 import com.ealva.ealvabrainz.brainz.data.EventList
+import com.ealva.ealvabrainz.brainz.data.EventMbid
 import com.ealva.ealvabrainz.brainz.data.Genre
+import com.ealva.ealvabrainz.brainz.data.GenreMbid
 import com.ealva.ealvabrainz.brainz.data.Instrument
 import com.ealva.ealvabrainz.brainz.data.InstrumentList
+import com.ealva.ealvabrainz.brainz.data.InstrumentMbid
 import com.ealva.ealvabrainz.brainz.data.IsrcRecordingList
 import com.ealva.ealvabrainz.brainz.data.Label
 import com.ealva.ealvabrainz.brainz.data.LabelList
+import com.ealva.ealvabrainz.brainz.data.LabelMbid
 import com.ealva.ealvabrainz.brainz.data.Place
 import com.ealva.ealvabrainz.brainz.data.PlaceList
+import com.ealva.ealvabrainz.brainz.data.PlaceMbid
 import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.RecordingList
+import com.ealva.ealvabrainz.brainz.data.RecordingMbid
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupList
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.ReleaseList
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.brainz.data.Series
 import com.ealva.ealvabrainz.brainz.data.SeriesList
+import com.ealva.ealvabrainz.brainz.data.SeriesMbid
 import com.ealva.ealvabrainz.brainz.data.TagList
 import com.ealva.ealvabrainz.brainz.data.Url
+import com.ealva.ealvabrainz.brainz.data.UrlMbid
 import com.ealva.ealvabrainz.brainz.data.Work
 import com.ealva.ealvabrainz.brainz.data.WorkList
+import com.ealva.ealvabrainz.brainz.data.WorkMbid
 import com.ealva.ealvabrainz.browse.AreaBrowse
 import com.ealva.ealvabrainz.browse.ArtistBrowse
 import com.ealva.ealvabrainz.browse.CollectionBrowse
@@ -77,27 +92,13 @@ import com.ealva.ealvabrainz.browse.ReleaseBrowse
 import com.ealva.ealvabrainz.browse.ReleaseGroupBrowse
 import com.ealva.ealvabrainz.browse.SeriesBrowse
 import com.ealva.ealvabrainz.browse.WorkBrowse
-import com.ealva.ealvabrainz.brainz.data.AreaMbid
-import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.common.BrainzMarker
-import com.ealva.ealvabrainz.brainz.data.CollectionMbid
 import com.ealva.ealvabrainz.common.DiscId
-import com.ealva.ealvabrainz.brainz.data.EventMbid
-import com.ealva.ealvabrainz.brainz.data.GenreMbid
-import com.ealva.ealvabrainz.brainz.data.InstrumentMbid
 import com.ealva.ealvabrainz.common.Isrc
 import com.ealva.ealvabrainz.common.Iswc
-import com.ealva.ealvabrainz.brainz.data.LabelMbid
 import com.ealva.ealvabrainz.common.Limit
 import com.ealva.ealvabrainz.common.Offset
-import com.ealva.ealvabrainz.brainz.data.PlaceMbid
-import com.ealva.ealvabrainz.brainz.data.RecordingMbid
-import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
-import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
-import com.ealva.ealvabrainz.brainz.data.SeriesMbid
 import com.ealva.ealvabrainz.common.TocParam
-import com.ealva.ealvabrainz.brainz.data.UrlMbid
-import com.ealva.ealvabrainz.brainz.data.WorkMbid
 import com.ealva.ealvabrainz.lookup.AreaLookup
 import com.ealva.ealvabrainz.lookup.ArtistLookup
 import com.ealva.ealvabrainz.lookup.CollectionLookup
@@ -133,6 +134,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
+import java.io.File
 
 /**
  * A BrainzCall is a suspending function which has a [MusicBrainz] receiver and returns a Retrofit
@@ -186,6 +188,8 @@ public typealias BrainzResult<T> = Result<T, BrainzMessage>
  */
 @BrainzMarker
 public interface MusicBrainzService {
+  public val coverArtService: CoverArtService
+
   /**
    * Lookup an [Area] with [mbid] and specify other information to be included via the
    * optional [lookup] lambda with receiver [AreaLookup]
@@ -618,21 +622,64 @@ public interface MusicBrainzService {
   public suspend fun <T : Any> brainz(block: BrainzCall<T>): BrainzResult<T>
 
   public companion object {
+    @Suppress("MemberVisibilityCanBePrivate")
+    public const val CACHE_DIR_NAME: String = "MusicBrainz"
+
+    /**
+     * Instantiate a MusicBrainzService and CoverArtService implementation which handles MusicBrainz
+     * server requirements such as a required User-Agent format, throttling requests, and
+     * factories/adapters to support the returned data classes.
+     *
+     * [appName], [appVersion], and [contactEmail] are used to form the user-agent.
+     *
+     * [dispatcher] defaults to [Dispatchers.IO] but can be configured, eg. for tests
+     */
     public operator fun invoke(
-      ctx: Context,
+      appName: String,
+      appVersion: String,
+      contactEmail: String,
+      credentialsProvider: CredentialsProvider? = null,
+      dispatcher: CoroutineDispatcher = Dispatchers.IO
+    ): MusicBrainzService {
+      return MusicBrainzService(
+        appName,
+        appVersion,
+        contactEmail,
+        CoverArtService(appName, appVersion, contactEmail, dispatcher = dispatcher),
+        credentialsProvider,
+        dispatcher = dispatcher
+      )
+    }
+
+    /**
+     * Instantiate a MusicBrainzService implementation which handles MusicBrainz server requirements
+     * such as a required User-Agent format, throttling requests, and factories/adapters to support
+     * the returned data classes.
+     *
+     * [appName], [appVersion], and [contactEmail] are used to form the user-agent.
+     *
+     * [coverArtService] is used to find album art
+     *
+     * [cacheDirectory] is the directory where server results are cached and is
+     * File([android.content.Context.getCacheDir], [CACHE_DIR_NAME]) by default
+     *
+     * [dispatcher] defaults to [Dispatchers.IO] but can be configured, eg. for tests
+     */
+    public operator fun invoke(
       appName: String,
       appVersion: String,
       contactEmail: String,
       coverArt: CoverArtService,
       credentialsProvider: CredentialsProvider? = null,
+      cacheDirectory: File? = null,
       dispatcher: CoroutineDispatcher = Dispatchers.IO
     ): MusicBrainzService = makeMusicBrainzService(
       appName,
       appVersion,
       contactEmail,
       credentialsProvider,
-      ctx,
       coverArt,
+      cacheDirectory,
       dispatcher
     )
 

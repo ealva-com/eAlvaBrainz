@@ -25,12 +25,12 @@ import com.ealva.ealvalog.Markers
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.filter.MarkerFilter
 import com.ealva.ealvalog.i
+import com.ealva.ealvalog.lazyLogger
 import com.ealva.ealvalog.w
+import kotlin.reflect.KClass
 
 public object BrainzLog {
   public var logBrainzErrors: Boolean = true
-
-  public const val BRAINZ_ERROR_TAG: String = "Brainz_Err"
 
   @Suppress("MemberVisibilityCanBePrivate")
   public const val markerName: String = "eAlvaBrainz"
@@ -48,6 +48,10 @@ public object BrainzLog {
   @Suppress("unused")
   public val markerFilter: MarkerFilter by lazy { MarkerFilter(marker) }
 }
+
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <T : Any> brainzLogger(forClass: KClass<T>): Lazy<Logger> =
+  lazyLogger(forClass, BrainzLog.marker)
 
 @Suppress("FunctionName", "unused")
 internal inline fun Logger._i(

@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ealva.brainzapp.data.Country
 import com.ealva.brainzapp.data.toCountry
+import com.ealva.brainzapp.log.brainzLogger
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.ArtistType
@@ -32,7 +33,6 @@ import com.ealva.ealvabrainz.brainz.data.artistType
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.lazyLogger
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import kotlinx.coroutines.CancellationException
@@ -42,7 +42,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.launch
 
-private val LOG by lazyLogger(ArtistSearchViewModel::class)
+private val LOG by brainzLogger(ArtistSearchViewModel::class)
 
 data class ArtistSearchResult(
   val mbid: ArtistMbid,

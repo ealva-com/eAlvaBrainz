@@ -17,15 +17,18 @@
 
 package com.ealva.brainzsvc.service
 
-import android.content.Context
 import android.net.Uri
+import com.ealva.brainzsvc.init.EalvaBrainz
+import com.ealva.brainzsvc.log.brainzLogger
 import com.ealva.brainzsvc.net.toSecureUri
 import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.AnnotationList
 import com.ealva.ealvabrainz.brainz.data.Area
 import com.ealva.ealvabrainz.brainz.data.AreaList
+import com.ealva.ealvabrainz.brainz.data.AreaMbid
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistList
+import com.ealva.ealvabrainz.brainz.data.ArtistMbid
 import com.ealva.ealvabrainz.brainz.data.BrowseAreaList
 import com.ealva.ealvabrainz.brainz.data.BrowseArtistList
 import com.ealva.ealvabrainz.brainz.data.BrowseCollectionList
@@ -40,30 +43,42 @@ import com.ealva.ealvabrainz.brainz.data.BrowseSeriesList
 import com.ealva.ealvabrainz.brainz.data.BrowseWorkList
 import com.ealva.ealvabrainz.brainz.data.CdStubList
 import com.ealva.ealvabrainz.brainz.data.Collection
+import com.ealva.ealvabrainz.brainz.data.CollectionMbid
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
 import com.ealva.ealvabrainz.brainz.data.DiscLookupList
 import com.ealva.ealvabrainz.brainz.data.Event
 import com.ealva.ealvabrainz.brainz.data.EventList
+import com.ealva.ealvabrainz.brainz.data.EventMbid
 import com.ealva.ealvabrainz.brainz.data.Genre
+import com.ealva.ealvabrainz.brainz.data.GenreMbid
 import com.ealva.ealvabrainz.brainz.data.Instrument
 import com.ealva.ealvabrainz.brainz.data.InstrumentList
+import com.ealva.ealvabrainz.brainz.data.InstrumentMbid
 import com.ealva.ealvabrainz.brainz.data.IsrcRecordingList
 import com.ealva.ealvabrainz.brainz.data.Label
 import com.ealva.ealvabrainz.brainz.data.LabelList
+import com.ealva.ealvabrainz.brainz.data.LabelMbid
 import com.ealva.ealvabrainz.brainz.data.Place
 import com.ealva.ealvabrainz.brainz.data.PlaceList
+import com.ealva.ealvabrainz.brainz.data.PlaceMbid
 import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.RecordingList
+import com.ealva.ealvabrainz.brainz.data.RecordingMbid
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupList
+import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.ReleaseList
+import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.ealva.ealvabrainz.brainz.data.Series
 import com.ealva.ealvabrainz.brainz.data.SeriesList
+import com.ealva.ealvabrainz.brainz.data.SeriesMbid
 import com.ealva.ealvabrainz.brainz.data.TagList
 import com.ealva.ealvabrainz.brainz.data.Url
+import com.ealva.ealvabrainz.brainz.data.UrlMbid
 import com.ealva.ealvabrainz.brainz.data.Work
 import com.ealva.ealvabrainz.brainz.data.WorkList
+import com.ealva.ealvabrainz.brainz.data.WorkMbid
 import com.ealva.ealvabrainz.brainz.data.the250
 import com.ealva.ealvabrainz.brainz.data.the500
 import com.ealva.ealvabrainz.browse.AreaBrowse
@@ -78,26 +93,12 @@ import com.ealva.ealvabrainz.browse.ReleaseBrowse
 import com.ealva.ealvabrainz.browse.ReleaseGroupBrowse
 import com.ealva.ealvabrainz.browse.SeriesBrowse
 import com.ealva.ealvabrainz.browse.WorkBrowse
-import com.ealva.ealvabrainz.brainz.data.AreaMbid
-import com.ealva.ealvabrainz.brainz.data.ArtistMbid
-import com.ealva.ealvabrainz.brainz.data.CollectionMbid
 import com.ealva.ealvabrainz.common.DiscId
-import com.ealva.ealvabrainz.brainz.data.EventMbid
-import com.ealva.ealvabrainz.brainz.data.GenreMbid
-import com.ealva.ealvabrainz.brainz.data.InstrumentMbid
 import com.ealva.ealvabrainz.common.Isrc
 import com.ealva.ealvabrainz.common.Iswc
-import com.ealva.ealvabrainz.brainz.data.LabelMbid
 import com.ealva.ealvabrainz.common.Limit
 import com.ealva.ealvabrainz.common.Offset
-import com.ealva.ealvabrainz.brainz.data.PlaceMbid
-import com.ealva.ealvabrainz.brainz.data.RecordingMbid
-import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
-import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
-import com.ealva.ealvabrainz.brainz.data.SeriesMbid
 import com.ealva.ealvabrainz.common.TocParam
-import com.ealva.ealvabrainz.brainz.data.UrlMbid
-import com.ealva.ealvabrainz.brainz.data.WorkMbid
 import com.ealva.ealvabrainz.lookup.AreaLookup
 import com.ealva.ealvabrainz.lookup.ArtistLookup
 import com.ealva.ealvabrainz.lookup.CollectionLookup
@@ -130,7 +131,6 @@ import com.ealva.ealvabrainz.search.TagSearch
 import com.ealva.ealvabrainz.search.WorkSearch
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.lazyLogger
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
@@ -142,16 +142,15 @@ import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import java.io.File
 
-private val LOG by lazyLogger(MusicBrainzService::class)
+private val LOG by brainzLogger(MusicBrainzService::class)
 
 // private const val MUSIC_BRAINZ_API_URL = "http://musicbrainz.org/ws/2/"
 private const val MUSIC_BRAINZ_API_SECURE_URL = "https://musicbrainz.org/ws/2/"
 private val SERVICE_NAME = MusicBrainzServiceImpl::class.java.simpleName
-private const val CACHE_DIR = "MusicBrainz"
 
 private class MusicBrainzServiceImpl(
   private val musicBrainz: MusicBrainz,
-  private val coverArtService: CoverArtService,
+  override val coverArtService: CoverArtService,
   private val dispatcher: CoroutineDispatcher
 ) : MusicBrainzService {
   override suspend fun lookupArea(
@@ -547,8 +546,8 @@ internal fun makeMusicBrainzService(
   appVersion: String,
   contact: String,
   credentialsProvider: CredentialsProvider?,
-  ctx: Context,
   coverArt: CoverArtService,
+  cacheDirectory: File?,
   dispatcher: CoroutineDispatcher
 ): MusicBrainzService = makeMusicBrainzService(
   buildMusicBrainz(
@@ -556,7 +555,9 @@ internal fun makeMusicBrainzService(
     appVersion,
     contact,
     credentialsProvider,
-    File(ctx.cacheDir, CACHE_DIR)
+    if (cacheDirectory?.isDirectory == true) cacheDirectory else EalvaBrainz.getCacheDir(
+      CoverArtService.CACHE_DIR_NAME
+    )
   ),
   coverArt,
   dispatcher

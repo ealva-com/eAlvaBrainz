@@ -20,14 +20,13 @@
 package com.ealva.brainzsvc.net
 
 import com.ealva.brainzsvc.log._i
-import com.ealva.ealvabrainz.log.BrainzLog
+import com.ealva.brainzsvc.log.brainzLogger
 import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.lazyLogger
 import engineering.clientside.throttle.Throttle
 import okhttp3.Interceptor
 import okhttp3.Response
 
-private val LOG by lazyLogger(ThrottlingInterceptor::class, BrainzLog.marker)
+private val LOG by brainzLogger(ThrottlingInterceptor::class)
 
 @Suppress("MaxLineLength")
 /**

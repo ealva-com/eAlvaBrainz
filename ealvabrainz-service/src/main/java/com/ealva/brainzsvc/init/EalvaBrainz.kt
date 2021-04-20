@@ -21,6 +21,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.annotation.StringRes
 import androidx.core.content.getSystemService
+import java.io.File
 
 @SuppressLint("StaticFieldLeak") // store the app context, not a leak
 public object EalvaBrainz {
@@ -28,6 +29,8 @@ public object EalvaBrainz {
   internal fun fetch(@StringRes stringRes: Int, vararg formatArgs: Any): String {
     return appCtx.getString(stringRes, *formatArgs)
   }
+
+  internal fun getCacheDir(dirName: String): File = File(appCtx.cacheDir, dirName)
 
   internal lateinit var appCtx: Context
 

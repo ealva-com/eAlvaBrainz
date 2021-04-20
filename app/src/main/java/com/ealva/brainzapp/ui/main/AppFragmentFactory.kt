@@ -21,6 +21,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.FragmentManager
+import com.ealva.brainzapp.log.brainzLogger
 import com.ealva.brainzapp.ui.artist.ArtistFragment
 import com.ealva.brainzapp.ui.artist.ArtistSearchFragment
 import com.ealva.brainzapp.ui.fragment.Navigation
@@ -28,13 +29,12 @@ import com.ealva.brainzapp.ui.release.ReleaseSearchFragment
 import com.ealva.brainzapp.ui.rgroup.ReleaseGroupSearchFragment
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.lazyLogger
 import com.ealva.ealvalog.w
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-private val LOG by lazyLogger(AppFragmentFactory::class)
+private val LOG by brainzLogger(AppFragmentFactory::class)
 
 typealias FragmentFactoryFn = () -> Fragment
 

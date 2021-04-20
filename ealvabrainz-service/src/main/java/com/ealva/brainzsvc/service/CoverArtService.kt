@@ -17,10 +17,12 @@
 
 package com.ealva.brainzsvc.service
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import com.ealva.brainzsvc.init.EalvaBrainz.getCacheDir
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzExceptionMessage
+import com.ealva.brainzsvc.service.CoverArtService.Companion.CACHE_DIR_NAME
+import com.ealva.ealvabrainz.BuildConfig
 import com.ealva.ealvabrainz.brainz.CoverArt
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
@@ -48,6 +50,9 @@ public interface CoverArtService {
   public suspend fun getReleaseGroupArt(mbid: ReleaseGroupMbid): CoverArtResult
 
   public companion object {
+    @Suppress("MemberVisibilityCanBePrivate")
+    public const val CACHE_DIR_NAME: String = "CoverArtArchive"
+
     /**
      * Intent to view the MusicBrainz website
      */
@@ -59,18 +64,29 @@ public interface CoverArtService {
      * Instantiate a CoverArtService implementation which handles MusicBrainz server requirements
      * such as a required User-Agent format, throttling requests, and factories/adapters to support
      * the returned data classes.
+     *
+     * [appName], [appVersion], and [contactEmail] are used to form the user-agent.
+     *
+     * [cacheDirectory] is the directory where server results are cached and is
+     * File([android.content.Context.getCacheDir], [CACHE_DIR_NAME]) by default
+     *
+     * [dispatcher] defaults to [Dispatchers.IO] but can be configured, eg. for tests
      */
     public operator fun invoke(
-      ctx: Context,
       appName: String,
       appVersion: String,
       contactEmail: String,
+      cacheDirectory: File? = null,
       dispatcher: CoroutineDispatcher = Dispatchers.IO
-    ): CoverArtService =
-      make(
-        buildCoverArt(appName, appVersion, contactEmail, File(ctx.cacheDir, CACHE_DIR)),
-        dispatcher
-      )
+    ): CoverArtService = make(
+      buildCoverArt(
+        appName,
+        appVersion,
+        contactEmail,
+        if (cacheDirectory?.isDirectory == true) cacheDirectory else getCacheDir(CACHE_DIR_NAME)
+      ),
+      dispatcher
+    )
 
     /** Internal for test, provides for injecting fakes/mocks/etc and test dispatcher. */
     internal fun make(
@@ -84,7 +100,6 @@ public interface CoverArtService {
 private const val COVER_ART_API_SECURE_URL = "https://coverartarchive.org/"
 
 private val SERVICE_NAME = CoverArtServiceImpl::class.java.simpleName
-private const val CACHE_DIR = "CoverArtArchive"
 private typealias CoverArtCall<T> = suspend CoverArt.() -> Response<T>
 
 private class CoverArtServiceImpl(

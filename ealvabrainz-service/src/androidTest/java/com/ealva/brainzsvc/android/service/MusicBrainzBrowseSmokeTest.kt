@@ -23,7 +23,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.ealva.brainzsvc.service.BrainzErrorMessage
 import com.ealva.brainzsvc.service.BuildConfig
-import com.ealva.brainzsvc.service.CoverArtService
 import com.ealva.brainzsvc.service.Credentials
 import com.ealva.brainzsvc.service.CredentialsProvider
 import com.ealva.brainzsvc.service.MusicBrainzService
@@ -63,10 +62,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-private const val appName = "eAlvaBrainz_test"
-private const val appVersion = "0.1"
-private const val contactEmail = "musicbrainz@ealva.com"
-
 /**
  * An integration test with MusicBrainz servers. This test suite purposefully sleeps 2 seconds
  * between calls to stay far away from rate limiting and not tax the MusicBrainz FREE (to us, an
@@ -101,27 +96,15 @@ public class MusicBrainzBrowseSmokeTest {
   public var coroutineRule: MainCoroutineRule = MainCoroutineRule()
 
   private lateinit var appCtx: Context
-  private lateinit var coverArtService: CoverArtService
   private lateinit var musicBrainzService: MusicBrainzService
 
   @Before
   public fun setup() {
     appCtx = ApplicationProvider.getApplicationContext()
-    println("make CoverArt")
-    coverArtService = CoverArtService(
-      ctx = appCtx,
-      appName = BuildConfig.BRAINZ_APP_NAME,
-      appVersion = BuildConfig.BRAINZ_APP_VERSION,
-      contactEmail = BuildConfig.BRAINZ_CONTACT_EMAIL,
-      dispatcher = coroutineRule.testDispatcher
-    )
-    println("make musicbrainz")
     musicBrainzService = MusicBrainzService(
-      ctx = appCtx,
       appName = BuildConfig.BRAINZ_APP_NAME,
       appVersion = BuildConfig.BRAINZ_APP_VERSION,
       contactEmail = BuildConfig.BRAINZ_CONTACT_EMAIL,
-      coverArt = coverArtService,
       credentialsProvider = object : CredentialsProvider {
         override val credentials: Credentials =
           Credentials(UserName(BuildConfig.BRAINZ_USERNAME), Password(BuildConfig.BRAINZ_PASSWORD))

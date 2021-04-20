@@ -39,6 +39,7 @@ import com.ealva.brainzapp.R
 import com.ealva.brainzapp.data.appearsValid
 import com.ealva.brainzapp.data.setAsClickableLink
 import com.ealva.brainzapp.data.toDisplayString
+import com.ealva.brainzapp.log.brainzLogger
 import com.ealva.brainzapp.ui.fragment.FragmentUiContext
 import com.ealva.brainzapp.ui.main.MainPresenter
 import com.ealva.brainzapp.ui.view.TabSelection
@@ -48,12 +49,11 @@ import com.ealva.brainzapp.ui.view.setStarRatingDrawable
 import com.ealva.brainzapp.ui.view.snackErrors
 import com.ealva.brainzapp.ui.view.tabSelectionFlow
 import com.ealva.brainzapp.ui.view.viewPager2
-import com.ealva.ealvabrainz.brainz.data.ensureExhaustive
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
+import com.ealva.ealvabrainz.brainz.data.ensureExhaustive
 import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.lazyLogger
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.tabs.TabLayout
@@ -119,7 +119,7 @@ import com.ealva.brainzapp.R.id.artist_ui_type as ID_ARTIST_TYPE
 import com.ealva.brainzapp.R.id.artist_ui_type_label as ID_TYPE_LABEL
 import com.ealva.brainzapp.R.id.artist_ui_view_pager as ID_PAGER
 
-private val LOG by lazyLogger(ArtistFragmentUi::class)
+private val LOG by brainzLogger(ArtistFragmentUi::class)
 
 class ArtistFragmentUi(
   uiContext: FragmentUiContext,

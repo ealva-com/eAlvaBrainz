@@ -18,12 +18,23 @@
 package com.ealva.brainzsvc.log
 
 import com.ealva.ealvabrainz.BuildConfig
+import com.ealva.ealvabrainz.log.BrainzLog
 import com.ealva.ealvalog.LogEntry
 import com.ealva.ealvalog.Logger
 import com.ealva.ealvalog.Marker
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.i
+import com.ealva.ealvalog.lazyLogger
 import com.ealva.ealvalog.w
+import kotlin.reflect.KClass
+
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun <T : Any> brainzLogger(forClass: KClass<T>): Lazy<Logger> =
+  lazyLogger(forClass, BrainzLog.marker)
+
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun brainzLogger(name: String): Lazy<Logger> =
+  lazyLogger(name, BrainzLog.marker)
 
 internal inline fun Logger._i(
   throwable: Throwable? = null,

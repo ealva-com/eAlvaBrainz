@@ -40,6 +40,7 @@ internal class CacheControlInterceptor(
               .minFresh(daysMinFresh, TimeUnit.DAYS)
               .build()
           )
+          .removeHeader("Pragma")
           .build()
       } else {
         request.newBuilder()
@@ -49,6 +50,7 @@ internal class CacheControlInterceptor(
               .maxStale(daysMaxStale, TimeUnit.DAYS)
               .build()
           )
+          .removeHeader("Pragma")
           .build()
       }
     }

@@ -18,13 +18,13 @@
 package com.ealva.brainzapp.data
 
 import com.ealva.brainzapp.R
+import com.ealva.brainzapp.log.brainzLogger
 import com.ealva.ealvabrainz.brainz.data.Genre
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.lazyLogger
 import kotlin.math.min
 
-private val LOG by lazyLogger(GenreItem::class)
+private val LOG by brainzLogger(GenreItem::class)
 
 interface GenreItem {
   val name: String

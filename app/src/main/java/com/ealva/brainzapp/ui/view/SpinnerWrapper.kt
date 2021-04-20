@@ -23,9 +23,9 @@ import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.Spinner
 import android.widget.SpinnerAdapter
+import com.ealva.brainzapp.log.brainzLogger
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.lazyLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
 import com.ealva.brainzapp.R.id.spinner_position_tag_id as KEY_SPINNER_POS
 
-private val LOG by lazyLogger(SpinnerWrapper::class)
+private val LOG by brainzLogger(SpinnerWrapper::class)
 
 class SpinnerWrapper(val spinner: Spinner) {
   private var proxyListener: OnItemSelectedListener? = null

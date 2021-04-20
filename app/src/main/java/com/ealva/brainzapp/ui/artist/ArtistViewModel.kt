@@ -36,6 +36,7 @@ import com.ealva.brainzapp.data.toIsni
 import com.ealva.brainzapp.data.toPrimaryReleaseGroupType
 import com.ealva.brainzapp.data.toSecondaryReleaseGroupList
 import com.ealva.brainzapp.data.toStarRating
+import com.ealva.brainzapp.log.brainzLogger
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.ealvabrainz.brainz.data.Artist
 import com.ealva.ealvabrainz.brainz.data.ArtistCredit
@@ -59,7 +60,6 @@ import com.ealva.ealvabrainz.common.toArtistName
 import com.ealva.ealvabrainz.common.toLabelName
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke
-import com.ealva.ealvalog.lazyLogger
 import com.github.michaelbull.result.andThen
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
@@ -67,7 +67,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 
-private val LOG by lazyLogger(ArtistViewModel::class)
+private val LOG by brainzLogger(ArtistViewModel::class)
 
 @Suppress("unused")
 class DisplayArtist(
