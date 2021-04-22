@@ -48,7 +48,7 @@ object Versions {
 }
 
 object BuildPluginsVersion {
-  const val AGP = "7.0.0-alpha08"
+  const val AGP = "7.0.0-alpha14"
   const val DETEKT = "1.16.0"
   const val DOKKA = "1.4.30"
   const val KOTLIN = "1.4.32"

@@ -367,6 +367,6 @@ Related
 [kotlin-result]: https://github.com/michaelbull/kotlin-result
 [railway]: https://fsharpforfunandprofit.com/rop/
 [maven-ealvabrainz]: https://search.maven.org/search?q=g:com.ealva%20AND%20a:ealvabrainz
-[maven-ealvabrainz-service] https://search.maven.org/search?q=g:com.ealva%20AND%20a:ealvabrainz-service
+[maven-ealvabrainz-service]: https://search.maven.org/search?q=g:com.ealva%20AND%20a:ealvabrainz-service
 [ealvabrainz-snapshot]: https://oss.sonatype.org/content/repositories/snapshots/com/ealva/ealvabrainz-service/
 [ealvabrainz-service-snapshot]: https://oss.sonatype.org/content/repositories/snapshots/com/ealva/ealvabrainz-service/
