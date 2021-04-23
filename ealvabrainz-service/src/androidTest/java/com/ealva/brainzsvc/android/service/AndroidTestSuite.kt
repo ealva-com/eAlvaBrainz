@@ -30,6 +30,7 @@ import org.junit.runners.Suite
 @ExperimentalCoroutinesApi
 @RunWith(Suite::class)
 @Suite.SuiteClasses(
+  MusicBrainzServiceTest::class,
   MusicBrainzFindSmokeTest::class,
   MusicBrainzLookupSmokeTest::class,
   MusicBrainzBrowseSmokeTest::class

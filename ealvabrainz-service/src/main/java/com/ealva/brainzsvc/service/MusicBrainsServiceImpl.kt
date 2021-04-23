@@ -18,7 +18,6 @@
 package com.ealva.brainzsvc.service
 
 import android.net.Uri
-import com.ealva.brainzsvc.init.EalvaBrainz
 import com.ealva.brainzsvc.log.brainzLogger
 import com.ealva.brainzsvc.net.toSecureUri
 import com.ealva.ealvabrainz.brainz.MusicBrainz
@@ -139,14 +138,13 @@ import com.github.michaelbull.result.runCatching
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import java.io.File
 
 private val LOG by brainzLogger(MusicBrainzService::class)
 
 // private const val MUSIC_BRAINZ_API_URL = "http://musicbrainz.org/ws/2/"
 private const val MUSIC_BRAINZ_API_SECURE_URL = "https://musicbrainz.org/ws/2/"
-private val SERVICE_NAME = MusicBrainzServiceImpl::class.java.simpleName
 
 private class MusicBrainzServiceImpl(
   private val musicBrainz: MusicBrainz,
@@ -542,44 +540,15 @@ internal fun makeMusicBrainzService(
 ): MusicBrainzService = MusicBrainzServiceImpl(musicBrainz, coverArtService, dispatcher)
 
 internal fun makeMusicBrainzService(
-  appName: String,
-  appVersion: String,
-  contact: String,
-  credentialsProvider: CredentialsProvider?,
-  coverArt: CoverArtService,
-  cacheDirectory: File?,
+  okHttpClient: OkHttpClient,
+  coverArtService: CoverArtService,
   dispatcher: CoroutineDispatcher
 ): MusicBrainzService = makeMusicBrainzService(
-  buildMusicBrainz(
-    appName,
-    appVersion,
-    contact,
-    credentialsProvider,
-    if (cacheDirectory?.isDirectory == true) cacheDirectory else EalvaBrainz.getCacheDir(
-      CoverArtService.CACHE_DIR_NAME
-    )
-  ),
-  coverArt,
-  dispatcher
+  buildMusicBrainz(okHttpClient), coverArtService, dispatcher
 )
 
-private fun buildMusicBrainz(
-  appName: String,
-  appVersion: String,
-  emailContact: String,
-  credentialsProvider: CredentialsProvider?,
-  cacheDirectory: File
-): MusicBrainz = Retrofit.Builder()
-  .client(
-    makeOkHttpClient(
-      SERVICE_NAME,
-      appName,
-      appVersion,
-      emailContact,
-      cacheDirectory,
-      credentialsProvider
-    )
-  )
+private fun buildMusicBrainz(client: OkHttpClient): MusicBrainz = Retrofit.Builder()
+  .client(client)
   .baseUrl(MUSIC_BRAINZ_API_SECURE_URL)
   .addMoshiConverterFactory()
   .build()

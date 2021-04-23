@@ -21,7 +21,8 @@ import com.ealva.ealvabrainz.brainz.data.theBrainzMoshi
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-internal fun Retrofit.Builder.addMoshiConverterFactory(): Retrofit.Builder {
-  addConverterFactory(MoshiConverterFactory.create(theBrainzMoshi))
-  return this
+private val moshiConverterFactory by lazy { MoshiConverterFactory.create(theBrainzMoshi) }
+
+internal fun Retrofit.Builder.addMoshiConverterFactory(): Retrofit.Builder = apply {
+  addConverterFactory(moshiConverterFactory)
 }

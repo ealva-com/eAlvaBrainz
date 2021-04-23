@@ -18,11 +18,17 @@
 package com.ealva.brainzsvc.service
 
 import android.net.Uri
+import com.burgstaller.okhttp.AuthenticationCacheInterceptor
+import com.burgstaller.okhttp.digest.CachingAuthenticator
+import com.burgstaller.okhttp.digest.Credentials
+import com.burgstaller.okhttp.digest.DigestAuthenticator
+import com.ealva.brainzsvc.init.EalvaBrainz
+import com.ealva.brainzsvc.net.BrainzJsonFormatUserAgentInterceptor
+import com.ealva.brainzsvc.net.CacheControlInterceptor
+import com.ealva.brainzsvc.net.ThrottlingInterceptor
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzExceptionMessage
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzErrorCodeMessage
 import com.ealva.brainzsvc.service.BrainzMessage.BrainzStatusMessage.BrainzNullReturn
-import com.ealva.brainzsvc.service.CoverArtService.Companion.CACHE_DIR_NAME
-import com.ealva.brainzsvc.service.MusicBrainzService.Companion.CACHE_DIR_NAME
 import com.ealva.ealvabrainz.brainz.MusicBrainz
 import com.ealva.ealvabrainz.brainz.data.AnnotationList
 import com.ealva.ealvabrainz.brainz.data.Area
@@ -133,8 +139,11 @@ import com.github.michaelbull.result.Result
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import okhttp3.Cache
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
-import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * A BrainzCall is a suspending function which has a [MusicBrainz] receiver and returns a Retrofit
@@ -625,31 +634,23 @@ public interface MusicBrainzService {
     @Suppress("MemberVisibilityCanBePrivate")
     public const val CACHE_DIR_NAME: String = "MusicBrainz"
 
-    /**
-     * Instantiate a MusicBrainzService and CoverArtService implementation which handles MusicBrainz
-     * server requirements such as a required User-Agent format, throttling requests, and
-     * factories/adapters to support the returned data classes.
-     *
-     * [appName], [appVersion], and [contactEmail] are used to form the user-agent.
-     *
-     * [dispatcher] defaults to [Dispatchers.IO] but can be configured, eg. for tests
-     */
-    public operator fun invoke(
+    @Volatile
+    private var brainzOkHttpClient: OkHttpClient? = null
+
+    // internal for Test
+    internal fun getOkHttpClient(
       appName: String,
       appVersion: String,
       contactEmail: String,
-      credentialsProvider: CredentialsProvider? = null,
-      dispatcher: CoroutineDispatcher = Dispatchers.IO
-    ): MusicBrainzService {
-      return MusicBrainzService(
-        appName,
-        appVersion,
-        contactEmail,
-        CoverArtService(appName, appVersion, contactEmail, dispatcher = dispatcher),
-        credentialsProvider,
-        dispatcher = dispatcher
-      )
-    }
+      addLoggingInterceptor: Boolean,
+      credentialsProvider: CredentialsProvider?,
+      client: OkHttpClient = defaultClient
+    ): OkHttpClient =
+      brainzOkHttpClient ?: synchronized(this) {
+        brainzOkHttpClient ?: makeOkHttpClient(
+          appName, appVersion, contactEmail, addLoggingInterceptor, credentialsProvider, client
+        )
+      }
 
     /**
      * Instantiate a MusicBrainzService implementation which handles MusicBrainz server requirements
@@ -658,10 +659,9 @@ public interface MusicBrainzService {
      *
      * [appName], [appVersion], and [contactEmail] are used to form the user-agent.
      *
-     * [coverArtService] is used to find album art
-     *
-     * [cacheDirectory] is the directory where server results are cached and is
-     * File([android.content.Context.getCacheDir], [CACHE_DIR_NAME]) by default
+     * Provide an OkHttpClient [clientForBuilder] for sharing connection pool, thread pools, cache,
+     * etc. A new builder is created from [clientForBuilder] and a cache is added if missing. If
+     * not provided [clientForBuilder] defaults to a new builder with a cache.
      *
      * [dispatcher] defaults to [Dispatchers.IO] but can be configured, eg. for tests
      */
@@ -669,27 +669,24 @@ public interface MusicBrainzService {
       appName: String,
       appVersion: String,
       contactEmail: String,
-      coverArt: CoverArtService,
+      addLoggingInterceptor: Boolean,
       credentialsProvider: CredentialsProvider? = null,
-      cacheDirectory: File? = null,
+      clientForBuilder: OkHttpClient = defaultClient,
       dispatcher: CoroutineDispatcher = Dispatchers.IO
-    ): MusicBrainzService = makeMusicBrainzService(
-      appName,
-      appVersion,
-      contactEmail,
-      credentialsProvider,
-      coverArt,
-      cacheDirectory,
-      dispatcher
-    )
-
-    /** Internal for test, provides for injecting fakes/mocks/etc and test dispatcher. */
-    internal fun make(
-      brainz: MusicBrainz,
-      coverArt: CoverArtService,
-      dispatcher: CoroutineDispatcher
     ): MusicBrainzService {
-      return makeMusicBrainzService(brainz, coverArt, dispatcher)
+      val okHttpClient = getOkHttpClient(
+        appName,
+        appVersion,
+        contactEmail,
+        addLoggingInterceptor,
+        credentialsProvider,
+        clientForBuilder
+      )
+      return makeMusicBrainzService(
+        okHttpClient,
+        CoverArtService(okHttpClient, dispatcher),
+        dispatcher
+      )
     }
 
 //    const val website = "https://musicbrainz.org/"
@@ -697,4 +694,79 @@ public interface MusicBrainzService {
 //    const val forgotPasswordUrl = """${website}lost-password"""
 //    const val donateUrl = "http://metabrainz.org/donate"
   }
+}
+
+private const val TEN_MEG = 10 * 1024 * 1024
+private val defaultClient: OkHttpClient by lazy {
+  OkHttpClient.Builder()
+    .cache(Cache(EalvaBrainz.getCacheDir("MusicBrainzCache"), TEN_MEG.toLong()))
+    .build()
+}
+
+private const val DAYS_MAX_AGE = 14
+private const val DAYS_MIN_FRESH = 14
+private const val DAYS_MAX_STALE = 365
+private const val MUSICBRAINZ_MAX_CALLS_PER_SECOND = 1.0
+
+private fun makeOkHttpClient(
+  appName: String,
+  appVersion: String,
+  contactEmail: String,
+  addLoggingInterceptor: Boolean,
+  credentialsProvider: CredentialsProvider? = null,
+  client: OkHttpClient
+): OkHttpClient = client.newBuilder().apply {
+  if (credentialsProvider != null) {
+    val authCache = ConcurrentHashMap<String, CachingAuthenticator>()
+    authenticator(DigestAuthenticator(OnTheFlyCredentials(credentialsProvider, authCache)))
+    addInterceptor(AuthenticationCacheInterceptor(authCache))
+  }
+  addInterceptor(CacheControlInterceptor(DAYS_MAX_AGE, DAYS_MIN_FRESH, DAYS_MAX_STALE))
+  addInterceptor(ThrottlingInterceptor(MUSICBRAINZ_MAX_CALLS_PER_SECOND, "MusicBrainzService"))
+  addInterceptor(BrainzJsonFormatUserAgentInterceptor(appName, appVersion, contactEmail))
+  if (addLoggingInterceptor) {
+    addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+  }
+  if (client.cache == null) {
+    cache(Cache(EalvaBrainz.getCacheDir("MusicBrainzCache"), TEN_MEG.toLong()))
+  }
+}.build()
+
+/**
+ * Implement okhttp-digest Credentials so we don't have to create with username/pwd at construction
+ * and instead get when needed. Client will decide how this info is obtained.
+ */
+internal class OnTheFlyCredentials(
+  private val provider: CredentialsProvider,
+  private val authCache: ConcurrentHashMap<String, CachingAuthenticator>
+) : Credentials("", "") {
+  private var credentials: com.ealva.brainzsvc.service.Credentials? = null
+
+  private fun clearAuthCache() {
+    authCache.clear()
+  }
+
+  /**
+   * If a race occurs between [getUserName] and [getPassword] it's expected the call(s) will fail
+   * and another attempt will be made. If our "last copy" of credentials doesn't match we clear
+   * the auth cache and start over
+   */
+  private fun getCredentials(): com.ealva.brainzsvc.service.Credentials {
+    println("getCredentials")
+    val newCredentials = provider.credentials
+    if (credentials == null || credentials != newCredentials) {
+      println("Credentials changed (maybe first call)")
+      clearAuthCache()
+      credentials = newCredentials
+    }
+    return newCredentials
+  }
+
+  override fun getUserName(): String = getCredentials().userName.value
+
+  /**
+   * Bit of a hack as we know [getUserName] is always called first and credential changing
+   * should be rare. See [getCredentials]
+   */
+  override fun getPassword(): String = credentials?.password?.value ?: "".also { clearAuthCache() }
 }

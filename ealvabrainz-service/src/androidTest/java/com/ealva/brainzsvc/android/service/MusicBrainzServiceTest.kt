@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  Eric A. Snell
+ * Copyright (c) 2021  Eric A. Snell
  *
  * This file is part of eAlvaBrainz
  *
@@ -15,25 +15,30 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.ealva.brainzsvc.service
+package com.ealva.brainzsvc.android.service
 
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.ealva.brainzsvc.init.EalvaBrainz
 import com.ealva.brainzsvc.net.BrainzJsonFormatUserAgentInterceptor
 import com.ealva.brainzsvc.net.CacheControlInterceptor
 import com.ealva.brainzsvc.net.ThrottlingInterceptor
+import com.ealva.brainzsvc.service.MusicBrainzService
 import com.nhaarman.expect.expect
 import org.junit.Test
-import java.io.File
+import org.junit.runner.RunWith
 
-public class OkHttpClientBuilderTest {
+@RunWith(AndroidJUnit4::class)
+public class MusicBrainzServiceTest {
   @Test
-  public fun `test okhttp built correctly`() {
-    val cacheDir = "CacheDir"
-    val okhttp = makeOkHttpClient(
-      "ServiceName",
+  public fun testOkhttpBuiltCorrectly() {
+    EalvaBrainz.appCtx = ApplicationProvider.getApplicationContext()
+    val okhttp = MusicBrainzService.getOkHttpClient(
       "appName",
       "version",
       "email",
-      File("\\dummy\\", cacheDir)
+      true,
+      null
     )
     expect(okhttp.interceptors.find { it is CacheControlInterceptor })
       .toNotBeNull { "Missing CacheControlInterceptor" }
@@ -42,6 +47,5 @@ public class OkHttpClientBuilderTest {
     expect(okhttp.interceptors.find { it is BrainzJsonFormatUserAgentInterceptor })
       .toNotBeNull { "Missing BrainzUserAgentInterceptor" }
     expect(okhttp.cache).toNotBeNull { "Cache not found and MusicBrainz requires" }
-    expect(okhttp.cache?.directory?.path).toEndWith(cacheDir)
   }
 }

@@ -27,7 +27,7 @@ internal fun Moshi.Builder.addRequired(): Moshi.Builder = apply {
   add(StringJsonAdapter())
 }
 
-public val theBrainzMoshi: Moshi = Moshi.Builder().addRequired().build()
+public val theBrainzMoshi: Moshi by lazy { Moshi.Builder().addRequired().build() }
 
 internal fun <T : Any> T.toJson(): String {
   return theBrainzMoshi

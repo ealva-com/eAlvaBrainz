@@ -117,6 +117,7 @@ public class MusicBrainzLookupSmokeTest {
       appName = BuildConfig.BRAINZ_APP_NAME,
       appVersion = BuildConfig.BRAINZ_APP_VERSION,
       contactEmail = BuildConfig.BRAINZ_CONTACT_EMAIL,
+      addLoggingInterceptor = true,
       credentialsProvider = object : CredentialsProvider {
         override val credentials: Credentials =
           Credentials(UserName(BuildConfig.BRAINZ_USERNAME), Password(BuildConfig.BRAINZ_PASSWORD))

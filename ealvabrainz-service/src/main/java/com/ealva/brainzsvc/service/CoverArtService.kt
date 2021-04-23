@@ -19,10 +19,6 @@ package com.ealva.brainzsvc.service
 
 import android.content.Intent
 import android.net.Uri
-import com.ealva.brainzsvc.init.EalvaBrainz.getCacheDir
-import com.ealva.brainzsvc.service.BrainzMessage.BrainzExceptionMessage
-import com.ealva.brainzsvc.service.CoverArtService.Companion.CACHE_DIR_NAME
-import com.ealva.ealvabrainz.BuildConfig
 import com.ealva.ealvabrainz.brainz.CoverArt
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
@@ -33,9 +29,9 @@ import com.github.michaelbull.result.runCatching
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
 import retrofit2.Response
 import retrofit2.Retrofit
-import java.io.File
 
 public typealias CoverArtResult = Result<CoverArtRelease, BrainzMessage>
 
@@ -50,9 +46,6 @@ public interface CoverArtService {
   public suspend fun getReleaseGroupArt(mbid: ReleaseGroupMbid): CoverArtResult
 
   public companion object {
-    @Suppress("MemberVisibilityCanBePrivate")
-    public const val CACHE_DIR_NAME: String = "CoverArtArchive"
-
     /**
      * Intent to view the MusicBrainz website
      */
@@ -60,46 +53,23 @@ public interface CoverArtService {
     public val BRAINZ_INTENT: Intent =
       Intent(Intent.ACTION_VIEW, Uri.parse("https://musicbrainz.org/"))
 
-    /**
-     * Instantiate a CoverArtService implementation which handles MusicBrainz server requirements
-     * such as a required User-Agent format, throttling requests, and factories/adapters to support
-     * the returned data classes.
-     *
-     * [appName], [appVersion], and [contactEmail] are used to form the user-agent.
-     *
-     * [cacheDirectory] is the directory where server results are cached and is
-     * File([android.content.Context.getCacheDir], [CACHE_DIR_NAME]) by default
-     *
-     * [dispatcher] defaults to [Dispatchers.IO] but can be configured, eg. for tests
-     */
     public operator fun invoke(
-      appName: String,
-      appVersion: String,
-      contactEmail: String,
-      cacheDirectory: File? = null,
+      okHttpClient: OkHttpClient,
       dispatcher: CoroutineDispatcher = Dispatchers.IO
-    ): CoverArtService = make(
-      buildCoverArt(
-        appName,
-        appVersion,
-        contactEmail,
-        if (cacheDirectory?.isDirectory == true) cacheDirectory else getCacheDir(CACHE_DIR_NAME)
-      ),
-      dispatcher
-    )
-
-    /** Internal for test, provides for injecting fakes/mocks/etc and test dispatcher. */
-    internal fun make(
-      coverArt: CoverArt,
-      dispatcher: CoroutineDispatcher
-    ): CoverArtService = CoverArtServiceImpl(coverArt, dispatcher)
+    ): CoverArtService = CoverArtServiceImpl(buildCoverArt(okHttpClient), dispatcher)
   }
 }
+
+private fun buildCoverArt(client: OkHttpClient) = Retrofit.Builder()
+  .client(client)
+  .baseUrl(COVER_ART_API_SECURE_URL)
+  .addMoshiConverterFactory()
+  .build()
+  .create(CoverArt::class.java)
 
 // private const val COVER_ART_API_URL = "http://coverartarchive.org/"
 private const val COVER_ART_API_SECURE_URL = "https://coverartarchive.org/"
 
-private val SERVICE_NAME = CoverArtServiceImpl::class.java.simpleName
 private typealias CoverArtCall<T> = suspend CoverArt.() -> Response<T>
 
 private class CoverArtServiceImpl(
@@ -118,28 +88,7 @@ private class CoverArtServiceImpl(
     block: CoverArtCall<T>
   ): Result<T, BrainzMessage> = withContext(dispatcher) {
     runCatching { coverArt.block() }
-      .mapError { ex -> BrainzExceptionMessage(ex) }
+      .mapError { ex -> BrainzMessage.BrainzExceptionMessage(ex) }
       .mapResponse()
   }
 }
-
-private fun buildCoverArt(
-  appName: String,
-  appVersion: String,
-  contactEmail: String,
-  cacheDirectory: File
-) = Retrofit.Builder()
-  .client(
-    makeOkHttpClient(
-      SERVICE_NAME,
-      appName,
-      appVersion,
-      contactEmail,
-      cacheDirectory,
-      addLoggingInterceptor = BuildConfig.DEBUG
-    )
-  )
-  .baseUrl(COVER_ART_API_SECURE_URL)
-  .addMoshiConverterFactory()
-  .build()
-  .create(CoverArt::class.java)

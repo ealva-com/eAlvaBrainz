@@ -295,7 +295,7 @@ public class MusicBrainzServiceTest {
   }
 
   private fun makeServiceForTest(mockBrainz: MusicBrainz): MusicBrainzService {
-    return MusicBrainzService.make(
+    return makeMusicBrainzService(
       mockBrainz,
       NullCoverArtService,
       coroutineRule.testDispatcher

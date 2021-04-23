@@ -18,7 +18,6 @@
 package com.ealva.brainzapp.services
 
 import com.ealva.brainzsvc.service.BuildConfig
-import com.ealva.brainzsvc.service.CoverArtService
 import com.ealva.brainzsvc.service.Credentials
 import com.ealva.brainzsvc.service.CredentialsProvider
 import com.ealva.brainzsvc.service.MusicBrainzService
@@ -29,22 +28,15 @@ import org.koin.dsl.module
 
 val brainzModule: Module = module {
   single {
-    CoverArtService(
-      appName = BuildConfig.BRAINZ_APP_NAME,
-      appVersion = BuildConfig.BRAINZ_APP_VERSION,
-      contactEmail = BuildConfig.BRAINZ_CONTACT_EMAIL,
-    )
-  }
-  single {
     MusicBrainzService(
       appName = BuildConfig.BRAINZ_APP_NAME,
       appVersion = BuildConfig.BRAINZ_APP_VERSION,
       contactEmail = BuildConfig.BRAINZ_CONTACT_EMAIL,
-      coverArt = get(),
       credentialsProvider = object : CredentialsProvider {
         override val credentials: Credentials =
           Credentials(UserName(BuildConfig.BRAINZ_USERNAME), Password(BuildConfig.BRAINZ_PASSWORD))
       },
+      addLoggingInterceptor = BuildConfig.DEBUG
     )
   }
 }
