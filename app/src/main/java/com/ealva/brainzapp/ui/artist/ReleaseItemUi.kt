@@ -124,8 +124,8 @@ class ReleaseItemUi(uiContext: FragmentUiContext, onClick: (v: View) -> Unit) : 
 
   @OptIn(ExperimentalCoroutinesApi::class)
   override val root: MaterialCardView = materialCardView(ID_CARD) {
-    radius = dp(10)
-    cardElevation = dp(4)
+    radius = dp(10f)
+    cardElevation = dp(4f)
 
     val catalogLabel = textView(ID_CATALOG_LABEL) {
       textResource = R.string.CatNumberLabel

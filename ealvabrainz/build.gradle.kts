@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License along with eAlvaBrainz.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-version = EalvaBrainzCoordinates.LIBRARY_VERSION
+version = EalvaBrainzCoordinates.VERSION
 
 plugins {
   id("com.android.library")
@@ -25,22 +25,28 @@ plugins {
 }
 
 android {
-  compileSdkVersion(Sdk.COMPILE_SDK_VERSION)
+  compileSdk = SdkVersion.COMPILE
 
   defaultConfig {
-    minSdkVersion(Sdk.MIN_SDK_VERSION)
-    targetSdkVersion(Sdk.TARGET_SDK_VERSION)
-
-    versionCode = EalvaBrainzCoordinates.LIBRARY_VERSION_CODE
-    versionName = EalvaBrainzCoordinates.LIBRARY_VERSION
+    minSdk = SdkVersion.MIN
+    targetSdk = SdkVersion.TARGET
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     consumerProguardFiles("consumer-rules.pro")
   }
 
   kotlinOptions {
-    jvmTarget = "11"
+    jvmTarget = "1.8"
+    languageVersion = "1.5"
+    apiVersion = "1.5"
+    suppressWarnings = false
+    verbose = true
+    freeCompilerArgs = listOf(
+      "-Xopt-in=kotlin.RequiresOptIn",
+      "-Xexplicit-api=warning"
+    )
   }
+
   compileOptions {
     isCoreLibraryDesugaringEnabled = true
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -89,40 +95,41 @@ android {
 }
 
 dependencies {
-  coreLibraryDesugaring(ToolsLib.DESUGARING)
+  coreLibraryDesugaring(Libs.DESUGAR)
   implementation(kotlin("stdlib-jdk8"))
-  implementation(SupportLibs.ANDROIDX_APPCOMPAT)
-  implementation(SupportLibs.ANDROIDX_CORE_KTX)
-  implementation(ThirdParty.EALVALOG)
-  implementation(ThirdParty.EALVALOG_CORE)
-  implementation(ThirdParty.FASTUTIL)
-  implementation(ThirdParty.COROUTINE_CORE)
-  implementation(ThirdParty.COROUTINE_ANDROID)
+  implementation(Libs.AndroidX.APPCOMPAT)
+  implementation(Libs.AndroidX.Ktx.CORE)
 
-  implementation(ThirdParty.MOSHI)
-  implementation(ThirdParty.MOSHI_RETROFIT)
-  kapt(ThirdParty.MOSHI_CODEGEN)
+  implementation(Libs.Log.EALVALOG)
+  implementation(Libs.Log.CORE)
+  implementation(Libs.Fastutil.FASTUTIL)
+  implementation(Libs.Coroutines.CORE)
+  implementation(Libs.Coroutines.ANDROID)
 
-  testImplementation(TestingLib.JUNIT)
-  testImplementation(AndroidTestingLib.ANDROIDX_TEST_CORE) {
-    exclude("junit", "junit")
-  }
-  testImplementation(AndroidTestingLib.ANDROIDX_TEST_RULES) {
-    exclude("junit", "junit")
-  }
-  testImplementation(TestingLib.EXPECT)
-  testImplementation(TestingLib.ROBOLECTRIC)
-  testImplementation(TestingLib.COROUTINE_TEST)
-  testImplementation(TestingLib.MOCKITO_KOTLIN)
-  testImplementation(TestingLib.MOCKITO_INLINE)
+  implementation(Libs.Square.MOSHI)
+  implementation(Libs.Square.MOSHI_RETROFIT)
+  kapt(Libs.Square.MOSHI_CODEGEN)
 
-  androidTestImplementation(AndroidTestingLib.ANDROIDX_TEST_RUNNER) {
+  testImplementation(Libs.JUnit.JUNIT)
+  testImplementation(Libs.AndroidX.Test.CORE) {
     exclude("junit", "junit")
   }
-  androidTestImplementation(AndroidTestingLib.ANDROIDX_TEST_EXT_JUNIT) {
+  testImplementation(Libs.AndroidX.Test.RULES) {
     exclude("junit", "junit")
   }
-  androidTestImplementation(TestingLib.JUNIT)
-  androidTestImplementation(TestingLib.EXPECT)
-  androidTestImplementation(TestingLib.COROUTINE_TEST)
+  testImplementation(Libs.Expect.EXPECT)
+  testImplementation(Libs.Robolectric.ROBOLECTRIC)
+  testImplementation(Libs.Coroutines.TEST)
+  testImplementation(Libs.Mockito.KOTLIN)
+  testImplementation(Libs.Mockito.INLINE)
+
+  androidTestImplementation(Libs.AndroidX.Test.RUNNER) {
+    exclude("junit", "junit")
+  }
+  androidTestImplementation(Libs.AndroidX.Test.Ext.JUNIT) {
+    exclude("junit", "junit")
+  }
+  androidTestImplementation(Libs.JUnit.JUNIT)
+  androidTestImplementation(Libs.Expect.EXPECT)
+  androidTestImplementation(Libs.Coroutines.TEST)
 }

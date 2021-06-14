@@ -80,7 +80,7 @@ fun CoordinatorLayout.addCircularProgress(viewId: Int): CircularProgressBar {
       .colors(intArrayOf(GPLUS_GREEN, GPLUS_YELLOW, GPLUS_BLUE, GPLUS_RED))
       .rotationSpeed(1.0F)
       .sweepSpeed(1.0F)
-      .strokeWidth(dp(4))
+      .strokeWidth(dp(4f))
       .minSweepAngle(10)
       .maxSweepAngle(300)
       .build()

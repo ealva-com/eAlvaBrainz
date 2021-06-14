@@ -104,8 +104,8 @@ class ReleaseGroupItemUi(
 
   @OptIn(ExperimentalCoroutinesApi::class)
   override val root: MaterialCardView = materialCardView(ID_CARD) {
-    radius = dp(10)
-    cardElevation = dp(4)
+    radius = dp(10f)
+    cardElevation = dp(4f)
     val totalHeight = dip(88)
 
     add(constraintLayout(ID_CONSTRAINT) {

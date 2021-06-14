@@ -16,7 +16,7 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
  * You should have received a copy of the GNU Lesser General Public License along with eAlvaBrainz.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-version = EalvaBrainzServiceCoordinates.LIBRARY_VERSION
+version = EalvaBrainzServiceCoordinates.VERSION
 
 plugins {
   id("com.android.library")
@@ -33,14 +33,11 @@ val brainzAppVersion: String = localProperties.getProperty("BRAINZ_APP_VERSION",
 val brainzEmail: String = localProperties.getProperty("BRAINZ_CONTACT_EMAIL", "\"\"")
 
 android {
-  compileSdkVersion(Sdk.COMPILE_SDK_VERSION)
+  compileSdk = SdkVersion.COMPILE
 
   defaultConfig {
-    minSdkVersion(Sdk.MIN_SDK_VERSION)
-    targetSdkVersion(Sdk.TARGET_SDK_VERSION)
-
-    versionCode = EalvaBrainzServiceCoordinates.LIBRARY_VERSION_CODE
-    versionName = EalvaBrainzServiceCoordinates.LIBRARY_VERSION
+    minSdk = SdkVersion.MIN
+    targetSdk = SdkVersion.TARGET
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     consumerProguardFiles("consumer-rules.pro")
@@ -97,58 +94,55 @@ android {
     suppressWarnings = false
     verbose = true
     freeCompilerArgs = listOf(
-      "-XXLanguage:+InlineClasses",
-      "-Xinline-classes",
       "-Xopt-in=kotlin.RequiresOptIn",
       "-Xexplicit-api=warning",
-      "-Xuse-14-inline-classes-mangling-scheme"
     )
   }
 }
 
 dependencies {
-  coreLibraryDesugaring(ToolsLib.DESUGARING)
+  coreLibraryDesugaring(Libs.DESUGAR)
   implementation(project(":ealvabrainz"))
   implementation(kotlin("stdlib-jdk8"))
-  implementation(SupportLibs.ANDROIDX_APPCOMPAT)
-  implementation(SupportLibs.ANDROIDX_CORE_KTX)
-  implementation(SupportLibs.ANDROIDX_STARTUP)
+  implementation(Libs.AndroidX.APPCOMPAT)
+  implementation(Libs.AndroidX.Ktx.CORE)
+  implementation(Libs.AndroidX.STARTUP)
 
-  implementation(ThirdParty.EALVALOG)
-  implementation(ThirdParty.EALVALOG_CORE)
-  implementation(ThirdParty.FASTUTIL)
-  implementation(ThirdParty.COROUTINE_CORE)
-  implementation(ThirdParty.COROUTINE_ANDROID)
+  implementation(Libs.Log.EALVALOG)
+  implementation(Libs.Log.CORE)
+  implementation(Libs.Fastutil.FASTUTIL)
+  implementation(Libs.Coroutines.CORE)
+  implementation(Libs.Coroutines.ANDROID)
 
-  implementation(ThirdParty.RETROFIT)
-  implementation(ThirdParty.MOSHI)
-  implementation(ThirdParty.MOSHI_RETROFIT)
-  implementation(ThirdParty.OKHTTP)
-  implementation(ThirdParty.OKHTTP_LOGGING)
+  implementation(Libs.Square.RETROFIT)
+  implementation(Libs.Square.MOSHI)
+  implementation(Libs.Square.MOSHI_RETROFIT)
+  implementation(Libs.Square.OKHTTP)
+  implementation(Libs.Square.OKHTTP_LOGGING)
 
-  implementation(ThirdParty.KOTLIN_RESULT)
-  implementation("io.github.rburgst:okhttp-digest:2.5")
+  implementation(Libs.Result.RESULT)
+  implementation(Libs.Credentials.OKHTTP_DIGEST)
 
-  testImplementation(TestingLib.JUNIT)
-  testImplementation(AndroidTestingLib.ANDROIDX_TEST_CORE) {
+  testImplementation(Libs.JUnit.JUNIT)
+  testImplementation(Libs.AndroidX.Test.CORE) {
     exclude("junit", "junit")
   }
-  testImplementation(AndroidTestingLib.ANDROIDX_TEST_RULES) {
+  testImplementation(Libs.AndroidX.Test.RULES) {
     exclude("junit", "junit")
   }
-  testImplementation(TestingLib.EXPECT)
-  testImplementation(TestingLib.ROBOLECTRIC)
-  testImplementation(TestingLib.COROUTINE_TEST)
-  testImplementation(TestingLib.MOCKITO_KOTLIN)
-  testImplementation(TestingLib.MOCKITO_INLINE)
+  testImplementation(Libs.Expect.EXPECT)
+  testImplementation(Libs.Robolectric.ROBOLECTRIC)
+  testImplementation(Libs.Coroutines.TEST)
+  testImplementation(Libs.Mockito.KOTLIN)
+  testImplementation(Libs.Mockito.INLINE)
 
-  androidTestImplementation(AndroidTestingLib.ANDROIDX_TEST_RUNNER) {
+  androidTestImplementation(Libs.AndroidX.Test.RUNNER) {
     exclude("junit", "junit")
   }
-  androidTestImplementation(AndroidTestingLib.ANDROIDX_TEST_EXT_JUNIT) {
+  androidTestImplementation(Libs.AndroidX.Test.Ext.JUNIT) {
     exclude("junit", "junit")
   }
-  androidTestImplementation(TestingLib.JUNIT)
-  androidTestImplementation(TestingLib.EXPECT)
-  androidTestImplementation(TestingLib.COROUTINE_TEST)
+  androidTestImplementation(Libs.JUnit.JUNIT)
+  androidTestImplementation(Libs.Expect.EXPECT)
+  androidTestImplementation(Libs.Coroutines.TEST)
 }

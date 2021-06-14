@@ -21,11 +21,11 @@ plugins {
 }
 
 android {
-  compileSdkVersion(Sdk.COMPILE_SDK_VERSION)
+  compileSdk = SdkVersion.COMPILE
 
   defaultConfig {
-    minSdkVersion(Sdk.MIN_SDK_VERSION)
-    targetSdkVersion(Sdk.TARGET_SDK_VERSION)
+    minSdk = SdkVersion.MIN
+    targetSdk = SdkVersion.TARGET
 
     applicationId = AppCoordinates.APP_ID
     versionCode = AppCoordinates.APP_VERSION_CODE
@@ -64,21 +64,21 @@ android {
 }
 
 dependencies {
-  coreLibraryDesugaring(ToolsLib.DESUGARING)
+  coreLibraryDesugaring(Libs.DESUGAR)
   implementation(project(":ealvabrainz"))
   implementation(project(":ealvabrainz-service"))
   implementation(kotlin("stdlib-jdk8"))
 
-  implementation(SupportLibs.ANDROIDX_APPCOMPAT)
-  implementation(SupportLibs.ANDROIDX_CONSTRAINT_LAYOUT)
-  implementation(SupportLibs.ANDROIDX_CORE_KTX)
-  implementation(SupportLibs.ANDROIDX_LIFECYCLE_RUNTIME_KTX)
+  implementation(Libs.AndroidX.APPCOMPAT)
+  implementation("com.android.support.constraint:constraint-layout:2.0.4")
+  implementation(Libs.AndroidX.Ktx.CORE)
+  implementation(Libs.AndroidX.Lifecycle.RUNTIME_KTX)
 
-  implementation(ThirdParty.KOTLIN_RESULT)
+  implementation(Libs.Result.RESULT)
 
   implementation("androidx.viewpager2:viewpager2:1.0.0")
-  implementation("androidx.activity:activity-ktx:1.2.2")
-  implementation("androidx.fragment:fragment-ktx:1.3.1")
+  implementation("androidx.activity:activity-ktx:1.2.3")
+  implementation("androidx.fragment:fragment-ktx:1.3.4")
   implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
   implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
   implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
@@ -86,40 +86,40 @@ dependencies {
   implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
   implementation("androidx.constraintlayout:constraintlayout:2.0.4")
   implementation("com.google.android.material:material:1.3.0")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0")
   implementation("com.squareup.retrofit2:retrofit:2.9.0")
-  implementation("com.louiscad.splitties:splitties-systemservices:3.0.0-alpha06")
-  implementation("com.louiscad.splitties:splitties-views-dsl:3.0.0-alpha06")
-  implementation("com.louiscad.splitties:splitties-views-dsl-coordinatorlayout:3.0.0-alpha06")
-  implementation("com.louiscad.splitties:splitties-views-dsl-constraintlayout:3.0.0-alpha06")
-  implementation("com.louiscad.splitties:splitties-views-dsl-recyclerview:3.0.0-alpha06")
-  implementation("com.louiscad.splitties:splitties-views-dsl-material:3.0.0-alpha06")
-  implementation("com.louiscad.splitties:splitties-views-dsl-appcompat:3.0.0-alpha06")
-  implementation("com.louiscad.splitties:splitties-toast:3.0.0-alpha06")
-  implementation("com.louiscad.splitties:splitties-snackbar:3.0.0-alpha06")
-  implementation("com.louiscad.splitties:splitties-resources:3.0.0-alpha06")
+  implementation("com.louiscad.splitties:splitties-systemservices:3.0.0-beta01")
+  implementation("com.louiscad.splitties:splitties-views-dsl:3.0.0-beta01")
+  implementation("com.louiscad.splitties:splitties-views-dsl-coordinatorlayout:3.0.0-beta01")
+  implementation("com.louiscad.splitties:splitties-views-dsl-constraintlayout:3.0.0-beta01")
+  implementation("com.louiscad.splitties:splitties-views-dsl-recyclerview:3.0.0-beta01")
+  implementation("com.louiscad.splitties:splitties-views-dsl-material:3.0.0-beta01")
+  implementation("com.louiscad.splitties:splitties-views-dsl-appcompat:3.0.0-beta01")
+  implementation("com.louiscad.splitties:splitties-toast:3.0.0-beta01")
+  implementation("com.louiscad.splitties:splitties-snackbar:3.0.0-beta01")
+  implementation("com.louiscad.splitties:splitties-resources:3.0.0-beta01")
   implementation("me.gujun.android:span:1.7")
-  implementation("com.mikepenz:iconics-core:5.0.1")
-  implementation("com.mikepenz:material-design-iconic-typeface:2.2.0.6-kotlin@aar")
+  implementation("com.mikepenz:iconics-core:5.2.8")
+  implementation("com.mikepenz:material-design-iconic-typeface:2.2.0.8-kotlin@aar")
   implementation("com.github.castorflex.smoothprogressbar:library-circular:1.3.0")
-  implementation("com.neovisionaries:nv-i18n:1.27")
-  implementation("com.github.bumptech.glide:glide:4.11.0")
-  implementation("com.github.bumptech.glide:okhttp3-integration:4.11.0")
+  implementation("com.neovisionaries:nv-i18n:1.28")
+  implementation("com.github.bumptech.glide:glide:4.12.0")
+  implementation("com.github.bumptech.glide:okhttp3-integration:4.12.0")
 
-  implementation(ThirdParty.EALVALOG)
-  implementation(ThirdParty.EALVALOG_CORE)
-  implementation(ThirdParty.EALVALOG_ANDROID)
+  implementation(Libs.Log.EALVALOG)
+  implementation(Libs.Log.CORE)
+  implementation(Libs.Log.ANDROID)
 
-  implementation(ThirdParty.KOIN)
-  implementation(ThirdParty.KOIN_ANDROID)
+  implementation(Libs.Koin.CORE)
+  implementation(Libs.Koin.ANDROID)
 
-  testImplementation(TestingLib.JUNIT)
-  testImplementation(AndroidTestingLib.ANDROIDX_TEST_CORE) {
+  testImplementation(Libs.JUnit.JUNIT)
+  testImplementation(Libs.AndroidX.Test.CORE) {
     exclude("junit", "junit")
   }
-  testImplementation(AndroidTestingLib.ANDROIDX_TEST_RULES) {
+  testImplementation(Libs.AndroidX.Test.RULES) {
     exclude("junit", "junit")
   }
-  testImplementation(TestingLib.EXPECT)
+  testImplementation(Libs.Expect.EXPECT)
 }

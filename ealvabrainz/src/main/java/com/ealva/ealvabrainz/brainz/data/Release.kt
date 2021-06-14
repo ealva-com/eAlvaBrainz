@@ -389,7 +389,7 @@ public class Release(
     public val fallbackMapping: Pair<String, Any> = Release::class.java.name to NullRelease
 
     public fun stringToStatus(value: String): Status =
-      map.computeIfAbsent(value.trim().toLowerCase(Locale.ROOT)) { key -> Status.Unrecognized(key) }
+      map.computeIfAbsent(value.trim().lowercase(Locale.ROOT)) { key -> Status.Unrecognized(key) }
 
     private val map: MutableMap<String, Status> = mutableMapOf<String, Status>().apply {
       Status.values().forEach { put(it.value, it) }

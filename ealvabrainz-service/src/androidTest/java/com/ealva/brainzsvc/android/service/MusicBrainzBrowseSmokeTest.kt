@@ -278,11 +278,11 @@ public class MusicBrainzBrowseSmokeTest {
 
   @Test
   public fun browseReleaseGroupsJethroTull(): Unit = brainz {
-    val limit = Limit(5)
+    val limit = Limit(20)
     browseReleaseGroups(BrowseOn.Artist(JETHRO_TULL_MBID), limit)
       .onSuccess { browseList ->
         expect(browseList.releaseGroups).toHaveSize(limit.value)
-        expect(browseList.releaseGroups[0].title).toBe("Aqualung")
+        expect(browseList.releaseGroups).toHaveAny { it.title == "Aqualung" }
       }
       .onFailure { fail("Brainz call failed") { it.toString() } }
   }
@@ -309,7 +309,9 @@ public class MusicBrainzBrowseSmokeTest {
       expect(browseList.workCount).toBeGreaterThan(340) // 343 last checked
       expect(browseList.workOffset).toBe(offset.value)
       expect(browseList.works).toHaveSize(limit.value)
-      expect(browseList.works).toHaveAny({ "Didn't have title Help!" }) { it.title == "Help!" }
+      expect(browseList.works).toHaveAny({ "Didn't have title Good Day Sunshine" }) {
+        it.title == "Good Day Sunshine"
+      }
     }.onFailure { fail("Brainz call failed") { it.toString() } }
   }
 

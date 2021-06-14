@@ -302,7 +302,7 @@ public class ReleaseGroup(
      * Returns one of the [Type] subtype objects or [Unrecognized]
      */
     public fun stringToType(value: String): Type =
-      typeMap.computeIfAbsent(value.trim().toLowerCase(Locale.ROOT)) { key -> Unrecognized(key) }
+      typeMap.computeIfAbsent(value.trim().lowercase(Locale.ROOT)) { key -> Unrecognized(key) }
 
     private val typeMap: MutableMap<String, Type> = mutableMapOf<String, Type>().apply {
       Type.values().forEach { put(it.value, it) }

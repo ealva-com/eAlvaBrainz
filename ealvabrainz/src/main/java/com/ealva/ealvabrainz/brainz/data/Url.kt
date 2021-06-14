@@ -32,13 +32,28 @@ import com.squareup.moshi.JsonClass
  * ```
  */
 @JsonClass(generateAdapter = true)
-public data class Url(
+public class Url(
   /** MBID of the Url */
   public val id: String = "",
   /** The url */
   public val resource: String = "",
   public val relations: List<Relation> = emptyList()
 ) {
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as Url
+
+    if (id != other.id) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    return id.hashCode()
+  }
 
   public enum class Include(override val value: String) : Inc {
     Aliases("aliases"),

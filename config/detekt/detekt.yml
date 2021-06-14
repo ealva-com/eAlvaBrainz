@@ -539,7 +539,7 @@ style:
   MayBeConst:
     active: true
   ModifierOrder:
-    active: true
+    active: false
   NestedClassesVisibility:
     active: false
   NewLineAtEndOfFile:

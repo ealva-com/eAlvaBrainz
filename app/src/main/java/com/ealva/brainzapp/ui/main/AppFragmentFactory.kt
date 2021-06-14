@@ -30,7 +30,6 @@ import com.ealva.brainzapp.ui.rgroup.ReleaseGroupSearchFragment
 import com.ealva.brainzsvc.service.MusicBrainzService
 import com.ealva.ealvalog.invoke
 import com.ealva.ealvalog.w
-import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -38,7 +37,6 @@ private val LOG by brainzLogger(AppFragmentFactory::class)
 
 typealias FragmentFactoryFn = () -> Fragment
 
-@OptIn(KoinApiExtension::class)
 class AppFragmentFactory(
   navigation: Navigation,
   mainPresenter: MainPresenter
