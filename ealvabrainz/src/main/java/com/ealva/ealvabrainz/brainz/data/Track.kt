@@ -21,6 +21,7 @@ import com.ealva.ealvabrainz.brainz.data.Recording.Companion.NullRecording
 import com.ealva.ealvabrainz.brainz.data.Track.Companion.NullTrack
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 
 /**
  * In MusicBrainz, a track is the way a recording is represented on a particular release (or, more
@@ -62,6 +63,7 @@ public class Track(
 public val Track.isNullObject: Boolean
   get() = this === NullTrack
 
+@Parcelize
 @JvmInline
 public value class TrackMbid(override val value: String) : Mbid
 

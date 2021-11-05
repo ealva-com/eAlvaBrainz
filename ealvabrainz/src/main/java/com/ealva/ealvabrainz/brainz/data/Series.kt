@@ -19,6 +19,7 @@ package com.ealva.ealvabrainz.brainz.data
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 
 /**
  * A series is a sequence of separate release groups, releases, recordings, works or events with a
@@ -130,6 +131,7 @@ public class Series(
 public inline val Series.isNullObject: Boolean
   get() = this === Series.NullSeries
 
+@Parcelize
 @JvmInline
 public value class SeriesMbid(override val value: String) : Mbid
 

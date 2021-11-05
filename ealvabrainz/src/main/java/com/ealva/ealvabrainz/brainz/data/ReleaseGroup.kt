@@ -21,6 +21,7 @@ import com.ealva.ealvabrainz.brainz.data.ReleaseGroup.Companion.NullReleaseGroup
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup.Type.Unrecognized
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 import java.util.Locale
 
 /**
@@ -314,6 +315,7 @@ public class ReleaseGroup(
 public inline val ReleaseGroup.isNullObject: Boolean
   get() = this === NullReleaseGroup
 
+@Parcelize
 @JvmInline
 public value class ReleaseGroupMbid(override val value: String) : Mbid
 
@@ -327,6 +329,7 @@ public inline val ReleaseGroup.mbid: ReleaseGroupMbid
 public fun String.toReleaseGroupType(): ReleaseGroup.Type =
   ReleaseGroup.stringToType(this)
 
+@Parcelize
 @JvmInline
 public value class ReleaseGroupTypeMbid(override val value: String) : Mbid
 

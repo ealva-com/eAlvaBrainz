@@ -19,6 +19,7 @@ package com.ealva.ealvabrainz.brainz.data
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 
 /**
  * In MusicBrainz terminology, a work is a distinct intellectual or artistic creation, which can
@@ -186,6 +187,7 @@ public class Work(
 public inline val Work.isNullObject: Boolean
   get() = this === Work.NullWork
 
+@Parcelize
 @JvmInline
 public value class WorkMbid(override val value: String) : Mbid
 

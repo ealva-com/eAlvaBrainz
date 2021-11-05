@@ -17,9 +17,13 @@
 
 package com.ealva.ealvabrainz.common
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 @JvmInline
 /** The name of an Genre. May be a partial name if used in a query. */
-public value class GenreName(public val value: String) {
+public value class GenreName(public val value: String) : Parcelable {
   public companion object {
     public val UNKNOWN: GenreName = GenreName("Unknown")
   }

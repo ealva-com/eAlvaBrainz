@@ -17,15 +17,18 @@
 
 package com.ealva.ealvabrainz.common
 
+import android.os.Parcelable
 import com.ealva.ealvabrainz.common.Formatting.toYear
+import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 import java.util.Date
 
 /**
  * Represents the year part of a date.
  */
+@Parcelize
 @JvmInline
-public value class Year(public val value: String) {
+public value class Year(public val value: String) : Parcelable {
   public companion object {
     /**
      * Extracts year from [localDate]

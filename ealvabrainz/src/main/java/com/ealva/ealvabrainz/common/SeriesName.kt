@@ -17,8 +17,12 @@
 
 package com.ealva.ealvabrainz.common
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 @JvmInline
-public value class SeriesName(public val value: String) {
+public value class SeriesName(public val value: String) : Parcelable {
   public companion object {
     public val UNKNOWN: SeriesName = SeriesName("Unknown")
   }

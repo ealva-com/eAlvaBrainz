@@ -24,7 +24,7 @@ plugins {
   id("io.gitlab.arturbosch.detekt") version PluginsVersion.DETEKT
   id("com.github.ben-manes.versions") version PluginsVersion.VERSIONS
   id("org.jetbrains.dokka") version PluginsVersion.DOKKA
-  id("com.vanniktech.maven.publish") version PluginsVersion.PUBLISH
+  id("com.vanniktech.maven.publish") version PluginsVersion.VANNIKTECH_PUBLISH
 }
 
 allprojects {

@@ -19,8 +19,10 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
+import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 
 /**
  * Areas are geographic regions or settlements. Areas are usually kept in sync with their
@@ -195,6 +197,7 @@ public class Area(
 public inline val Area.isNullObject: Boolean
   get() = this === Area.NullArea
 
+@Parcelize
 @JvmInline
 public value class AreaMbid(override val value: String) : Mbid
 

@@ -20,6 +20,7 @@ plugins {
   id("com.android.library")
   kotlin("android")
   kotlin("kapt")
+  id("kotlin-parcelize")
   id("org.jetbrains.dokka")
   id("com.vanniktech.maven.publish")
 }
@@ -85,11 +86,8 @@ android {
     suppressWarnings = false
     verbose = true
     freeCompilerArgs = listOf(
-      "-XXLanguage:+InlineClasses",
-      "-Xinline-classes",
       "-Xopt-in=kotlin.RequiresOptIn",
       "-Xexplicit-api=warning",
-      "-Xuse-14-inline-classes-mangling-scheme"
     )
   }
 }
@@ -103,8 +101,8 @@ dependencies {
   implementation(Libs.Log.EALVALOG)
   implementation(Libs.Log.CORE)
   implementation(Libs.Fastutil.FASTUTIL)
-  implementation(Libs.Coroutines.CORE)
-  implementation(Libs.Coroutines.ANDROID)
+  implementation(Libs.Kotlin.Coroutines.CORE)
+  implementation(Libs.Kotlin.Coroutines.ANDROID)
 
   implementation(Libs.Square.MOSHI)
   implementation(Libs.Square.MOSHI_RETROFIT)
@@ -119,7 +117,7 @@ dependencies {
   }
   testImplementation(Libs.Expect.EXPECT)
   testImplementation(Libs.Robolectric.ROBOLECTRIC)
-  testImplementation(Libs.Coroutines.TEST)
+  testImplementation(Libs.Kotlin.Coroutines.TEST)
   testImplementation(Libs.Mockito.KOTLIN)
   testImplementation(Libs.Mockito.INLINE)
 
@@ -131,5 +129,5 @@ dependencies {
   }
   androidTestImplementation(Libs.JUnit.JUNIT)
   androidTestImplementation(Libs.Expect.EXPECT)
-  androidTestImplementation(Libs.Coroutines.TEST)
+  androidTestImplementation(Libs.Kotlin.Coroutines.TEST)
 }

@@ -20,6 +20,7 @@ package com.ealva.ealvabrainz.brainz.data
 import com.ealva.ealvabrainz.brainz.data.Place.Companion.NullPlace
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 
 /**
  * A place is a building or outdoor area used for performing or producing music.
@@ -188,6 +189,7 @@ public class Place(
 public inline val Place.isNullObject: Boolean
   get() = this === NullPlace
 
+@Parcelize
 @JvmInline
 public value class PlaceMbid(override val value: String) : Mbid
 

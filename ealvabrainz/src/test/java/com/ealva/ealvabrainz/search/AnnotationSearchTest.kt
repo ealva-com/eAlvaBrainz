@@ -25,6 +25,7 @@ import com.ealva.ealvabrainz.lucene.Term
 import com.ealva.ealvabrainz.matchers.expect
 import com.ealva.ealvabrainz.matchers.toBeAsString
 import com.nhaarman.expect.expect
+import kotlinx.parcelize.Parcelize
 import org.junit.Test
 
 public class AnnotationSearchTest {
@@ -86,4 +87,5 @@ public class AnnotationSearchTest {
   }
 }
 
+@Parcelize
 private class EntityMbid(override val value: String) : Mbid

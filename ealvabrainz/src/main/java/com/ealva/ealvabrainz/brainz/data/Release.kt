@@ -21,6 +21,7 @@ import com.ealva.ealvabrainz.brainz.data.CoverArtArchive.Companion.NullCoverArtA
 import com.ealva.ealvabrainz.brainz.data.Release.Companion.NullRelease
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 import java.util.Locale
 
 /**
@@ -406,6 +407,7 @@ public inline val Release.isNullObject: Boolean
  */
 public fun String.toReleaseStatus(): Release.Status = Release.stringToStatus(this)
 
+@Parcelize
 @JvmInline
 public value class StatusMbid(override val value: String) : Mbid
 
@@ -421,6 +423,7 @@ public val StatusMbid.status: Release.Status
     else -> Release.Status.Unrecognized(value)
   }
 
+@Parcelize
 @JvmInline
 public value class PackagingMbid(override val value: String) : Mbid
 
@@ -430,6 +433,7 @@ public inline val Packaging.mbid: PackagingMbid
 public inline val Release.packagingMbid: PackagingMbid
   get() = PackagingMbid(packagingId)
 
+@Parcelize
 @JvmInline
 public value class ReleaseMbid(override val value: String) : Mbid
 

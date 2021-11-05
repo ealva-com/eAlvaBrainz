@@ -56,8 +56,6 @@ android {
     suppressWarnings = false
     verbose = true
     freeCompilerArgs = listOf(
-      "-XXLanguage:+InlineClasses",
-      "-Xinline-classes",
       "-Xopt-in=kotlin.RequiresOptIn"
     )
   }
@@ -70,24 +68,25 @@ dependencies {
   implementation(kotlin("stdlib-jdk8"))
 
   implementation(Libs.AndroidX.APPCOMPAT)
-  implementation("com.android.support.constraint:constraint-layout:2.0.4")
+  implementation("androidx.constraintlayout:constraintlayout:2.1.1")
+//  implementation("com.android.support.constraint:constraint-layout:2.1.1")
   implementation(Libs.AndroidX.Ktx.CORE)
   implementation(Libs.AndroidX.Lifecycle.RUNTIME_KTX)
 
   implementation(Libs.Result.RESULT)
 
   implementation("androidx.viewpager2:viewpager2:1.0.0")
-  implementation("androidx.activity:activity-ktx:1.2.3")
-  implementation("androidx.fragment:fragment-ktx:1.3.5")
-  implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
-  implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-  implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.3.1")
-  implementation("androidx.lifecycle:lifecycle-common-java8:2.3.1")
+  implementation("androidx.activity:activity-ktx:1.4.0")
+  implementation("androidx.fragment:fragment-ktx:1.3.6")
+  implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
+  implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
+  implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
+  implementation("androidx.lifecycle:lifecycle-common-java8:2.4.0")
   implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-  implementation("androidx.constraintlayout:constraintlayout:2.0.4")
-  implementation("com.google.android.material:material:1.3.0")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0")
+  implementation("androidx.constraintlayout:constraintlayout:2.1.1")
+  implementation("com.google.android.material:material:1.4.0")
+  implementation(Libs.Kotlin.Coroutines.CORE)
+  implementation(Libs.Kotlin.Coroutines.ANDROID)
   implementation("com.squareup.retrofit2:retrofit:2.9.0")
   implementation("com.louiscad.splitties:splitties-systemservices:3.0.0-beta01")
   implementation("com.louiscad.splitties:splitties-views-dsl:3.0.0-beta01")
@@ -100,10 +99,10 @@ dependencies {
   implementation("com.louiscad.splitties:splitties-snackbar:3.0.0-beta01")
   implementation("com.louiscad.splitties:splitties-resources:3.0.0-beta01")
   implementation("me.gujun.android:span:1.7")
-  implementation("com.mikepenz:iconics-core:5.2.8")
+  implementation("com.mikepenz:iconics-core:5.3.2")
   implementation("com.mikepenz:material-design-iconic-typeface:2.2.0.8-kotlin@aar")
   implementation("com.github.castorflex.smoothprogressbar:library-circular:1.3.0")
-  implementation("com.neovisionaries:nv-i18n:1.28")
+  implementation("com.neovisionaries:nv-i18n:1.29")
   implementation("com.github.bumptech.glide:glide:4.12.0")
   implementation("com.github.bumptech.glide:okhttp3-integration:4.12.0")
 

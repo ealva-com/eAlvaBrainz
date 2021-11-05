@@ -17,6 +17,9 @@
 
 package com.ealva.ealvabrainz.common
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * The International Standard Musical Work Code (ISWC) identifies a musical work as a unique
  * intangible creation. It relates to the result of an intangible creation of one or more people,
@@ -28,8 +31,9 @@ package com.ealva.ealvabrainz.common
  *
  * [MusicBrainz ISWC](https://musicbrainz.org/doc/ISWC)
  */
+@Parcelize
 @JvmInline
-public value class Iswc(public val value: String) {
+public value class Iswc(public val value: String) : Parcelable {
   public companion object {
     public val UNKNOWN: Iswc = Iswc("Unknown")
   }

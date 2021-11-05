@@ -19,6 +19,9 @@
 
 package com.ealva.ealvabrainz.brainz.data
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * One of MusicBrainz' aims is to be the universal lingua franca for music by providing a reliable
  * and unambiguous form of music identification; this music identification is performed through the
@@ -34,7 +37,7 @@ package com.ealva.ealvabrainz.brainz.data
  * An entity can have more than one MBID. When an entity is merged into another, its MBIDs redirect
  * to the other entity.
  */
-public interface Mbid {
+public interface Mbid : Parcelable {
   /**
    * In its canonical textual representation, the 16 octets of a
    * [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) are represented as 32
@@ -60,6 +63,7 @@ public interface Mbid {
  * an annotation has a "type" and "entity" ID and the "type" is unrecognized. See the Annotation
  * class in brainz.data
  */
+@Parcelize
 @JvmInline
 public value class UnknownEntityMbid(override val value: String) : Mbid
 

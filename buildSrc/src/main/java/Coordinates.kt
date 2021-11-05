@@ -22,13 +22,13 @@ object AppCoordinates {
   const val APP_VERSION_CODE = 1
 }
 
-private const val IS_SNAPSHOT = true
+private const val IS_SNAPSHOT = false
 
 object EalvaBrainzCoordinates {
   // All parts of versioning can be up to 2 digits: 0-99
   private const val MAJOR = 0
   private const val MINOR = 7
-  private const val PATCH = 2
+  private const val PATCH = 3
   private const val BUILD = 0
 
   val VERSION = "$MAJOR.$MINOR.$PATCH-${buildPart(IS_SNAPSHOT, BUILD)}"
@@ -38,7 +38,7 @@ object EalvaBrainzServiceCoordinates {
   // All parts of versioning can be up to 2 digits: 0-99
   private const val MAJOR = 0
   private const val MINOR = 7
-  private const val PATCH = 2
+  private const val PATCH = 3
   private const val BUILD = 0
 
   val VERSION = "$MAJOR.$MINOR.$PATCH-${buildPart(IS_SNAPSHOT, BUILD)}"

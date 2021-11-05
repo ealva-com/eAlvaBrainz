@@ -17,7 +17,9 @@
 
 package com.ealva.ealvabrainz.common
 
-@JvmInline
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * The title of a Recording. May be a partial title if used in a query.
  *
@@ -25,7 +27,9 @@ package com.ealva.ealvabrainz.common
  * must always be associated with a single recording, but a recording can be linked to any number of
  * tracks.
  */
-public value class RecordingTitle(public val value: String) {
+@Parcelize
+@JvmInline
+public value class RecordingTitle(public val value: String) : Parcelable {
   public companion object {
     public val UNKNOWN: RecordingTitle = RecordingTitle("Unknown")
   }

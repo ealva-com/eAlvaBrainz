@@ -17,12 +17,16 @@
 
 package com.ealva.ealvabrainz.common
 
-@JvmInline
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * The name is the official name of the event if it has one, or a descriptive name (like "Main
  * Artist at Place") if not. May be a partial name if used in a query.
  */
-public value class PlaceName(public val value: String) {
+@Parcelize
+@JvmInline
+public value class PlaceName(public val value: String) : Parcelable {
   public companion object {
     public val UNKNOWN: PlaceName = PlaceName("Unknown")
   }

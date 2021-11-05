@@ -90,7 +90,7 @@ fun Fragment.getArtistSearchViewModel(
 private class ArtistSearchViewModelFactory(
   private val brainz: MusicBrainzService
 ) : ViewModelProvider.Factory {
-  override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+  override fun <T : ViewModel> create(modelClass: Class<T>): T {
     require(modelClass.isAssignableFrom(ArtistSearchViewModelImpl::class.java))
     @Suppress("UNCHECKED_CAST")
     return ArtistSearchViewModelImpl(brainz) as T
@@ -156,7 +156,7 @@ internal class ArtistSearchViewModelImpl(
         job.cancel(CancellationException("New query supersedes any current job"))
         loadJob = null
       }
-      actor.offer(queryData)
+      actor.trySend(queryData).isSuccess
     } catch (e: Exception) {
       if (e !is CancellationException) LOG.e(e) { it("offer load data exception") }
     }

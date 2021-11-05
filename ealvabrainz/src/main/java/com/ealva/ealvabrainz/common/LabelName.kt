@@ -17,7 +17,9 @@
 
 package com.ealva.ealvabrainz.common
 
-@JvmInline
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * The official name of the label. May be a partial name if used in a query.
  *
@@ -35,7 +37,9 @@ package com.ealva.ealvabrainz.common
  * differentiate between identically named labels, you should use a disambiguation comment and
  * possibly an annotation as well.
  */
-public value class LabelName(public val value: String) {
+@Parcelize
+@JvmInline
+public value class LabelName(public val value: String) : Parcelable {
   public companion object {
     public val UNKNOWN: LabelName = LabelName("Unknown")
   }

@@ -17,13 +17,17 @@
 
 package com.ealva.ealvabrainz.common
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * An editor is the user that created a Collection. So, your login name for MusicBrainz
  * would be the editor name for collections
  */
 @Suppress("unused")
+@Parcelize
 @JvmInline
-public value class EditorName(public val value: String) {
+public value class EditorName(public val value: String) : Parcelable {
   public companion object {
     public val UNKNOWN: EditorName = EditorName("Unknown")
   }

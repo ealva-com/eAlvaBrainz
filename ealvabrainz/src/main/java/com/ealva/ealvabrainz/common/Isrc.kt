@@ -17,6 +17,9 @@
 
 package com.ealva.ealvabrainz.common
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * The ISRC (International Standard Recording Code) is the international identification system for
  * sound recordings and music video recordings. Each ISRC is a unique and permanent identifier for a
@@ -28,8 +31,9 @@ package com.ealva.ealvabrainz.common
  *
  * [MusicBrainz ISRC](https://musicbrainz.org/doc/ISRC#Determining_ISRCs_of_recordings)
  */
+@Parcelize
 @JvmInline
-public value class Isrc(public val value: String) {
+public value class Isrc(public val value: String) : Parcelable {
   public companion object {
     public val UNKNOWN: Isrc = Isrc("Unknown")
   }

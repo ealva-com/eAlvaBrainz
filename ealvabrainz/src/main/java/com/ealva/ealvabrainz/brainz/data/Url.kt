@@ -19,6 +19,7 @@ package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.Url.Companion.NullUrl
 import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 
 /**
  * A MusicBrainz URL consists of its ID and the actual Url
@@ -81,6 +82,7 @@ public class Url(
 public inline val Url.isNullObject: Boolean
   get() = this === NullUrl
 
+@Parcelize
 @JvmInline
 public value class UrlMbid(override val value: String) : Mbid
 

@@ -19,6 +19,7 @@ package com.ealva.ealvabrainz.brainz.data
 
 import com.ealva.ealvabrainz.brainz.data.Genre.Companion.NullGenre
 import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 
 @JsonClass(generateAdapter = true)
 public class Genre(
@@ -71,6 +72,7 @@ public class Genre(
 public val Genre.isNullObject: Boolean
   get() = this === NullGenre
 
+@Parcelize
 @JvmInline
 public value class GenreMbid(override val value: String) : Mbid
 

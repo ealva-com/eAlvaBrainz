@@ -21,6 +21,7 @@ package com.ealva.ealvabrainz.brainz.data
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 
 /**
  * Result from artist mbid lookup
@@ -279,6 +280,7 @@ public class Artist(
 public inline val Artist.isNullObject: Boolean
   get() = this === Artist.NullArtist
 
+@Parcelize
 @JvmInline
 public value class ArtistMbid(override val value: String) : Mbid {
   @Suppress("unused")

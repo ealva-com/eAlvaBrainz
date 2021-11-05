@@ -20,6 +20,7 @@ package com.ealva.ealvabrainz.brainz.data
 import com.nhaarman.expect.Matcher
 import com.nhaarman.expect.expect
 import com.nhaarman.expect.fail
+import kotlinx.parcelize.Parcelize
 import org.junit.Test
 
 public class MbidTest {
@@ -97,5 +98,6 @@ private fun Matcher<TestMbid>.toBeInvalid() {
   if (mbid.isValid) fail("Expected invalid Mbid but was $mbid")
 }
 
+@Parcelize
 @JvmInline
 private value class TestMbid(override val value: String) : Mbid

@@ -17,11 +17,14 @@
 
 package com.ealva.ealvabrainz.common
 
+import android.os.Parcelable
 import com.ealva.ealvabrainz.brainz.data.CdStub
 import com.ealva.ealvabrainz.brainz.data.Disc
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @JvmInline
-public value class DiscId(public val value: String)
+public value class DiscId(public val value: String) : Parcelable
 
 public inline val Disc.discId: DiscId
   get() = DiscId(id)

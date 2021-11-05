@@ -109,7 +109,7 @@ fun Fragment.getArtistViewModel(
 private class ArtistViewModelFactory(
   private val brainz: MusicBrainzService
 ) : ViewModelProvider.Factory {
-  override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+  override fun <T : ViewModel> create(modelClass: Class<T>): T {
     require(modelClass.isAssignableFrom(ArtistViewModelImpl::class.java))
     @Suppress("UNCHECKED_CAST")
     return ArtistViewModelImpl(brainz) as T

@@ -19,6 +19,7 @@ package com.ealva.ealvabrainz.brainz.data
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 
 @JsonClass(generateAdapter = true)
 public class Instrument(
@@ -147,6 +148,7 @@ public class Instrument(
 public inline val Instrument.isNullObject: Boolean
   get() = this === Instrument.NullInstrument
 
+@Parcelize
 @JvmInline
 public value class InstrumentMbid(override val value: String) : Mbid
 

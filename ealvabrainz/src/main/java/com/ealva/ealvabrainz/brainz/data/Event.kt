@@ -19,6 +19,7 @@ package com.ealva.ealvabrainz.brainz.data
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 
 /**
  * An event refers to an organised event which people can attend, and is relevant to MusicBrainz.
@@ -233,6 +234,7 @@ public class Event(
 public inline val Event.isNullObject: Boolean
   get() = this === Event.NullEvent
 
+@Parcelize
 @JvmInline
 public value class EventMbid(override val value: String) : Mbid
 

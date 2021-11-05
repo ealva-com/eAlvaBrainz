@@ -19,6 +19,7 @@ package com.ealva.ealvabrainz.brainz.data
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 
 /**
  * In the Json sent from the server the different in Collection "types" can be found in 2 locations.
@@ -257,6 +258,7 @@ public class WorkCollection(
 public val WorkCollection.isNullObject: Boolean
   get() = this === WorkCollection.NullWorkCollection
 
+@Parcelize
 @JvmInline
 public value class CollectionMbid(override val value: String) : Mbid
 

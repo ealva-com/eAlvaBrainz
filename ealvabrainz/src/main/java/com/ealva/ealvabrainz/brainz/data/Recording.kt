@@ -20,6 +20,7 @@ package com.ealva.ealvabrainz.brainz.data
 import com.ealva.ealvabrainz.brainz.data.Recording.Companion.NullRecording
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 
 /**
  * A [recording](https://musicbrainz.org/doc/Recording) is an entity in MusicBrainz which can be
@@ -263,6 +264,7 @@ public class Recording(
 public val Recording.isNullObject: Boolean
   get() = this === NullRecording
 
+@Parcelize
 @JvmInline
 public value class RecordingMbid(override val value: String) : Mbid
 

@@ -19,6 +19,7 @@ package com.ealva.ealvabrainz.brainz.data
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.parcelize.Parcelize
 
 /**
  * Labels are one of the most complicated and controversial parts of the music industry. The
@@ -265,6 +266,7 @@ public class Label(
 public inline val Label.isNullObject: Boolean
   get() = this === Label.NullLabel
 
+@Parcelize
 @JvmInline
 public value class LabelMbid(override val value: String) : Mbid
 

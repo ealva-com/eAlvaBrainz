@@ -294,17 +294,16 @@ public class MusicBrainzFindSmokeTest {
       .onSuccess { tagList ->
         expect(tagList.count).toBeGreaterThan(25) // 28 last checked
         expect(tagList.tags).toHaveSize(25)
-        expect(tagList.tags).toHaveAny {
-          it.score == 100 && it.name == "rock shoegaze"
-        }
-        expect(tagList.tags).toHaveAny {
-          it.score == 100 && it.name == "indie shoegaze"
+        expect(tagList.tags).toHaveAny({ "didn't contain shoegaze" }) {
+          it.score == 100 && it.name.contains("shoegaze", ignoreCase = true)
         }
       }
       .onFailure { fail("Brainz call failed") { it.toString() } }
 
     findTag { default("indie") }
-      .onSuccess { tagList -> expect(tagList.tags).toHaveAny { it.name.contains("indie") } }
+      .onSuccess { tagList ->
+        expect(tagList.tags).toHaveAny({ "indie" }) { it.name.contains("indie", ignoreCase = true) }
+      }
       .onFailure { fail("Brainz call failed") { it.toString() } }
   }
 

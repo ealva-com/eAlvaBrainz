@@ -17,12 +17,16 @@
 
 package com.ealva.ealvabrainz.common
 
-@JvmInline
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 /**
  * Name of a Lyricist artist, be it a person or a band. The may be a partial name if used in a
  * query
  */
-public value class LyricistName(public val value: String) {
+@Parcelize
+@JvmInline
+public value class LyricistName(public val value: String) : Parcelable {
   public companion object {
     public val UNKNOWN: LyricistName = LyricistName("Unknown")
   }
