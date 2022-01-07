@@ -30,13 +30,9 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 
 @JvmInline
-value class Isni(val value: String) {
-  companion object {
-    val NullIsni: Isni = Isni("")
-  }
-}
+value class Isni(val value: String)
 
-fun String.toIsni(): Isni = Isni(this)
+val String?.asIsni: Isni get() = Isni(this?.trim() ?: "")
 
 inline val Isni.appearsValid: Boolean
   get() = value.length == 16

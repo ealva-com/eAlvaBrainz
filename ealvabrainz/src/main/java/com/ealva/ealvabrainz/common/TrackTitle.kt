@@ -31,7 +31,7 @@ public value class TrackTitle(public val value: String) : Parcelable {
 /**
  * Convert this String to an [TrackTitle] or [TrackTitle.UNKNOWN] if this is null.
  */
-@Suppress("unused")
-public fun String?.toTrackTitle(): TrackTitle {
-  return if (this != null) TrackTitle(trim()) else TrackTitle.UNKNOWN
-}
+public inline val String?.asTrackTitle: TrackTitle
+  get() = this?.let { TrackTitle(it.trim()) } ?: TrackTitle.UNKNOWN
+
+public inline val TrackTitle.isBlank: Boolean get() = value.isBlank()

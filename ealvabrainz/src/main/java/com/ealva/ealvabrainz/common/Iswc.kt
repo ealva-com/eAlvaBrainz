@@ -39,6 +39,7 @@ public value class Iswc(public val value: String) : Parcelable {
   }
 }
 
-@Suppress("unused")
-public fun String?.toIswc(): Iswc =
-  if (this != null) Iswc(trim()) else Iswc.UNKNOWN
+public inline val String?.asIswc: Iswc
+  get() = this?.let { Iswc(it.trim()) } ?: Iswc.UNKNOWN
+
+public inline val Iswc.isBlank: Boolean get() = value.isBlank()

@@ -18,16 +18,16 @@
 object SdkVersion {
   const val COMPILE = 31
   const val MIN = 21
-  const val TARGET = 30
+  const val TARGET = 31
 }
 
 object PluginsVersion {
-  const val AGP = "7.0.3"
-  const val DETEKT = "1.18.1"
-  const val DOKKA = "1.5.31"
-  const val KOTLIN = "1.5.31"
+  const val AGP = "7.0.4"
+  const val DETEKT = "1.19.0"
+  const val DOKKA = "1.6.10"
+  const val KOTLIN = "1.6.10"
   const val VANNIKTECH_PUBLISH = "0.18.0"
-  const val VERSIONS = "0.39.0"
+  const val VERSIONS = "0.41.0"
 }
 
 object Libs {
@@ -35,7 +35,7 @@ object Libs {
   const val DESUGAR = "com.android.tools:desugar_jdk_libs:1.1.5"
 
   object AndroidX {
-    const val APPCOMPAT = "androidx.appcompat:appcompat:1.3.1"
+    const val APPCOMPAT = "androidx.appcompat:appcompat:1.4.0"
     const val PALETTE = "androidx.palette:palette:1.0.0"
     const val STARTUP = "androidx.startup:startup-runtime:1.1.0"
 
@@ -62,7 +62,7 @@ object Libs {
   }
 
   object Credentials {
-    const val OKHTTP_DIGEST = "io.github.rburgst:okhttp-digest:2.5"
+    const val OKHTTP_DIGEST = "io.github.rburgst:okhttp-digest:2.6"
   }
 
   object Expect {
@@ -74,17 +74,17 @@ object Libs {
   }
 
   object Koin {
-    private const val VERSION = "3.1.3"
+    private const val VERSION = "3.1.4"
     const val CORE = "io.insert-koin:koin-core:$VERSION"
     const val ANDROID = "io.insert-koin:koin-android:$VERSION"
   }
 
   object Kotlin {
-    private const val VERSION = "1.5.31"
+    private const val VERSION = "1.6.10"
     const val KGP = "org.jetbrains.kotlin:kotlin-gradle-plugin:$VERSION"
 
     object Coroutines {
-      private const val VERSION = "1.5.2"
+      private const val VERSION = "1.6.0"
       const val CORE = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$VERSION"
       const val ANDROID =
         "org.jetbrains.kotlinx:kotlinx-coroutines-android:$VERSION"
@@ -105,7 +105,7 @@ object Libs {
   }
 
   object Mockito {
-    const val INLINE = "org.mockito:mockito-inline:4.0.0"
+    const val INLINE = "org.mockito:mockito-inline:4.2.0"
     const val KOTLIN = "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
   }
 
@@ -116,13 +116,13 @@ object Libs {
   }
 
   object Robolectric {
-    const val ROBOLECTRIC = "org.robolectric:robolectric:4.6.1"
+    const val ROBOLECTRIC = "org.robolectric:robolectric:4.7.3"
   }
 
   object Square {
     private const val MOSHI_VERSION = "1.12.0"
     private const val RETRO_VERSION = "2.9.0"
-    private const val OK_VERSION = "4.9.2"
+    private const val OK_VERSION = "4.9.3"
     const val MOSHI = "com.squareup.moshi:moshi:$MOSHI_VERSION"
     const val MOSHI_CODEGEN = "com.squareup.moshi:moshi-kotlin-codegen:$MOSHI_VERSION"
     const val MOSHI_RETROFIT = "com.squareup.retrofit2:converter-moshi:$RETRO_VERSION"

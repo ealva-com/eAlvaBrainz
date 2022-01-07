@@ -35,7 +35,7 @@ public value class PlaceName(public val value: String) : Parcelable {
 /**
  * Convert this String to an [PlaceName] or [PlaceName.UNKNOWN] if this is null.
  */
-@Suppress("unused")
-public fun String?.toPlaceName(): PlaceName {
-  return if (this != null) PlaceName(trim()) else PlaceName.UNKNOWN
-}
+public inline val String?.asPlaceName: PlaceName
+  get() = this?.let { PlaceName(it.trim()) } ?: PlaceName.UNKNOWN
+
+public inline val PlaceName.isBlank: Boolean get() = value.isBlank()

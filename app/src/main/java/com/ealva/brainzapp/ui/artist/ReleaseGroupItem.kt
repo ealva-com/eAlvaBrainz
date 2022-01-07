@@ -23,7 +23,7 @@ import com.ealva.brainzapp.data.StarRating
 import com.ealva.brainzapp.data.toStarRating
 import com.ealva.ealvabrainz.common.AlbumTitle
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
-import com.ealva.ealvabrainz.common.toAlbumTitle
+import com.ealva.ealvabrainz.common.asAlbumTitle
 
 class ReleaseGroupItem private constructor(
   val id: Long,
@@ -87,7 +87,10 @@ class ReleaseGroupItem private constructor(
       ReleaseGroupItem(
         -1L,
         ReleaseGroupMbid(""),
-        "".toAlbumTitle(),
+        /**
+         * Convert this String to an [AlbumTitle] or [AlbumTitle.UNKNOWN] if this is null.
+         */
+        "".asAlbumTitle,
         ReleaseGroupType.Primary.Unknown,
         emptyList(),
         0.0F.toStarRating(),

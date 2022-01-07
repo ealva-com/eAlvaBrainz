@@ -35,7 +35,7 @@ public value class EventName(public val value: String) : Parcelable {
 /**
  * Convert this String to an [EventName] or [EventName.UNKNOWN] if this is null.
  */
-@Suppress("unused")
-public fun String?.toEventName(): EventName {
-  return if (this != null) EventName(trim()) else EventName.UNKNOWN
-}
+public inline val String?.asEventName: EventName
+  get() = this?.let { EventName(it.trim()) } ?: EventName.UNKNOWN
+
+public inline val EventName.isBlank: Boolean get() = value.isBlank()

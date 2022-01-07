@@ -28,6 +28,7 @@ public value class SeriesName(public val value: String) : Parcelable {
   }
 }
 
-@Suppress("unused")
-public fun String?.toSeriesName(): SeriesName =
-  if (this != null) SeriesName(trim()) else SeriesName.UNKNOWN
+public inline val String?.asSeriesName: SeriesName
+  get() = this?.let { SeriesName(it.trim()) } ?: SeriesName.UNKNOWN
+
+public inline val SeriesName.isBlank: Boolean get() = value.isBlank()

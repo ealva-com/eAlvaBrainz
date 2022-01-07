@@ -31,8 +31,11 @@ public value class ComposerName(public val value: String) : Parcelable {
     public val UNKNOWN: ComposerName = ComposerName("Unknown")
   }
 }
+
 /**
  * Convert this String to an [ComposerName] or [ComposerName.UNKNOWN] if this is null.
  */
-public fun String?.toComposerName(): ComposerName =
-  if (this != null) ComposerName(trim()) else ComposerName.UNKNOWN
+public inline val String?.asComposerName: ComposerName
+  get() = this?.let { ComposerName(it.trim()) } ?: ComposerName.UNKNOWN
+
+public inline val ComposerName.isBlank: Boolean get() = value.isBlank()

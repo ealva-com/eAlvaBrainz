@@ -38,5 +38,7 @@ public value class RecordingTitle(public val value: String) : Parcelable {
 /**
  * Convert this String to an [RecordingTitle] or [RecordingTitle.UNKNOWN] if this is null.
  */
-public fun String?.toRecordingTitle(): RecordingTitle =
-  if (this != null) RecordingTitle(trim()) else RecordingTitle.UNKNOWN
+public inline val String?.asRecordingTitle: RecordingTitle
+  get() = this?.let { RecordingTitle(it.trim()) } ?: RecordingTitle.UNKNOWN
+
+public inline val RecordingTitle.isBlank: Boolean get() = value.isBlank()

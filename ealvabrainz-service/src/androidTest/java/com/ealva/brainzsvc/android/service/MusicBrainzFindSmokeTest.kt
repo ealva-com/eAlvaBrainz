@@ -41,7 +41,7 @@ import com.ealva.ealvabrainz.common.LabelName
 import com.ealva.ealvabrainz.common.Limit
 import com.ealva.ealvabrainz.common.WorkName
 import com.ealva.ealvabrainz.common.Year
-import com.ealva.ealvabrainz.common.toAlbumTitle
+import com.ealva.ealvabrainz.common.asAlbumTitle
 import com.ealva.ealvabrainz.test.shared.MainCoroutineRule
 import com.ealva.ealvabrainz.test.shared.runBlockingTest
 import com.ealva.ealvabrainz.test.shared.toHaveAll
@@ -217,7 +217,11 @@ public class MusicBrainzFindSmokeTest {
 
   @Test
   public fun findReleaseJethroTullAqualung(): Unit = brainz {
-    val aqualung = "Aqualung".toAlbumTitle()
+    val aqualung =
+      /**
+       * Convert this String to an [AlbumTitle] or [AlbumTitle.UNKNOWN] if this is null.
+       */
+      "Aqualung".asAlbumTitle
     findRelease(Limit(4)) { artist(JETHRO_TULL) and release(aqualung) }
       .onSuccess { releaseList -> expect(releaseList.releases).toHaveSize(4) }
       .onFailure { fail("Brainz call failed") { it.toString() } }
@@ -226,7 +230,12 @@ public class MusicBrainzFindSmokeTest {
   @Test
   public fun findReleaseJethroTullNotFound(): Unit = brainz {
     findRelease(Limit(4)) {
-      artist(JETHRO_TULL) and release("not found".toAlbumTitle())
+      artist(JETHRO_TULL) and release(
+        /**
+         * Convert this String to an [AlbumTitle] or [AlbumTitle.UNKNOWN] if this is null.
+         */
+        "not found".asAlbumTitle
+      )
     }.onSuccess { releaseList ->
       expect(releaseList.count).toBe(0)
     }.onFailure { fail("Brainz call failed") { it.toString() } }

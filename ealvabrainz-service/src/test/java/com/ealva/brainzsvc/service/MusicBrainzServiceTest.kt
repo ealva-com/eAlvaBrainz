@@ -39,10 +39,10 @@ import com.ealva.ealvabrainz.common.BrainzException
 import com.ealva.ealvabrainz.common.BrainzInvalidStatusException
 import com.ealva.ealvabrainz.common.Limit
 import com.ealva.ealvabrainz.common.Offset
+import com.ealva.ealvabrainz.common.asAlbumTitle
+import com.ealva.ealvabrainz.common.asArtistName
+import com.ealva.ealvabrainz.common.asRecordingTitle
 import com.ealva.ealvabrainz.common.buildQueryMap
-import com.ealva.ealvabrainz.common.toAlbumTitle
-import com.ealva.ealvabrainz.common.toArtistName
-import com.ealva.ealvabrainz.common.toRecordingTitle
 import com.ealva.ealvabrainz.test.shared.MainCoroutineRule
 import com.ealva.ealvabrainz.test.shared.runBlockingTest
 import com.github.michaelbull.result.Err
@@ -177,9 +177,13 @@ public class MusicBrainzServiceTest {
   @Test
   public fun `test find recording query string`(): Unit = coroutineRule.runBlockingTest {
     val dummy = RecordingList()
-    val recordingName = "Her Majesty".toRecordingTitle()
-    val albumName = "Abbey Road".toAlbumTitle()
-    val artistName = "The Beatles".toArtistName()
+    val recordingName = "Her Majesty".asRecordingTitle
+    val albumName =
+      /**
+       * Convert this String to an [AlbumTitle] or [AlbumTitle.UNKNOWN] if this is null.
+       */
+      "Abbey Road".asAlbumTitle
+    val artistName = "The Beatles".asArtistName
     val query =
       """(recording:"${recordingName.value}" AND artist:"${artistName.value}" """ +
         """AND release:"${albumName.value}")"""

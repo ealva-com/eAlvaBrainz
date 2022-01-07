@@ -35,10 +35,10 @@ import com.ealva.ealvabrainz.brainz.data.TrackMbid
 import com.ealva.ealvabrainz.brainz.data.UrlMbid
 import com.ealva.ealvabrainz.brainz.data.WorkMbid
 import com.ealva.ealvabrainz.common.Formatting
-import com.ealva.ealvabrainz.common.toAlbumTitle
-import com.ealva.ealvabrainz.common.toArtistName
-import com.ealva.ealvabrainz.common.toLabelName
-import com.ealva.ealvabrainz.common.toRecordingTitle
+import com.ealva.ealvabrainz.common.asAlbumTitle
+import com.ealva.ealvabrainz.common.asArtistName
+import com.ealva.ealvabrainz.common.asLabelName
+import com.ealva.ealvabrainz.common.asRecordingTitle
 import com.nhaarman.expect.expect
 import com.nhaarman.expect.fail
 import org.junit.Test
@@ -198,10 +198,10 @@ public class TermTest {
 
     val aTitle = "Short (Subtitle)"
     val escapedTitle = """"$aTitle""""
-    expect(Term(aTitle.toAlbumTitle()).toString()).toBe(escapedTitle)
-    expect(Term(aTitle.toArtistName()).toString()).toBe(escapedTitle)
-    expect(Term(aTitle.toLabelName()).toString()).toBe(escapedTitle)
-    expect(Term(aTitle.toRecordingTitle()).toString()).toBe(escapedTitle)
+    expect(Term(aTitle.asAlbumTitle).toString()).toBe(escapedTitle)
+    expect(Term(aTitle.asArtistName).toString()).toBe(escapedTitle)
+    expect(Term(aTitle.asLabelName).toString()).toBe(escapedTitle)
+    expect(Term(aTitle.asRecordingTitle).toString()).toBe(escapedTitle)
 
     expect(Term(ReleaseGroup.Type.Album).toString()).toBe(ReleaseGroup.Type.Album.value)
     expect(Term(Release.Status.Official).toString()).toBe(Release.Status.Official.value)

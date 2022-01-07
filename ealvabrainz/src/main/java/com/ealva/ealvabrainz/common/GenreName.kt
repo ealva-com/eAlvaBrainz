@@ -32,6 +32,7 @@ public value class GenreName(public val value: String) : Parcelable {
 /**
  * Convert this String to a [GenreName] or [GenreName.UNKNOWN] if this is null.
  */
-@Suppress("unused")
-public fun String?.toGenreName(): GenreName =
-  if (this != null) GenreName(trim()) else GenreName.UNKNOWN
+public inline val String?.asGenreName: GenreName
+  get() = this?.let { GenreName(it.trim()) } ?: GenreName.UNKNOWN
+
+public inline val GenreName.isBlank: Boolean get() = value.isBlank()

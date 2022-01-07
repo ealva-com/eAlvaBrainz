@@ -36,18 +36,6 @@ android {
     consumerProguardFiles("consumer-rules.pro")
   }
 
-  kotlinOptions {
-    jvmTarget = "1.8"
-    languageVersion = "1.5"
-    apiVersion = "1.5"
-    suppressWarnings = false
-    verbose = true
-    freeCompilerArgs = listOf(
-      "-Xopt-in=kotlin.RequiresOptIn",
-      "-Xexplicit-api=warning"
-    )
-  }
-
   compileOptions {
     isCoreLibraryDesugaringEnabled = true
     sourceCompatibility = JavaVersion.VERSION_1_8

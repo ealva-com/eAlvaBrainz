@@ -28,11 +28,10 @@ import androidx.lifecycle.viewModelScope
 import com.ealva.brainzapp.data.Country
 import com.ealva.brainzapp.data.GenreItem
 import com.ealva.brainzapp.data.Isni
-import com.ealva.brainzapp.data.Isni.Companion.NullIsni
 import com.ealva.brainzapp.data.StarRating
+import com.ealva.brainzapp.data.asIsni
 import com.ealva.brainzapp.data.toCountry
 import com.ealva.brainzapp.data.toGenreItems
-import com.ealva.brainzapp.data.toIsni
 import com.ealva.brainzapp.data.toPrimaryReleaseGroupType
 import com.ealva.brainzapp.data.toSecondaryReleaseGroupList
 import com.ealva.brainzapp.data.toStarRating
@@ -55,9 +54,9 @@ import com.ealva.ealvabrainz.brainz.data.isValid
 import com.ealva.ealvabrainz.brainz.data.mbid
 import com.ealva.ealvabrainz.browse.ReleaseBrowse.BrowseOn
 import com.ealva.ealvabrainz.common.ArtistName
-import com.ealva.ealvabrainz.common.toAlbumTitle
-import com.ealva.ealvabrainz.common.toArtistName
-import com.ealva.ealvabrainz.common.toLabelName
+import com.ealva.ealvabrainz.common.asAlbumTitle
+import com.ealva.ealvabrainz.common.asArtistName
+import com.ealva.ealvabrainz.common.asLabelName
 import com.ealva.ealvalog.e
 import com.ealva.ealvalog.invoke
 import com.github.michaelbull.result.andThen
@@ -221,7 +220,7 @@ internal class ArtistViewModelImpl(
       if (!releaseMap.containsKey(releaseMbid)) {
         releaseMap[releaseMbid] = ReleaseItem.make(
           releaseMbid,
-          release.title.toAlbumTitle(),
+          release.title.asAlbumTitle,
           format,
           tracks,
           release.country,
@@ -247,7 +246,7 @@ internal class ArtistViewModelImpl(
         entry.value.run {
           displayMap[entry.key] = ReleaseGroupItem.make(
             mbid,
-            title.toAlbumTitle(),
+            title.asAlbumTitle,
             primaryType.toPrimaryReleaseGroupType(),
             secondaryTypes.toSecondaryReleaseGroupList(),
             rating.value.toStarRating(),
@@ -295,7 +294,7 @@ internal class ArtistViewModelImpl(
       DisplayArtist(
         mbid = resultMbid,
         type = brainzArtist.artistType,
-        name = brainzArtist.name.toArtistName(),
+        name = brainzArtist.name.asArtistName,
         country = brainzArtist.country.toCountry(),
         area = brainzArtist.area.name,
         lifespanBegin = brainzArtist.lifeSpan.begin,
@@ -303,7 +302,7 @@ internal class ArtistViewModelImpl(
         lifespanEnded = brainzArtist.lifeSpan.ended,
         lifespanEnd = brainzArtist.lifeSpan.end,
         endArea = brainzArtist.endArea.name,
-        isni = brainzArtist.isnis.firstOrNull()?.toIsni() ?: NullIsni,
+        isni = brainzArtist.isnis.firstOrNull().asIsni,
         rating = brainzArtist.rating.value.toStarRating(),
         ratingVotes = brainzArtist.rating.votesCount,
         genres = brainzArtist.genres.toGenreItems()
@@ -313,7 +312,7 @@ internal class ArtistViewModelImpl(
 }
 
 private fun List<ArtistCredit>.toCreditItems(): List<CreditItem> = map {
-  CreditItem(it.artist.mbid, it.artist.name.toArtistName(), it.joinphrase)
+  CreditItem(it.artist.mbid, it.artist.name.asArtistName, it.joinphrase)
 }.toList()
 
 private fun List<LabelInfo>.toLabelItems(): MutableList<LabelItem> = asSequence()
@@ -322,7 +321,7 @@ private fun List<LabelInfo>.toLabelItems(): MutableList<LabelItem> = asSequence(
   .mapTo(ArrayList(size)) { labelInfo ->
     LabelItem(
       labelInfo.label.mbid,
-      labelInfo.label.name.toLabelName(),
+      labelInfo.label.name.asLabelName,
       labelInfo.label.disambiguation
     )
   }

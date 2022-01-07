@@ -48,6 +48,7 @@ public value class LabelName(public val value: String) : Parcelable {
 /**
  * Convert this String to an [LabelName] or [LabelName.UNKNOWN] if this is null.
  */
-public fun String?.toLabelName(): LabelName {
-  return if (this != null) LabelName(trim()) else LabelName.UNKNOWN
-}
+public inline val String?.asLabelName: LabelName
+  get() = this?.let { LabelName(it.trim()) } ?: LabelName.UNKNOWN
+
+public inline val LabelName.isBlank: Boolean get() = value.isBlank()

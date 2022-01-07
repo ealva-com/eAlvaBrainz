@@ -31,9 +31,7 @@ public value class AlbumTitle(public val value: String) : Parcelable {
   }
 }
 
-/**
- * Convert this String to an [AlbumTitle] or [AlbumTitle.UNKNOWN] if this is null.
- */
-public fun String?.toAlbumTitle(): AlbumTitle {
-  return if (this != null) AlbumTitle(trim()) else AlbumTitle.UNKNOWN
-}
+public inline val String?.asAlbumTitle: AlbumTitle
+  get() = this?.let { AlbumTitle(it.trim()) } ?: AlbumTitle.UNKNOWN
+
+public inline val AlbumTitle.isBlank: Boolean get() = value.isBlank()

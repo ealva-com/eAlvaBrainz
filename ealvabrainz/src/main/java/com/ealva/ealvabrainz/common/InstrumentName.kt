@@ -31,7 +31,7 @@ public value class InstrumentName(public val value: String) : Parcelable {
 /**
  * Convert this String to an [InstrumentName] or [InstrumentName.UNKNOWN] if this is null.
  */
-@Suppress("unused")
-public fun String?.toInstrumentName(): InstrumentName {
-  return if (this != null) InstrumentName(trim()) else InstrumentName.UNKNOWN
-}
+public inline val String?.asInstrumentName: InstrumentName
+  get() = this?.let { InstrumentName(it.trim()) } ?: InstrumentName.UNKNOWN
+
+public inline val InstrumentName.isBlank: Boolean get() = value.isBlank()

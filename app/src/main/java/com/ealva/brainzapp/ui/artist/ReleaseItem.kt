@@ -29,7 +29,7 @@ import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.brainz.data.LabelMbid
 import com.ealva.ealvabrainz.common.LabelName
 import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
-import com.ealva.ealvabrainz.common.toAlbumTitle
+import com.ealva.ealvabrainz.common.asAlbumTitle
 import me.gujun.android.span.span
 import splitties.resources.appStyledColor
 
@@ -158,7 +158,10 @@ class ReleaseItem private constructor(
       ReleaseItem(
         -1L,
         ReleaseMbid(""),
-        "".toAlbumTitle(),
+        /**
+         * Convert this String to an [AlbumTitle] or [AlbumTitle.UNKNOWN] if this is null.
+         */
+        "".asAlbumTitle,
         format = "",
         tracks = "",
         country = "",

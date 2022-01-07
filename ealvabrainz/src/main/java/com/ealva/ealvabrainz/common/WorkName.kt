@@ -28,6 +28,7 @@ public value class WorkName(public val value: String) : Parcelable {
   }
 }
 
-@Suppress("unused")
-public fun String?.toWorkName(): WorkName =
-  if (this != null) WorkName(trim()) else WorkName.UNKNOWN
+public inline val String?.asWorkName: WorkName
+  get() = this?.let { WorkName(it.trim()) } ?: WorkName.UNKNOWN
+
+public inline val WorkName.isBlank: Boolean get() = value.isBlank()

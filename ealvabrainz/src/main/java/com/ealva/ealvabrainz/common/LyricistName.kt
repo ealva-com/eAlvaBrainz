@@ -31,8 +31,11 @@ public value class LyricistName(public val value: String) : Parcelable {
     public val UNKNOWN: LyricistName = LyricistName("Unknown")
   }
 }
+
 /**
  * Convert this String to an [LyricistName] or [LyricistName.UNKNOWN] if this is null.
  */
-public fun String?.toLyricistName(): LyricistName =
-  if (this != null) LyricistName(trim()) else LyricistName.UNKNOWN
+public inline val String?.asLyricistName: LyricistName
+  get() = this?.let { LyricistName(it.trim()) } ?: LyricistName.UNKNOWN
+
+public inline val LyricistName.isBlank: Boolean get() = value.isBlank()

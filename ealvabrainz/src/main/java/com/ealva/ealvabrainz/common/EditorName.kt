@@ -33,6 +33,5 @@ public value class EditorName(public val value: String) : Parcelable {
   }
 }
 
-@Suppress("unused")
-public fun String?.toEditorName(): EditorName =
-  if (this != null) EditorName(trim()) else EditorName.UNKNOWN
+public inline val String?.asEditorName: EditorName
+  get() = this?.let { EditorName(it.trim()) } ?: EditorName.UNKNOWN

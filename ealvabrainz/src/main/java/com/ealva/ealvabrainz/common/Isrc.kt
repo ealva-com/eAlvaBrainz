@@ -39,6 +39,7 @@ public value class Isrc(public val value: String) : Parcelable {
   }
 }
 
-@Suppress("unused")
-public fun String?.toIsrc(): Isrc =
-  if (this != null) Isrc(trim()) else Isrc.UNKNOWN
+public inline val String?.asIsrc: Isrc
+  get() = this?.let { Isrc(it.trim()) } ?: Isrc.UNKNOWN
+
+public inline val Isrc.isBlank: Boolean get() = value.isBlank()

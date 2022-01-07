@@ -29,9 +29,7 @@ public value class AreaName(public val value: String) : Parcelable {
   }
 }
 
-/**
- * Convert this String to an [AreaName] or [AreaName.UNKNOWN] if this is null.
- */
-@Suppress("unused")
-public fun String?.toAreaName(): AreaName =
-  if (this != null) AreaName(trim()) else AreaName.UNKNOWN
+public inline val String?.asAreaName: AreaName
+  get() = this?.let { AreaName(it.trim()) } ?: AreaName.UNKNOWN
+
+public inline val AreaName.isBlank: Boolean get() = value.isBlank()
