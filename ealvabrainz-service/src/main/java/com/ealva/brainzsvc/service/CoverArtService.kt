@@ -24,8 +24,8 @@ import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
 import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
 import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.coroutines.runSuspendCatching
 import com.github.michaelbull.result.mapError
-import com.github.michaelbull.result.runCatching
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -87,7 +87,7 @@ private class CoverArtServiceImpl(
   suspend fun <T : Any> coverArt(
     block: CoverArtCall<T>
   ): Result<T, BrainzMessage> = withContext(dispatcher) {
-    runCatching { coverArt.block() }
+    runSuspendCatching { coverArt.block() }
       .mapError { ex -> BrainzMessage.BrainzExceptionMessage(ex) }
       .mapResponse()
   }

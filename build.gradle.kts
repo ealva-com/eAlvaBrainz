@@ -29,7 +29,6 @@ plugins {
 
 allprojects {
   repositories {
-    jcenter()
     google()
     mavenCentral()
     maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
@@ -43,18 +42,12 @@ subprojects {
 
   detekt {
     config = rootProject.files("config/detekt/detekt.yml")
-    reports {
-      html {
-        enabled = true
-        destination = file("build/reports/detekt.html")
-      }
-    }
   }
 }
 
 buildscript {
   dependencies {
-    classpath("com.android.tools.build:gradle:7.0.0-beta03")
+    classpath("com.android.tools.build:gradle:${PluginsVersion.AGP}")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${PluginsVersion.KOTLIN}")
   }
 }

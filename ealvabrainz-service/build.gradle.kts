@@ -127,6 +127,7 @@ dependencies {
   implementation(Libs.Square.OKHTTP_LOGGING)
 
   implementation(Libs.Result.RESULT)
+  implementation(Libs.Result.COROUTINES)
   implementation(Libs.Credentials.OKHTTP_DIGEST)
 
   testImplementation(Libs.JUnit.JUNIT)

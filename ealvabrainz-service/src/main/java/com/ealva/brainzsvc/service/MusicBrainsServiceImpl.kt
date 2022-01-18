@@ -134,7 +134,7 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.mapError
-import com.github.michaelbull.result.runCatching
+import com.github.michaelbull.result.coroutines.runSuspendCatching
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -475,7 +475,7 @@ private class MusicBrainzServiceImpl(
   override suspend fun <T : Any> brainz(
     block: BrainzCall<T>
   ): Result<T, BrainzMessage> = withContext(dispatcher) {
-    runCatching { musicBrainz.block() }
+    runSuspendCatching { musicBrainz.block() }
       .mapError { ex -> BrainzMessage.BrainzExceptionMessage(ex) }
       .mapResponse()
   }

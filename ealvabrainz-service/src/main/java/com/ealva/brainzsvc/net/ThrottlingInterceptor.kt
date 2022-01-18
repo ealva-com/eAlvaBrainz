@@ -28,7 +28,6 @@ import okhttp3.Response
 
 private val LOG by brainzLogger(ThrottlingInterceptor::class)
 
-@Suppress("MaxLineLength")
 /**
  * Interceptor that throttles requests to the server
  *
