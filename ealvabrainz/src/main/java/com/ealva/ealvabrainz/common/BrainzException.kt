@@ -17,8 +17,10 @@
 
 package com.ealva.ealvabrainz.common
 
-public open class BrainzException(message: String, cause: Throwable? = null) :
-  RuntimeException(message, cause)
+public open class BrainzException internal constructor(
+  message: String,
+  cause: Throwable? = null
+) : RuntimeException(message, cause)
 
 public class BrainzInvalidTypeException : BrainzException(
   "Type is not a valid parameter unless 'include' contains releases or release-groups"

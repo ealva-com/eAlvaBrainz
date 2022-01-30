@@ -138,7 +138,7 @@ fun SpinnerWrapper.itemSelectedFlow(): Flow<SpinnerSelection> = callbackFlow<Spi
     override fun onNothingSelected(parent: AdapterView<*>?) {}
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-      offer(SpinnerSelection(parent, view, position, id))
+      trySend(SpinnerSelection(parent, view, position, id))
     }
   })
   awaitClose { setOnItemSelectedListener(null) }

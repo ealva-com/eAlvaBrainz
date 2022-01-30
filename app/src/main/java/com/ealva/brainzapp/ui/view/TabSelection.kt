@@ -35,15 +35,15 @@ sealed class TabSelection(@Suppress("unused") val tab: TabLayout.Tab) {
 fun TabLayout.tabSelectionFlow(): Flow<TabSelection> = callbackFlow<TabSelection> {
   val listener = object : TabLayout.OnTabSelectedListener {
     override fun onTabReselected(tab: TabLayout.Tab) {
-      offer(TabSelection.Reselected(tab))
+      trySend(TabSelection.Reselected(tab))
     }
 
     override fun onTabUnselected(tab: TabLayout.Tab) {
-      offer(TabSelection.Unselected(tab))
+      trySend(TabSelection.Unselected(tab))
     }
 
     override fun onTabSelected(tab: TabLayout.Tab) {
-      offer(TabSelection.Selected(tab))
+      trySend(TabSelection.Selected(tab))
     }
   }
   addOnTabSelectedListener(listener)

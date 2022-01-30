@@ -45,8 +45,8 @@ android {
   }
 
   lint {
-    isWarningsAsErrors = false
-    isAbortOnError = false
+    warningsAsErrors = false
+    abortOnError = false
   }
 
   kotlinOptions {
@@ -68,7 +68,7 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10")
 
   implementation(Libs.AndroidX.APPCOMPAT)
-  implementation("androidx.constraintlayout:constraintlayout:2.1.2")
+  implementation("androidx.constraintlayout:constraintlayout:2.1.3")
 //  implementation("com.android.support.constraint:constraint-layout:2.1.1")
   implementation(Libs.AndroidX.Ktx.CORE)
   implementation(Libs.AndroidX.Lifecycle.RUNTIME_KTX)
@@ -83,22 +83,21 @@ dependencies {
   implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.0")
   implementation("androidx.lifecycle:lifecycle-common-java8:2.4.0")
   implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-  implementation("androidx.constraintlayout:constraintlayout:2.1.2")
-  implementation("com.google.android.material:material:1.4.0")
+  implementation("androidx.constraintlayout:constraintlayout:2.1.3")
+  implementation("com.google.android.material:material:1.5.0")
   implementation(Libs.Kotlin.Coroutines.CORE)
   implementation(Libs.Kotlin.Coroutines.ANDROID)
   implementation("com.squareup.retrofit2:retrofit:2.9.0")
-  implementation("com.louiscad.splitties:splitties-systemservices:3.0.0-beta01")
-  implementation("com.louiscad.splitties:splitties-views-dsl:3.0.0-beta01")
-  implementation("com.louiscad.splitties:splitties-views-dsl-coordinatorlayout:3.0.0-beta01")
-  implementation("com.louiscad.splitties:splitties-views-dsl-constraintlayout:3.0.0-beta01")
-  implementation("com.louiscad.splitties:splitties-views-dsl-recyclerview:3.0.0-beta01")
-  implementation("com.louiscad.splitties:splitties-views-dsl-material:3.0.0-beta01")
-  implementation("com.louiscad.splitties:splitties-views-dsl-appcompat:3.0.0-beta01")
-  implementation("com.louiscad.splitties:splitties-toast:3.0.0-beta01")
-  implementation("com.louiscad.splitties:splitties-snackbar:3.0.0-beta01")
-  implementation("com.louiscad.splitties:splitties-resources:3.0.0-beta01")
-  implementation("me.gujun.android:span:1.7")
+  implementation("com.louiscad.splitties:splitties-systemservices:3.0.0")
+  implementation("com.louiscad.splitties:splitties-views-dsl:3.0.0")
+  implementation("com.louiscad.splitties:splitties-views-dsl-coordinatorlayout:3.0.0")
+  implementation("com.louiscad.splitties:splitties-views-dsl-constraintlayout:3.0.0")
+  implementation("com.louiscad.splitties:splitties-views-dsl-recyclerview:3.0.0")
+  implementation("com.louiscad.splitties:splitties-views-dsl-material:3.0.0")
+  implementation("com.louiscad.splitties:splitties-views-dsl-appcompat:3.0.0")
+  implementation("com.louiscad.splitties:splitties-toast:3.0.0")
+  implementation("com.louiscad.splitties:splitties-snackbar:3.0.0")
+  implementation("com.louiscad.splitties:splitties-resources:3.0.0")
   implementation("com.mikepenz:iconics-core:5.3.3")
   implementation("com.mikepenz:material-design-iconic-typeface:2.2.0.8-kotlin@aar")
   implementation("com.github.castorflex.smoothprogressbar:library-circular:1.3.0")

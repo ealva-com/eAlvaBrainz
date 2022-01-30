@@ -22,7 +22,7 @@ object SdkVersion {
 }
 
 object PluginsVersion {
-  const val AGP = "7.0.4"
+  const val AGP = "7.1.0"
   const val DETEKT = "1.19.0"
   const val DOKKA = "1.6.10"
   const val KOTLIN = "1.6.10"
@@ -35,7 +35,7 @@ object Libs {
   const val DESUGAR = "com.android.tools:desugar_jdk_libs:1.1.5"
 
   object AndroidX {
-    const val APPCOMPAT = "androidx.appcompat:appcompat:1.4.0"
+    const val APPCOMPAT = "androidx.appcompat:appcompat:1.4.1"
     const val PALETTE = "androidx.palette:palette:1.0.0"
     const val STARTUP = "androidx.startup:startup-runtime:1.1.0"
 
@@ -74,7 +74,7 @@ object Libs {
   }
 
   object Koin {
-    private const val VERSION = "3.1.4"
+    private const val VERSION = "3.1.5"
     const val CORE = "io.insert-koin:koin-core:$VERSION"
     const val ANDROID = "io.insert-koin:koin-android:$VERSION"
   }
@@ -105,12 +105,12 @@ object Libs {
   }
 
   object Mockito {
-    const val INLINE = "org.mockito:mockito-inline:4.2.0"
+    const val INLINE = "org.mockito:mockito-inline:4.3.1"
     const val KOTLIN = "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
   }
 
   object Result {
-    private const val VERSION = "1.1.13"
+    private const val VERSION = "1.1.14"
     const val RESULT = "com.michael-bull.kotlin-result:kotlin-result:$VERSION"
     const val COROUTINES = "com.michael-bull.kotlin-result:kotlin-result-coroutines:$VERSION"
   }

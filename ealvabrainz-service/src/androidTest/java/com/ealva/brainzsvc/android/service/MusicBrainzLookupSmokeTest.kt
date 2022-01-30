@@ -42,6 +42,7 @@ import com.ealva.ealvabrainz.brainz.data.Place
 import com.ealva.ealvabrainz.brainz.data.PlaceMbid
 import com.ealva.ealvabrainz.brainz.data.Recording
 import com.ealva.ealvabrainz.brainz.data.RecordingMbid
+import com.ealva.ealvabrainz.brainz.data.Relationships
 import com.ealva.ealvabrainz.brainz.data.Release
 import com.ealva.ealvabrainz.brainz.data.Release.Include
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroup
@@ -150,8 +151,9 @@ public class MusicBrainzLookupSmokeTest {
         Artist.Include.Tags,
         Artist.Include.UserTags,
         Artist.Include.Genres,
-        Artist.Include.UserGenres
+        Artist.Include.UserGenres,
       )
+      relationships(Relationships.Url)
     }.onSuccess { artist ->
       expect(artist.name).toBe("Nirvana")
       expect(artist.aliases).toNotBeEmpty()

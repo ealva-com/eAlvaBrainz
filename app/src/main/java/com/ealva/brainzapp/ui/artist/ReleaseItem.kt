@@ -20,18 +20,15 @@
 package com.ealva.brainzapp.ui.artist
 
 import android.content.Context
-import android.graphics.Color
-import android.text.SpannableStringBuilder
-import com.ealva.brainzapp.ui.view.sp
-import com.ealva.ealvabrainz.common.AlbumTitle
+import android.text.SpannedString
+import androidx.core.text.buildSpannedString
 import com.ealva.ealvabrainz.brainz.data.ArtistMbid
-import com.ealva.ealvabrainz.common.ArtistName
 import com.ealva.ealvabrainz.brainz.data.LabelMbid
-import com.ealva.ealvabrainz.common.LabelName
 import com.ealva.ealvabrainz.brainz.data.ReleaseMbid
+import com.ealva.ealvabrainz.common.AlbumTitle
+import com.ealva.ealvabrainz.common.ArtistName
+import com.ealva.ealvabrainz.common.LabelName
 import com.ealva.ealvabrainz.common.asAlbumTitle
-import me.gujun.android.span.span
-import splitties.resources.appStyledColor
 
 class CreditItem(
   val artistMbid: ArtistMbid,
@@ -40,23 +37,26 @@ class CreditItem(
 )
 
 @JvmName(name = "creditListToSpannable")
-fun List<CreditItem>.toSpannable(clicked: (CreditItem) -> Unit): SpannableStringBuilder {
-  return span {
-    this@toSpannable.forEachIndexed { index, credit ->
-      if (index > 0) append(" ")
-      span(credit.artistName.value) {
-        textDecorationLine = "underline"
-        textColor = Color.BLUE
-        onClick = {
-          clicked(credit)
-        }
-      }
-      if (credit.joinPhrase.isNotBlank()) {
-        append(" ")
-        append(credit.joinPhrase)
-      }
-    }
+fun List<CreditItem>.toSpannable(clicked: (CreditItem) -> Unit): SpannedString {
+  return buildSpannedString {
+    append("")
   }
+//  return span {
+//    this@toSpannable.forEachIndexed { index, credit ->
+//      if (index > 0) append(" ")
+//      span(credit.artistName.value) {
+//        textDecorationLine = "underline"
+//        textColor = Color.BLUE
+//        onClick = {
+//          clicked(credit)
+//        }
+//      }
+//      if (credit.joinPhrase.isNotBlank()) {
+//        append(" ")
+//        append(credit.joinPhrase)
+//      }
+//    }
+//  }
 }
 
 class LabelItem(
@@ -69,26 +69,29 @@ class LabelItem(
 fun List<LabelItem>.toSpannable(
   ctx: Context,
   clicked: (LabelItem) -> Unit
-): SpannableStringBuilder {
-  return span {
-    val disambiguationSize = ctx.sp(13)
-
-    this@toSpannable.forEachIndexed { index, label ->
-      if (index > 0) append(", ")
-      span(label.name.value) {
-        textDecorationLine = "underline"
-        textColor = Color.BLUE
-        onClick = { clicked(label) }
-      }
-      if (label.disambiguation.isNotBlank()) {
-        span("(${label.disambiguation})") {
-          textSize = disambiguationSize
-          textColor = appStyledColor(android.R.attr.textColorSecondary)
-          onClick = { clicked(label) }
-        }
-      }
-    }
+): SpannedString {
+  return buildSpannedString {
+    append("")
   }
+//  return span {
+//    val disambiguationSize = ctx.sp(13)
+//
+//    this@toSpannable.forEachIndexed { index, label ->
+//      if (index > 0) append(", ")
+//      span(label.name.value) {
+//        textDecorationLine = "underline"
+//        textColor = Color.BLUE
+//        onClick = { clicked(label) }
+//      }
+//      if (label.disambiguation.isNotBlank()) {
+//        span("(${label.disambiguation})") {
+//          textSize = disambiguationSize
+//          textColor = appStyledColor(android.R.attr.textColorSecondary)
+//          onClick = { clicked(label) }
+//        }
+//      }
+//    }
+//  }
 }
 
 class ReleaseItem private constructor(

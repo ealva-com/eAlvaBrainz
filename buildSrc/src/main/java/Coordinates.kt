@@ -28,7 +28,7 @@ object EalvaBrainzCoordinates {
   // All parts of versioning can be up to 2 digits: 0-99
   private const val MAJOR = 0
   private const val MINOR = 10
-  private const val PATCH = 1
+  private const val PATCH = 2
   private const val BUILD = 0
 
   val VERSION = "$MAJOR.$MINOR.$PATCH-${buildPart(IS_SNAPSHOT, BUILD)}"
@@ -38,7 +38,7 @@ object EalvaBrainzServiceCoordinates {
   // All parts of versioning can be up to 2 digits: 0-99
   private const val MAJOR = 0
   private const val MINOR = 10
-  private const val PATCH = 1
+  private const val PATCH = 2
   private const val BUILD = 0
 
   val VERSION = "$MAJOR.$MINOR.$PATCH-${buildPart(IS_SNAPSHOT, BUILD)}"

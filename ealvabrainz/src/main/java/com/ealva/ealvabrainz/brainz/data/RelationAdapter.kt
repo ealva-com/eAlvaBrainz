@@ -121,6 +121,7 @@ internal class RelationAdapter(private val moshi: Moshi) : JsonAdapter<Relation>
 }
 
 private val commonRelationNames = setOf(
+  "type",
   "type-id",
   "target-type",
   "ordering-key",

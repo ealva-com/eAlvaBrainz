@@ -18,6 +18,7 @@
 package com.ealva.brainzapp.app
 
 import android.app.Application
+import com.ealva.brainzapp.BuildConfig
 import com.ealva.brainzapp.services.brainzModule
 import com.ealva.ealvabrainz.log.BrainzLog
 import com.ealva.ealvalog.Loggers
@@ -27,6 +28,7 @@ import com.ealva.ealvalog.android.DebugLogHandler
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
+import org.koin.core.logger.Level
 
 @Suppress("unused") // It's in the manifest
 class App : Application() {
@@ -34,7 +36,7 @@ class App : Application() {
     super.onCreate()
     setupLogging()
     startKoin {
-      androidLogger()
+      androidLogger(if (BuildConfig.DEBUG) Level.ERROR else Level.NONE)
       androidContext(this@App)
       modules(brainzModule)
     }

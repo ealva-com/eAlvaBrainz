@@ -45,7 +45,7 @@ fun View.addOnTouchOvalRipple() {
 @OptIn(ExperimentalCoroutinesApi::class)
 fun View.clickFlow(): Flow<View> = callbackFlow {
   setOnClickListener { v ->
-    offer(v)
+    trySend(v)
   }
   awaitClose { setOnClickListener(null) }
 }.conflate().flowOn(Dispatchers.Main)
