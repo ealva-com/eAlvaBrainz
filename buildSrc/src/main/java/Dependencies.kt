@@ -22,12 +22,12 @@ object SdkVersion {
 }
 
 object PluginsVersion {
-  const val AGP = "7.1.0"
+  const val AGP = "7.1.1"
   const val DETEKT = "1.19.0"
   const val DOKKA = "1.6.10"
   const val KOTLIN = "1.6.10"
   const val VANNIKTECH_PUBLISH = "0.18.0"
-  const val VERSIONS = "0.41.0"
+  const val VERSIONS = "0.42.0"
 }
 
 object Libs {
@@ -37,7 +37,7 @@ object Libs {
   object AndroidX {
     const val APPCOMPAT = "androidx.appcompat:appcompat:1.4.1"
     const val PALETTE = "androidx.palette:palette:1.0.0"
-    const val STARTUP = "androidx.startup:startup-runtime:1.1.0"
+    const val STARTUP = "androidx.startup:startup-runtime:1.1.1"
 
     object Ktx {
       const val CORE = "androidx.core:core-ktx:1.7.0"

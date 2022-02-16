@@ -18,7 +18,7 @@
 package com.ealva.brainzsvc.service
 
 import android.content.Intent
-import android.net.Uri
+import androidx.core.net.toUri
 import com.ealva.ealvabrainz.brainz.CoverArt
 import com.ealva.ealvabrainz.brainz.data.CoverArtRelease
 import com.ealva.ealvabrainz.brainz.data.ReleaseGroupMbid
@@ -51,7 +51,7 @@ public interface CoverArtService {
      */
     @Suppress("unused")
     public val BRAINZ_INTENT: Intent =
-      Intent(Intent.ACTION_VIEW, Uri.parse("https://musicbrainz.org/"))
+      Intent(Intent.ACTION_VIEW, "https://musicbrainz.org/".toUri())
 
     public operator fun invoke(
       okHttpClient: OkHttpClient,

@@ -20,7 +20,6 @@
 package com.ealva.brainzapp.data
 
 import android.content.Intent
-import android.net.Uri
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
@@ -28,6 +27,7 @@ import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 
 @JvmInline
 value class Isni(val value: String)
@@ -60,7 +60,7 @@ fun TextView.setAsClickableLink(isni: Isni) {
         textView.context,
         Intent(
           Intent.ACTION_VIEW,
-          Uri.parse("https://www.isni.org/${isni.value}")
+          "https://www.isni.org/${isni.value}".toUri()
         ),
         null
       )

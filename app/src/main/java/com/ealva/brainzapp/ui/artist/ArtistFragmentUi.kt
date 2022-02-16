@@ -23,7 +23,6 @@ package com.ealva.brainzapp.ui.artist
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.view.View.NO_ID
 import android.widget.RatingBar
 import android.widget.TextView
@@ -32,6 +31,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat.startActivity
+import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.lifecycle.whenStarted
 import androidx.viewpager2.widget.ViewPager2
@@ -358,7 +358,7 @@ class ArtistFragmentUi(
             isni.context,
             Intent(
               Intent.ACTION_VIEW,
-              Uri.parse("https://www.isni.org/${isni.getTag(KEY_ISNI_VALUE)}")
+              "https://www.isni.org/${isni.getTag(KEY_ISNI_VALUE)}".toUri()
             ),
             null
           )
