@@ -327,7 +327,7 @@ public class BoostTerm(private val term: Term, private val boost: Int) : Term() 
  * A compound term is simply list of terms separated by an [operator] string and enclosed in
  * parenthesis.
  */
-public sealed class CompoundTerm(
+public open class CompoundTerm(
   private val operator: String,
   internal val terms: List<Term>
 ) : Term() {

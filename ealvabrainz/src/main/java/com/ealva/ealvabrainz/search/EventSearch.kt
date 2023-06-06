@@ -43,6 +43,7 @@ import com.ealva.ealvabrainz.common.BrainzMarker
 import com.ealva.ealvabrainz.common.EventName
 import com.ealva.ealvabrainz.common.PlaceName
 import com.ealva.ealvabrainz.common.Year
+import com.ealva.ealvabrainz.lucene.CompoundTerm
 import com.ealva.ealvabrainz.lucene.Field
 import com.ealva.ealvabrainz.lucene.Query
 import com.ealva.ealvabrainz.lucene.Term
@@ -78,6 +79,8 @@ public class EventSearch(query: Query = Query()) : BaseSearch<SearchField>(query
   public fun artistId(mbid: ArtistMbid): Field = artistId { Term(mbid) }
   public fun artistId(build: MbidTermBuilder<ArtistMbid>.() -> Term): Field =
     add(ArtistId, MbidTermBuilder<ArtistMbid>().build())
+  public fun artistIds(operator: String, mbIds: List<ArtistMbid>): Field =
+    add(ArtistId, CompoundTerm(operator, mbIds.map { Term(it) }))
 
   /** the event's begin date (e.g. "1980-01-22") */
   public fun beginDate(term: LocalDate): Field = beginDate { Term(term) }
